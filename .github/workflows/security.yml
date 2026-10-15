@@ -1,0 +1,25 @@
+# Fails only when a dependency has a known vulnerability (OSV database, from pubspec.lock and desktop/Cargo.lock). Runs weekly and
+# on demand, because new advisories appear without any change in this repo.
+# Warnings such as unmaintained or yanked packages are reported but never fail it.
+name: Security
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  osv-scanner:
+    name: Vulnerable dependencies (OSV-Scanner)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: osv-scanner
+        uses: google/osv-scanner-action/osv-scanner-action@v2.6.0
+        with:
+          scan-args: |-
+            --recursive
+            ./
