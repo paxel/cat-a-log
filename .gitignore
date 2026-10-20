@@ -58,3 +58,4 @@ desktop/crates/catlog-gui/tests/snapshots/*.old.png
 
 # Flutter regenerates the macOS scaffolding on pub get; 2.0 has no Flutter macOS target
 /macos/
+site-dist/

@@ -33,6 +33,25 @@ cd desktop && cargo run --bin catlog
 flutter test test/screenshots --run-skipped
 ```
 
+## Documentation site
+
+`site/` holds the keeper's documentation as HTML fragments in two trees,
+`site/en/` and `site/de/`, page for page; `tool/site/build.js` renders
+them into `site-dist/` with the navigation, a search index per language
+and the link check (#160).
+
+```sh
+# build and preview at http://127.0.0.1:8080/
+node tool/site/build.js --serve
+
+# the build's own tests
+node --test "tool/site/*.test.js"
+```
+
+The Pages workflow builds the site on every push and deploys it on a
+release tag only, after checking the tag against `pubspec.yaml`, so the
+site always describes the app the stores have.
+
 ## Translations
 
 38 ARB files under `lib/l10n/`, machine-translated. `gen_l10n` runs on

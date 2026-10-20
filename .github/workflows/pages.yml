@@ -1,0 +1,68 @@
+name: Pages
+
+# Builds the documentation site (site/ -> site-dist/) on every push to summer,
+# every pull request and every release tag; deploys it to GitHub Pages only for
+# release tags, so the site always describes the app the stores have (#160).
+#
+# One-time steps in the repository settings, done on 2026-10-20:
+#   1. Settings -> Pages -> Source: "GitHub Actions".
+#   2. Settings -> Environments -> github-pages -> Deployment branches and tags:
+#      tags matching "v*" (the deploy job runs only on those).
+
+on:
+  push:
+    branches: [summer]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages-build-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build site
+        run: node tool/site/build.js --base "/${{ github.event.repository.name }}/"
+
+      - name: Test site build
+        run: node --test "tool/site/*.test.js"
+
+      - name: Check that the tag matches the pubspec.yaml version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          expected="v$(sed -n 's/^version: \([0-9.]*\)+.*/\1/p' pubspec.yaml | head -n 1)"
+          if [ "$expected" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match pubspec.yaml version ($expected); the site would describe the wrong release"
+            exit 1
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site-dist
+
+  deploy:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
