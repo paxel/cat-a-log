@@ -55,23 +55,12 @@ who made it, and you can look at any cat's story like a diary.
 
 ## What it looks like
 
-| Home | A cat | Its card |
+| Home | A cat | The desk |
 |---|---|---|
-| ![Clowders](docs/screenshots/01-home.png) | ![Cat](docs/screenshots/03-cat.png) | ![Card](docs/screenshots/04-card.png) |
+| ![Home](site/assets/frames/phone/en/home.png) | ![Cat](site/assets/frames/phone/en/cat.png) | ![Desk](site/assets/frames/desk/en/cards.png) |
 
-| A foster home | The diary | The map |
-|---|---|---|
-| ![Clowder](docs/screenshots/02-clowder.png) | ![Timeline](docs/screenshots/05-timeline.png) | ![Map](docs/screenshots/06-map.png) |
-
-| Weight over time | The agenda | The missing poster |
-|---|---|---|
-| ![Graph](docs/screenshots/07-graph.png) | ![Agenda](docs/screenshots/08-agenda.png) | ![Poster](docs/screenshots/09-poster.png) |
-
-| The report for the vet | Changes waiting in the folder | The strays |
-|---|---|---|
-| ![Report](docs/screenshots/10-report.png) | ![Sync](docs/screenshots/11-sync.png) | ![Strays](docs/screenshots/12-strays.png) |
-
-*(Demo data — the cats in your catalog will be considerably fluffier.)*
+Every screen of the phone and every view of the desk, with the flows step
+by step, in English and German: **[the documentation](https://paxel.github.io/cat-a-log/)**.
 
 ## Get it
 
