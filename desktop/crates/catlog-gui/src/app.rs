@@ -2256,7 +2256,9 @@ impl App {
     }
 
     /// Carries out what a page, a card or the dashboard asked for.
-    fn act_page(&mut self, page_action: PageAction) {
+    /// Does what a page asked for; public so the site frames drive the
+    /// app through the same actions a click would (#162).
+    pub fn act_page(&mut self, page_action: PageAction) {
         let t = self.t;
         match page_action {
             PageAction::None => {}

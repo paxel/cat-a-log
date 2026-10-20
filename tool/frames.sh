@@ -4,10 +4,12 @@
 # a release; CI runs the same and fails when a committed frame differs.
 set -eu
 cd "$(dirname "$0")/.."
+echo "the demo catalog as a folder for the desk…"
+flutter test test/screenshots/demo_fixture_test.dart --run-skipped --concurrency=1
 echo "phone frames (en, de)…"
 flutter test test/screenshots/site_frames_test.dart --run-skipped --concurrency=1
 if [ -d desktop/crates/catlog-gui/tests ] && grep -q site_frames desktop/crates/catlog-gui/tests/*.rs 2>/dev/null; then
   echo "desk frames (en, de)…"
-  (cd desktop && nice -n 19 env CARGO_BUILD_JOBS=2 cargo test -j 2 -p catlog-gui --test site_frames -- --ignored)
+  (cd desktop && nice -n 19 env CARGO_BUILD_JOBS=2 UPDATE_SNAPSHOTS=force cargo test -j 2 -p catlog-gui --test site_frames -- --ignored)
 fi
 echo "done: site/assets/frames"

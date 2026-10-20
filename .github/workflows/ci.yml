@@ -84,6 +84,11 @@ jobs:
         run: cargo test -p catlog-gui --test render --locked -- --ignored
       - name: Snapshot tests (the look of the six views and a card)
         run: cargo test -p catlog-gui --test snapshots --locked -- --ignored
+      # The desk's pages and flow steps for the site are committed (#162);
+      # a frame that no longer matches the app fails here, with the same
+      # slack the view snapshots get for another GPU.
+      - name: Site frames of the desk are current
+        run: cargo test -p catlog-gui --test site_frames --locked -- --ignored
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-llvm-cov

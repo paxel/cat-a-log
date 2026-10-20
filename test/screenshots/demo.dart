@@ -43,8 +43,18 @@ Future<void> loadRealFonts() async {
 /// it, so chores are due, appointments lie ahead and streaks end
 /// yesterday; [pinClock] makes the app see the same day.
 final DateTime demoToday = DateTime(2026, 10, 20);
-DateTime ago(int days, {int hour = 10}) =>
-    DateTime(demoToday.year, demoToday.month, demoToday.day - days, hour);
+
+/// The moment the store's clock stands at while the demo is written:
+/// [ago] moves it to the day it names, so an entry is recorded on the
+/// day it is dated and the desk's "recent changes" read as a history.
+DateTime _writingAt = DateTime(2026, 10, 20, 9);
+
+DateTime ago(int days, {int hour = 10}) {
+  final at = DateTime(demoToday.year, demoToday.month, demoToday.day - days, hour);
+  if (days >= 0) _writingAt = at;
+  return at;
+}
+
 DateTime ahead(int days, {int hour = 10}) => ago(-days, hour: hour);
 
 /// Pins the app's clock to nine in the morning of [demoToday], and the
@@ -52,6 +62,7 @@ DateTime ahead(int days, {int hour = 10}) => ago(-days, hour: hour);
 /// authors page shows, and the name a new cat is proposed.
 void pinClock() {
   nowProvider = () => DateTime(demoToday.year, demoToday.month, demoToday.day, 9);
+  CatalogStore.clock = () => _writingAt;
   var seed = 7;
   CatalogStore.newKey = () => SigningKey.fromSeed(
         Uint8List.fromList(List<int>.generate(32, (i) => (i * 37 + seed++) & 0xff)),
