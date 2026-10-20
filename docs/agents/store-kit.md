@@ -29,7 +29,9 @@ Play's internal track, and uploads the iOS build to TestFlight.
 
 `CHANGELOG.md` holds the current version; older sections sit in
 `OLDER_CHANGES.md`, newest first. The release to describe is every section
-after the live version.
+after the live version. `CHANGELOG.de.md` and `OLDER_CHANGES.de.md` carry
+the same sections in German, kept in step entry by entry: the German
+What's New is lifted from there, never translated afresh.
 
 ## Screenshots
 

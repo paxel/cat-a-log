@@ -12,10 +12,8 @@ import os from "node:os";
 import path from "node:path";
 import http from "node:http";
 import { fileURLToPath } from "node:url";
-import { escapeHtml } from "./html.js";
-
-const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-export const REPO_ROOT = path.resolve(SCRIPT_DIR, "..", "..");
+import { REPO_ROOT, decodeEntities, escapeHtml, readVersion, slugify, stripTags } from "./common.js";
+import { generatedPages } from "./generated.js";
 export const REPO_URL = "https://github.com/paxel/catlog";
 export const SITE_URL = "https://paxel.github.io/cat-a-log/";
 
@@ -109,66 +107,9 @@ const FONTS_HREF =
   "https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,600;1,400&family=Noto+Serif:wght@400;600&display=swap";
 
 // ---------------------------------------------------------------------------
-// Small helpers
+// Small helpers live in common.js, shared with the generated pages.
 
-export { escapeHtml };
-
-const NAMED_ENTITIES = {
-  lt: "<",
-  gt: ">",
-  quot: '"',
-  apos: "'",
-  nbsp: " ",
-  mdash: "—",
-  ndash: "–",
-  hellip: "…",
-  rarr: "→",
-  larr: "←",
-  copy: "©",
-  times: "×",
-  middot: "·",
-  laquo: "«",
-  raquo: "»",
-};
-
-/** Decodes numeric and the named entities the pages use; `&amp;` last so `&amp;lt;` stays `&lt;`. */
-export function decodeEntities(text) {
-  return text
-    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
-    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number(dec)))
-    .replace(/&([a-z]+);/gi, (whole, name) =>
-      name === "amp" ? whole : (NAMED_ENTITIES[name] ?? whole),
-    )
-    .replace(/&amp;/g, "&");
-}
-
-const INLINE_TAG = /^<\/?(a|code|em|strong|kbd|span|b|i|abbr|sup|sub|mark|small|var)\b[^>]*>$/i;
-
-/** Text of an HTML fragment: inline tags vanish, block tags become a space, entities are decoded. */
-export function stripTags(html) {
-  const text = html.replace(/<[^>]*>/g, (tag) => (INLINE_TAG.test(tag) ? "" : " "));
-  return decodeEntities(text).replace(/\s+/g, " ").trim();
-}
-
-export function slugify(text) {
-  const slug = stripTags(text)
-    .toLowerCase()
-    .replace(/ä/g, "ae")
-    .replace(/ö/g, "oe")
-    .replace(/ü/g, "ue")
-    .replace(/ß/g, "ss")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/[\s-]+/g, "-");
-  return slug || "section";
-}
-
-/** The app's version from pubspec.yaml: `version: X.Y.Z+B` gives X.Y.Z. */
-export function readVersion(pubspec) {
-  const match = /^version:\s*(\d+\.\d+\.\d+)(?:\+\d+)?\s*$/m.exec(pubspec);
-  if (!match) throw new Error("pubspec.yaml: no version found");
-  return match[1];
-}
+export { REPO_ROOT, escapeHtml, decodeEntities, stripTags, slugify, readVersion };
 
 function collectIds(html) {
   const ids = new Set();
@@ -782,7 +723,6 @@ const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPat
 if (isMain) {
   try {
     const opts = parseArgs(process.argv.slice(2));
-    const { generatedPages } = await import("./generated.js");
     const result = buildSite({ ...opts, generated: generatedPages(opts.srcDir) });
     console.log(`Built ${result.pages} pages (v${result.version}) into ${result.outDir}`);
     if (opts.serve) serve(result.outDir, opts.port);

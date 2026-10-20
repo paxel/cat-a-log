@@ -52,6 +52,20 @@ The Pages workflow builds the site on every push and deploys it on a
 release tag only, after checking the tag against `pubspec.yaml`, so the
 site always describes the app the stores have.
 
+The site's frames under `site/assets/frames/` are generated, not drawn:
+`tool/frames.sh` renders the phone's pages and flow steps (Flutter, both
+languages, the clock pinned to the demo's day) and the desk's (the kittest
+harness over the same demo catalog). CI regenerates them and fails on a
+diff, so a frame never shows an older app than the tag.
+
+The glossary page is built from `CONTEXT.md` and `site/glossary.de.md`,
+the fields page from the starter set in the Dart core, and What's new
+from `CHANGELOG.md`, `CHANGELOG.de.md` and their `OLDER_CHANGES` files.
+A new term, a new starter field or a changelog section without its German
+twin fails the build. The privacy policy lives in the site
+(`site/en/reference/privacy-policy.html`, served at the root path the
+stores link, too).
+
 ## Translations
 
 38 ARB files under `lib/l10n/`, machine-translated. `gen_l10n` runs on
@@ -60,6 +74,11 @@ names translate at display time (ADR-0005) — never store translations in
 the data.
 
 ## Releases
+
+Every changelog entry is written twice: in `CHANGELOG.md` and in
+`CHANGELOG.de.md`, same section, same order. A version bump moves the
+released section of both to `OLDER_CHANGES.md` and `OLDER_CHANGES.de.md`
+with the tag's date.
 
 Tag-driven, mirroring the dedup-rs pipeline: `git tag v2.0.0 && git push
 --tags` (or the Actions "Run workflow" button with publish ticked) runs the

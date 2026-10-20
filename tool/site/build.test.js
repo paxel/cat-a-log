@@ -16,6 +16,7 @@ import {
   readVersion,
   switchHref,
 } from "./build.js";
+import { generatedPages, parseChangelog, parseGlossary, parseStarters } from "./generated.js";
 
 const PAGE = (title, body = "<p>Text.</p>", extra = "") =>
   `<!-- page: title="${title}" ${extra} -->\n${body}\n`;
@@ -145,8 +146,28 @@ test("a broken link or anchor fails the build, and a root-relative one too", () 
   assert.throws(() => collectPages({ srcDir: src }), /is root-relative/);
 });
 
-test("the repository's own site builds and links", () => {
+test("the repository's own site builds and links, generated pages included", () => {
   const out = fs.mkdtempSync(path.join(os.tmpdir(), "catlog-site-dist-"));
-  const result = buildSite({ outDir: out, base: "/cat-a-log/" });
-  assert.ok(result.pages >= 2);
+  const result = buildSite({ outDir: out, base: "/cat-a-log/", generated: generatedPages() });
+  assert.ok(result.pages >= 100, `${result.pages} pages`);
+  for (const lang of ["en", "de"]) {
+    for (const page of ["glossary", "whats-new", "fields", "privacy-policy", "troubleshooting"]) {
+      assert.ok(fs.existsSync(path.join(out, lang, "reference", `${page}.html`)), `${lang}/${page}`);
+    }
+  }
+  // The privacy policy keeps the address the stores link.
+  assert.match(fs.readFileSync(path.join(out, "privacy-policy.html"), "utf8"), /no server, no account/);
+});
+
+test("the glossary, the starters and a changelog parse, and a missing German term fails", () => {
+  const entries = parseGlossary("## Language\n\n**Cat**:\nAn animal.\n_Avoid_: kitty\n\n**Stray** [Stray]:\nNo home.\n");
+  assert.deepEqual(entries.map((e) => [e.term, e.english, e.avoid]), [["Cat", "Cat", "kitty"], ["Stray", "Stray", ""]]);
+  assert.throws(() => parseGlossary("nothing here", "x.md"), /x\.md: no glossary entries/);
+  const starters = parseStarters("(slug: 'weight', name: 'Weight', type: FieldType.unitValue, scope: FieldScope.cat, options: [])");
+  assert.deepEqual(starters, [{ slug: "weight", name: "Weight", type: "unitValue", scope: "cat" }]);
+  const log = parseChangelog("## [2.4.0]\n\n### Added\n- One.\n  more\n- Two.\n\n## [2.3.0] - 2026-10-05\n\n### Fixed\n- Three.\n");
+  assert.deepEqual(log.map((s) => [s.version, s.date, s.categories.map((c) => [c.name, c.items])]), [
+    ["2.4.0", "", [["Added", ["One. more", "Two."]]]],
+    ["2.3.0", "2026-10-05", [["Fixed", ["Three."]]]],
+  ]);
 });

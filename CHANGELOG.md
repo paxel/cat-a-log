@@ -6,6 +6,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [S
 ## [2.4.0]
 
 ### Added
+- The documentation at <https://paxel.github.io/cat-a-log/>: every screen of the phone and every view of the desk on a page of its own, the flows step by step with a frame per step, the glossary, the file formats, every field, and what to do when something is wrong, in English and German. The site describes the released app and is updated with every release.
 - A poster can be taken down and another put up (#85). "Flier hangs here" on a cat's page records a flier position where the phone is, like "Seen here now" records a sighting; a hold on the map asks, after the cat, whether it was seen here or its poster hangs here. Every poster still hanging is a square pin on the map, not only the latest; a hold on a pin offers "Flier taken down", which removes that position like any history row, so the pin goes and the history keeps the row with its arrow back. On the desk a right-click on a flier pin takes the poster down, the map's right-click offers the flier beside the sighting, and the cat page's Actions menu has "Flier hangs here" with the position picked on the map; the desk shows every poster as a pin without the stray area switched on.
 
 ### Fixed

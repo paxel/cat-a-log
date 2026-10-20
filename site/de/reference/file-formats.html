@@ -1,0 +1,12 @@
+<!-- page: title="Dateiformate" track="reference" order=4 summary="Die Dateien, die cat(a)log schreibt: das .catsync-Bündel, der gemeinsame Ordner mit Segmenten und Manifest, die Sicherungen, die Archivdatei und die Zurückgehen-Datei; was mitreist und was bleibt." -->
+<p class="lede">Alles, was ein Gerät weiß, ist ein nur wachsendes Protokoll von Einträgen plus die Fotos. Die Dateien unten tragen es zwischen Geräten oder halten es sicher; keine davon erreicht einen Server.</p>
+<h2>Das Bündel: <code>.catsync</code></h2>
+<p>Ein Zip mit jedem Eintrag, den der Absender hält, einer pro Zeile als JSON Lines, und den gerade benutzten Fotos unter ihrer Prüfsumme. Der Import läuft mit demselben Motor wie jeder andere Transport: Neues wird genommen, Bekanntes übersprungen, und der Versionsvektor des Bündels unterscheidet Konflikte. Private Werte sind nur drin, wenn der Schalter des Absenders es sagte. Ein Telefon und der Schreibtisch lesen einander die Bündel.</p>
+<h2>Der gemeinsame Ordner: <code>catlog-sync/</code></h2>
+<p>Jedes Gerät schreibt seine eigene Historie als Folge von Segmenten, <code>&lt;Gerät&gt;.1.seg</code>, <code>.2.seg</code> und so weiter, jedes eine JSON-Lines-Datei mit Einträgen, und ein Manifest, <code>&lt;Gerät&gt;.manifest</code>, mit seinem Versionsvektor und der Liste der Segmente. Ein volles Segment ändert sich nie wieder, darum bewegt ein Cloud-Client nur das offene. Fotos liegen in <code>blobs/</code> unter ihrer Prüfsumme, die Signierschlüssel in <code>keys/</code>. Ein Ordner trägt mehrere Kataloge, jeden in einem eigenen Unterordner. Die Dateien jedes anderen Geräts werden nur gelesen.</p>
+<h2>Sicherungen</h2>
+<p>Eine vollständige Kopie eines Katalogs, mit Fotos, als Bündel: auf dem Telefon im Ordner <code>catlog-backups</code>, den du freigegeben hast, auf dem Schreibtisch in deinem Downloads-Ordner, geschrieben, wenn die App nach Änderungen verlassen wird. Wiederherstellen liest sie als neue Kataloge.</p>
+<h2>Die Archivdatei und die Zurückgehen-Datei</h2>
+<p>Archivieren schreibt die archivierten Katzen und Zuhause mit ihren Fotos in ein Bündel, bevor es sie löscht; der Import holt sie zurück. Zurückgehen zu einem Moment schreibt alles nach dem Moment in ein Bündel am selben Ort, bevor es entfernt wird.</p>
+<h2>Was nie mitreist</h2>
+<p>Die Ortsangaben der Kamera, aus jedem gespeicherten Foto entfernt. Private Werte ohne den Schalter. Verstecktes und Gesperrtes gilt je Gerät und verlässt es nie.</p>

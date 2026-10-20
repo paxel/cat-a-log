@@ -1710,3 +1710,19 @@ h3:hover .anchor,
 .platform strong {
   color: var(--ink);
 }
+
+.glossary .avoid {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.glossary dd {
+  margin-bottom: 0.4rem;
+}
+
+h2 small {
+  color: var(--muted);
+  font-size: 0.6em;
+  font-weight: 400;
+  margin-left: 0.5rem;
+}

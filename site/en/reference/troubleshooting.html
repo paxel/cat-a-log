@@ -1,0 +1,22 @@
+<!-- page: title="Troubleshooting" track="reference" order=7 summary="When something is wrong: sync says nothing, a photo is missing after a sync, a partner is named as outdated, the crash report, a lost phone, the desk missing from the Linux menu." -->
+<p class="lede">The way out for the things that go wrong, in the order keepers meet them. Each page of the app has a help behind its question mark too.</p>
+<h2>Sync says nothing</h2>
+<p>A shared folder exchanges changes only while both apps have been on screen with the folder reachable. Open the sync page: the watch line names whose changes wait; a tap syncs now. If the folder is out of reach, the note at the top says so and stays until the folder is back; on Android check that the folder's cloud client is still signed in and the folder still granted. A partner you never synced with in person is taken on trust from their file: that is normal.</p>
+<h2>A photo is missing after a sync</h2>
+<p>A cloud client copies the photo files after the entry files. The next round of the folder watch fetches them without a tap; a cat whose photo has not arrived shows its placeholder until then.</p>
+<h2>A partner is named as still on the old version</h2>
+<p>Their app writes the folder in the layout from before 2.0.0 and cannot read your segments until it updates. Everyone keeps what they have; nothing is lost. The name goes once they update.</p>
+<h2>Entries were refused</h2>
+<p>The arrival page lists entries in a known name without the right signature. Either the partner has a new key, which an in-person sync pins, or someone wrote in their name. Nothing refused is lost on their side.</p>
+<h2>A value two people changed</h2>
+<p>A conflict. The home's menu names them while there are some; the <a href="../phone/conflicts.html">conflicts page</a> decides them, and the decision reaches every device.</p>
+<h2>The app asks to report a crash</h2>
+<p>After a crash, a freeze or a memory kill while the app was on screen, the next start offers a report with the system's reason; a battery saver closing the app does not count. The report goes by mail with what you add to it.</p>
+<h2>A lost or new phone</h2>
+<p>The backups in the <code>catlog-backups</code> folder of your cloud client or USB stick, one full copy per catalog, are read by Restore in Manage catalogs on the new phone. A partner's shared folder brings everything back too, except private values that never travelled.</p>
+<h2>A wrong import or merge</h2>
+<p>Go back to the moment before it: <a href="../phone/moments.html">Moments</a>. A merge itself cannot be undone, but the moment before it can be returned to.</p>
+<h2>The desk is not in the Linux menu, or shows no icon</h2>
+<p>Start it once from a terminal or the file manager: it registers its own menu entry and icon on every start, for Homebrew, the tarball and the AppImage alike. The desk installed through Homebrew is in the menu right after <code>brew install</code>.</p>
+<h2>Something else</h2>
+<p><a href="https://github.com/paxel/catlog/issues">Open an issue</a> with what you did, what you expected and what happened; a crash report from the app is the best start.</p>

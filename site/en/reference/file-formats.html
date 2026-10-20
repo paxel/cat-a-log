@@ -1,0 +1,12 @@
+<!-- page: title="File formats" track="reference" order=4 summary="The files cat(a)log writes: the .catsync bundle, the shared folder with its segments and manifest, the backups, the archive file and the go-back file; what travels and what stays." -->
+<p class="lede">Everything a device knows is an append-only log of entries plus the photos. The files below carry it between devices or keep it safe; none of them reaches a server.</p>
+<h2>The bundle: <code>.catsync</code></h2>
+<p>A zip with every entry the sender holds, one per line in JSON Lines, and the photos currently in use by their hash. Importing runs the same engine as every other transport: what is new is taken, what is known is skipped, and the bundle's version vector tells conflicts apart. Private values are inside only when the sender's switch said so. A phone and the desk read each other's bundles.</p>
+<h2>The shared folder: <code>catlog-sync/</code></h2>
+<p>Each device writes its own history as a run of segments, <code>&lt;device&gt;.1.seg</code>, <code>.2.seg</code> and so on, each a JSON Lines file of entries, and a manifest, <code>&lt;device&gt;.manifest</code>, with its version vector and the list of segments. A full segment never changes again, so a cloud client moves only the open one. Photos lie in <code>blobs/</code> by hash, the signing keys in <code>keys/</code>. One folder carries several catalogs, each in a subfolder of its own. Every other device's files are read only.</p>
+<h2>Backups</h2>
+<p>A full copy of a catalog, with photos, as a bundle: on the phone in the <code>catlog-backups</code> folder you granted, on the desk in your Downloads folder, written when the app is left after changes. Restore reads them as new catalogs.</p>
+<h2>The archive file and the go-back file</h2>
+<p>Archiving writes the archived cats and homes with their photos to a bundle before deleting them; importing it brings them back. Going back to a moment writes everything after the moment to a bundle in the same place before removing it.</p>
+<h2>What never travels</h2>
+<p>Camera location metadata, stripped from every stored photo. Private values without the switch. Hidden and banned things are per device and never leave it.</p>
