@@ -196,6 +196,15 @@ class AppLocalizationsDa extends AppLocalizations {
   String get seenHereNow => 'Set her nu';
 
   @override
+  String get recordHere => 'Registrér her:';
+
+  @override
+  String get flierHangsHere => 'Opslaget hænger her';
+
+  @override
+  String get flierTakenDown => 'Opslaget er taget ned';
+
+  @override
   String get deleteCat => 'Slet kat';
 
   @override
@@ -738,9 +747,6 @@ class AppLocalizationsDa extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Mappesynkronisering mislykkedes: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Registrér en observation her:';
 
   @override
   String trailOf(String name, int count) {

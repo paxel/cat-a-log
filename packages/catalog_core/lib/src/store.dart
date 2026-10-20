@@ -1368,11 +1368,21 @@ class CatalogStore {
     return null;
   }
 
-  /// All flier positions ever recorded on the entity, newest first.
-  List<(double, double)> flierPositions(String entityId) => [
+  /// The live flier position entries of the entity, newest first: one
+  /// per poster still hanging. A poster taken down is its entry removed
+  /// like any history row (#85), so it is gone from here and from the
+  /// map while the history keeps it.
+  List<Entry> flierPositionEntries(String entityId) => [
         for (final e in fieldHistory(entityId, positionKey))
-          if (parsePositionKind(e.value ?? '') == PositionKind.flier)
-            if (parsePosition(e.value) case final pos?) pos
+          if (parsePositionKind(e.value ?? '') == PositionKind.flier &&
+              parsePosition(e.value) != null)
+            e
+      ];
+
+  /// All flier positions still hanging on the entity, newest first.
+  List<(double, double)> flierPositions(String entityId) => [
+        for (final e in flierPositionEntries(entityId))
+          if (parsePosition(e.value) case final pos?) pos
       ];
 
   /// The kind marker of a position value; plain "lat,lon" is a sighting.

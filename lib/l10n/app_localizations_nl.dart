@@ -196,6 +196,15 @@ class AppLocalizationsNl extends AppLocalizations {
   String get seenHereNow => 'Hier gezien';
 
   @override
+  String get recordHere => 'Hier vastleggen:';
+
+  @override
+  String get flierHangsHere => 'Poster hangt hier';
+
+  @override
+  String get flierTakenDown => 'Poster weggehaald';
+
+  @override
   String get deleteCat => 'Kat verwijderen';
 
   @override
@@ -739,9 +748,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Map synchroniseren mislukt: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Hier een waarneming vastleggen:';
 
   @override
   String trailOf(String name, int count) {

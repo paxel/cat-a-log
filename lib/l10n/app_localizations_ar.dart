@@ -195,6 +195,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get seenHereNow => 'شوهدت هنا الآن';
 
   @override
+  String get recordHere => 'سجّل هنا:';
+
+  @override
+  String get flierHangsHere => 'المنشور معلّق هنا';
+
+  @override
+  String get flierTakenDown => 'أُزيل المنشور';
+
+  @override
   String get deleteCat => 'حذف القطة';
 
   @override
@@ -735,9 +744,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'فشلت مزامنة المجلد: $error';
   }
-
-  @override
-  String get recordSightingHere => 'سجّل مشاهدة هنا:';
 
   @override
   String trailOf(String name, int count) {

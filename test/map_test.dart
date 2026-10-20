@@ -201,6 +201,84 @@ void main() {
     expect(find.text('Minka'), findsNWidgets(2));
   });
 
+  testWidgets('every poster is a pin; a hold on one takes it down (#85)', (
+    tester,
+  ) async {
+    final dir = Directory.systemTemp.createTempSync('catlog_map');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final tile = File('${dir.path}/tile.png')
+      ..writeAsBytesSync(
+        Uint8List.fromList(img.encodePng(img.Image(width: 1, height: 1))),
+      );
+    final store = CatalogStore.inMemory();
+    addTearDown(store.close);
+    store.author = 'axel';
+    final lost = store.createCat('Minka');
+    store.recordPosition(lost, 52.50, 13.40, kind: PositionKind.flier);
+    store.recordPosition(lost, 52.51, 13.41, kind: PositionKind.flier);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MapScreen(store: store, tileProvider: _FakeTileProvider(tile)),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    // Two posters, two square pins — not only the latest.
+    expect(find.text('Minka'), findsNWidgets(2));
+
+    await tester.longPress(find.text('Minka').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Flier taken down'));
+    await tester.pumpAndSettle();
+    expect(find.text('Minka'), findsOneWidget);
+    expect(store.flierPositions(lost), hasLength(1));
+    // Removed, not deleted: the history keeps the row marked.
+    expect(
+      store
+          .fieldHistory(lost, CatalogStore.positionKey, includeVoided: true)
+          .where((e) => e.voided),
+      hasLength(1),
+    );
+  });
+
+  testWidgets('a hold on the map records a sighting or a flier (#85)', (
+    tester,
+  ) async {
+    final dir = Directory.systemTemp.createTempSync('catlog_map');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final tile = File('${dir.path}/tile.png')
+      ..writeAsBytesSync(
+        Uint8List.fromList(img.encodePng(img.Image(width: 1, height: 1))),
+      );
+    final store = CatalogStore.inMemory();
+    addTearDown(store.close);
+    store.author = 'axel';
+    final stray = store.createCat('Roamer');
+    store.recordPosition(stray, 52.52, 13.40);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MapScreen(store: store, tileProvider: _FakeTileProvider(tile)),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    final map = tester.getRect(find.byType(FlutterMap));
+    await tester.longPressAt(map.center + const Offset(80, 80));
+    await tester.pumpAndSettle();
+    expect(find.text('Record here:'), findsOneWidget);
+    await tester.tap(find.text('Roamer').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Seen here now'), findsOneWidget);
+    await tester.tap(find.text('Flier hangs here'));
+    await tester.pumpAndSettle();
+    expect(store.flierPositions(stray), hasLength(1));
+    // The sighting stayed where it was; the poster is its own pin.
+    expect(store.sightingPositionOf(stray), (52.52, 13.40));
+    expect(find.text('Roamer'), findsNWidgets(2));
+  });
+
   testWidgets('members of a clowder without a position pin themselves; '
       'cats on one spot share a pin that opens the list (#88)', (tester) async {
     final dir = Directory.systemTemp.createTempSync('catlog_map');

@@ -196,6 +196,15 @@ class AppLocalizationsLv extends AppLocalizations {
   String get seenHereNow => 'Tikko redzēts šeit';
 
   @override
+  String get recordHere => 'Ierakstīt šeit:';
+
+  @override
+  String get flierHangsHere => 'Sludinājums karājas šeit';
+
+  @override
+  String get flierTakenDown => 'Sludinājums noņemts';
+
+  @override
   String get deleteCat => 'Dzēst kaķi';
 
   @override
@@ -737,9 +746,6 @@ class AppLocalizationsLv extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Mapes sinhronizācija neizdevās: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Ierakstīt novērojumu šeit:';
 
   @override
   String trailOf(String name, int count) {

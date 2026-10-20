@@ -195,6 +195,15 @@ class AppLocalizationsEt extends AppLocalizations {
   String get seenHereNow => 'Nähtud siin praegu';
 
   @override
+  String get recordHere => 'Salvesta siin:';
+
+  @override
+  String get flierHangsHere => 'Kuulutus ripub siin';
+
+  @override
+  String get flierTakenDown => 'Kuulutus võetud maha';
+
+  @override
   String get deleteCat => 'Kustuta kass';
 
   @override
@@ -736,9 +745,6 @@ class AppLocalizationsEt extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Kausta sünkroonimine ebaõnnestus: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Salvesta vaatlus siin:';
 
   @override
   String trailOf(String name, int count) {

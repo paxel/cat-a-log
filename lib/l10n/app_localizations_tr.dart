@@ -195,6 +195,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get seenHereNow => 'Şimdi burada görüldü';
 
   @override
+  String get recordHere => 'Buraya kaydet:';
+
+  @override
+  String get flierHangsHere => 'İlan burada asılı';
+
+  @override
+  String get flierTakenDown => 'İlan kaldırıldı';
+
+  @override
   String get deleteCat => 'Kediyi sil';
 
   @override
@@ -735,9 +744,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Klasör eşitleme başarısız: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Burada bir görülme kaydet:';
 
   @override
   String trailOf(String name, int count) {

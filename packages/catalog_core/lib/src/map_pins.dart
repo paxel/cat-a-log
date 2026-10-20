@@ -18,6 +18,10 @@ class MapPin {
   /// null.
   final String? fieldKey;
 
+  /// The history entry a flier pin stands for, so the poster can be
+  /// taken down from the pin (#85). Null for every other kind.
+  final int? seq;
+
   const MapPin({
     required this.kind,
     required this.id,
@@ -25,6 +29,7 @@ class MapPin {
     required this.lat,
     required this.lon,
     this.fieldKey,
+    this.seq,
   });
 }
 

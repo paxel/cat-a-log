@@ -173,18 +173,30 @@ impl Catalog {
         Ok(None)
     }
 
-    /// All flier positions ever recorded on the entity, newest first.
-    pub fn flier_positions(&self, entity: &str) -> Result<Vec<(f64, f64)>> {
+    /// The live flier positions of the entity, newest first, each with
+    /// the entry behind it: one per poster still hanging. A poster taken
+    /// down is its entry removed like any history row (#85), so it is
+    /// gone from here and from the map while the history keeps it.
+    pub fn flier_position_entries(&self, entity: &str) -> Result<Vec<(i64, f64, f64)>> {
         let mut out = Vec::new();
         for e in self.field_history(entity, POSITION_KEY, false)? {
             let value = e.value.unwrap_or_default();
             if parse_position_kind(&value) == PositionKind::Flier
-                && let Some(pos) = parse_position(Some(&value))
+                && let Some((lat, lon)) = parse_position(Some(&value))
             {
-                out.push(pos);
+                out.push((e.seq, lat, lon));
             }
         }
         Ok(out)
+    }
+
+    /// All flier positions still hanging on the entity, newest first.
+    pub fn flier_positions(&self, entity: &str) -> Result<Vec<(f64, f64)>> {
+        Ok(self
+            .flier_position_entries(entity)?
+            .into_iter()
+            .map(|(_, lat, lon)| (lat, lon))
+            .collect())
     }
 
     /// Records a position; sightings are stored plain, fliers carry
@@ -589,6 +601,16 @@ mod tests {
             Some((51.34, 12.37))
         );
         assert_eq!(c.flier_positions("cat:a").unwrap(), vec![(51.0, 12.0)]);
+        // A second poster; the first taken down is its entry removed,
+        // kept in the history, gone from the positions (#85).
+        c.record_position("cat:a", 51.1, 12.1, PositionKind::Flier, None)
+            .unwrap();
+        let hanging = c.flier_position_entries("cat:a").unwrap();
+        assert_eq!(hanging.len(), 2);
+        c.remove_entry(hanging[1].0).unwrap();
+        assert_eq!(c.flier_positions("cat:a").unwrap(), vec![(51.1, 12.1)]);
+        let rows = c.field_history("cat:a", POSITION_KEY, true).unwrap();
+        assert_eq!(rows.iter().filter(|e| e.voided).count(), 1);
         c.move_cat("cat:a", Some("clowder:f")).unwrap();
         assert!(c.strays().unwrap().is_empty());
         let events = c.clowder_occupancy("clowder:h").unwrap();

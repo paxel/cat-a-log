@@ -143,8 +143,9 @@ pub struct App {
     history_of: Option<(String, String)>,
     map_page: MapPage,
     picker: PositionPicker,
-    /// The Cat a sighting is being picked for.
-    sighting_for: Option<String>,
+    /// The Cat a sighting is being picked for, and what the pick records:
+    /// seen there, or a poster hangs there (#85).
+    sighting_for: Option<(String, PositionKind)>,
     mover: MoveDialog,
     /// The list pane's width when the window opened.
     pane_width: f32,
@@ -988,11 +989,13 @@ impl App {
                     MapPageAction::None => {}
                     MapPageAction::OpenCat(id) => page_action = PageAction::OpenCat(id),
                     MapPageAction::OpenClowder(id) => page_action = PageAction::OpenClowder(id),
-                    MapPageAction::Sighting(id, lat, lon) => {
-                        if let Err(e) =
-                            self.store
-                                .record_position(&id, lat, lon, PositionKind::Sighting, None)
-                        {
+                    MapPageAction::Record(id, lat, lon, kind) => {
+                        if let Err(e) = self.store.record_position(&id, lat, lon, kind, None) {
+                            self.fail(e.to_string());
+                        }
+                    }
+                    MapPageAction::FlierTakenDown(seq) => {
+                        if let Err(e) = self.store.remove_entry(seq) {
                             self.fail(e.to_string());
                         }
                     }
@@ -1233,13 +1236,15 @@ impl App {
             self.picker.ask(Some(&current), self.map_page.map.viewport);
         }
         if let Some(picked) = self.picker.show(ui.ctx(), &t) {
-            if let Some(cat) = self.sighting_for.take() {
+            if let Some((cat, kind)) = self.sighting_for.take() {
                 if let Some((lat, lon)) = catlog_core::entities::parse_position(Some(&picked)) {
-                    match self
-                        .store
-                        .record_position(&cat, lat, lon, PositionKind::Sighting, None)
-                    {
-                        Ok(()) => self.notice = Some(t.sighting_recorded().to_string()),
+                    match self.store.record_position(&cat, lat, lon, kind, None) {
+                        Ok(()) => match kind {
+                            PositionKind::Sighting => {
+                                self.notice = Some(t.sighting_recorded().to_string())
+                            }
+                            PositionKind::Flier => self.paw(),
+                        },
                         Err(e) => self.fail(e.to_string()),
                     }
                 }
@@ -2283,7 +2288,11 @@ impl App {
             PageAction::NewField(scope) => self.new_field.ask(scope),
             PageAction::Move(cat) => self.mover.ask(&self.store, &cat),
             PageAction::Sighting(cat) => {
-                self.sighting_for = Some(cat);
+                self.sighting_for = Some((cat, PositionKind::Sighting));
+                self.picker.ask(None, self.map_page.map.viewport);
+            }
+            PageAction::Flier(cat) => {
+                self.sighting_for = Some((cat, PositionKind::Flier));
                 self.picker.ask(None, self.map_page.map.viewport);
             }
             PageAction::ShowOnMap(id) => {
@@ -3935,9 +3944,10 @@ mod tests {
         h.run_steps(3);
         assert_eq!(h.state().view(), View::Map);
         let pins = MapPage::pins(h.state().store(), None, &std::collections::HashSet::new());
+        // The sighting and the poster, a kilometre apart: two pins (#85).
         assert_eq!(
             pins.iter().map(|p| p.label.as_str()).collect::<Vec<_>>(),
-            vec!["Miezi"]
+            vec!["Miezi", "Miezi"]
         );
         h.get_by_label("Possible stray area").click();
         h.run_steps(3);
@@ -7911,6 +7921,104 @@ mod tests {
         h.get_by_label("Previous pin").click();
         h.run();
         assert_eq!(h.state().map_page.map.viewport, first, "and back again");
+    }
+
+    #[test]
+    fn a_poster_is_taken_down_from_its_pin_and_another_hangs_here_from_the_map() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut h = harness(seeded_with(dir.path(), "moves"));
+        h.run();
+        open_view(&mut h, "Map");
+        let miezi = "cat:00000000-0000-4000-8000-000000000001";
+        let none = std::collections::HashSet::new();
+        // Every poster is a pin of its own, named by its entry.
+        let pins = MapPage::pins(h.state().store(), None, &none);
+        let flier = pins
+            .iter()
+            .find(|p| p.id.starts_with("flier:"))
+            .expect("the poster's pin")
+            .id
+            .clone();
+        assert_eq!(h.state().store().flier_positions(miezi).unwrap().len(), 1);
+        // A click on it draws the cat's trail like the cat's own pin.
+        assert_eq!(
+            h.state_mut().map_page.click_pin(&flier),
+            MapPageAction::None
+        );
+        assert_eq!(h.state().map_page.trail_of.as_deref(), Some(miezi));
+        // A right-click offers to take the poster down; the row stays in
+        // the history, removed.
+        h.state_mut().map_page.secondary_click_pin(&flier);
+        h.run();
+        h.get_by_label("Flier taken down").click();
+        h.run();
+        assert!(h.state().store().flier_positions(miezi).unwrap().is_empty());
+        let rows = h
+            .state()
+            .store()
+            .field_history(miezi, catlog_core::entities::POSITION_KEY, true)
+            .unwrap();
+        assert_eq!(rows.iter().filter(|e| e.voided).count(), 1);
+        assert!(
+            !MapPage::pins(h.state().store(), None, &none)
+                .iter()
+                .any(|p| p.id.starts_with("flier:")),
+            "the pin is gone"
+        );
+        // A right-click on the ground: seen here, or a poster hangs here.
+        h.state_mut().map_page.sighting_at = Some((51.36, 12.39));
+        h.run();
+        h.get_by_label("Record here:");
+        h.get_by_label("Flier hangs here").click();
+        h.run();
+        // The cat combo under the map; the view bar's Cats is a button.
+        h.get_all_by_role(egui::accesskit::Role::ComboBox)
+            .next()
+            .expect("the cat combo")
+            .click();
+        h.step();
+        h.get_all_by_label("Miezi")
+            .last()
+            .unwrap()
+            .click_accesskit();
+        h.run();
+        assert_eq!(
+            h.state().store().flier_positions(miezi).unwrap(),
+            vec![(51.36, 12.39)]
+        );
+        assert_eq!(
+            h.state().store().sighting_position_of(miezi).unwrap(),
+            Some((51.34, 12.37)),
+            "the sighting is untouched"
+        );
+    }
+
+    #[test]
+    fn a_poster_hangs_where_the_page_picks_on_the_map() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut h = harness(seeded_with(dir.path(), "fields-all"));
+        h.run();
+        let miezi = "cat:00000000-0000-4000-8000-000000000001";
+        open_cat_page(&mut h, miezi);
+        h.get_by_label("Actions").click();
+        h.step();
+        h.get_by_label("Flier hangs here").click();
+        h.run_steps(3);
+        assert!(h.state().picker.open);
+        let sighting = h.state().store().sighting_position_of(miezi).unwrap();
+        h.state_mut().picker.picked = Some((51.36, 12.39));
+        h.run_steps(2);
+        h.get_by_label("OK").click();
+        h.run_steps(3);
+        assert_eq!(
+            h.state().store().flier_positions(miezi).unwrap().first(),
+            Some(&(51.36, 12.39))
+        );
+        assert_eq!(
+            h.state().store().sighting_position_of(miezi).unwrap(),
+            sighting,
+            "a poster is not a sighting"
+        );
     }
 
     #[test]

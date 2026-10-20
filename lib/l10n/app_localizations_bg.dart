@@ -196,6 +196,15 @@ class AppLocalizationsBg extends AppLocalizations {
   String get seenHereNow => 'Видяна тук сега';
 
   @override
+  String get recordHere => 'Запиши тук:';
+
+  @override
+  String get flierHangsHere => 'Обявата виси тук';
+
+  @override
+  String get flierTakenDown => 'Обявата е свалена';
+
+  @override
   String get deleteCat => 'Изтрий котката';
 
   @override
@@ -737,9 +746,6 @@ class AppLocalizationsBg extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Неуспешна синхронизация на папката: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Запиши забелязване тук:';
 
   @override
   String trailOf(String name, int count) {

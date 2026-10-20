@@ -197,6 +197,8 @@ pub enum MapAction {
     Click(f64, f64),
     /// The map was right-clicked at this position.
     SecondaryClick(f64, f64),
+    /// A pin was right-clicked.
+    PinSecondary(String),
 }
 
 /// The viewport: where the map looks and how close.
@@ -494,9 +496,14 @@ impl MapView {
                 }
             };
         } else if response.secondary_clicked() {
-            let p = pointer.unwrap_or(rect.center());
-            let (lat, lon) = self.unproject(rect, p);
-            action = MapAction::SecondaryClick(lat, lon);
+            action = match hit {
+                Some(id) => MapAction::PinSecondary(id),
+                None => {
+                    let p = pointer.unwrap_or(rect.center());
+                    let (lat, lon) = self.unproject(rect, p);
+                    MapAction::SecondaryClick(lat, lon)
+                }
+            };
         }
         // OSM asks for its credit on every map.
         let credit = "© OpenStreetMap contributors";

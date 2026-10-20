@@ -196,6 +196,15 @@ class AppLocalizationsUk extends AppLocalizations {
   String get seenHereNow => 'Бачили тут щойно';
 
   @override
+  String get recordHere => 'Записати тут:';
+
+  @override
+  String get flierHangsHere => 'Оголошення висить тут';
+
+  @override
+  String get flierTakenDown => 'Оголошення знято';
+
+  @override
   String get deleteCat => 'Видалити кота';
 
   @override
@@ -738,9 +747,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Помилка синхронізації теки: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Записати зустріч тут:';
 
   @override
   String trailOf(String name, int count) {

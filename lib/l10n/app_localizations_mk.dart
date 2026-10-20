@@ -196,6 +196,15 @@ class AppLocalizationsMk extends AppLocalizations {
   String get seenHereNow => 'Видена тука сега';
 
   @override
+  String get recordHere => 'Запиши тука:';
+
+  @override
+  String get flierHangsHere => 'Огласот виси тука';
+
+  @override
+  String get flierTakenDown => 'Огласот е симнат';
+
+  @override
   String get deleteCat => 'Избриши мачка';
 
   @override
@@ -740,9 +749,6 @@ class AppLocalizationsMk extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Синхронизацијата на папката не успеа: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Запиши видување тука:';
 
   @override
   String trailOf(String name, int count) {

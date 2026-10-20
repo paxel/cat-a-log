@@ -195,6 +195,15 @@ class AppLocalizationsSl extends AppLocalizations {
   String get seenHereNow => 'Videna tukaj zdaj';
 
   @override
+  String get recordHere => 'Zabeleži tukaj:';
+
+  @override
+  String get flierHangsHere => 'Letak visi tukaj';
+
+  @override
+  String get flierTakenDown => 'Letak snet';
+
+  @override
   String get deleteCat => 'Izbriši mačko';
 
   @override
@@ -736,9 +745,6 @@ class AppLocalizationsSl extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Sinhronizacija mape ni uspela: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Zabeleži opažanje tukaj:';
 
   @override
   String trailOf(String name, int count) {

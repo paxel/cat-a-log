@@ -195,6 +195,15 @@ class AppLocalizationsMt extends AppLocalizations {
   String get seenHereNow => 'Rajtu hawn issa';
 
   @override
+  String get recordHere => 'Irreġistra hawn:';
+
+  @override
+  String get flierHangsHere => 'Il-flier imdendel hawn';
+
+  @override
+  String get flierTakenDown => 'Flier imneħħi';
+
+  @override
   String get deleteCat => 'Ħassar il-qattus';
 
   @override
@@ -737,9 +746,6 @@ class AppLocalizationsMt extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Is-sinkronizzazzjoni tal-folder falliet: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Irreġistra dehra hawn:';
 
   @override
   String trailOf(String name, int count) {

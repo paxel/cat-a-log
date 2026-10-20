@@ -195,6 +195,15 @@ class AppLocalizationsIs extends AppLocalizations {
   String get seenHereNow => 'Sást hér núna';
 
   @override
+  String get recordHere => 'Skrá hér:';
+
+  @override
+  String get flierHangsHere => 'Auglýsingin hangir hér';
+
+  @override
+  String get flierTakenDown => 'Auglýsing tekin niður';
+
+  @override
   String get deleteCat => 'Eyða ketti';
 
   @override
@@ -738,9 +747,6 @@ class AppLocalizationsIs extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Samstilling möppu mistókst: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Skrá að köttur sást hér:';
 
   @override
   String trailOf(String name, int count) {

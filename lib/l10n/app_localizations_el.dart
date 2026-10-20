@@ -196,6 +196,15 @@ class AppLocalizationsEl extends AppLocalizations {
   String get seenHereNow => 'Εθεάθη εδώ τώρα';
 
   @override
+  String get recordHere => 'Καταγραφή εδώ:';
+
+  @override
+  String get flierHangsHere => 'Η αφίσα κρέμεται εδώ';
+
+  @override
+  String get flierTakenDown => 'Η αφίσα αφαιρέθηκε';
+
+  @override
   String get deleteCat => 'Διαγραφή γάτας';
 
   @override
@@ -742,9 +751,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Αποτυχία συγχρονισμού φακέλου: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Καταγραφή παρατήρησης εδώ:';
 
   @override
   String trailOf(String name, int count) {

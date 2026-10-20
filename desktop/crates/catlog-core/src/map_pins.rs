@@ -22,6 +22,9 @@ pub struct MapPin {
     pub name: String,
     pub lat: f64,
     pub lon: f64,
+    /// The history entry a flier pin stands for, so the poster can be
+    /// taken down from the pin (#85). None for every other kind.
+    pub seq: Option<i64>,
 }
 
 /// Things within this distance of each other count as one spot.
@@ -98,6 +101,7 @@ mod tests {
             name: name.to_string(),
             lat,
             lon,
+            seq: None,
         }
     }
 

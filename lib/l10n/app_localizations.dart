@@ -518,6 +518,24 @@ abstract class AppLocalizations {
   /// **'Seen here now'**
   String get seenHereNow;
 
+  /// No description provided for @recordHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Record here:'**
+  String get recordHere;
+
+  /// No description provided for @flierHangsHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Flier hangs here'**
+  String get flierHangsHere;
+
+  /// No description provided for @flierTakenDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Flier taken down'**
+  String get flierTakenDown;
+
   /// No description provided for @deleteCat.
   ///
   /// In en, this message translates to:
@@ -1459,12 +1477,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Folder sync failed: {error}'**
   String folderSyncFailed(String error);
-
-  /// No description provided for @recordSightingHere.
-  ///
-  /// In en, this message translates to:
-  /// **'Record a sighting here:'**
-  String get recordSightingHere;
 
   /// No description provided for @trailOf.
   ///

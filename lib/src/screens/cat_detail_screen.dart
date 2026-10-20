@@ -440,8 +440,14 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
     setState(() {});
   }
 
-  Future<void> _seenHere() async {
-    final failure = await seenHereNow(store, id);
+  Future<void> _seenHere() => _recordHere(seenHereNow);
+
+  /// A poster of this cat hangs where the keeper stands (#85).
+  Future<void> _flierHere() => _recordHere(flierHangsHere);
+
+  Future<void> _recordHere(
+      Future<LocationFailure?> Function(CatalogStore, String) record) async {
+    final failure = await record(store, id);
     if (!mounted) return;
     if (failure != null) {
       await explainLocationFailure(context, failure);
@@ -650,6 +656,11 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               icon: Icons.location_on_outlined,
               label: context.t.seenHereNow,
               onPressed: _seenHere,
+            ),
+            PageAction(
+              icon: Icons.push_pin_outlined,
+              label: context.t.flierHangsHere,
+              onPressed: _flierHere,
             ),
             PageAction(
               icon: Icons.post_add,

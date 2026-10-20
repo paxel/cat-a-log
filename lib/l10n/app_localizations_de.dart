@@ -197,6 +197,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get seenHereNow => 'Hier gesehen';
 
   @override
+  String get recordHere => 'Hier eintragen:';
+
+  @override
+  String get flierHangsHere => 'Aushang hängt hier';
+
+  @override
+  String get flierTakenDown => 'Aushang abgenommen';
+
+  @override
   String get deleteCat => 'Katze löschen';
 
   @override
@@ -742,9 +751,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Ordner-Sync fehlgeschlagen: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Hier eine Sichtung eintragen:';
 
   @override
   String trailOf(String name, int count) {

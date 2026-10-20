@@ -195,6 +195,15 @@ class AppLocalizationsRo extends AppLocalizations {
   String get seenHereNow => 'Văzută aici acum';
 
   @override
+  String get recordHere => 'Înregistrează aici:';
+
+  @override
+  String get flierHangsHere => 'Afișul atârnă aici';
+
+  @override
+  String get flierTakenDown => 'Afiș dat jos';
+
+  @override
   String get deleteCat => 'Șterge pisica';
 
   @override
@@ -737,9 +746,6 @@ class AppLocalizationsRo extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Sincronizarea dosarului a eșuat: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Înregistrează o observație aici:';
 
   @override
   String trailOf(String name, int count) {

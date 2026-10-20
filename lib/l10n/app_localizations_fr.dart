@@ -195,6 +195,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get seenHereNow => 'Vu ici maintenant';
 
   @override
+  String get recordHere => 'Enregistrer ici :';
+
+  @override
+  String get flierHangsHere => 'L\'affiche est accrochée ici';
+
+  @override
+  String get flierTakenDown => 'Affiche retirée';
+
+  @override
   String get deleteCat => 'Supprimer le chat';
 
   @override
@@ -741,9 +750,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Échec de la synchro du dossier : $error';
   }
-
-  @override
-  String get recordSightingHere => 'Enregistrer une observation ici :';
 
   @override
   String trailOf(String name, int count) {

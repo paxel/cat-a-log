@@ -193,6 +193,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get seenHereNow => '刚在这里见到';
 
   @override
+  String get recordHere => '在这里记录：';
+
+  @override
+  String get flierHangsHere => '启事贴在这里';
+
+  @override
+  String get flierTakenDown => '启事已撤下';
+
+  @override
   String get deleteCat => '删除猫';
 
   @override
@@ -713,9 +722,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String folderSyncFailed(String error) {
     return '文件夹同步失败：$error';
   }
-
-  @override
-  String get recordSightingHere => '在这里记录目击：';
 
   @override
   String trailOf(String name, int count) {

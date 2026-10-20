@@ -23,8 +23,10 @@ pub enum MapPageAction {
     None,
     OpenCat(String),
     OpenClowder(String),
-    /// Record a sighting of this Cat at this position.
-    Sighting(String, f64, f64),
+    /// Record a sighting or a flier of this Cat at this position.
+    Record(String, f64, f64, PositionKind),
+    /// The poster behind this flier position entry was taken down.
+    FlierTakenDown(i64),
 }
 
 pub struct MapPage {
@@ -40,8 +42,13 @@ pub struct MapPage {
     /// Missing cats whose possible stray area is overlaid.
     pub stray_areas: HashSet<String>,
     pub areas_open: bool,
-    /// The Cat a right-click offered to record a sighting for.
+    /// Where a right-click offered to record a sighting or a flier.
     pub sighting_at: Option<(f64, f64)>,
+    /// What the right-click records: seen here, or a poster hangs here.
+    pub record_kind: PositionKind,
+    /// The flier position entry a right-click on its pin offered to take
+    /// down (#85).
+    pub flier_down: Option<i64>,
     loaded_viewport: bool,
     /// What the keeper typed to jump somewhere: a cat, a clowder, the
     /// person responsible for one, or a place through the geocoder.
@@ -65,6 +72,8 @@ impl MapPage {
             stray_areas: HashSet::new(),
             areas_open: false,
             sighting_at: None,
+            record_kind: PositionKind::Sighting,
+            flier_down: None,
             loaded_viewport: false,
         }
     }
@@ -168,10 +177,10 @@ impl MapPage {
     }
 
     /// Everything on the map, one spot per 20 m: homes at their
-    /// position, cats at their latest sighting, and for a chosen
-    /// missing cat its flier positions, so a flier-only cat stays
-    /// reachable. Within a spot the home leads, then the cats.
-    pub fn spots(store: &Catalog, stray_areas: &HashSet<String>) -> Vec<PinSpot> {
+    /// position, cats at their latest sighting, and every poster still
+    /// hanging as a flier pin of its own (#85), so a flier-only cat
+    /// stays reachable. Within a spot the home leads, then the cats.
+    pub fn spots(store: &Catalog, _stray_areas: &HashSet<String>) -> Vec<PinSpot> {
         let mut pins = Vec::new();
         for c in store.clowders().unwrap_or_default() {
             if let Ok(Some((lat, lon))) = store.position_of(&c.id) {
@@ -181,6 +190,7 @@ impl MapPage {
                     name: c.name,
                     lat,
                     lon,
+                    seq: None,
                 });
             }
         }
@@ -195,18 +205,18 @@ impl MapPage {
                     name: cat.name.clone(),
                     lat,
                     lon,
+                    seq: None,
                 });
             }
-            if stray_areas.contains(&cat.id) {
-                for (lat, lon) in store.flier_positions(&cat.id).unwrap_or_default() {
-                    pins.push(MapPin {
-                        kind: PinKind::Flier,
-                        id: cat.id.clone(),
-                        name: cat.name.clone(),
-                        lat,
-                        lon,
-                    });
-                }
+            for (seq, lat, lon) in store.flier_position_entries(&cat.id).unwrap_or_default() {
+                pins.push(MapPin {
+                    kind: PinKind::Flier,
+                    id: cat.id.clone(),
+                    name: cat.name.clone(),
+                    lat,
+                    lon,
+                    seq: Some(seq),
+                });
             }
         }
         group_pins(pins, SPOT_METERS)
@@ -223,7 +233,7 @@ impl MapPage {
         Self::spots(store, stray_areas)
             .iter()
             .map(|spot| Pin {
-                id: spot.front().id.clone(),
+                id: Self::pin_id(spot),
                 lat: spot.lat(),
                 lon: spot.lon(),
                 label: spot.label(),
@@ -233,22 +243,45 @@ impl MapPage {
             .collect()
     }
 
+    /// What a spot's pin is called on the map: the front thing's id, or
+    /// for a flier its entry, since a cat may have several posters.
+    fn pin_id(spot: &PinSpot) -> String {
+        match (spot.front().kind, spot.front().seq) {
+            (PinKind::Flier, Some(seq)) => format!("flier:{seq}"),
+            _ => spot.front().id.clone(),
+        }
+    }
+
+    fn spot_at(&self, pin: &str) -> Option<usize> {
+        self.spots.iter().position(|s| Self::pin_id(s) == pin)
+    }
+
     /// A click on a pin: a shared spot opens its list; a single pin
     /// toggles its trail, and a second click opens the thing.
-    pub fn click_pin(&mut self, id: &str) -> MapPageAction {
-        if let Some(at) = self
-            .spots
-            .iter()
-            .position(|s| s.merged() && s.front().id == id)
-        {
+    pub fn click_pin(&mut self, pin: &str) -> MapPageAction {
+        let Some(at) = self.spot_at(pin) else {
+            return MapPageAction::None;
+        };
+        if self.spots[at].merged() {
             self.open_spot = Some(at);
             return MapPageAction::None;
         }
-        if self.trail_of.as_deref() == Some(id) {
-            Self::open(id)
+        let id = self.spots[at].front().id.clone();
+        if self.trail_of.as_deref() == Some(id.as_str()) {
+            Self::open(&id)
         } else {
-            self.trail_of = Some(id.to_string());
+            self.trail_of = Some(id);
             MapPageAction::None
+        }
+    }
+
+    /// A right-click on a pin: a flier pin offers to take the poster
+    /// down (#85); every other pin has nothing to say.
+    pub fn secondary_click_pin(&mut self, pin: &str) {
+        if let Some(at) = self.spot_at(pin)
+            && let Some(seq) = self.spots[at].front().seq
+        {
+            self.flier_down = Some(seq);
         }
     }
 
@@ -403,6 +436,19 @@ impl MapPage {
             MapAction::Pin(id) => action = self.click_pin(&id),
             MapAction::Click(_, _) => {}
             MapAction::SecondaryClick(lat, lon) => self.sighting_at = Some((lat, lon)),
+            MapAction::PinSecondary(id) => self.secondary_click_pin(&id),
+        }
+        if let Some(seq) = self.flier_down {
+            // A right-click on a flier pin: the poster was taken down.
+            ui.horizontal(|ui| {
+                if ui.button(t.flier_taken_down()).clicked() {
+                    action = MapPageAction::FlierTakenDown(seq);
+                    self.flier_down = None;
+                }
+                if ui.button(t.cancel()).clicked() {
+                    self.flier_down = None;
+                }
+            });
         }
         // What stands on the shared spot that was clicked: a row per
         // thing, the name opens it, the map icon draws its trail.
@@ -432,9 +478,20 @@ impl MapPage {
             }
         }
         if let Some((lat, lon)) = self.sighting_at {
-            // A right-click on the map records a sighting of a Cat here.
+            // A right-click on the map records a sighting of a Cat here,
+            // or that its poster hangs here (#85).
             ui.horizontal(|ui| {
-                ui.label(t.seen_here_now());
+                ui.label(t.record_here());
+                ui.radio_value(
+                    &mut self.record_kind,
+                    PositionKind::Sighting,
+                    t.seen_here_now(),
+                );
+                ui.radio_value(
+                    &mut self.record_kind,
+                    PositionKind::Flier,
+                    t.flier_hangs_here(),
+                );
                 let mut chosen: Option<String> = None;
                 egui::ComboBox::from_id_salt("sighting-cat")
                     .selected_text(t.cats())
@@ -446,7 +503,7 @@ impl MapPage {
                         }
                     });
                 if let Some(id) = chosen {
-                    action = MapPageAction::Sighting(id, lat, lon);
+                    action = MapPageAction::Record(id, lat, lon, self.record_kind);
                     self.sighting_at = None;
                 }
                 if ui.button(t.cancel()).clicked() {

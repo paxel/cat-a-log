@@ -175,9 +175,13 @@ void main() {
     await tester.longPress(find.byType(FlutterMap));
     await tester.pumpAndSettle();
     expect(find.byType(BottomSheet), findsNothing);
-    expect(find.text('Record a sighting here:'), findsOneWidget);
+    expect(find.text('Record here:'), findsOneWidget);
     await tester.tap(find.text('Streuner'));
     await tester.pumpAndSettle();
+    // The cat chosen, the menu asks what to record (#85).
+    await tester.tap(find.text('Seen here now'));
+    await tester.pumpAndSettle();
+    expect(store.sightingPositionOf(store.cats().single.id), isNotNull);
     expect(dots(tester), 0);
     expect(find.byType(MarkerLayer), findsWidgets);
   });

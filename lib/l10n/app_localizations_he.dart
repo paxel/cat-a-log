@@ -195,6 +195,15 @@ class AppLocalizationsHe extends AppLocalizations {
   String get seenHereNow => 'נראה כאן עכשיו';
 
   @override
+  String get recordHere => 'רישום כאן:';
+
+  @override
+  String get flierHangsHere => 'המודעה תלויה כאן';
+
+  @override
+  String get flierTakenDown => 'המודעה הוסרה';
+
+  @override
   String get deleteCat => 'מחיקת החתול';
 
   @override
@@ -734,9 +743,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'סנכרון התיקייה נכשל: $error';
   }
-
-  @override
-  String get recordSightingHere => 'רישום תצפית כאן:';
 
   @override
   String trailOf(String name, int count) {

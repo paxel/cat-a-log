@@ -195,6 +195,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get seenHereNow => 'Most itt látták';
 
   @override
+  String get recordHere => 'Rögzítés itt:';
+
+  @override
+  String get flierHangsHere => 'A plakát itt függ';
+
+  @override
+  String get flierTakenDown => 'Plakát levéve';
+
+  @override
   String get deleteCat => 'Macska törlése';
 
   @override
@@ -736,9 +745,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Mappa szinkronizálása sikertelen: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Észlelés rögzítése itt:';
 
   @override
   String trailOf(String name, int count) {

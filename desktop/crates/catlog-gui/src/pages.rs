@@ -70,6 +70,8 @@ pub enum PageAction {
     Move(String),
     /// Record where this Cat was seen, picked on the map.
     Sighting(String),
+    /// Record where a poster of this Cat hangs, picked on the map (#85).
+    Flier(String),
     /// Show this entity on the map.
     ShowOnMap(String),
     /// Add photos from files to this Cat.
@@ -280,6 +282,10 @@ impl Pages {
                     }
                     if ui.button(t.seen_here_now()).clicked() {
                         action = PageAction::Sighting(id.to_string());
+                        ui.close();
+                    }
+                    if ui.button(t.flier_hangs_here()).clicked() {
+                        action = PageAction::Flier(id.to_string());
                         ui.close();
                     }
                     if ui.button(t.show_on_map()).clicked() {

@@ -195,6 +195,15 @@ class AppLocalizationsGa extends AppLocalizations {
   String get seenHereNow => 'Feicthe anseo anois';
 
   @override
+  String get recordHere => 'Taifead anseo:';
+
+  @override
+  String get flierHangsHere => 'Tá an bhileog crochta anseo';
+
+  @override
+  String get flierTakenDown => 'Bileog bainte anuas';
+
+  @override
   String get deleteCat => 'Scrios an cat';
 
   @override
@@ -740,9 +749,6 @@ class AppLocalizationsGa extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Theip ar shioncrónú an fhillteáin: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Taifead feiceáil anseo:';
 
   @override
   String trailOf(String name, int count) {

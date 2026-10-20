@@ -195,6 +195,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get seenHereNow => 'Nähty täällä nyt';
 
   @override
+  String get recordHere => 'Kirjaa tähän:';
+
+  @override
+  String get flierHangsHere => 'Ilmoitus roikkuu tässä';
+
+  @override
+  String get flierTakenDown => 'Ilmoitus otettu pois';
+
+  @override
   String get deleteCat => 'Poista kissa';
 
   @override
@@ -737,9 +746,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Kansion synkronointi epäonnistui: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Kirjaa havainto tähän:';
 
   @override
   String trailOf(String name, int count) {

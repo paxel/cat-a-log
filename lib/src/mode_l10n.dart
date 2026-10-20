@@ -982,6 +982,9 @@ class ModeLocalizations implements AppLocalizations {
   String get flierFromGallery => base.flierFromGallery;
 
   @override
+  String get flierHangsHere => base.flierHangsHere;
+
+  @override
   String flierHidden(int count) => base.flierHidden(count);
 
   @override
@@ -989,6 +992,9 @@ class ModeLocalizations implements AppLocalizations {
 
   @override
   String flierRecognized(String name) => base.flierRecognized(name);
+
+  @override
+  String get flierTakenDown => base.flierTakenDown;
 
   @override
   String folderCatalogHint(Object name) => base.folderCatalogHint(name);
@@ -2155,7 +2161,7 @@ class ModeLocalizations implements AppLocalizations {
   String get readOnlyCalendar => base.readOnlyCalendar;
 
   @override
-  String get recordSightingHere => base.recordSightingHere;
+  String get recordHere => base.recordHere;
 
   @override
   String refusedEntries(int count, Object name) => base.refusedEntries(count, name);

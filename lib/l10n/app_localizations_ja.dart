@@ -194,6 +194,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get seenHereNow => '今ここで目撃';
 
   @override
+  String get recordHere => 'ここで記録:';
+
+  @override
+  String get flierHangsHere => 'チラシがここに貼ってある';
+
+  @override
+  String get flierTakenDown => 'チラシを撤去';
+
+  @override
   String get deleteCat => '猫を削除';
 
   @override
@@ -727,9 +736,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'フォルダー同期に失敗: $error';
   }
-
-  @override
-  String get recordSightingHere => 'ここで目撃を記録:';
 
   @override
   String trailOf(String name, int count) {

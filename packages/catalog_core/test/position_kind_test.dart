@@ -33,6 +33,22 @@ void main() {
     expect(store.flierPositions(cat), [(50.0, 8.0)]);
   });
 
+  test('a poster taken down is its entry removed; the history keeps it (#85)',
+      () {
+    store.recordPosition(cat, 50.0, 8.0, kind: PositionKind.flier);
+    store.recordPosition(cat, 50.1, 8.1, kind: PositionKind.flier);
+    final hanging = store.flierPositionEntries(cat);
+    expect(hanging.map((e) => CatalogStore.parsePosition(e.value)),
+        [(50.1, 8.1), (50.0, 8.0)]);
+    store.removeEntry(hanging.first.seq);
+    expect(store.flierPositions(cat), [(50.0, 8.0)]);
+    expect(store.flierPositionEntries(cat).single.seq, hanging.last.seq);
+    // The history shows the row marked, not gone.
+    final rows = store.fieldHistory(cat, CatalogStore.positionKey,
+        includeVoided: true);
+    expect(rows.where((e) => e.voided).single.seq, hanging.first.seq);
+  });
+
   test('a flier-only stray has no sighting position but is valid', () {
     store.recordPosition(cat, 50.0, 8.0, kind: PositionKind.flier);
     expect(store.sightingPositionOf(cat), isNull);

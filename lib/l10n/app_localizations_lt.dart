@@ -195,6 +195,15 @@ class AppLocalizationsLt extends AppLocalizations {
   String get seenHereNow => 'Ką tik matyta čia';
 
   @override
+  String get recordHere => 'Įrašyti čia:';
+
+  @override
+  String get flierHangsHere => 'Skelbimas kabo čia';
+
+  @override
+  String get flierTakenDown => 'Skelbimas nuimtas';
+
+  @override
   String get deleteCat => 'Ištrinti katę';
 
   @override
@@ -736,9 +745,6 @@ class AppLocalizationsLt extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Aplanko sinchronizavimas nepavyko: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Įrašyti pastebėjimą čia:';
 
   @override
   String trailOf(String name, int count) {

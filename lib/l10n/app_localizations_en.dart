@@ -196,6 +196,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get seenHereNow => 'Seen here now';
 
   @override
+  String get recordHere => 'Record here:';
+
+  @override
+  String get flierHangsHere => 'Flier hangs here';
+
+  @override
+  String get flierTakenDown => 'Flier taken down';
+
+  @override
   String get deleteCat => 'Delete cat';
 
   @override
@@ -736,9 +745,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Folder sync failed: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Record a sighting here:';
 
   @override
   String trailOf(String name, int count) {

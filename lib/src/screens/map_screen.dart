@@ -356,13 +356,14 @@ class _MapScreenState extends State<MapScreen>
         (e, LatLng(pos.$1, pos.$2)),
   ];
 
-  /// Each stray's latest flier position — where its poster says it was
-  /// lost — for the square pins (#83). Older flier positions stay in
-  /// the stray-area overlay (#55).
-  List<(EntityView, LatLng)> _flierPinned(List<EntityView> entities) => [
-    for (final e in entities)
-      if (store.flierPositions(e.id).firstOrNull case final pos?)
-        (e, LatLng(pos.$1, pos.$2)),
+  /// Every poster still hanging: each flier position of every missing
+  /// cat as its own square pin (#83, #85), with the entry behind it so
+  /// the pin can take the poster down.
+  List<(EntityView, LatLng, int)> _flierPinned() => [
+    for (final cat in store.visibleCats())
+      for (final e in store.flierPositionEntries(cat.id))
+        if (CatalogStore.parsePosition(e.value) case final pos?)
+          (cat, LatLng(pos.$1, pos.$2), e.seq),
   ];
 
   /// Cats that pin on their own: strays, and members of a clowder that
@@ -412,13 +413,14 @@ class _MapScreenState extends State<MapScreen>
         lat: p.latitude,
         lon: p.longitude,
       ),
-    for (final (cat, p) in _flierPinned(store.visibleStrays()))
+    for (final (cat, p, seq) in _flierPinned())
       MapPin(
         kind: PinKind.flier,
         id: cat.id,
         name: cat.name,
         lat: p.latitude,
         lon: p.longitude,
+        seq: seq,
       ),
     for (final (e, def, p) in _userPins())
       MapPin(
@@ -467,20 +469,20 @@ class _MapScreenState extends State<MapScreen>
       ? '${pin.name} · ${fieldDefName(context.t, store.visibleFieldDefs().firstWhere((d) => d.key == pin.fieldKey))}'
       : pin.name;
 
-  // Only sightings are recorded from the map; a clowder's position is set
-  // via its Position field — clowders move far too rarely for a map menu.
-  // The menu opens at the finger, on the spot it is about.
+  // A sighting or a flier is recorded from the map; a clowder's position
+  // is set via its Position field — clowders move far too rarely for a
+  // map menu. The menu opens at the finger, on the spot it is about: the
+  // cat first, then whether it was seen here or its poster hangs here
+  // (#85).
   Future<void> _longPress(Offset at, LatLng point) async {
     final strays = store.visibleStrays();
     if (strays.isEmpty) return;
+    final position = RelativeRect.fromLTRB(at.dx, at.dy, at.dx, at.dy);
     final catId = await showMenu<String>(
       context: context,
-      position: RelativeRect.fromLTRB(at.dx, at.dy, at.dx, at.dy),
+      position: position,
       items: [
-        PopupMenuItem(
-          enabled: false,
-          child: Text(context.t.recordSightingHere),
-        ),
+        PopupMenuItem(enabled: false, child: Text(context.t.recordHere)),
         for (final s in strays)
           PopupMenuItem(
             value: s.id,
@@ -495,7 +497,53 @@ class _MapScreenState extends State<MapScreen>
       ],
     );
     if (catId == null || !mounted) return;
-    store.recordPosition(catId, point.latitude, point.longitude);
+    final kind = await showMenu<PositionKind>(
+      context: context,
+      position: position,
+      items: [
+        PopupMenuItem(
+          value: PositionKind.sighting,
+          child: Text(context.t.seenHereNow),
+        ),
+        PopupMenuItem(
+          value: PositionKind.flier,
+          child: Text(context.t.flierHangsHere),
+        ),
+      ],
+    );
+    if (kind == null || !mounted) return;
+    store.recordPosition(catId, point.latitude, point.longitude, kind: kind);
+    setState(() {});
+  }
+
+  /// Hold on a flier pin: the poster is taken down, which removes its
+  /// entry like any history row (#85), or the position's history.
+  Future<void> _flierMenu(MapPin pin, Offset at) async {
+    final t = context.t;
+    final action = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(at.dx, at.dy, at.dx, at.dy),
+      items: [
+        PopupMenuItem(value: 'down', child: Text(t.flierTakenDown)),
+        PopupMenuItem(value: 'history', child: Text(t.fieldHistoryTooltip)),
+      ],
+    );
+    if (action == null || !mounted) return;
+    switch (action) {
+      case 'down':
+        if (pin.seq case final seq?) store.removeEntry(seq);
+      case 'history':
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => TimelineScreen(
+              store: store,
+              entityId: pin.id,
+              field: CatalogStore.positionKey,
+            ),
+          ),
+        );
+    }
+    if (!mounted) return;
     setState(() {});
   }
 
@@ -990,32 +1038,6 @@ class _MapScreenState extends State<MapScreen>
                       ),
                     MarkerLayer(
                       markers: [
-                        // Toggled stray areas carry the missing cat's face on each
-                        // flier position — flier-only cats become reachable (#55).
-                        for (final catId in _strayAreas)
-                          for (final pos in store.flierPositions(catId).skip(1))
-                            Marker(
-                              point: LatLng(pos.$1, pos.$2),
-                              width: _MapPin.width,
-                              height: _MapPin.height,
-                              alignment: Alignment.topCenter,
-                              child: _MapPin(
-                                label: null,
-                                onTap: () async {
-                                  await Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => CatDetailScreen(
-                                        store: store,
-                                        catId: catId,
-                                      ),
-                                    ),
-                                  );
-                                  if (!mounted) return;
-                                  setState(() {});
-                                },
-                                child: _catFace(catId, false),
-                              ),
-                            ),
                         for (final spot in spots)
                           if (spot.merged)
                             // Several things on one spot: one pin, the front thing's
@@ -1047,6 +1069,14 @@ class _MapScreenState extends State<MapScreen>
                                   spot.front.fieldKey ??
                                       CatalogStore.positionKey,
                                 ),
+                                onTap: () => _toggleTrail(
+                                  spot.front.id,
+                                  spot.front.fieldKey ??
+                                      CatalogStore.positionKey,
+                                ),
+                                onLongPress: spot.front.kind == PinKind.flier
+                                    ? (at) => _flierMenu(spot.front, at)
+                                    : null,
                                 child: _face(
                                   spot.front,
                                   _onTrail(
@@ -1054,11 +1084,6 @@ class _MapScreenState extends State<MapScreen>
                                     spot.front.fieldKey ??
                                         CatalogStore.positionKey,
                                   ),
-                                ),
-                                onTap: () => _toggleTrail(
-                                  spot.front.id,
-                                  spot.front.fieldKey ??
-                                      CatalogStore.positionKey,
                                 ),
                               ),
                             ),
@@ -1212,6 +1237,9 @@ class _MapPin extends StatelessWidget {
   final String? label;
   final Widget child;
   final VoidCallback onTap;
+
+  /// The pin's menu, opened where the finger is; none for most pins.
+  final void Function(Offset at)? onLongPress;
   final bool highlighted;
 
   /// The tip's colour; the face's ring colour, so they read as one.
@@ -1221,6 +1249,7 @@ class _MapPin extends StatelessWidget {
     required this.label,
     required this.child,
     required this.onTap,
+    this.onLongPress,
     this.highlighted = false,
     this.color = Colors.deepOrange,
   });
@@ -1233,6 +1262,9 @@ class _MapPin extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onLongPressStart: onLongPress == null
+          ? null
+          : (d) => onLongPress!(d.globalPosition),
       // The marker box is laid out tight; packing to the end keeps the
       // tip's apex on the bottom edge, which is the coordinate.
       child: Column(

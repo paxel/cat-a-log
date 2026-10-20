@@ -231,10 +231,22 @@ Future<void> recoverStrayCam(CatalogStore store,
 
 /// Records a sighting of an existing cat at the device's position.
 /// Returns null on success, otherwise why no position was available.
-Future<LocationFailure?> seenHereNow(CatalogStore store, String catId) async {
-  final outcome = await locateDevice();
+Future<LocationFailure?> seenHereNow(CatalogStore store, String catId,
+        {Locator locate = locateDevice}) =>
+    _recordHere(store, catId, PositionKind.sighting, locate);
+
+/// Records a flier position of a cat where the device is: a poster of
+/// it hangs here (#85). Returns null on success, otherwise why no
+/// position was available.
+Future<LocationFailure?> flierHangsHere(CatalogStore store, String catId,
+        {Locator locate = locateDevice}) =>
+    _recordHere(store, catId, PositionKind.flier, locate);
+
+Future<LocationFailure?> _recordHere(
+    CatalogStore store, String catId, PositionKind kind, Locator locate) async {
+  final outcome = await locate();
   final position = outcome.pos;
   if (position == null) return outcome.failure ?? LocationFailure.noFix;
-  store.recordPosition(catId, position.$1, position.$2);
+  store.recordPosition(catId, position.$1, position.$2, kind: kind);
   return null;
 }

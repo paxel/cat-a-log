@@ -195,6 +195,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get seenHereNow => 'Právě viděna zde';
 
   @override
+  String get recordHere => 'Zaznamenat zde:';
+
+  @override
+  String get flierHangsHere => 'Leták visí zde';
+
+  @override
+  String get flierTakenDown => 'Leták sundán';
+
+  @override
   String get deleteCat => 'Smazat kočku';
 
   @override
@@ -736,9 +745,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Synchronizace složky selhala: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Zaznamenat pozorování zde:';
 
   @override
   String trailOf(String name, int count) {

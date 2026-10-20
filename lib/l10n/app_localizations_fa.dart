@@ -195,6 +195,15 @@ class AppLocalizationsFa extends AppLocalizations {
   String get seenHereNow => 'همین حالا اینجا دیده شد';
 
   @override
+  String get recordHere => 'اینجا ثبت کن:';
+
+  @override
+  String get flierHangsHere => 'آگهی اینجا نصب است';
+
+  @override
+  String get flierTakenDown => 'آگهی برداشته شد';
+
+  @override
   String get deleteCat => 'حذف گربه';
 
   @override
@@ -735,9 +744,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'همگام‌سازی پوشه ناموفق: $error';
   }
-
-  @override
-  String get recordSightingHere => 'اینجا یک مشاهده ثبت کن:';
 
   @override
   String trailOf(String name, int count) {

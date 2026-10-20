@@ -168,4 +168,23 @@ void main() {
     expect(store.cats(), isEmpty);
     expect(store.localSetting(strayCamPendingKey), isEmpty);
   });
+
+  test('flier hangs here records a flier position where the device is (#85)',
+      () async {
+    final store = CatalogStore.inMemory();
+    addTearDown(store.close);
+    store.author = 'axel';
+    final cat = store.createCat('Minka');
+    final failure = await flierHangsHere(store, cat,
+        locate: () async => (pos: (48.1, 11.5), failure: null));
+    expect(failure, isNull);
+    expect(store.flierPositions(cat), [(48.1, 11.5)]);
+    expect(store.sightingPositionOf(cat), isNull);
+    // Without a fix nothing is written and the reason comes back.
+    expect(
+        await flierHangsHere(store, cat,
+            locate: () async => (pos: null, failure: LocationFailure.denied)),
+        LocationFailure.denied);
+    expect(store.flierPositions(cat), hasLength(1));
+  });
 }

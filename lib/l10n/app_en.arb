@@ -86,6 +86,9 @@
   "renameCat": "Rename cat",
   "renameCatNeutral": "Rename pet",
   "seenHereNow": "Seen here now",
+  "recordHere": "Record here:",
+  "flierHangsHere": "Flier hangs here",
+  "flierTakenDown": "Flier taken down",
   "deleteCat": "Delete cat",
   "deleteCatNeutral": "Delete pet",
   "clowderLabel": "Clowder",
@@ -430,7 +433,6 @@
       }
     }
   },
-  "recordSightingHere": "Record a sighting here:",
   "trailOf": "Trail: {name} ({count} sightings)",
   "trailOfField": "Trail: {name} — {field} ({count} values)",
   "trailOfPlace": "Trail: {name} ({count} positions)",

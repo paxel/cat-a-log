@@ -195,6 +195,15 @@ class AppLocalizationsSq extends AppLocalizations {
   String get seenHereNow => 'U pa këtu tani';
 
   @override
+  String get recordHere => 'Regjistro këtu:';
+
+  @override
+  String get flierHangsHere => 'Fletushka varet këtu';
+
+  @override
+  String get flierTakenDown => 'Fletushka u hoq';
+
+  @override
   String get deleteCat => 'Fshi macen';
 
   @override
@@ -738,9 +747,6 @@ class AppLocalizationsSq extends AppLocalizations {
   String folderSyncFailed(String error) {
     return 'Sinkronizimi i dosjes dështoi: $error';
   }
-
-  @override
-  String get recordSightingHere => 'Regjistro një vëzhgim këtu:';
 
   @override
   String trailOf(String name, int count) {

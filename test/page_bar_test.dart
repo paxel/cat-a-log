@@ -89,6 +89,14 @@ void main() {
     }
   });
 
+  testWidgets('the cat page offers Flier hangs here beside Seen here now (#85)',
+      (tester) async {
+    await pump(tester, CatDetailScreen(store: store, catId: cat), 800);
+    final seen = tester.getRect(find.byTooltip('Seen here now'));
+    final flier = tester.getRect(find.byTooltip('Flier hangs here'));
+    expect(flier.left, greaterThan(seen.left));
+  });
+
   testWidgets('a delete on the bar still asks first', (tester) async {
     await pump(tester, CatDetailScreen(store: store, catId: cat), 800);
     await tester.tap(find.byTooltip('Delete cat'));
