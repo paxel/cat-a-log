@@ -161,7 +161,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
 
   /// Position of the owner's address, looked up on request.
   (double, double)? _addressPosition;
-  DateTime _missingSince = DateUtils.dateOnly(DateTime.now());
+  DateTime _missingSince = DateUtils.dateOnly(clockNow());
 
   /// The poster's missing-since date at the precision it was printed
   /// (#76); [_missingSince] is its first day, used for entry timestamps
@@ -496,7 +496,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
   PartialDate? _missingDate(String text) {
     final date = parseFlierDate(text);
     if (date == null) return null;
-    return date.earliest.isAfter(DateUtils.dateOnly(DateTime.now()))
+    return date.earliest.isAfter(DateUtils.dateOnly(clockNow()))
         ? null
         : date;
   }
@@ -564,7 +564,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
     final picked = await pickDay(
       context,
       initial: _missingSince,
-      lastDate: DateTime.now(),
+      lastDate: clockNow(),
     );
     if (picked != null && mounted) {
       setState(() {

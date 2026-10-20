@@ -166,7 +166,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
           title: name,
           schedule: _schedule,
           time: _time,
-          start: dayOf(DateTime.now()),
+          start: dayOf(clockNow()),
           remind: _remind,
           remindAt: _remindAt,
           due: _repeat == ChoreRepeat.once ? _due : null,
@@ -227,7 +227,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
   }
 
   Future<void> _pickDue() async {
-    final picked = await pickDay(context, initial: _due ?? DateTime.now());
+    final picked = await pickDay(context, initial: _due ?? clockNow());
     if (picked != null && mounted) setState(() => _due = dayOf(picked));
   }
 
@@ -257,7 +257,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
                   entity: _entity,
                   title: _title.text,
                   schedule: _schedule,
-                  start: dayOf(DateTime.now()),
+                  start: dayOf(clockNow()),
                 ))
             .copyWith(
               schedule: _schedule,
@@ -269,7 +269,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
     final ticks = existing == null
         ? <DateTime, DateTime>{}
         : store.choreTicks(existing!);
-    final now = DateTime.now();
+    final now = clockNow();
     final today = dayOf(now);
     DateTime moment(DateTime day) =>
         DateTime(day.year, day.month, day.day, at.hour, at.minute);

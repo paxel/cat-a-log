@@ -231,7 +231,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
         if (store.resolveEntity(a.entity) == mine) a,
     ];
     final chores = partitionChores(
-        store, store.choresOf(id), DateUtils.dateOnly(DateTime.now()));
+        store, store.choresOf(id), DateUtils.dateOnly(clockNow()));
     final laterCount = chores.later.length + chores.paused.length;
     if (plans.isEmpty &&
         appointments.isEmpty &&
@@ -239,7 +239,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
         laterCount == 0) {
       return const [];
     }
-    final today = DateUtils.dateOnly(DateTime.now());
+    final today = DateUtils.dateOnly(clockNow());
     return [
       const Divider(),
       Spotlight(

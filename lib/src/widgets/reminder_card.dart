@@ -37,7 +37,7 @@ class ReminderCard extends StatelessWidget {
       this.onOpen});
 
   static String relativeDue(BuildContext context, DateTime due) {
-    final today = DateUtils.dateOnly(DateTime.now());
+    final today = DateUtils.dateOnly(clockNow());
     final day = DateUtils.dateOnly(due);
     final days = day.difference(today).inDays;
     if (days == 0) return context.t.dueToday;
@@ -94,7 +94,7 @@ class ReminderCard extends StatelessWidget {
     final t = context.t;
     final r = reminder;
     final overdue =
-        DateUtils.dateOnly(r.due).isBefore(DateUtils.dateOnly(DateTime.now()));
+        DateUtils.dateOnly(r.due).isBefore(DateUtils.dateOnly(clockNow()));
     final defs = {for (final def in store.fieldDefs()) def.key: def};
     final def = defs[r.field];
     final fieldName = def == null ? r.field : fieldDefName(t, def);
@@ -183,7 +183,7 @@ class _RepeatDialogState extends State<_RepeatDialog> {
   DateTime? _next() {
     final n = int.tryParse(_count.text.trim());
     if (n == null || n <= 0) return null;
-    final now = DateTime.now();
+    final now = clockNow();
     return switch (_unit) {
       'days' => now.add(Duration(days: n)),
       'weeks' => now.add(Duration(days: 7 * n)),

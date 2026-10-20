@@ -60,7 +60,7 @@ class _ReminderDialogState extends State<_ReminderDialog> {
   FieldDef? _def;
   FieldValueController? _value;
   final _noValue = ValueNotifier<int>(0);
-  DateTime _due = DateTime.now().add(const Duration(days: 1));
+  DateTime _due = clockNow().add(const Duration(days: 1));
 
   @override
   void dispose() {

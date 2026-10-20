@@ -58,7 +58,7 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
   late final _notes = TextEditingController(text: widget.existing?.notes ?? '');
   late DateTime _date =
       widget.existing?.date ??
-      DateUtils.dateOnly(DateTime.now().add(const Duration(days: 1)));
+      DateUtils.dateOnly(clockNow().add(const Duration(days: 1)));
   late TimeOfDay? _time = widget.existing?.time == null
       ? null
       : TimeOfDay(

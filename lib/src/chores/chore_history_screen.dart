@@ -40,7 +40,7 @@ class _ChoreHistoryScreenState extends State<ChoreHistoryScreen> {
   bool get _showVoided => store.localSetting(historyShowVoidedKey) == 'yes';
 
   List<ChoreLogRow> get _rows {
-    final rows = store.choreLog(widget.chore, DateTime.now());
+    final rows = store.choreLog(widget.chore, clockNow());
     return _oldestFirst ? rows.reversed.toList() : rows;
   }
 
@@ -250,7 +250,7 @@ class _TickDialogState extends State<_TickDialog> {
     final picked = await pickDay(
       context,
       initial: _moment,
-      lastDate: DateTime.now().add(const Duration(days: 1)),
+      lastDate: clockNow().add(const Duration(days: 1)),
     );
     if (!mounted || picked == null) return;
     setState(() => _moment = withTimeOf(picked, _moment));

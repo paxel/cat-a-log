@@ -4,6 +4,7 @@ import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'calendar_port.dart';
+import 'package:catalog_core/catalog_core.dart';
 
 /// Whether this platform has a device calendar to mirror into.
 /// Desktops fall back to the .ics export.
@@ -109,8 +110,8 @@ class DeviceCalendarPort implements CalendarPort {
     final result = await _plugin.retrieveEvents(
         calendarId,
         RetrieveEventsParams(
-            startDate: DateTime.now().subtract(const Duration(days: 3650)),
-            endDate: DateTime.now().add(const Duration(days: 36500))));
+            startDate: clockNow().subtract(const Duration(days: 3650)),
+            endDate: clockNow().add(const Duration(days: 36500))));
     if (result.isSuccess != true) {
       throw CalendarPortException(
           result.errors.map((e) => e.errorMessage).join('; '));

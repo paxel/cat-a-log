@@ -286,7 +286,7 @@ class _InPersonScreenState extends State<InPersonScreen> {
               fingerprint: info.fingerprint!, includePrivate: _includePrivate));
       if (result == null || !mounted || !widget.store.isOpen) return;
       widget.store.setLocalSetting(
-          'lastSync:${info.host}', DateTime.now().toIso8601String());
+          'lastSync:${info.host}', clockNow().toIso8601String());
       if (needsAttention(result.report)) {
         await showImportSummary(context, widget.store, result.applied,
             undo: result.moment, report: result.report);

@@ -163,7 +163,7 @@ Future<String?> _strayCam(BuildContext context, CatalogStore store,
     name = await proposeCatName(store, Localizations.localeOf(context));
   }
   name ??=
-      'Stray ${DateTime.now().toIso8601String().substring(0, 16).replaceFirst('T', ' ')}';
+      'Stray ${clockNow().toIso8601String().substring(0, 16).replaceFirst('T', ' ')}';
   // Park the capture: if Android kills the app behind the camera, the
   // photo arrives on next start as image_picker "lost data".
   store.setLocalSetting(strayCamPendingKey,

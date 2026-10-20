@@ -92,7 +92,7 @@ Future<void> rescheduleChoreReminders(
   required String Function(Chore chore) body,
   List<CatalogStore> others = const [],
 }) async {
-  final at = now ?? DateTime.now();
+  final at = now ?? clockNow();
   final planned = <(PlannedReminder, String)>[
     for (final p in plannedReminders(store, at)) (p, body(p.chore)),
     for (final other in others)

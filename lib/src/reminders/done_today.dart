@@ -14,7 +14,7 @@ Set<String> _offList(CatalogStore store, DateTime today) {
 
 /// Takes a done card off today's list on this device.
 void takeOffList(CatalogStore store, String key, {DateTime? today}) {
-  final day = today ?? DateTime.now();
+  final day = today ?? clockNow();
   final keys = _offList(store, day)..add(key);
   store.setLocalSetting(
       doneTodayDismissedKey, '${dayKey(day)}|${keys.join(',')}');
@@ -27,7 +27,7 @@ String appointmentListKey(Appointment a) => 'a:${a.key}';
 /// The plans ticked today and still on the list.
 List<ActiveReminder> doneRemindersToday(CatalogStore store,
     {DateTime? today}) {
-  final day = today ?? DateTime.now();
+  final day = today ?? clockNow();
   final off = _offList(store, day);
   return [
     for (final r in store.remindersDoneToday(day))
@@ -38,7 +38,7 @@ List<ActiveReminder> doneRemindersToday(CatalogStore store,
 /// The appointments finished today and still on the list.
 List<Appointment> doneAppointmentsToday(CatalogStore store,
     {DateTime? today}) {
-  final day = today ?? DateTime.now();
+  final day = today ?? clockNow();
   final off = _offList(store, day);
   return [
     for (final a in store.appointmentsDoneToday(day))

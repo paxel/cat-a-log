@@ -117,7 +117,7 @@ class _DateEntryFieldState extends State<DateEntryField> {
           _text.text,
           Localizations.localeOf(context).toString(),
         )?.earliest ??
-        DateUtils.dateOnly(DateTime.now());
+        DateUtils.dateOnly(clockNow());
     if (initial.isAfter(last)) initial = last;
     final picked = await showDatePicker(
       context: context,

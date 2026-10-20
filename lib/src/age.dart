@@ -19,7 +19,7 @@ String? ageDisplay(
   final died = PartialDate.parse(
     store.current(catId, Keys.userField('deceased')),
   );
-  final at = died?.latest ?? today ?? DateTime.now();
+  final at = died?.latest ?? today ?? clockNow();
   final age = born.ageAt(at);
   if (age == null) return null;
   final parts = [

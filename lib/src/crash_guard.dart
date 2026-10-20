@@ -8,6 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'l10n.dart';
+import 'package:catalog_core/catalog_core.dart';
 
 /// Global crash guard (forgiving-UX rule 3: errors explain themselves).
 ///
@@ -149,7 +150,7 @@ String crashReportHeader({DateTime? at}) => [
       'cat(a)log ${_appVersion ?? 'version unknown'}',
       '${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
       'locale ${Platform.localeName}',
-      (at ?? DateTime.now()).toIso8601String(),
+      (at ?? clockNow()).toIso8601String(),
     ].join('\n');
 
 void _record(Object error, StackTrace? stack) {

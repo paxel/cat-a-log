@@ -438,7 +438,7 @@ List<FlierEntry> _loneLine(
 /// past. Null when the line holds no date. Typed dates do not take
 /// these: a typed appointment lies ahead, not behind.
 PartialDate? parseFlierDate(String text, {DateTime? today}) {
-  final at = today ?? DateTime.now();
+  final at = today ?? clockNow();
   final now = DateTime(at.year, at.month, at.day);
   final s = text.toLowerCase();
   final dmy = RegExp(r'(?<!\d)(\d{1,2})[./-](\d{1,2})[./-](\d{4}|\d{2})(?!\d)')

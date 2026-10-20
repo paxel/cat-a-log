@@ -8,6 +8,7 @@ import 'package:archive/archive.dart';
 import 'entry.dart';
 import 'fields.dart';
 import 'store.dart';
+import 'clock.dart';
 
 /// Public cat share for fliers (#40): a whitelist subset of one cat and
 /// its clowder in the ordinary `.catsync` format, plus the QR payload
@@ -42,9 +43,9 @@ Uint8List catShareBytes(CatalogStore store,
       entity: entity,
       field: field,
       value: value,
-      date: date ?? DateTime.now(),
+      date: date ?? clockNow(),
       author: author ?? 'share',
-      recorded: recorded ?? DateTime.now(),
+      recorded: recorded ?? clockNow(),
     ));
   }
 

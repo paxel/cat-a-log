@@ -14,7 +14,7 @@ void afterChoreTick(
   CatalogStore store, {
   CatalogManager? manager,
 }) {
-  final today = DateUtils.dateOnly(DateTime.now());
+  final today = DateUtils.dateOnly(clockNow());
   final due = [
     for (final c in store.allChores())
       if (c.active && countsToday(c, store.choreTicks(c), today)) c,
@@ -30,7 +30,7 @@ void afterChoreTick(
     final climbed = recordLadders(
       manager,
       ladders(gatherStats([store], today)),
-      DateTime.now(),
+      clockNow(),
     );
     if (climbed.isNotEmpty) {
       cheer = Cheer.ladder;

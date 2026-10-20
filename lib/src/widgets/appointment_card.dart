@@ -139,7 +139,7 @@ class AppointmentCard extends StatelessWidget {
     final t = context.t;
     final a = appointment;
     final members = _members;
-    final now = DateTime.now();
+    final now = clockNow();
     final overdue = a.allDay
         ? DateUtils.dateOnly(a.date).isBefore(DateUtils.dateOnly(now))
         : a.start.isBefore(now);

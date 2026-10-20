@@ -46,7 +46,7 @@ Objection? starterFieldObjection(
   DateTime? today,
 }) {
   if (value == null || value.isEmpty) return null;
-  final limit = DateUtils.dateOnly(today ?? DateTime.now());
+  final limit = DateUtils.dateOnly(today ?? clockNow());
   switch (def.slug) {
     case 'birthdate':
       final born = _date(value);

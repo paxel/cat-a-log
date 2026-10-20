@@ -73,7 +73,7 @@ class _Row {
 class _MissingPosterScreenState extends State<MissingPosterScreen> {
   CatalogStore get store => widget.store;
   final _extra = TextEditingController();
-  DateTime _since = DateUtils.dateOnly(DateTime.now());
+  DateTime _since = DateUtils.dateOnly(clockNow());
   bool _qr = true;
 
   /// The chosen pictures, hash to the framed part; at most two, the
@@ -491,7 +491,7 @@ class _MissingPosterScreenState extends State<MissingPosterScreen> {
               final picked = await pickDay(
                 context,
                 initial: _since,
-                lastDate: DateTime.now(),
+                lastDate: clockNow(),
               );
               if (picked != null && mounted) _changed(() => _since = picked);
             },

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'entry.dart';
 import 'fields.dart';
 import 'store.dart';
+import 'clock.dart';
 
 /// Chores (1.2.0): the recurring care of a cat or a home — feeding,
 /// drops, litter — as a daily checklist with streaks. A chore is one
@@ -619,7 +620,7 @@ extension Chores on CatalogStore {
   /// by default; an earlier day than the due one is an early tick.
   void tickChore(Chore chore, DateTime occurrence,
       {DateTime? doneOn, DateTime? date}) {
-    final done = dayOf(doneOn ?? DateTime.now());
+    final done = dayOf(doneOn ?? clockNow());
     append(chore.entity, Keys.choreTick(chore.id, dayKey(dayOf(occurrence))),
         dayKey(done),
         date: date);

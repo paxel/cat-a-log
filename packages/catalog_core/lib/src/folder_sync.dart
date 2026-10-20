@@ -9,6 +9,7 @@ import 'entry.dart';
 import 'fields.dart';
 import 'signing.dart';
 import 'store.dart';
+import 'clock.dart';
 
 /// Outcome of one folder sync, for the summary line.
 class FolderSyncResult {
@@ -303,7 +304,7 @@ Future<FolderSyncResult> folderSyncIn(CatalogStore store, SyncFolder folder,
 
   // ---- read every foreign device's files (never write them)
   final (applied, lagging, quiet) = await _readForeign(store, folder, readDirs,
-      report: report, now: now ?? DateTime.now());
+      report: report, now: now ?? clockNow());
 
   // ---- write own changes: segments and manifest
   final entriesOut = await publishOwn(store, folder,

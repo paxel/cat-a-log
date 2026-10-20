@@ -21,13 +21,13 @@ class MoveDialog extends StatefulWidget {
 }
 
 class _MoveDialogState extends State<MoveDialog> {
-  late DateTime _asOf = widget.asOf ?? DateTime.now();
+  late DateTime _asOf = widget.asOf ?? clockNow();
 
   Future<void> _pickDay() async {
     final picked = await pickDay(
       context,
       initial: _asOf,
-      lastDate: DateTime.now().add(const Duration(days: 1)),
+      lastDate: clockNow().add(const Duration(days: 1)),
     );
     if (!mounted || picked == null) return;
     setState(() => _asOf = picked);
@@ -36,7 +36,7 @@ class _MoveDialogState extends State<MoveDialog> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final sameDay = DateUtils.isSameDay(_asOf, DateTime.now());
+    final sameDay = DateUtils.isSameDay(_asOf, clockNow());
     return SimpleDialog(
       title: Text(t.moveTo),
       children: [

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'l10n.dart';
 import 'layout.dart';
+import 'package:catalog_core/catalog_core.dart';
 
 /// What the frame picker needs of a player: the picture, the clock,
 /// seeking and playing. The real one wraps the video player; a test
@@ -108,7 +109,7 @@ class _VideoFramesScreenState extends State<VideoFramesScreen> {
   /// The slider seeks as the finger moves, a few times a frame at most;
   /// the finger's rest lands exactly.
   Future<void> _scrub(double ms, {bool settle = false}) async {
-    final now = DateTime.now();
+    final now = clockNow();
     if (!settle && now.difference(_lastSeek).inMilliseconds < 60) return;
     _lastSeek = now;
     await player.seekTo(Duration(milliseconds: ms.round()));

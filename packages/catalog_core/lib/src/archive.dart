@@ -6,6 +6,7 @@ import 'bundle.dart';
 import 'entry.dart';
 import 'fields.dart';
 import 'store.dart';
+import 'clock.dart';
 
 /// Archiving (#53): long-running catalogs accumulate dead weight —
 /// deceased cats and clowders nobody lives in any more, and above all
@@ -40,7 +41,7 @@ class ArchiveCandidate {
 List<ArchiveCandidate> archiveCandidates(CatalogStore store,
     {Duration inactiveFor = const Duration(days: 365 * 2),
     DateTime? now}) {
-  final today = now ?? DateTime.now();
+  final today = now ?? clockNow();
   final result = <ArchiveCandidate>[];
   // One pass over the log, not one per entity: these catalogs are big
   // by definition — that is why the feature exists.

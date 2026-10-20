@@ -187,7 +187,7 @@ Future<void> _autoBackup(CatalogStore store,
       // The copy that counts is written: say so before the folder copy,
       // whose failure must not read as "no copy at all".
       store.setLocalSetting('lastBackupVector', vector);
-      store.setLocalSetting(backupAtKey, DateTime.now().toIso8601String());
+      store.setLocalSetting(backupAtKey, clockNow().toIso8601String());
       store.setLocalSetting(backupErrorKey, '');
       // And the chosen folder, when there is one: the same file again.
       final tree = store.localSetting(backupFolderKey);

@@ -70,7 +70,7 @@ class _NameDateDialogState extends State<_NameDateDialog> {
       text: widget.species != null && !speciesPresets.contains(widget.species)
           ? widget.species
           : '');
-  DateTime _asOf = DateTime.now();
+  DateTime _asOf = clockNow();
 
   /// A preset, or '' for "own" (typed below).
   late String? _species = widget.species == null
@@ -120,7 +120,7 @@ class _NameDateDialogState extends State<_NameDateDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final sameDay = DateUtils.isSameDay(_asOf, DateTime.now());
+    final sameDay = DateUtils.isSameDay(_asOf, clockNow());
     return AlertDialog(
       title: Text(widget.title),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -172,7 +172,7 @@ class _NameDateDialogState extends State<_NameDateDialog> {
             final picked = await pickDay(
               context,
               initial: _asOf,
-              lastDate: DateTime.now().add(const Duration(days: 1)),
+              lastDate: clockNow().add(const Duration(days: 1)),
             );
             if (!mounted) return;
             if (picked != null) setState(() => _asOf = picked);

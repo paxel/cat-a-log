@@ -55,9 +55,9 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final today = DateUtils.dateOnly(DateTime.now());
+    final today = DateUtils.dateOnly(clockNow());
     final states = ladders(gatherStats(widget.stores, today));
-    recordLadders(manager, states, DateTime.now());
+    recordLadders(manager, states, clockNow());
     final recorded = {for (final a in manager.achievements()) a.id: a};
     final locale = Localizations.localeOf(context).toString();
     String since(LadderState s) =>

@@ -79,7 +79,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
 
   Future<void> _export(List<String> names) async {
     final t = context.t;
-    final stamp = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final stamp = DateFormat('yyyy-MM-dd').format(clockNow());
     final name = 'catlog-archive-$stamp.catsync';
     try {
       if (widget.saveTo != null) {

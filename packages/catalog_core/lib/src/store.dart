@@ -14,6 +14,7 @@ import 'fields.dart';
 import 'registry.dart';
 import 'signing.dart';
 import 'units.dart';
+import 'clock.dart';
 
 /// Author name stamped on entries the store seeds itself (starter Fields).
 const seedAuthor = 'cat(a)log';
@@ -134,7 +135,12 @@ class CatalogStore {
   /// Where the store reads the wall clock for [Entry.recorded] and for
   /// moments. Tools that need a reproducible log — the fixture corpus
   /// the desktop core is tested against — swap it for a fixed clock.
-  static DateTime Function() clock = DateTime.now;
+  static DateTime Function() clock = clockNow;
+
+  /// Where a new catalog's signing key comes from, and with it its device
+  /// id. The frame generators swap it for a key from a fixed seed, so the
+  /// pages that show the key draw the same one on every run (#161).
+  static SigningKey Function() newKey = SigningKey.generate;
 
   /// Opens an on-disk catalog, creating it if needed. Image blobs go to an
   /// `images` directory next to the database file.
@@ -226,7 +232,7 @@ class CatalogStore {
   /// and gets its key in [_ensureSigningKey], once the log is migrated.
   void _ensureDeviceId() {
     if (_rawSetting('device') != null) return;
-    final key = SigningKey.generate();
+    final key = newKey();
     _rawSet('device', deviceIdFromKey(key.publicKey));
     _rawSet('signseed', key.seedHex);
     _rawSet('signsince', '1');

@@ -257,12 +257,12 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
         context,
         initial:
             _storedDay(graphRangeFromKey) ??
-            DateTime.now().subtract(const Duration(days: 30)),
+            clockNow().subtract(const Duration(days: 30)),
       );
       if (from == null || !mounted) return;
       final to = await pickDay(
         context,
-        initial: _storedDay(graphRangeToKey) ?? DateTime.now(),
+        initial: _storedDay(graphRangeToKey) ?? clockNow(),
       );
       if (to == null || !mounted) return;
       store.setLocalSetting(
@@ -330,7 +330,7 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
     final t = context.t;
     final locale = Localizations.localeOf(context).toString();
     final all = graphPoints(store, widget.entityId, widget.def);
-    final (from, to) = _bounds(DateTime.now());
+    final (from, to) = _bounds(clockNow());
     final shown = pointsBetween(all, from, to);
     final appointments = [
       for (final a in store.appointmentsOf(widget.entityId, includeDone: true))
@@ -429,8 +429,8 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
           if (_trend)
             if (trendLine(
                   shown,
-                  from ?? (shown.isEmpty ? DateTime.now() : shown.first.at),
-                  to ?? DateTime.now(),
+                  from ?? (shown.isEmpty ? clockNow() : shown.first.at),
+                  to ?? clockNow(),
                 )
                 case final fit?)
               Padding(
@@ -463,7 +463,7 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
                       painter: GraphPainter(
                         points: shown,
                         from: from ?? (shown.isEmpty ? null : shown.first.at),
-                        to: to ?? DateTime.now(),
+                        to: to ?? clockNow(),
                         appointments: appointments,
                         lineColor: Theme.of(context).colorScheme.primary,
                         // The painter draws its own text: it must carry the app's

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:sqlite3/sqlite3.dart';
 
 import 'store.dart';
+import 'clock.dart';
 
 /// One catalog on disk: a folder holding its database and its photos.
 ///
@@ -217,7 +218,7 @@ class CatalogManager implements SharedSettings {
     final id = _newId();
     _db.execute(
       'INSERT INTO catalogs (id, name, created) VALUES (?, ?, ?)',
-      [id, clean, DateTime.now().toUtc().toIso8601String()],
+      [id, clean, clockNow().toUtc().toIso8601String()],
     );
     final info = CatalogInfo(
         id: id,
@@ -335,7 +336,7 @@ class CatalogManager implements SharedSettings {
       }
       _db.execute(
         'INSERT INTO catalogs (id, name, created) VALUES (?, ?, ?)',
-        [id, name, DateTime.now().toUtc().toIso8601String()],
+        [id, name, clockNow().toUtc().toIso8601String()],
       );
       // Past this line the copy is the catalog: tidying up the old
       // location must never be able to take it away again, so failures

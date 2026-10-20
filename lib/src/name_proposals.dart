@@ -5,6 +5,10 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
 import 'pet_mode.dart';
 
+/// The dice behind a proposed name; the frame generators seed it so a
+/// page shows the same proposal on every run (#161).
+Random proposalDice = Random();
+
 /// Offline name proposals: a big global list (classics, ancient/mythic,
 /// funny) merged with a small bonus list for the active language.
 /// Never proposes a name already in the catalog — no second Luna.
@@ -41,5 +45,5 @@ Future<String?> proposeCatName(CatalogStore store, Locale locale) async {
       if (!used.contains(n.toLowerCase())) n
   ];
   if (free.isEmpty) return null;
-  return free[Random().nextInt(free.length)];
+  return free[proposalDice.nextInt(free.length)];
 }

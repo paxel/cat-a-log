@@ -223,7 +223,7 @@ class _FieldValueInputState extends State<FieldValueInput> {
         // Birth and death dates can't lie in the future; other date
         // fields legitimately can (appointments, due dates).
         final pastOnly = def.slug == 'birthdate' || def.slug == 'deceased';
-        final last = pastOnly ? DateUtils.dateOnly(DateTime.now()) : null;
+        final last = pastOnly ? DateUtils.dateOnly(clockNow()) : null;
         // Typed, at the precision known — a year alone is a value (#76);
         // the calendar sits behind the icon (#79).
         return DateEntryField(
@@ -378,7 +378,7 @@ class _FieldEditDialogState extends State<_FieldEditDialog> {
     current: widget.current,
     locale: Localizations.localeOf(context).toString(),
   );
-  late DateTime _asOf = widget.asOf?.toLocal() ?? DateTime.now();
+  late DateTime _asOf = widget.asOf?.toLocal() ?? clockNow();
   late bool _private =
       widget.store != null &&
       widget.excludeId != null &&
@@ -397,7 +397,7 @@ class _FieldEditDialogState extends State<_FieldEditDialog> {
     final picked = await pickDay(
       context,
       initial: _asOf,
-      lastDate: DateTime.now().add(const Duration(days: 1)),
+      lastDate: clockNow().add(const Duration(days: 1)),
     );
     if (!mounted) return;
     // The day changes, the time of day stays: a value has a moment, and
@@ -419,7 +419,7 @@ class _FieldEditDialogState extends State<_FieldEditDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final sameDay = DateUtils.isSameDay(_asOf, DateTime.now());
+    final sameDay = DateUtils.isSameDay(_asOf, clockNow());
     return AlertDialog(
       title: Text(fieldDefName(context.t, widget.def)),
       content: SingleChildScrollView(

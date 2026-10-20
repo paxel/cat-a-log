@@ -145,7 +145,7 @@ class SyncWatcher extends ChangeNotifier {
     DateTime Function()? clock,
   }) : folderOf = folderOf ?? syncFolderOf,
        notes = notes ?? NoteQueue.instance,
-       clock = clock ?? DateTime.now;
+       clock = clock ?? clockNow;
 
   bool get enabled => store.isOpen && syncWatchOn(store);
 

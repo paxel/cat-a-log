@@ -177,7 +177,7 @@ pw.Document vetReportPdf({
   required PdfFonts fonts,
   DateTime? today,
 }) {
-  final now = today ?? DateTime.now();
+  final now = today ?? clockNow();
   final name = store.current(catId, Keys.name) ?? t.unnamed;
   final doc = pw.Document(
     title: '$name — ${t.vetReportTitle}',

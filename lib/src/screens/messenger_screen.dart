@@ -29,7 +29,7 @@ class _MessengerScreenState extends State<MessengerScreen> {
   Future<void> _shareBundle() async {
     final t = context.t;
     try {
-      final stamp = DateTime.now().toIso8601String().substring(0, 10);
+      final stamp = clockNow().toIso8601String().substring(0, 10);
       await withPrivateFile('catlog-$stamp.catsync', (path) async {
         writeBundle(widget.store, path, includePrivate: _includePrivate);
         if (!mounted) return;

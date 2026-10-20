@@ -67,9 +67,9 @@ class _VetReportScreenState extends State<VetReportScreen> {
       widget.catId,
       _fields,
       DateTime(1900),
-      DateTime.now(),
+      clockNow(),
     );
-    _to = DateUtils.dateOnly(DateTime.now());
+    _to = DateUtils.dateOnly(clockNow());
     _from = all.isEmpty ? _to : DateUtils.dateOnly(all.first.date.toLocal());
     _schedulePreview();
   }
@@ -86,7 +86,7 @@ class _VetReportScreenState extends State<VetReportScreen> {
     final picked = await pickDay(
       context,
       initial: from ? _from : _to,
-      lastDate: DateTime.now().add(const Duration(days: 1)),
+      lastDate: clockNow().add(const Duration(days: 1)),
     );
     if (picked == null || !mounted) return;
     setState(() {

@@ -40,7 +40,7 @@ const agendaAutoOpenWindow = Duration(days: 3);
 /// True when the next due date warrants opening the agenda on start —
 /// a reminder's day or an appointment's start, whichever comes first.
 bool agendaWantsAttention(CatalogStore store) {
-  final limit = DateTime.now().add(agendaAutoOpenWindow);
+  final limit = clockNow().add(agendaAutoOpenWindow);
   final reminders = store.activeReminders();
   if (reminders.isNotEmpty && !reminders.first.due.isAfter(limit)) {
     return true;
@@ -191,7 +191,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
   /// The desktop and escape-hatch path: one .ics file of every plan.
   Future<void> _exportIcs() async {
     final t = context.t;
-    final ics = writeIcs(icsEvents(store, t), stamp: DateTime.now());
+    final ics = writeIcs(icsEvents(store, t), stamp: clockNow());
     try {
       await shareFiles(context, [
         XFile.fromData(
@@ -335,7 +335,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     final items = agendaItems(store);
-    final today = DateUtils.dateOnly(DateTime.now());
+    final today = DateUtils.dateOnly(clockNow());
     final chores = _chores(today);
     final asked = [
       for (final c in chores.today)

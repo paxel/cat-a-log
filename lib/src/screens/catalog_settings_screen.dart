@@ -239,7 +239,7 @@ class _CatalogSettingsScreenState extends State<CatalogSettingsScreen> {
   Future<void> _chooseTitle() async {
     final t = context.t;
     final earned =
-        earnedTitles(t, [_store], DateUtils.dateOnly(DateTime.now()));
+        earnedTitles(t, [_store], DateUtils.dateOnly(clockNow()));
     final picked = await showDialog<String>(
       context: context,
       builder: (context) => SimpleDialog(
