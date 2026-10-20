@@ -3,6 +3,10 @@ name: Pages
 # Builds the documentation site (site/ -> site-dist/) on every push to summer,
 # every pull request and every release tag; deploys it to GitHub Pages only for
 # release tags, so the site always describes the app the stores have (#160).
+# Every build assembles every released minor version (the latest patch of
+# each tag that carries a site, under /vX.Y.Z/) plus the working tree at the
+# root, so a release whose docs no longer build fails on summer, not on
+# release day.
 #
 # One-time steps in the repository settings, done on 2026-10-20:
 #   1. Settings -> Pages -> Source: "GitHub Actions".
@@ -26,13 +30,15 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # every release tag that carries a site is built, see tool/site/build-all.js
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Build site
-        run: node tool/site/build.js --base "/${{ github.event.repository.name }}/"
+      - name: Build site, every released minor version and the working tree
+        run: node tool/site/build-all.js --base "/${{ github.event.repository.name }}/"
 
       - name: Test site build
         run: node --test "tool/site/*.test.js"

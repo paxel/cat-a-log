@@ -53,6 +53,10 @@ export const UI = {
     projectLinks: "Project links",
     whatsNew: "What's new",
     versionTitle: "cat(a)log version",
+    versionsTitle: "Documentation versions",
+    latest: "latest",
+    noticeFor: "Documentation for v{v}.",
+    noticeRead: "Read the latest, v{l}",
     language: "Language",
     stepOf: "Step {n} of {m}",
     step: "Step",
@@ -86,6 +90,10 @@ export const UI = {
     projectLinks: "Projektlinks",
     whatsNew: "Was ist neu",
     versionTitle: "cat(a)log-Version",
+    versionsTitle: "Versionen der Dokumentation",
+    latest: "neueste",
+    noticeFor: "Dokumentation für v{v}.",
+    noticeRead: "Zur neuesten, v{l}",
     language: "Sprache",
     stepOf: "Schritt {n} von {m}",
     step: "Schritt",
@@ -326,11 +334,53 @@ export function switchHref(page, pages) {
   return sibling ? sibling.url : `${lang.switchTo}/index.html`;
 }
 
+// ---------------------------------------------------------------------------
+// Versions: the site is published once per release, every minor version
+// under /vX.Y.Z/ and the latest one also at the root (build-all.js). Each
+// entry is { version, base, pages, latest }; `pages` lists the URLs that
+// version has, so the menu sends a reader to the same page where it exists
+// and to the language's start page where it does not.
+
+/** The URL of `pageUrl` in another version of the site, or of its language's start page when that version lacks the page. */
+export function versionHref(entry, pageUrl, lang = "en") {
+  const target = pageUrl && entry.pages.includes(pageUrl) ? pageUrl : `${lang}/index.html`;
+  return `${entry.base}${target}`;
+}
+
+function renderVersionMenu(version, versions, currentUrl, lang, ui) {
+  const chip = `<span class="chip" title="${escapeHtml(ui.versionTitle)}">v${escapeHtml(version)}</span>`;
+  if (!versions.length) return chip;
+  const items = versions
+    .map((entry) => {
+      const label = `v${escapeHtml(entry.version)}${entry.latest ? ` (${escapeHtml(ui.latest)})` : ""}`;
+      return entry.version === version
+        ? `<li><span aria-current="true">${label}</span></li>`
+        : `<li><a href="${versionHref(entry, currentUrl, lang)}">${label}</a></li>`;
+    })
+    .join("");
+  return (
+    `<details class="version-menu"><summary class="chip" title="${escapeHtml(ui.versionsTitle)}">v${escapeHtml(version)}</summary>` +
+    `<ul aria-label="${escapeHtml(ui.versionsTitle)}">${items}</ul></details>`
+  );
+}
+
+/** A one-line pointer to the latest release on every page of an older one. */
+function renderVersionNotice(version, versions, currentUrl, lang, ui) {
+  const latest = versions.find((entry) => entry.latest);
+  if (!latest || latest.version === version) return "";
+  return (
+    `<p class="version-notice">${escapeHtml(ui.noticeFor.replace("{v}", version))} ` +
+    `<a href="${versionHref(latest, currentUrl, lang)}">${escapeHtml(ui.noticeRead.replace("{l}", latest.version))}</a>.</p>\n`
+  );
+}
+
 const BRAND = (rel) =>
   `<img class="mark" src="${rel}assets/icon.png" width="28" height="28" alt="">`;
 
-function shell({ lang, title, summary, rel, root, nav, currentUrl, eyebrow, main, toc, version, switchTo, whatsNew }) {
+function shell({ lang, title, summary, rel, root, nav, currentUrl, eyebrow, main, toc, version, switchTo, whatsNew, versions = [] }) {
   const ui = UI[lang];
+  const versionMenu = renderVersionMenu(version, versions, currentUrl, lang, ui);
+  const versionNotice = renderVersionNotice(version, versions, currentUrl, lang, ui);
   const language = LANGS.find((l) => l.id === lang);
   const i18n = {
     stepOf: ui.stepOf,
@@ -365,7 +415,7 @@ ${summary ? `<meta name="description" content="${escapeHtml(summary)}">\n` : ""}
 <header class="site-header">
 <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="${escapeHtml(ui.openNav)}"><span class="nav-toggle-bars" aria-hidden="true"></span></button>
 <a class="brand" href="${rel}${lang}/index.html">${BRAND(rel)}<span class="brand-name">cat(a)log</span></a>
-<span class="chip" title="${escapeHtml(ui.versionTitle)}">v${escapeHtml(version)}</span>
+${versionMenu}
 <div class="search" role="search">
 <input class="search-input" id="search" type="search" placeholder="${escapeHtml(ui.search)}" aria-label="${escapeHtml(ui.searchLabel)}" role="combobox" aria-autocomplete="list" aria-controls="search-results" aria-expanded="false" autocomplete="off" spellcheck="false">
 <kbd class="search-kbd" aria-hidden="true">/</kbd>
@@ -382,7 +432,7 @@ ${summary ? `<meta name="description" content="${escapeHtml(summary)}">\n` : ""}
 ${renderNav(nav, currentUrl, rel, lang, ui)}
 </nav>
 <main class="content" id="content" tabindex="-1">
-${eyebrow ? `<p class="eyebrow track-eyebrow">${escapeHtml(eyebrow)}</p>\n` : ""}${main}
+${versionNotice}${eyebrow ? `<p class="eyebrow track-eyebrow">${escapeHtml(eyebrow)}</p>\n` : ""}${main}
 </main>
 ${toc}</div>
 <footer class="site-footer">
@@ -395,7 +445,7 @@ ${toc}</div>
 `;
 }
 
-export function renderPage(page, { navs, version, pages, url = page.url }) {
+export function renderPage(page, { navs, version, pages, url = page.url, versions = [] }) {
   const rel = relPrefix(url);
   const ui = UI[page.lang];
   const { html, headings } = processHeadings(page.body, ui);
@@ -418,10 +468,11 @@ export function renderPage(page, { navs, version, pages, url = page.url }) {
     version,
     switchTo: switchHref(page, pages),
     whatsNew: pages.find((p) => p.lang === page.lang && p.path === "reference/whats-new.html")?.url,
+    versions,
   });
 }
 
-export function render404({ navs, version, base = "/" }) {
+export function render404({ navs, version, base = "/", versions = [] }) {
   const ui = UI.en;
   const main = `<h1>${escapeHtml(ui.notFound)}</h1>
 <p class="lede">${escapeHtml(ui.notFoundLede)}</p>
@@ -440,6 +491,7 @@ export function render404({ navs, version, base = "/" }) {
     toc: "",
     version,
     switchTo: "de/index.html",
+    versions,
   });
 }
 
@@ -490,7 +542,7 @@ export function extractLinks(file, content) {
 const EXTERNAL = /^(https?:|mailto:|data:|tel:)/i;
 
 /** files: Map<relativePath, content> of every output file. Throws on the first broken link or anchor. */
-export function checkLinks(files, { base = "/" } = {}) {
+export function checkLinks(files, { base = "/", knownTargets = new Set() } = {}) {
   const ids = new Map();
   for (const [file, html] of files) if (file.endsWith(".html")) ids.set(file, collectIds(html));
   const asIndex = (target) => `${target.replace(/\/$/, "")}/index.html`;
@@ -502,6 +554,7 @@ export function checkLinks(files, { base = "/" } = {}) {
       const fragment = hashAt >= 0 ? link.slice(hashAt + 1) : "";
       let target = (hashAt >= 0 ? link.slice(0, hashAt) : link).replace(/\?.*$/, "");
       if (target.startsWith("/")) {
+        if (knownTargets.has(target)) continue; // a file of another version
         if (!target.startsWith(base)) {
           throw new Error(`Broken link in ${file}: "${link}" is outside the site base ${base}`);
         }
@@ -599,6 +652,8 @@ export function buildSite({
   assetsDir = path.join(srcDir, "assets"),
   pages = null,
   generated = [],
+  versions = [],
+  knownTargets = new Set(),
 } = {}) {
   if (!base.startsWith("/") || !base.endsWith("/")) {
     throw new Error(`--base must start and end with "/": got "${base}"`);
@@ -606,7 +661,7 @@ export function buildSite({
   guardOutDir(outDir, srcDir);
   if (!pages) pages = collectPages({ srcDir, generated });
   const navs = Object.fromEntries(LANGS.map((l) => [l.id, buildNav(pages, l.id)]));
-  const ctx = { navs, version, pages, base };
+  const ctx = { navs, version, pages, base, versions };
 
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
@@ -633,7 +688,7 @@ export function buildSite({
     if (!files.has(rel)) files.set(rel, /\.(css|js|html|svg)$/.test(rel) ? fs.readFileSync(file, "utf8") : "");
   }
 
-  checkLinks(files, { base });
+  checkLinks(files, { base, knownTargets });
 
   for (const [rel, html] of files) {
     if (!rel.endsWith(".html")) continue;

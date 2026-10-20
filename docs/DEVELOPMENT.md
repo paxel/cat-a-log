@@ -44,13 +44,19 @@ and the link check (#160).
 # build and preview at http://127.0.0.1:8080/
 node tool/site/build.js --serve
 
+# every released minor version under /vX.Y.Z/ plus the working tree at the root
+node tool/site/build-all.js
+
 # the build's own tests
 node --test "tool/site/*.test.js"
 ```
 
 The Pages workflow builds the site on every push and deploys it on a
 release tag only, after checking the tag against `pubspec.yaml`, so the
-site always describes the app the stores have.
+site always describes the app the stores have. Every deploy carries every
+released minor version, the latest patch of each, under `/vX.Y.Z/`, and
+the header's version menu leads between them; an older version's pages
+point at the latest.
 
 The site's frames under `site/assets/frames/` are generated, not drawn:
 `tool/frames.sh` renders the phone's pages and flow steps (Flutter, both

@@ -17,6 +17,8 @@ import {
   switchHref,
 } from "./build.js";
 import { generatedPages, parseChangelog, parseGlossary, parseStarters } from "./generated.js";
+import { compareVersions, planVersions } from "./build-all.js";
+import { versionHref } from "./build.js";
 
 const PAGE = (title, body = "<p>Text.</p>", extra = "") =>
   `<!-- page: title="${title}" ${extra} -->\n${body}\n`;
@@ -170,4 +172,29 @@ test("the glossary, the starters and a changelog parse, and a missing German ter
     ["2.4.0", "", [["Added", ["One. more", "Two."]]]],
     ["2.3.0", "2026-10-05", [["Fixed", ["Three."]]]],
   ]);
+});
+
+test("one version per minor, the newest patch, the working tree replacing its own tag", () => {
+  const plan = planVersions({
+    tags: ["v2.4.1", "v2.4.2", "v2.5.0", "v3.0.0", "v3.0.1"],
+    workingVersion: "3.0.1",
+  });
+  assert.deepEqual(
+    plan.map((e) => [e.version, e.source, e.latest]),
+    [
+      ["3.0.1", "worktree", true],
+      ["2.5.0", "tag", false],
+      ["2.4.2", "tag", false],
+    ],
+  );
+  // A working tree ahead of every tag is its own newest entry.
+  const ahead = planVersions({ tags: ["v2.4.1"], workingVersion: "2.5.0" });
+  assert.deepEqual(ahead.map((e) => e.version), ["2.5.0", "2.4.1"]);
+  assert.deepEqual(["2.9.0", "2.10.0", "3.0.0"].sort(compareVersions), ["3.0.0", "2.10.0", "2.9.0"]);
+});
+
+test("the version menu keeps the page where the other version has it, else its language's start", () => {
+  const old = { version: "2.4.1", base: "/cat-a-log/v2.4.1/", pages: ["en/index.html", "de/index.html", "en/phone/cat.html"], latest: false };
+  assert.equal(versionHref(old, "en/phone/cat.html", "en"), "/cat-a-log/v2.4.1/en/phone/cat.html");
+  assert.equal(versionHref(old, "de/phone/cat.html", "de"), "/cat-a-log/v2.4.1/de/index.html");
 });
