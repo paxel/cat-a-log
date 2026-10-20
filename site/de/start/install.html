@@ -1,0 +1,34 @@
+<!-- page: title="Installieren" track="start" order=1 summary="Wie cat(a)log auf ein Android-Telefon, ein iPhone, Linux, Windows und macOS kommt, und was jeder Kanal von selbst aktualisiert." -->
+<p class="lede">Die Telefon-App läuft auf Android und iPhone, die Schreibtisch-App auf Linux, Windows und macOS. Jeder Kanal unten trägt dieselbe Version; nimm den, den du ohnehin benutzt. Nichts zum Anmelden, nichts zu bezahlen.</p>
+<h2>Android</h2>
+<ul class="channels">
+  <li class="channel"><p class="eyebrow">Google Play</p><p>Installiere aus <a href="https://play.google.com/store/apps/details?id=io.github.paxel.catlog">dem Play-Eintrag</a>. Play aktualisiert die App von selbst.</p></li>
+  <li class="channel"><p class="eyebrow">F-Droid</p><p>Füge der F-Droid-App das Repository <code>https://paxel.github.io/fdroid/repo</code> hinzu und installiere cat(a)log daraus. F-Droid aktualisiert es mit deinen anderen Apps.</p><p>Das Repository heißt "paxel's apps"; F-Droid zeigt beim Hinzufügen seinen Fingerabdruck und merkt ihn sich.</p></li>
+  <li class="channel"><p class="eyebrow">Die APK</p><p>Lade die Datei, die auf <code>arm64-v8a.apk</code> endet, von <a href="https://github.com/paxel/catlog/releases">den Veröffentlichungen</a>, öffne sie und erlaube die Installation, wenn das Telefon fragt. Eine APK aktualisiert sich nicht selbst: komm für die nächste Version wieder, oder nimm stattdessen das F-Droid-Repository.</p></li>
+</ul>
+<p class="platform"><strong>Android:</strong> der gemeinsame Ordner braucht einen Ordner, in den das Telefon schreiben darf, den Ordner eines Cloud-Clients oder einen USB-Stick; die App fragt einmal danach.</p>
+<h2>iPhone und iPad</h2>
+<ul class="channels">
+  <li class="channel"><p class="eyebrow">App Store</p><p>Installiere aus <a href="https://apps.apple.com/us/app/cat-a-log/id6801824418">dem App-Store-Eintrag</a>. Der App Store aktualisiert die App von selbst.</p></li>
+  <li class="channel"><p class="eyebrow">TestFlight</p><p>Die Beta der nächsten Version läuft über Apples TestFlight. <a href="https://github.com/paxel/catlog/issues">Frag</a> nach einer Einladung.</p></li>
+</ul>
+<h2>Linux</h2>
+<ul class="channels">
+  <li class="channel"><p class="eyebrow">Homebrew</p><pre><code>brew install paxel/tap/catlog</code></pre><p>Die App steht gleich nach der Installation im Anwendungsmenü. <code>brew upgrade</code> aktualisiert sie.</p></li>
+  <li class="channel"><p class="eyebrow">deb</p><p>Lade das <code>.deb</code> für deinen Rechner (<code>x86_64</code> oder <code>arm64</code>) von <a href="https://github.com/paxel/catlog/releases">den Veröffentlichungen</a> und installiere es mit deinem Paketwerkzeug. Es aktualisiert sich nicht selbst.</p></li>
+  <li class="channel"><p class="eyebrow">AppImage</p><p>Lade das <code>.AppImage</code>, mach es ausführbar, starte es. Es trägt seinen Menüeintrag und sein Symbol selbst ein. Es aktualisiert sich nicht selbst.</p></li>
+  <li class="channel"><p class="eyebrow">tar.gz</p><p>Lade das <code>tar.gz</code>, entpacke es irgendwohin, starte <code>catlog</code>. Für einen Rechner ohne Paketverwaltung.</p></li>
+</ul>
+<h2>Windows</h2>
+<ul class="channels">
+  <li class="channel"><p class="eyebrow">Scoop</p><pre><code>scoop bucket add paxel https://github.com/paxel/scoop-bucket
+scoop install catlog</code></pre><p><code>scoop update catlog</code> aktualisiert es.</p></li>
+  <li class="channel"><p class="eyebrow">zip</p><p>Lade die Datei, die auf <code>windows-x86_64.zip</code> endet, entpacke sie irgendwohin, doppelklicke <code>catlog.exe</code>. Es aktualisiert sich nicht selbst.</p></li>
+</ul>
+<h2>macOS</h2>
+<ul class="channels">
+  <li class="channel"><p class="eyebrow">Homebrew</p><pre><code>brew install --cask paxel/tap/catlog</code></pre><p><code>brew upgrade</code> aktualisiert es.</p></li>
+  <li class="channel"><p class="eyebrow">dmg</p><p>Lade das <code>.dmg</code> für deinen Mac (<code>arm64</code> für Apple Silicon, <code>x86_64</code> für Intel), zieh die App in Programme. Beim ersten Mal: Rechtsklick auf die App und "Öffnen" wählen; sie ist nicht bei Apple signiert, deshalb fragt der Mac einmal.</p></li>
+</ul>
+<h2>Nach der Installation</h2>
+<p>Die App öffnet mit einer kurzen Tour und fragt nach deinem Namen, dem Autor, unter dem jede Änderung festgehalten wird. Dann gehört der erste Katalog dir: <a href="getting-started.html">die ersten zehn Minuten</a>.</p>
