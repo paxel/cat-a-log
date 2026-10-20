@@ -180,18 +180,22 @@ impl MergeDialog {
     }
 }
 
-/// Runs the merge the dialog decided.
+/// Runs the merge the dialog decided, with the Moment before it that
+/// the phone records too (#110), so a wrong merge can be gone back on.
 pub fn apply_merge(
     store: &mut Catalog,
     loser: &str,
     survivor: &str,
     kind: MergeKind,
 ) -> catlog_core::Result<()> {
+    let before = store.current_seq()?;
     match kind {
         MergeKind::Cat => store.merge_cat(loser, survivor),
         MergeKind::Clowder => store.merge_clowder(loser, survivor),
         MergeKind::Field => store.merge_field(loser, survivor),
-    }
+    }?;
+    store.moment_for(before, true, catlog_core::moments::cause::MERGE, None)?;
+    Ok(())
 }
 
 /// Moves Clowders with their Cats, or Strays, into another Catalog.
@@ -350,6 +354,14 @@ mod tests {
         assert!(d.ask_into(&store, "fielddef:name", MergeKind::Field));
         assert!(!d.candidates.iter().any(|(id, _)| id == "fielddef:name"));
         apply_merge(&mut store, "cat:a", "cat:b", MergeKind::Cat).unwrap();
+        // The moment before the merge is there to go back to (#110).
+        let moment = store
+            .moments()
+            .unwrap()
+            .into_iter()
+            .find(|m| m.cause == catlog_core::moments::cause::MERGE)
+            .expect("a merge moment");
+        assert!(moment.seq < store.current_seq().unwrap());
         assert_eq!(store.cats(None).unwrap().len(), 1);
     }
 }
