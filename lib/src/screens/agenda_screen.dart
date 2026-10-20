@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../help.dart';
 import '../l10n.dart';
 import '../notes.dart';
 import '../layout.dart';
@@ -345,22 +344,22 @@ class _AgendaScreenState extends State<AgendaScreen> {
     final allDone = asked.isNotEmpty &&
         !asked.any((c) => openToday(c, store.choreTicks(c), today));
     return Scaffold(
-      appBar: roomyAppBar(
+      appBar: pageBar(
         context,
         title: Text(t.agenda),
+        help: PageHelp('agenda', store: store),
         actions: [
-          HelpButton(store: store, screenId: 'agenda'),
           // The export as a button of its own; the resync beside it
           // while the calendar mirror is on. No menu for one item.
-          IconButton(
-            icon: const Icon(Icons.ios_share),
-            tooltip: t.exportIcs,
+          PageAction(
+            icon: Icons.ios_share,
+            label: t.exportIcs,
             onPressed: _exportIcs,
           ),
           if (calendarMirrorEnabled(store) && _calendarAvailable)
-            IconButton(
-              icon: const Icon(Icons.sync),
-              tooltip: t.resyncCalendar,
+            PageAction(
+              icon: Icons.sync,
+              label: t.resyncCalendar,
               onPressed: () =>
                   resyncCalendarNow(context, store, port: widget.calendarPort),
             ),

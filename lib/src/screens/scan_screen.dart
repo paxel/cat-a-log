@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../help.dart';
 
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../l10n.dart';
+import '../layout.dart';
 
 /// Fullscreen QR scanner; pops the first detected string.
 class ScanScreen extends StatefulWidget {
@@ -20,10 +20,7 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.t.scanCode),
-        actions: [HelpButton(screenId: 'scan')],
-      ),
+      appBar: pageBar(context, title: Text(context.t.scanCode), help: PageHelp('scan')),
       body: MobileScanner(
         onDetect: (capture) {
           if (_done) return;

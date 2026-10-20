@@ -333,9 +333,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Mizzi')); // open the duplicate = loser
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(PopupMenuButton<String>));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Merge into…'));
+    await tester.tap(find.byTooltip('Merge into…'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Miezi'));
     await tester.pumpAndSettle();

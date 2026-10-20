@@ -362,21 +362,21 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
     final facts = _facts();
     final roster = _selected.contains(_catsKey) ? cats : <EntityView>[];
     return Scaffold(
-      appBar: roomyAppBar(
+      appBar: pageBar(
         context,
         title: Text(context.t.cardTitle(name)),
         actions: [
-          IconButton(
-              icon: const Icon(Icons.ios_share),
-              tooltip: context.t.shareAsImage,
+          PageAction(
+              icon: Icons.ios_share,
+              label: context.t.shareAsImage,
               onPressed: _shareImage),
-          IconButton(
-              icon: const Icon(Icons.picture_as_pdf),
-              tooltip: context.t.shareAsPdf,
+          PageAction(
+              icon: Icons.picture_as_pdf,
+              label: context.t.shareAsPdf,
               onPressed: () => _sharePdf(cats)),
-          IconButton(
-              icon: const Icon(Icons.print),
-              tooltip: context.t.print,
+          PageAction(
+              icon: Icons.print,
+              label: context.t.print,
               onPressed: () => _printCard(cats)),
         ],
       ),

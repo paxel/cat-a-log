@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import 'l10n.dart';
+import 'layout.dart';
 
 /// What the frame picker needs of a player: the picture, the clock,
 /// seeking and playing. The real one wraps the video player; a test
@@ -168,10 +169,10 @@ class _VideoFramesScreenState extends State<VideoFramesScreen> {
     final shown = (_drag ?? player.position.inMilliseconds.toDouble())
         .clamp(0.0, total);
     return Scaffold(
-      appBar: AppBar(title: Text(t.pickFramesTitle), actions: [
-        IconButton(
-          icon: const Icon(Icons.check),
-          tooltip: t.save,
+      appBar: pageBar(context, title: Text(t.pickFramesTitle), actions: [
+        PageAction(
+          icon: Icons.check,
+          label: t.save,
           onPressed: _kept.isEmpty || _busy ? null : _keepAndClose,
         ),
       ]),

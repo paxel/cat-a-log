@@ -2,7 +2,6 @@ import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../help.dart';
 import '../l10n.dart';
 import '../layout.dart';
 import '../undo_import.dart';
@@ -69,9 +68,7 @@ class _GoBackScreenState extends State<GoBackScreen> {
     final all = momentsOf(widget.store);
     final shown = _showAll ? all : all.take(recentMoments).toList();
     return Scaffold(
-      appBar: roomyAppBar(context, title: Text(t.goBackTitle), actions: [
-        HelpButton(store: widget.store, screenId: 'goBack'),
-      ]),
+      appBar: pageBar(context, title: Text(t.goBackTitle), help: PageHelp('goBack', store: widget.store)),
       body: ListView(children: [
         for (final (index, point) in shown.indexed) ...[
           // A month header where the month changes: a long history has

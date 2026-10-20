@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../help.dart';
 import '../field_labels.dart';
 import '../history_share.dart';
 import '../l10n.dart';
@@ -14,6 +13,7 @@ import '../pdf_fonts.dart';
 import '../vet_report.dart';
 import '../widgets/date_entry.dart';
 import 'field_graph_screen.dart';
+import '../layout.dart';
 
 /// What goes to the vet: field chips, a date range, every row ticked
 /// until unticked, the patient summary on or off. Share as PDF builds
@@ -216,18 +216,19 @@ class _VetReportScreenState extends State<VetReportScreen> {
     final entries = _entries;
     return Scaffold(
       // The same two buttons as the card page: share as PDF, print.
-      appBar: AppBar(
+      appBar: pageBar(
+        context,
         title: Text(t.vetReportTitle),
+        help: PageHelp('vetReport', store: widget.store),
         actions: [
-          HelpButton(store: widget.store, screenId: 'vetReport'),
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf),
-            tooltip: t.shareAsPdf,
+          PageAction(
+            icon: Icons.picture_as_pdf,
+            label: t.shareAsPdf,
             onPressed: _busy || entries.isEmpty ? null : _share,
           ),
-          IconButton(
-            icon: const Icon(Icons.print),
-            tooltip: t.print,
+          PageAction(
+            icon: Icons.print,
+            label: t.print,
             onPressed: _busy || entries.isEmpty ? null : _print,
           ),
         ],

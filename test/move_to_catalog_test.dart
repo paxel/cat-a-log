@@ -47,17 +47,13 @@ void main() {
   testWidgets('with one catalog there is nowhere to move to',
       (tester) async {
     await pumpCat(tester);
-    await tester.tap(find.byIcon(Icons.more_vert));
-    await tester.pumpAndSettle();
-    expect(find.text('Move to another catalog'), findsNothing);
+    expect(find.byTooltip('Move to another catalog'), findsNothing);
   });
 
   testWidgets('the cat moves and leaves the page behind', (tester) async {
     final paris = catalogs.create('Paris');
     await pumpCat(tester);
-    await tester.tap(find.byIcon(Icons.more_vert));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Move to another catalog'));
+    await tester.tap(find.byTooltip('Move to another catalog'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Paris'));
     await tester.pumpAndSettle();
@@ -71,9 +67,7 @@ void main() {
   testWidgets('dismissing the picker moves nothing', (tester) async {
     catalogs.create('Paris');
     await pumpCat(tester);
-    await tester.tap(find.byIcon(Icons.more_vert));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Move to another catalog'));
+    await tester.tap(find.byTooltip('Move to another catalog'));
     await tester.pumpAndSettle();
     await tester.tapAt(const Offset(20, 20));
     await tester.pumpAndSettle();
@@ -92,9 +86,7 @@ void main() {
       home: ClowderDetailScreen(store: store, clowderId: clowder),
     ));
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.more_vert));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Move to another catalog'));
+    await tester.tap(find.byTooltip('Move to another catalog'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Paris'));
     await tester.pumpAndSettle();
@@ -162,6 +154,10 @@ void main() {
 
     // The move is a row there: one other catalog, so the picker opens
     // at once.
+    // The bar's title line pushes the row below a 600dp window (#171).
+    await tester.scrollUntilVisible(
+        find.text('Move in from another catalog…'), 200,
+        scrollable: find.byType(Scrollable).first);
     await tester.tap(find.text('Move in from another catalog…'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(CheckboxListTile, 'Hinterhof'));
@@ -193,6 +189,10 @@ void main() {
     ));
     await tester.pumpAndSettle();
     // Two other catalogs: a menu, not a crash that swallows itself.
+    // The bar's title line pushes the row below a 600dp window (#171).
+    await tester.scrollUntilVisible(
+        find.text('Move in from another catalog…'), 200,
+        scrollable: find.byType(Scrollable).first);
     await tester.tap(find.text('Move in from another catalog…'));
     await tester.pumpAndSettle();
     expect(find.text('Rom'), findsWidgets);

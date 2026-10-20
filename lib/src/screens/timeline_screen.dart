@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../layout.dart';
-import '../help.dart';
 import '../field_editing.dart';
 import '../field_labels.dart';
 import '../hidden.dart';
@@ -267,19 +266,19 @@ class _TimelineScreenState extends State<TimelineScreen> {
         store.current(widget.entityId, Keys.name) ?? context.t.unnamed;
     final rows = _rows();
     return Scaffold(
-      appBar: roomyAppBar(
+      appBar: pageBar(
         context,
         title: Text(widget.field == null
             ? context.t.timelineOf(name)
             : context.t.fieldHistoryOf(
                 fieldLabel(context.t, store, widget.field!), name)),
+        help: PageHelp('timeline', store: store),
         actions: [
-          HelpButton(store: store, screenId: 'timeline'),
-          IconButton(
-            icon: Icon(_showVoided
+          PageAction(
+            icon: _showVoided
                 ? Icons.visibility_off_outlined
-                : Icons.visibility),
-            tooltip: _showVoided
+                : Icons.visibility,
+            label: _showVoided
                 ? context.t.hideRemovedValues
                 : context.t.showRemovedValues,
             onPressed: () {

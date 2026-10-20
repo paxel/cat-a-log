@@ -341,13 +341,13 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
     final current = store.current(widget.entityId, widget.def.key);
     final name = store.current(widget.entityId, Keys.name) ?? t.unnamed;
     return Scaffold(
-      appBar: roomyAppBar(
+      appBar: pageBar(
         context,
         title: Text(fieldDefName(t, widget.def)),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.ios_share),
-            tooltip: t.shareAsImage,
+          PageAction(
+            icon: Icons.ios_share,
+            label: t.shareAsImage,
             onPressed: _share,
           ),
         ],

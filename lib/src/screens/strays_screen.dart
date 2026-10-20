@@ -17,6 +17,7 @@ import '../stray_cam.dart';
 import '../widgets/add_fan.dart';
 import 'cat_detail_screen.dart';
 import 'cat_list_screen.dart';
+import '../layout.dart';
 
 /// Cats currently in no Clowder: the shared cat list (#87) with the
 /// strays' own tools — flier capture, stray cam, match candidates,
@@ -120,26 +121,24 @@ class StraysScreen extends StatelessWidget {
         onChanged: refresh,
       ),
       actions: (context, refresh) => [
-        Spotlight(
-          id: 'strays-scan',
-          child: IconButton(
-            icon: const Icon(Icons.qr_code_scanner),
-            tooltip: context.t.scanShareLabel,
-            onPressed: () async {
-              await scanShareCode(context, store);
-              refresh();
-            },
-          ),
+        PageAction(
+          spotlightId: 'strays-scan',
+          icon: Icons.qr_code_scanner,
+          label: context.t.scanShareLabel,
+          onPressed: () async {
+            await scanShareCode(context, store);
+            refresh();
+          },
         ),
         if (canMoveBetweenCatalogs)
-          IconButton(
-            icon: const Icon(Icons.drive_file_move_outline),
-            tooltip: context.t.moveToCatalog,
+          PageAction(
+            icon: Icons.drive_file_move_outline,
+            label: context.t.moveToCatalog,
             onPressed: () => _moveSelection(context, refresh),
           ),
-        IconButton(
-          icon: const Icon(Icons.join_inner),
-          tooltip: context.t.matchCandidatesTitle,
+        PageAction(
+          icon: Icons.join_inner,
+          label: context.t.matchCandidatesTitle,
           onPressed: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(

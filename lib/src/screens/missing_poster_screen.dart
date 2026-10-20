@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../field_labels.dart';
-import '../help.dart';
 import '../hidden.dart';
 import '../image_import.dart';
 import '../image_provider_cache.dart';
@@ -19,6 +18,7 @@ import '../pdf_fonts.dart';
 import '../widgets/date_entry.dart';
 import '../widgets/poster_frame.dart';
 import 'card_screen.dart' show cardQrPayload;
+import '../layout.dart';
 
 /// What the poster says, ticked from the record: every filled field of
 /// the cat and of its home as a "Label: value" line, the day the cat
@@ -426,18 +426,19 @@ class _MissingPosterScreenState extends State<MissingPosterScreen> {
     final qrFits = _qrPayload(ticked) != null;
     return Scaffold(
       // The same two buttons as the card page: share as PDF, print.
-      appBar: AppBar(
+      appBar: pageBar(
+        context,
         title: Text(t.posterMenu.replaceAll('…', '')),
+        help: PageHelp('poster', store: widget.store),
         actions: [
-          HelpButton(store: widget.store, screenId: 'poster'),
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf),
-            tooltip: t.shareAsPdf,
+          PageAction(
+            icon: Icons.picture_as_pdf,
+            label: t.shareAsPdf,
             onPressed: _busy ? null : _share,
           ),
-          IconButton(
-            icon: const Icon(Icons.print),
-            tooltip: t.print,
+          PageAction(
+            icon: Icons.print,
+            label: t.print,
             onPressed: _busy ? null : _print,
           ),
         ],

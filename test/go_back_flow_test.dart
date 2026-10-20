@@ -55,6 +55,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.settings_outlined));
     await tester.pumpAndSettle();
+    // The bar's title line pushes the row below a 600dp window (#171).
+    await tester.scrollUntilVisible(find.text('Go back'), 200,
+        scrollable: find.byType(Scrollable).first);
     expect(find.text('Go back'), findsOneWidget);
 
     // The go-back itself, as the confirmation applies it once the file

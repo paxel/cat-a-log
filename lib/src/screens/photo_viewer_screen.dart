@@ -6,6 +6,8 @@ import 'package:share_plus/share_plus.dart';
 
 import '../share.dart';
 import '../widgets/missing_photo.dart';
+import '../layout.dart';
+import '../l10n.dart';
 
 /// Full-screen gallery: swipe through a cat's photos, pinch to zoom.
 /// Tap on a thumbnail lands here; the action menu stays on long-press.
@@ -51,13 +53,15 @@ class _PhotoViewerScreenState extends State<PhotoViewerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
+      appBar: pageBar(
+        context,
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         title: Text('${_current + 1} / ${widget.hashes.length}'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.ios_share),
+          PageAction(
+            icon: Icons.ios_share,
+            label: context.t.shareAsImage,
             onPressed: () {
               final bytes = _bytesFor(widget.hashes[_current]);
               if (bytes == null) return;

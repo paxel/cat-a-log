@@ -1,11 +1,11 @@
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
-import '../help.dart';
 import '../field_labels.dart';
 import '../l10n.dart';
 import '../merge_dialogs.dart';
 import '../widgets/cat_avatar.dart';
+import '../layout.dart';
 
 /// "Find duplicates" (#45): likely twins among cats and clowders —
 /// exact matches first, fuzzy name matches ranked by shared attributes.
@@ -54,9 +54,7 @@ class _DuplicatesScreenState extends State<DuplicatesScreen> {
     final t = context.t;
     final candidates = duplicateCandidates(store);
     return Scaffold(
-      appBar: AppBar(title: Text(t.findDuplicates), actions: [
-        HelpButton(store: store, screenId: 'duplicates'),
-      ]),
+      appBar: pageBar(context, title: Text(t.findDuplicates), help: PageHelp('duplicates', store: store)),
       body: candidates.isEmpty
           ? Center(child: Text(t.noDuplicates))
           : ListView(children: [

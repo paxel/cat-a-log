@@ -148,15 +148,13 @@ class _ChoreHistoryScreenState extends State<ChoreHistoryScreen> {
     final theme = Theme.of(context);
     final name = store.current(widget.chore.entity, Keys.name) ?? t.unnamed;
     return Scaffold(
-      appBar: roomyAppBar(
+      appBar: pageBar(
         context,
         title: Text('${widget.chore.title} · $name'),
         actions: [
-          IconButton(
-            icon: Icon(
-              _oldestFirst ? Icons.arrow_upward : Icons.arrow_downward,
-            ),
-            tooltip: _oldestFirst ? t.sortNewestFirst : t.sortOldestFirst,
+          PageAction(
+            icon: _oldestFirst ? Icons.arrow_upward : Icons.arrow_downward,
+            label: _oldestFirst ? t.sortNewestFirst : t.sortOldestFirst,
             onPressed: () {
               store.setLocalSetting(
                 choreLogOldestFirstKey,
@@ -165,11 +163,9 @@ class _ChoreHistoryScreenState extends State<ChoreHistoryScreen> {
               setState(() {});
             },
           ),
-          IconButton(
-            icon: Icon(
-              _showVoided ? Icons.visibility_off_outlined : Icons.visibility,
-            ),
-            tooltip: _showVoided ? t.hideRemovedValues : t.showRemovedValues,
+          PageAction(
+            icon: _showVoided ? Icons.visibility_off_outlined : Icons.visibility,
+            label: _showVoided ? t.hideRemovedValues : t.showRemovedValues,
             onPressed: () {
               store.setLocalSetting(
                 historyShowVoidedKey,
@@ -178,14 +174,10 @@ class _ChoreHistoryScreenState extends State<ChoreHistoryScreen> {
               setState(() {});
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.copy),
-            tooltip: t.copyText,
-            onPressed: _copy,
-          ),
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf),
-            tooltip: t.shareAsPdf,
+          PageAction(icon: Icons.copy, label: t.copyText, onPressed: _copy),
+          PageAction(
+            icon: Icons.picture_as_pdf,
+            label: t.shareAsPdf,
             onPressed: _sharePdf,
           ),
         ],

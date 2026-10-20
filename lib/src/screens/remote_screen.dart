@@ -5,12 +5,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../exclusive.dart';
-import '../help.dart';
 import '../import_summary.dart';
 import '../l10n.dart';
 import '../notes.dart';
 import '../sync/saf_folder.dart';
 import '../sync/sync_watch.dart';
+import '../layout.dart';
 
 /// "Remote": sync through a shared folder (Nextcloud, Syncthing, a USB
 /// stick) for devices that never meet.
@@ -130,10 +130,7 @@ class _RemoteScreenState extends State<RemoteScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.syncChooserRemote),
-        actions: [HelpButton(store: widget.store, screenId: 'remote')],
-      ),
+      appBar: pageBar(context, title: Text(t.syncChooserRemote), help: PageHelp('remote', store: widget.store)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

@@ -1,7 +1,6 @@
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
-import '../help.dart';
 import '../l10n.dart';
 import '../notes.dart';
 import '../layout.dart';
@@ -97,9 +96,7 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
     final t = context.t;
     final active = widget.catalogs.active;
     return Scaffold(
-      appBar: roomyAppBar(context, title: Text(t.catalogsTitle), actions: [
-        HelpButton(store: store, screenId: 'catalogs'),
-      ]),
+      appBar: pageBar(context, title: Text(t.catalogsTitle), help: PageHelp('catalogs', store: store)),
       body: ListView(children: [
         for (final catalog in widget.catalogs.catalogs())
           ListTile(

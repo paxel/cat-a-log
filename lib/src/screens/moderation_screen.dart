@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../l10n.dart';
 import '../celebration.dart';
-import '../help.dart';
 import '../titles.dart';
+import '../layout.dart';
 
 /// Moderation (ADR-0006): per-author hard delete behind one plain
 /// confirmation, and the local ban list. Everything here acts on THIS device only —
@@ -101,10 +101,7 @@ class _ModerationScreenState extends State<ModerationScreen> {
     final rows = store.authorsOverview();
     final bans = store.bans();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.moderationTitle),
-        actions: [HelpButton(store: widget.store, screenId: 'moderation')],
-      ),
+      appBar: pageBar(context, title: Text(t.moderationTitle), help: PageHelp('moderation', store: widget.store)),
       body: ListView(children: [
         Padding(
           padding: const EdgeInsets.all(16),

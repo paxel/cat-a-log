@@ -136,7 +136,7 @@ class _TargetScreenState extends State<_TargetScreen> {
     final homes = store.clowders()
       ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return Scaffold(
-      appBar: roomyAppBar(context, title: Text(t.addPhotosTo)),
+      appBar: pageBar(context, title: Text(t.addPhotosTo)),
       body: ListView(children: [
         ListTile(
           leading: const Icon(Icons.add),

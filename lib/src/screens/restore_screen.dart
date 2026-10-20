@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-import '../help.dart';
 import '../auto_backup.dart';
 import '../l10n.dart';
 import '../notes.dart';
 import '../restore_backups.dart';
+import '../layout.dart';
 
 /// The .catsync files of the folder the keeper picks, copied where the
 /// app can read them; null when the picker was dismissed. Android only:
@@ -137,23 +137,25 @@ class _RestoreScreenState extends State<RestoreScreen> {
     final locale = Localizations.localeOf(context).toString();
     return Scaffold(
       // Skip and Restore in the app bar, where every page keeps its actions.
-      appBar: AppBar(
+      appBar: pageBar(
+        context,
         title: Text(t.restoreTitle),
+        help: const PageHelp('restore'),
         actions: [
-          HelpButton(screenId: 'restore'),
-          TextButton(
+          PageAction.labelled(
+            label: t.introSkip,
             onPressed: _restoring ? null : () => widget.onDone(null),
-            child: Text(t.introSkip),
           ),
-          IconButton(
-            icon: _restoring
+          PageAction(
+            icon: Icons.restore,
+            busy: _restoring
                 ? const SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.restore),
-            tooltip: t.restoreAction,
+                : null,
+            label: t.restoreAction,
             onPressed: _restoring || _selected.isEmpty ? null : _restore,
           ),
         ],

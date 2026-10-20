@@ -10,6 +10,7 @@ import 'l10n.dart';
 import 'notes.dart';
 import 'share.dart';
 import 'private_temp.dart';
+import 'layout.dart';
 
 /// Practical ceiling for the inline QR payload; beyond it the codes stop
 /// scanning reliably.
@@ -112,7 +113,7 @@ class _SharePubliclyScreenState extends State<SharePubliclyScreen> {
     final inline = _inlinePayload;
     final url = _url.text.trim();
     return Scaffold(
-      appBar: AppBar(title: Text(t.sharePublicly)),
+      appBar: pageBar(context, title: Text(t.sharePublicly)),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         if (store.localSetting(catalogNameKey) case final name?)
           Padding(

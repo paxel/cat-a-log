@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'import_summary.dart';
 import 'l10n.dart';
 import 'notes.dart';
+import 'layout.dart';
 
 /// Which synced-in events become notes at the top. Adoptions and
 /// births are on by default; the somber ones are opt-in.
@@ -86,7 +87,7 @@ class _ToastSettingsScreenState extends State<ToastSettingsScreen> {
       'move': t.toastKindMoves,
     };
     return Scaffold(
-      appBar: AppBar(title: Text(t.toastSettingsTitle)),
+      appBar: pageBar(context, title: Text(t.toastSettingsTitle)),
       body: ListView(children: [
         for (final (kind, _) in toastKinds)
           SwitchListTile(

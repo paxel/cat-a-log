@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n.dart';
 import '../exclusive.dart';
+import '../layout.dart';
 
 const _repoUrl = 'https://github.com/paxel/catlog';
 const _issuesUrl = '$_repoUrl/issues';
@@ -38,7 +39,7 @@ class _AboutScreenState extends State<AboutScreen> {
     final t = context.t;
     final showDonate = !Platform.isIOS;
     return Scaffold(
-      appBar: AppBar(title: Text(t.about)),
+      appBar: pageBar(context, title: Text(t.about)),
       body: ListView(children: [
         const SizedBox(height: 24),
         const Center(child: Icon(Icons.pets, size: 64)),

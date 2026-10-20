@@ -1,12 +1,12 @@
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
-import '../help.dart';
 import '../auto_backup.dart';
 import '../l10n.dart';
 import 'in_person_screen.dart';
 import 'messenger_screen.dart';
 import 'remote_screen.dart';
+import '../layout.dart';
 
 /// The sync chooser: three self-explaining cards instead of one packed
 /// page (ADR-0002 transports; forgiving-UX rule 8 — uncluttered pages).
@@ -20,9 +20,7 @@ class SyncScreen extends StatelessWidget {
     final t = context.t;
     final backupError = store.localSetting(backupErrorKey);
     return Scaffold(
-      appBar: AppBar(title: Text(t.sync), actions: [
-        HelpButton(store: store, screenId: 'sync'),
-      ]),
+      appBar: pageBar(context, title: Text(t.sync), help: PageHelp('sync', store: store)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

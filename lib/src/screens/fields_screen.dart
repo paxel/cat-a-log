@@ -1,11 +1,11 @@
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
-import '../help.dart';
 import '../field_labels.dart';
 import '../l10n.dart';
 import '../merge_dialogs.dart';
 import '../new_field_dialog.dart';
+import '../layout.dart';
 
 /// All global Field definitions, and a dialog to create new ones.
 class FieldsScreen extends StatefulWidget {
@@ -119,9 +119,7 @@ class _FieldsScreenState extends State<FieldsScreen> {
           FieldScope.both => context.t.forBoth,
         };
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.fields), actions: [
-        HelpButton(store: widget.store, screenId: 'fields'),
-      ]),
+      appBar: pageBar(context, title: Text(context.t.fields), help: PageHelp('fields', store: widget.store)),
       body: ListView(
         // The last row scrolls clear of the floating button.
         padding: const EdgeInsets.only(bottom: 88),

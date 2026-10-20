@@ -4,7 +4,6 @@ import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
 import '../auto_backup.dart';
-import '../help.dart';
 import '../l10n.dart';
 import '../move_to_catalog.dart';
 import '../notes.dart';
@@ -15,6 +14,7 @@ import 'catalogs_screen.dart' show askCatalogName;
 import 'fields_screen.dart';
 import 'go_back_screen.dart';
 import 'moderation_screen.dart';
+import '../layout.dart';
 
 /// Everything that belongs to one catalog alone, on one page reached
 /// from its row in the switcher: name, what it holds, its fields, its
@@ -266,13 +266,11 @@ class _CatalogSettingsScreenState extends State<CatalogSettingsScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     final catalog = _catalog;
-    if (_closed) return Scaffold(appBar: AppBar(title: Text(catalog.name)));
+    if (_closed) return Scaffold(appBar: pageBar(context, title: Text(catalog.name)));
     final usage = _store.storageUsage();
     final danger = Theme.of(context).colorScheme.error;
     return Scaffold(
-      appBar: AppBar(title: Text(catalog.name), actions: [
-        HelpButton(store: _store, screenId: 'catalogSettings'),
-      ]),
+      appBar: pageBar(context, title: Text(catalog.name), help: PageHelp('catalogSettings', store: _store)),
       body: ListView(
         children: [
           ListTile(

@@ -5,7 +5,6 @@ import 'package:latlong2/latlong.dart';
 
 import '../field_editing.dart';
 import '../field_labels.dart';
-import '../help.dart';
 import '../history_share.dart';
 import '../l10n.dart';
 import '../layout.dart';
@@ -247,33 +246,25 @@ class _FieldHistoryScreenState extends State<FieldHistoryScreen> {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     return Scaffold(
-      appBar: roomyAppBar(
+      appBar: pageBar(
         context,
         title: Text(t.fieldHistoryOf(fieldDefName(t, widget.def), name)),
+        help: PageHelp('history', store: store),
         actions: [
-          HelpButton(store: store, screenId: 'history'),
-          IconButton(
-            icon: Icon(
-              _oldestFirst ? Icons.arrow_upward : Icons.arrow_downward,
-            ),
-            tooltip: _oldestFirst ? t.sortNewestFirst : t.sortOldestFirst,
+          PageAction(
+            icon: _oldestFirst ? Icons.arrow_upward : Icons.arrow_downward,
+            label: _oldestFirst ? t.sortNewestFirst : t.sortOldestFirst,
             onPressed: _flip,
           ),
-          IconButton(
-            icon: Icon(
-              _showVoided ? Icons.visibility_off_outlined : Icons.visibility,
-            ),
-            tooltip: _showVoided ? t.hideRemovedValues : t.showRemovedValues,
+          PageAction(
+            icon: _showVoided ? Icons.visibility_off_outlined : Icons.visibility,
+            label: _showVoided ? t.hideRemovedValues : t.showRemovedValues,
             onPressed: _flipVoided,
           ),
-          IconButton(
-            icon: const Icon(Icons.copy),
-            tooltip: t.copyText,
-            onPressed: _copy,
-          ),
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf),
-            tooltip: t.shareAsPdf,
+          PageAction(icon: Icons.copy, label: t.copyText, onPressed: _copy),
+          PageAction(
+            icon: Icons.picture_as_pdf,
+            label: t.shareAsPdf,
             onPressed: _sharePdf,
           ),
         ],

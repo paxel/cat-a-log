@@ -85,6 +85,21 @@ a screen that breaks one is a bug, not a style choice.
   everyone already reads, and the agenda draws one beside its list. The
   rule holds everywhere else; a grid is not a way to list plans.
 
+## The bar
+
+- **One bar on every phone page** (`pageBar` in `lib/src/layout.dart`).
+  On a phone the buttons sit on their own row and the title on the line
+  under them; from the desktop breakpoint up the title sits beside them.
+- **An action goes into ⋮ only when the bar is full.** A page lists its
+  actions in a fixed order; the bar shows as many as fit at the width it
+  has, the rest overflow into ⋮, and ⋮ exists only when it holds
+  something. Help is first, ⋮ last. Nothing adapts to use.
+- A destructive action has no special place: last in the order, on the
+  bar when there is room; its confirm dialog is the guard.
+- An action in ⋮ shows its icon and its words, as it does on the bar.
+- Labelled buttons (Save, Skip) and buttons that open a menu of their
+  own never overflow.
+
 ## Lists and sections
 
 - A section that is rarely needed folds; the fold is remembered per

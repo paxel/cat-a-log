@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../age.dart';
 import '../field_labels.dart';
-import '../help.dart';
 import '../l10n.dart';
 import '../layout.dart';
 import '../spotlight.dart';
@@ -21,7 +20,7 @@ typedef CatSource = List<EntityView> Function(CatalogStore store);
 
 /// Extra app-bar actions or a floating button for one use of the list;
 /// [refresh] redraws the list after whatever the action did.
-typedef CatListExtras = List<Widget> Function(
+typedef CatListExtras = List<PageAction> Function(
   BuildContext context,
   VoidCallback refresh,
 );
@@ -221,35 +220,30 @@ class _CatListScreenState extends State<CatListScreen> {
     final cats = _cats();
     final empty = widget.source(store).isEmpty;
     return Scaffold(
-      appBar: roomyAppBar(
+      appBar: pageBar(
         context,
         title: Text(widget.title),
+        help: widget.helpScreenId == null
+            ? null
+            : PageHelp(widget.helpScreenId!, store: store),
         actions: [
-          if (widget.helpScreenId != null)
-            HelpButton(store: store, screenId: widget.helpScreenId!),
-          IconButton(
-            icon: Icon(
-              _tableView ? Icons.view_list : Icons.table_rows_outlined,
-            ),
-            tooltip: _tableView ? t.viewAsList : t.viewAsTable,
+          PageAction(
+            icon: _tableView ? Icons.view_list : Icons.table_rows_outlined,
+            label: _tableView ? t.viewAsList : t.viewAsTable,
             onPressed: () {
               store.setLocalSetting(catViewKey, _tableView ? 'list' : 'table');
               setState(() {});
             },
           ),
           if (!_tableView)
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.sort),
-              tooltip: t.sortLabel,
+            PageAction.menu(
+              icon: Icons.sort,
+              label: t.sortLabel,
               onSelected: (s) => _setSort(s, toggle: false),
-              itemBuilder: (context) => [
-                PopupMenuItem(value: 'name', child: Text(t.name)),
-                PopupMenuItem(value: 'age', child: Text(t.ageLabel)),
-                for (final def in _columnDefs)
-                  PopupMenuItem(
-                    value: def.key,
-                    child: Text(fieldDefName(t, def)),
-                  ),
+              menu: [
+                ('name', t.name),
+                ('age', t.ageLabel),
+                for (final def in _columnDefs) (def.key, fieldDefName(t, def)),
               ],
             ),
           ...?widget.actions?.call(context, _refresh),

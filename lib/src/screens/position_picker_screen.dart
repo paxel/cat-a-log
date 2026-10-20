@@ -12,6 +12,7 @@ import '../map/cached_tiles.dart';
 import '../map/place_view.dart';
 import '../stray_cam.dart';
 import '../exclusive.dart';
+import '../layout.dart';
 
 /// Where the picker last was, so the next pick starts in the same
 /// region instead of a country-level default. Session memory is enough:
@@ -146,12 +147,13 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
-      appBar: AppBar(
+      appBar: pageBar(
+        context,
         title: Text(context.t.starterPosition),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            tooltip: context.t.save,
+          PageAction(
+            icon: Icons.check,
+            label: context.t.save,
             onPressed: _picked == null ? null : _pop,
           ),
         ],

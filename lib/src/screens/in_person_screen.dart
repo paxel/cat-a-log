@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../exclusive.dart';
-import '../help.dart';
 import '../import_summary.dart';
 import '../sync/hotspot.dart';
 import '../l10n.dart';
@@ -18,6 +17,7 @@ import '../sync/lan.dart';
 import 'scan_screen.dart';
 import '../sync/tls.dart';
 import '../widgets/pair_code_text.dart';
+import '../layout.dart';
 
 /// "In person": two devices in the same room sync over the local
 /// network. Host shows a QR, joiner scans (or types the short code).
@@ -346,10 +346,7 @@ class _InPersonScreenState extends State<InPersonScreen> {
     final iosOffline = Platform.isIOS && onNet == false;
     final canHost = onNet != false;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.syncChooserInPerson),
-        actions: [HelpButton(store: widget.store, screenId: 'inPerson')],
-      ),
+      appBar: pageBar(context, title: Text(t.syncChooserInPerson), help: PageHelp('inPerson', store: widget.store)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

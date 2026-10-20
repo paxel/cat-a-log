@@ -21,6 +21,7 @@ import 'stray_cam.dart';
 import 'widgets/date_entry.dart';
 import 'widgets/looks_input.dart';
 import 'exclusive.dart';
+import 'layout.dart';
 
 /// A transponder number on a flier: 15 digits, often printed with
 /// spaces or hyphens between groups.
@@ -1411,7 +1412,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
     final photo = _photo;
     if (photo == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(_newCat ? t.captureFlier : t.addFlier)),
+        appBar: pageBar(context, title: Text(_newCat ? t.captureFlier : t.addFlier)),
         body: Center(
           child: _choosing && !_picking
               // The two ways in, as buttons on the page: no sheet first.
@@ -1445,7 +1446,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
         if (!didPop) _confirmAbort();
       },
       child: Scaffold(
-        appBar: AppBar(title: Text(steps[step].title)),
+        appBar: pageBar(context, title: Text(steps[step].title)),
         body: Column(
           children: [
             LinearProgressIndicator(value: (step + 1) / steps.length),

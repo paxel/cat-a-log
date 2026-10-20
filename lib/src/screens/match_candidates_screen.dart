@@ -1,7 +1,6 @@
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
-import '../help.dart';
 import '../field_labels.dart';
 import '../l10n.dart';
 import '../looks_labels.dart';
@@ -9,6 +8,7 @@ import '../merge_dialogs.dart';
 import '../widgets/cat_avatar.dart';
 import '../widgets/cat_ear.dart';
 import 'cat_detail_screen.dart';
+import '../layout.dart';
 
 /// Possible same-cat pairs (#33): exact ID matches first, then cats
 /// whose positions fall inside the 500 m stray area, then pairs whose
@@ -108,9 +108,7 @@ class _MatchCandidatesScreenState extends State<MatchCandidatesScreen> {
                 c
           ];
     return Scaffold(
-      appBar: AppBar(title: Text(t.matchCandidatesTitle), actions: [
-        HelpButton(store: store, screenId: 'matches'),
-      ]),
+      appBar: pageBar(context, title: Text(t.matchCandidatesTitle), help: PageHelp('matches', store: store)),
       body: candidates.isEmpty
           ? Center(child: Text(t.noMatchCandidates))
           : ListView(children: [

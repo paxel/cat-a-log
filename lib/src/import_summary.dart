@@ -12,6 +12,7 @@ import 'pet_mode.dart';
 import 'titles.dart';
 import 'undo_import.dart';
 import 'widgets/cat_avatar.dart';
+import 'layout.dart';
 
 /// One field of a cat or a home that reads differently after an import
 /// than before it. [field] is a key; a photo shows as [Keys.imagePrefix]
@@ -591,7 +592,7 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
     final updated = shown(r.updated);
     final deleted = shown(r.deleted);
     return Scaffold(
-      appBar: AppBar(title: Text(t.syncSummaryTitle)),
+      appBar: pageBar(context, title: Text(t.syncSummaryTitle)),
       body: ListView(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -683,8 +684,7 @@ class _ChangesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: AppBar(
-          title: Text(store.current(arrival.id, Keys.name) ?? t.unnamed)),
+      appBar: pageBar(context, title: Text(store.current(arrival.id, Keys.name) ?? t.unnamed)),
       body: ListView(children: [
         for (final c in arrival.changes)
           if (c.isPhoto)

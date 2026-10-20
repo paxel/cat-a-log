@@ -53,10 +53,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// At 500dp every action of the page is on the bar (#171).
   Future<void> menu(WidgetTester tester, String item) async {
-    await tester.tap(find.byIcon(Icons.more_vert));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(item));
+    await tester.tap(find.byTooltip(item));
     await tester.pumpAndSettle();
   }
 

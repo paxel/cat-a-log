@@ -4,7 +4,6 @@ import 'package:latlong2/latlong.dart';
 
 import '../move_to_catalog.dart';
 import '../layout.dart';
-import '../help.dart';
 import '../field_editing.dart';
 import '../hidden.dart';
 import '../l10n.dart';
@@ -501,7 +500,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
         if (!didPop) setState(() => _editing = false);
       },
       child: Scaffold(
-        appBar: roomyAppBar(
+        appBar: pageBar(
           context,
           // Renaming: a tap on the title in edit mode; in read mode the
           // title wears the ear and a hold opens the same dialog.
@@ -516,11 +515,12 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
                     ),
                   ),
                 ),
+          help: PageHelp('clowder', store: store),
+          // In this order as far as the bar has room; the rest in ⋮.
           actions: [
-            HelpButton(store: store, screenId: 'clowder'),
-            IconButton(
-              icon: const Icon(Icons.badge_outlined),
-              tooltip: context.t.card,
+            PageAction(
+              icon: Icons.badge_outlined,
+              label: context.t.card,
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) =>
@@ -528,14 +528,14 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
                 ),
               ),
             ),
-            IconButton(
-              icon: Icon(_editing ? Icons.check : Icons.edit),
-              tooltip: _editing ? context.t.doneLabel : context.t.editLabel,
+            PageAction(
+              icon: _editing ? Icons.check : Icons.edit,
+              label: _editing ? context.t.doneLabel : context.t.editLabel,
               onPressed: () => setState(() => _editing = !_editing),
             ),
-            IconButton(
-              icon: const Icon(Icons.history),
-              tooltip: context.t.timeline,
+            PageAction(
+              icon: Icons.history,
+              label: context.t.timeline,
               onPressed: () async {
                 await Navigator.of(context).push(
                   MaterialPageRoute(
@@ -545,41 +545,38 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
                 if (mounted) setState(() {});
               },
             ),
-            PopupMenuButton<String>(
-              onSelected: (v) {
-                if (v == 'delete') _deleteClowder();
-                if (v == 'moveCatalog') _moveToCatalog();
-                if (v == 'merge') _mergeClowder();
-                if (v == 'hide') {
-                  final wasHidden = store.isHidden(id);
-                  store.setHidden(id, !wasHidden);
-                  if (wasHidden || showHidden.value) {
-                    setState(() {});
-                  } else {
-                    Navigator.of(context).pop();
-                  }
+            if (canMoveBetweenCatalogs)
+              PageAction(
+                icon: Icons.drive_file_move_outline,
+                label: context.t.moveToCatalog,
+                onPressed: _moveToCatalog,
+              ),
+            PageAction(
+              icon: store.isHidden(id)
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
+              label: store.isHidden(id)
+                  ? context.t.unhideLabel
+                  : context.t.hideLabel,
+              onPressed: () {
+                final wasHidden = store.isHidden(id);
+                store.setHidden(id, !wasHidden);
+                if (wasHidden || showHidden.value) {
+                  setState(() {});
+                } else {
+                  Navigator.of(context).pop();
                 }
               },
-              itemBuilder: (context) => [
-                if (canMoveBetweenCatalogs)
-                  PopupMenuItem(
-                    value: 'moveCatalog',
-                    child: Text(context.t.moveToCatalog),
-                  ),
-                PopupMenuItem(
-                  value: 'hide',
-                  child: Text(
-                    store.isHidden(id)
-                        ? context.t.unhideLabel
-                        : context.t.hideLabel,
-                  ),
-                ),
-                PopupMenuItem(value: 'merge', child: Text(context.t.mergeInto)),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Text(context.t.deleteClowder),
-                ),
-              ],
+            ),
+            PageAction(
+              icon: Icons.merge,
+              label: context.t.mergeInto,
+              onPressed: _mergeClowder,
+            ),
+            PageAction(
+              icon: Icons.delete_outline,
+              label: context.t.deleteClowder,
+              onPressed: _deleteClowder,
             ),
           ],
         ),

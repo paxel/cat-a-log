@@ -8,7 +8,6 @@ import 'package:latlong2/latlong.dart';
 import '../move_dialog.dart';
 import '../move_to_catalog.dart';
 import '../layout.dart';
-import '../help.dart';
 import '../celebration.dart';
 import '../field_editing.dart';
 import '../registry_lookup.dart';
@@ -595,119 +594,103 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
         if (!didPop) setState(() => _editing = false);
       },
       child: Scaffold(
-        appBar: roomyAppBar(
+        appBar: pageBar(
           context,
           // Renaming lives in edit mode: the title becomes tappable there.
           title: _editing
               ? InkWell(onTap: _rename, child: Text(name))
               : Text(name),
+          help: PageHelp('cat', store: store),
+          menuSpotlightId: 'cat-menu',
+          // In this order as far as the bar has room; the rest in ⋮.
           actions: [
-            HelpButton(store: store, screenId: 'cat'),
-            IconButton(
-              icon: const Icon(Icons.badge_outlined),
-              tooltip: context.t.card,
+            PageAction(
+              icon: Icons.badge_outlined,
+              label: context.t.card,
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => CardScreen(store: store, catId: id),
                 ),
               ),
             ),
-            Spotlight(
-              id: 'cat-edit',
-              child: IconButton(
-                icon: Icon(_editing ? Icons.check : Icons.edit),
-                tooltip: _editing ? context.t.doneLabel : context.t.editLabel,
-                onPressed: () => setState(() => _editing = !_editing),
-              ),
+            PageAction(
+              spotlightId: 'cat-edit',
+              icon: _editing ? Icons.check : Icons.edit,
+              label: _editing ? context.t.doneLabel : context.t.editLabel,
+              onPressed: () => setState(() => _editing = !_editing),
             ),
-            IconButton(
-              icon: const Icon(Icons.history),
-              tooltip: context.t.timeline,
+            PageAction(
+              icon: Icons.history,
+              label: context.t.timeline,
               onPressed: _openTimeline,
             ),
-            Spotlight(
-              id: 'cat-report',
-              child: IconButton(
-                icon: const Icon(Icons.medical_information_outlined),
-                tooltip: context.t.vetReportMenu,
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => VetReportScreen(store: store, catId: id),
-                )),
+            PageAction(
+              spotlightId: 'cat-report',
+              icon: Icons.medical_information_outlined,
+              label: context.t.vetReportMenu,
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => VetReportScreen(store: store, catId: id),
+              )),
+            ),
+            PageAction(
+              spotlightId: 'cat-poster',
+              icon: Icons.campaign_outlined,
+              label: context.t.posterMenu,
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => MissingPosterScreen(store: store, catId: id),
+              )),
+            ),
+            if (canMoveBetweenCatalogs)
+              PageAction(
+                icon: Icons.drive_file_move_outline,
+                label: context.t.moveToCatalog,
+                onPressed: _moveToCatalog,
+              ),
+            PageAction(
+              icon: Icons.location_on_outlined,
+              label: context.t.seenHereNow,
+              onPressed: _seenHere,
+            ),
+            PageAction(
+              icon: Icons.post_add,
+              label: context.t.addFlier,
+              onPressed: _addFlier,
+            ),
+            PageAction(
+              icon: Icons.public,
+              label: context.t.sharePublicly,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => SharePubliclyScreen(store: store, catId: id),
+                ),
               ),
             ),
-            Spotlight(
-              id: 'cat-poster',
-              child: IconButton(
-                icon: const Icon(Icons.campaign_outlined),
-                tooltip: context.t.posterMenu,
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => MissingPosterScreen(store: store, catId: id),
-                )),
-              ),
+            PageAction(
+              icon: store.isHidden(id)
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
+              label: store.isHidden(id)
+                  ? context.t.unhideLabel
+                  : context.t.hideLabel,
+              onPressed: () {
+                final wasHidden = store.isHidden(id);
+                store.setHidden(id, !wasHidden);
+                if (wasHidden || showHidden.value) {
+                  setState(() {});
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
             ),
-            Spotlight(
-              id: 'cat-menu',
-              child: PopupMenuButton<String>(
-                onSelected: (v) {
-                  if (v == 'delete') _deleteCat();
-                  if (v == 'moveCatalog') _moveToCatalog();
-                  if (v == 'merge') _mergeCat();
-                  if (v == 'seen') _seenHere();
-                  if (v == 'flier') _addFlier();
-                  if (v == 'share') {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            SharePubliclyScreen(store: store, catId: id),
-                      ),
-                    );
-                  }
-                  if (v == 'hide') {
-                    final wasHidden = store.isHidden(id);
-                    store.setHidden(id, !wasHidden);
-                    if (wasHidden || showHidden.value) {
-                      setState(() {});
-                    } else {
-                      Navigator.of(context).pop();
-                    }
-                  }
-                },
-                itemBuilder: (context) => [
-                  if (canMoveBetweenCatalogs)
-                    PopupMenuItem(
-                      value: 'moveCatalog',
-                      child: Text(context.t.moveToCatalog),
-                    ),
-                  PopupMenuItem(
-                    value: 'seen',
-                    child: Text(context.t.seenHereNow),
-                  ),
-                  PopupMenuItem(
-                    value: 'flier',
-                    child: Text(context.t.addFlier),
-                  ),
-                  PopupMenuItem(
-                    value: 'share',
-                    child: Text(context.t.sharePublicly),
-                  ),
-                  PopupMenuItem(
-                    value: 'hide',
-                    child: Text(
-                      store.isHidden(id)
-                          ? context.t.unhideLabel
-                          : context.t.hideLabel,
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'merge',
-                    child: Text(context.t.mergeInto),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Text(context.t.deleteCat),
-                  ),
-                ],
-              ),
+            PageAction(
+              icon: Icons.merge,
+              label: context.t.mergeInto,
+              onPressed: _mergeCat,
+            ),
+            PageAction(
+              icon: Icons.delete_outline,
+              label: context.t.deleteCat,
+              onPressed: _deleteCat,
             ),
           ],
         ),

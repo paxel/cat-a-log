@@ -7,7 +7,6 @@ import 'package:flutter/rendering.dart';
 
 import '../age.dart';
 import '../layout.dart';
-import '../help.dart';
 import '../field_labels.dart';
 import '../hidden.dart';
 import '../image_provider_cache.dart';
@@ -352,23 +351,21 @@ class _CardScreenState extends State<CardScreen> {
     final photo = hash == null ? null : imageProviderFor(store, hash);
     final facts = _facts();
     return Scaffold(
-      appBar: roomyAppBar(
+      appBar: pageBar(
         context,
         title: Text(context.t.cardTitle(name)),
+        help: PageHelp('card', store: store),
         actions: [
-          HelpButton(store: store, screenId: 'card'),
-          IconButton(
-              icon: const Icon(Icons.ios_share),
-              tooltip: context.t.shareAsImage,
+          PageAction(
+              icon: Icons.ios_share,
+              label: context.t.shareAsImage,
               onPressed: _shareImage),
-          IconButton(
-              icon: const Icon(Icons.picture_as_pdf),
-              tooltip: context.t.shareAsPdf,
+          PageAction(
+              icon: Icons.picture_as_pdf,
+              label: context.t.shareAsPdf,
               onPressed: _sharePdf),
-          IconButton(
-              icon: const Icon(Icons.print),
-              tooltip: context.t.print,
-              onPressed: _printCard),
+          PageAction(
+              icon: Icons.print, label: context.t.print, onPressed: _printCard),
         ],
       ),
       body: SingleChildScrollView(

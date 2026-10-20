@@ -36,11 +36,10 @@ void main() {
 
     await tester.pumpWidget(CatlogApp(store: store));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(PopupMenuButton<String>));
-    await tester.pumpAndSettle();
-    expect(find.text('Conflicts (1)'), findsOneWidget);
+    // The action is on the bar while there is something to settle.
+    expect(find.byTooltip('Conflicts (1)'), findsOneWidget);
 
-    await tester.tap(find.text('Conflicts (1)'));
+    await tester.tap(find.byTooltip('Conflicts (1)'));
     await tester.pumpAndSettle();
     expect(find.text('Conflicts to resolve'), findsOneWidget);
     expect(find.textContaining('Miezi'), findsOneWidget);
@@ -51,11 +50,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(store.conflicts(), isEmpty);
     expect(store.current(cat, 'f:color'), 'grey');
-    // The last one settled closes the page; the menu item is gone.
+    // The last one settled closes the page; the action is gone.
     expect(find.text('Conflicts to resolve'), findsNothing);
-    await tester.tap(find.byType(PopupMenuButton<String>));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('Conflicts'), findsNothing);
+    expect(find.byTooltip('Conflicts (1)'), findsNothing);
   });
 
   testWidgets('two entries with the same value: nothing to pick', (

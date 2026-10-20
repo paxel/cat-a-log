@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../layout.dart';
 import '../cover_picture.dart';
-import '../help.dart';
 import '../hidden.dart';
 import '../image_provider_cache.dart';
 import '../l10n.dart';
@@ -223,18 +222,18 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
         return a.name.toLowerCase().compareTo(b.name.toLowerCase());
       });
     return Scaffold(
-      appBar: roomyAppBar(
+      appBar: pageBar(
         context,
         // In the two-pane layout this list lives in a narrow column.
         narrow: widget.onOpenPage == null ? null : true,
         title: _catalogTitle(context),
+        help: PageHelp('home', store: widget.store),
+        menuSpotlightId: 'home-menu',
+        // In this order as far as the bar has room; the rest in ⋮.
         actions: [
-          HelpButton(store: widget.store, screenId: 'home'),
-          IconButton(
-            icon: Icon(
-                _tableView ? Icons.grid_view : Icons.table_rows_outlined),
-            tooltip:
-                _tableView ? context.t.viewAsTiles : context.t.viewAsTable,
+          PageAction(
+            icon: _tableView ? Icons.grid_view : Icons.table_rows_outlined,
+            label: _tableView ? context.t.viewAsTiles : context.t.viewAsTable,
             onPressed: () {
               widget.store.setLocalSetting(
                   clowderViewKey, _tableView ? 'tiles' : 'table');
@@ -242,9 +241,9 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
               widget.onViewChanged?.call();
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: context.t.searchCats,
+          PageAction(
+            icon: Icons.search,
+            label: context.t.searchCats,
             // Searching is filtering the list of every cat (#87).
             onPressed: () => _open(PanePage(
                 id: 'search',
@@ -254,17 +253,15 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
                     source: (s) => s.visibleCats(),
                     autofocusFilter: true))),
           ),
-          Spotlight(
-            id: 'home-agenda',
-            child: IconButton(
-              icon: const Icon(Icons.alarm),
-              tooltip: context.t.agenda,
-              onPressed: _openAgenda,
-            ),
+          PageAction(
+            spotlightId: 'home-agenda',
+            icon: Icons.alarm,
+            label: context.t.agenda,
+            onPressed: _openAgenda,
           ),
-          IconButton(
-            icon: const Icon(Icons.map_outlined),
-            tooltip: context.t.map,
+          PageAction(
+            icon: Icons.map_outlined,
+            label: context.t.map,
             onPressed: () async {
               await Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => MapScreen(store: widget.store),
@@ -273,77 +270,68 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
               setState(() {});
             },
           ),
-          Spotlight(
-            id: 'home-sync',
-            child: IconButton(
-              icon: const Icon(Icons.sync),
-              tooltip: context.t.sync,
-              onPressed: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => SyncScreen(store: widget.store),
-                ));
-                if (!mounted) return;
-                setState(() {});
-              },
-            ),
-          ),
-          Spotlight(
-            id: 'home-menu',
-            child: PopupMenuButton<String>(
-            onSelected: (v) {
-              if (v == 'duplicates') {
-                _open(PanePage(
-                    id: 'duplicates',
-                    build: (_) => DuplicatesScreen(store: widget.store)));
-              }
-              if (v == 'achievements' && catalogManager != null) {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => AchievementsScreen(
-                      manager: catalogManager!, stores: [widget.store]),
-                ));
-              }
-              if (v == 'settings') _openSettings();
-              if (v == 'conflicts') _openConflicts();
-              if (v == 'hidden') {
-                setState(() => showHidden.value = !showHidden.value);
-              }
-              if (v == 'about') {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => AboutScreen(store: widget.store),
-                ));
-              }
+          PageAction(
+            spotlightId: 'home-sync',
+            icon: Icons.sync,
+            label: context.t.sync,
+            onPressed: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => SyncScreen(store: widget.store),
+              ));
+              if (!mounted) return;
+              setState(() {});
             },
-            itemBuilder: (context) => [
-              // Fields belong to the catalog: they live in its settings;
-              // Add field on the detail pages covers daily use.
-              PopupMenuItem(
-                  value: 'hidden',
-                  child: Text(showHidden.value
-                      ? context.t.stopShowingHidden
-                      : context.t.showHiddenLabel)),
-              PopupMenuItem(
-                  value: 'duplicates',
-                  child: Text(context.t.findDuplicates)),
-              // Only while there is something to settle: a sync raised a
-              // conflict, the arrival page was closed, and the badges
-              // on the cat pages would otherwise be the only trace.
-              if (widget.store.conflicts().isNotEmpty)
-                PopupMenuItem(
-                    value: 'conflicts',
-                    child: Text(context.t
-                        .conflictsMenu(widget.store.conflicts().length))),
-              // Achievements are a main item: what the chores earned,
-              // reachable without a chore page (Patrick, 2026-09-14).
-              if (catalogManager != null)
-                PopupMenuItem(
-                    value: 'achievements',
-                    child: Text(context.t.achievementsTitle)),
-              PopupMenuItem(
-                  value: 'settings', child: Text(context.t.settings)),
-              PopupMenuItem(
-                  value: 'about', child: Text(context.t.aboutAndFeedback)),
-            ],
           ),
+          // Fields belong to the catalog: they live in its settings;
+          // Add field on the detail pages covers daily use.
+          PageAction(
+            icon: showHidden.value
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined,
+            label: showHidden.value
+                ? context.t.stopShowingHidden
+                : context.t.showHiddenLabel,
+            onPressed: () =>
+                setState(() => showHidden.value = !showHidden.value),
+          ),
+          PageAction(
+            icon: Icons.copy_all_outlined,
+            label: context.t.findDuplicates,
+            onPressed: () => _open(PanePage(
+                id: 'duplicates',
+                build: (_) => DuplicatesScreen(store: widget.store))),
+          ),
+          // Only while there is something to settle: a sync raised a
+          // conflict, the arrival page was closed, and the badges
+          // on the cat pages would otherwise be the only trace.
+          if (widget.store.conflicts().isNotEmpty)
+            PageAction(
+              icon: Icons.warning_amber_outlined,
+              label: context.t.conflictsMenu(widget.store.conflicts().length),
+              onPressed: _openConflicts,
+            ),
+          // Achievements are a main item: what the chores earned,
+          // reachable without a chore page (Patrick, 2026-09-14).
+          if (catalogManager case final manager?)
+            PageAction(
+              icon: Icons.emoji_events_outlined,
+              label: context.t.achievementsTitle,
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => AchievementsScreen(
+                    manager: manager, stores: [widget.store]),
+              )),
+            ),
+          PageAction(
+            icon: Icons.settings_outlined,
+            label: context.t.settings,
+            onPressed: _openSettings,
+          ),
+          PageAction(
+            icon: Icons.info_outline,
+            label: context.t.aboutAndFeedback,
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => AboutScreen(store: widget.store),
+            )),
           ),
         ],
       ),

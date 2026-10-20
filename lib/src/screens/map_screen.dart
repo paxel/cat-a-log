@@ -11,7 +11,6 @@ import 'dart:async';
 
 import '../field_editing.dart';
 import '../field_labels.dart';
-import '../help.dart';
 import '../geocode.dart';
 import '../hidden.dart';
 import '../image_provider_cache.dart';
@@ -29,6 +28,7 @@ import 'field_history_screen.dart';
 import 'timeline_screen.dart';
 import '../exclusive.dart';
 import '../pet_mode.dart';
+import '../layout.dart';
 
 /// The map: Strays at their latest position, Clowders as home pins.
 /// Long-press places a Clowder or records a Stray sighting at that spot.
@@ -888,10 +888,11 @@ class _MapScreenState extends State<MapScreen>
         ? 15.0
         : stored?.$2 ?? (all.isEmpty ? 6.0 : 13.0);
     return Scaffold(
-      appBar: AppBar(
+      appBar: pageBar(
+        context,
         title: Text(context.t.map),
         // All map controls live in the toolbar below the map.
-        actions: [HelpButton(store: store, screenId: 'map')],
+        help: PageHelp('map', store: store),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(56),
           child: Spotlight(

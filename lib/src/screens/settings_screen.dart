@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../celebration.dart';
 import '../event_toasts.dart';
-import '../help.dart';
 import '../l10n.dart';
 import '../fur_background.dart';
 import '../achievements.dart';
@@ -16,6 +15,7 @@ import '../chores/chore_reminders.dart';
 import '../sounds.dart';
 import 'achievements_screen.dart';
 import 'backups_screen.dart';
+import '../layout.dart';
 
 /// The settings that belong to the app, not to a catalog: language,
 /// units, celebrations, event toasts and the two replays. One flat
@@ -113,10 +113,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.settings),
-        actions: [HelpButton(store: widget.store, screenId: 'settings')],
-      ),
+      appBar: pageBar(context, title: Text(t.settings), help: PageHelp('settings', store: widget.store)),
       body: ListView(
         children: [
           ListTile(

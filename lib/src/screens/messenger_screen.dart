@@ -5,12 +5,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../help.dart';
 import '../import_summary.dart';
 import '../l10n.dart';
 import '../notes.dart';
 import '../share.dart';
 import '../private_temp.dart';
+import '../layout.dart';
 
 /// "Messenger": the whole catalog as one .catsync file through WhatsApp,
 /// Signal, mail — anything that moves files.
@@ -71,10 +71,7 @@ class _MessengerScreenState extends State<MessengerScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.syncChooserMessenger),
-        actions: [HelpButton(store: widget.store, screenId: 'messenger')],
-      ),
+      appBar: pageBar(context, title: Text(t.syncChooserMessenger), help: PageHelp('messenger', store: widget.store)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

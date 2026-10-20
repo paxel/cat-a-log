@@ -4,11 +4,11 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../exclusive.dart';
-import '../help.dart';
 import '../l10n.dart';
 import '../notes.dart';
 import '../share.dart';
 import '../private_temp.dart';
+import '../layout.dart';
 
 /// Human-readable byte size, kept short: 12 MB, not 12,345,678 bytes.
 String formatBytes(int bytes) {
@@ -134,9 +134,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     final usage = store.storageUsage();
     final candidates = _candidates();
     return Scaffold(
-      appBar: AppBar(title: Text(t.archiveTitle), actions: [
-        HelpButton(store: store, screenId: 'archive'),
-      ]),
+      appBar: pageBar(context, title: Text(t.archiveTitle), help: PageHelp('archive', store: store)),
       body: ListView(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),

@@ -46,27 +46,6 @@ final Map<String, HelpText> helpTexts = {
   'achievements': (t) => t.helpAchievements,
 };
 
-/// The "?" for an app bar. Shows nothing when the screen has no help
-/// text — better absent than empty.
-class HelpButton extends StatelessWidget {
-  /// Null on pages that stand outside a catalog (restore, scan,
-  /// achievements): help shows, the tips button does not.
-  final CatalogStore? store;
-  final String screenId;
-
-  const HelpButton({super.key, this.store, required this.screenId});
-
-  @override
-  Widget build(BuildContext context) {
-    if (!helpTexts.containsKey(screenId)) return const SizedBox.shrink();
-    return IconButton(
-      icon: const Icon(Icons.help_outline),
-      tooltip: context.t.helpTitle,
-      onPressed: () => showHelp(context, store, screenId),
-    );
-  }
-}
-
 /// Opens the help page for a screen.
 Future<void> showHelp(
   BuildContext context,
@@ -93,7 +72,7 @@ class HelpScreen extends StatelessWidget {
     final text = helpTexts[screenId]!;
     final hasTips = store != null && spotlightManifest.containsKey(screenId);
     return Scaffold(
-      appBar: roomyAppBar(context, title: Text(t.helpTitle)),
+      appBar: pageBar(context, title: Text(t.helpTitle)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [

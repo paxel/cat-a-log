@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n.dart';
 import 'dart:ui' as ui;
+import '../layout.dart';
 
 enum PhotoEditMode { crop, mark }
 
@@ -115,28 +116,28 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: AppBar(
+      appBar: pageBar(
+        context,
         title: Text(
             widget.mode == PhotoEditMode.crop ? t.cropTitle : t.markTitle),
         actions: [
           if (widget.allowSkip)
-            TextButton(
+            PageAction.labelled(
+              label: t.useFullPhoto,
               onPressed: () => Navigator.of(context)
                   .pop(widget.selectOnly ? (crop: null) : widget.bytes),
-              child: Text(t.useFullPhoto),
             ),
           // A labeled button, not a bare checkmark: next to "Use full
           // photo" an icon didn't tell testers it applies the rectangle.
-          TextButton(
-            onPressed: _busy || _selection == null ? null : _apply,
-            child: _busy
+          PageAction.labelled(
+            label: widget.mode == PhotoEditMode.crop ? t.applyCrop : t.save,
+            busy: _busy
                 ? const SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2))
-                : Text(widget.mode == PhotoEditMode.crop
-                    ? t.applyCrop
-                    : t.save),
+                : null,
+            onPressed: _busy || _selection == null ? null : _apply,
           ),
         ],
       ),

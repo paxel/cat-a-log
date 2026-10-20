@@ -11,6 +11,7 @@ import '../reminders/plan_entity.dart';
 import '../widgets/date_entry.dart';
 import 'chore_history_screen.dart';
 import 'chore_reminders.dart';
+import '../layout.dart';
 
 /// Making or editing a chore (1.2.0): a title, whose it is, how often,
 /// at what time of day, and whether the phone should remind. A full
@@ -330,10 +331,12 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
     final locale = Localizations.localeOf(context).toString();
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: pageBar(
+        context,
         title: Text(existing == null ? t.newChore : t.choreEdit),
         actions: [
-          TextButton(onPressed: _canSave ? _save : null, child: Text(t.save)),
+          PageAction.labelled(
+              label: t.save, onPressed: _canSave ? _save : null),
         ],
       ),
       body: ListView(

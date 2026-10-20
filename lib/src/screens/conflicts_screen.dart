@@ -1,10 +1,10 @@
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
-import '../help.dart';
 import '../conflict_choice.dart';
 import '../field_labels.dart';
 import '../l10n.dart';
+import '../layout.dart';
 
 /// Every field in the catalog that two people changed at once and
 /// nobody has settled yet. Reached from the home menu while there is
@@ -36,10 +36,7 @@ class _ConflictsScreenState extends State<ConflictsScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.summaryConflicts),
-        actions: [HelpButton(store: widget.store, screenId: 'conflicts')],
-      ),
+      appBar: pageBar(context, title: Text(t.summaryConflicts), help: PageHelp('conflicts', store: widget.store)),
       body: ListView(
         children: [
           for (final (entity, field) in store.conflicts()) ...[

@@ -2,10 +2,10 @@ import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../help.dart';
 import '../achievements.dart';
 import '../l10n.dart';
 import '../widgets/cat_ear.dart';
+import '../layout.dart';
 
 /// The keeper's achievements: what was earned, and only that — full
 /// stretches with their count, one title per chore at its rank, the
@@ -76,10 +76,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     final coats = unlockedCoats(months);
     final nothing = stretches.isEmpty && titled.isEmpty && coats.isEmpty;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.achievementsTitle),
-        actions: [HelpButton(screenId: 'achievements')],
-      ),
+      appBar: pageBar(context, title: Text(t.achievementsTitle), help: PageHelp('achievements')),
       body: ListView(
         children: [
           if (nothing)

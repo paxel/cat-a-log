@@ -8,6 +8,7 @@ import '../l10n.dart';
 import '../widgets/cat_avatar.dart';
 import 'cat_detail_screen.dart';
 import 'clowder_detail_screen.dart';
+import '../layout.dart';
 
 /// What stands on one spot of the map, behind a merged pin: a row per
 /// thing in the pin's order, a tap opens it, the map icon goes back to
@@ -70,7 +71,7 @@ class MapSpotScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: AppBar(title: Text(spot.label)),
+      appBar: pageBar(context, title: Text(spot.label)),
       body: ListView(
         children: [
           for (final pin in spot.pins)
