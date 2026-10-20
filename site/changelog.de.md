@@ -1,6 +1,11 @@
-# Ältere Änderungen
+# Änderungen auf Deutsch
 
-Die deutschen Änderungsnotizen älterer Versionen von cat(a)log, ab 2.0.0; die aktuelle Version steht in [CHANGELOG.de.md](CHANGELOG.de.md). Versionen vor 2.0.0 gibt es nur auf Englisch in [OLDER_CHANGES.md](OLDER_CHANGES.md).
+Die deutschen Änderungsnotizen zu cat(a)log, Abschnitt für Abschnitt wie `CHANGELOG.md` und `OLDER_CHANGES.md` im Wurzelverzeichnis, in einer Datei: die aktuelle Version oben ohne Datum, die veröffentlichten darunter mit dem Datum ihres Tags, ab 2.0.0. Die Seite "Was ist neu" der Dokumentation wird daraus gebaut; eine englische Version ohne deutschen Abschnitt lässt den Bau fehlschlagen. Versionen vor 2.0.0 gibt es nur auf Englisch.
+
+## [2.4.1]
+
+### Neu
+- Die Dokumentation unter <https://paxel.github.io/cat-a-log/>: jeder Bildschirm des Telefons und jede Ansicht des Schreibtischs auf einer eigenen Seite, die Abläufe Schritt für Schritt mit einem Bild pro Schritt, das Glossar, die Dateiformate, jedes Feld, und was zu tun ist, wenn etwas nicht stimmt, auf Englisch und Deutsch. Die Seite beschreibt die veröffentlichte App, wird mit jeder Version aktualisiert und behält jede frühere Version unter dem Versionsmenü in ihrer Kopfzeile.
 
 ## [2.4.0] - 2026-10-20
 

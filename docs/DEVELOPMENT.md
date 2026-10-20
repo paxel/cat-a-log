@@ -66,7 +66,8 @@ diff, so a frame never shows an older app than the tag.
 
 The glossary page is built from `CONTEXT.md` and `site/glossary.de.md`,
 the fields page from the starter set in the Dart core, and What's new
-from `CHANGELOG.md`, `CHANGELOG.de.md` and their `OLDER_CHANGES` files.
+from `CHANGELOG.md` and `OLDER_CHANGES.md` at the root and the German
+`site/changelog.de.md`.
 A new term, a new starter field or a changelog section without its German
 twin fails the build. The privacy policy lives in the site
 (`site/en/reference/privacy-policy.html`, served at the root path the
@@ -81,10 +82,11 @@ the data.
 
 ## Releases
 
-Every changelog entry is written twice: in `CHANGELOG.md` and in
-`CHANGELOG.de.md`, same section, same order. A version bump moves the
-released section of both to `OLDER_CHANGES.md` and `OLDER_CHANGES.de.md`
-with the tag's date.
+Every changelog entry is written twice: in `CHANGELOG.md` at the root
+and in `site/changelog.de.md`, same section, same order. The German file
+holds every version in one place, the current one on top; a version bump
+moves the English section to `OLDER_CHANGES.md` and only dates the
+German one.
 
 Tag-driven, mirroring the dedup-rs pipeline: `git tag v2.0.0 && git push
 --tags` (or the Actions "Run workflow" button with publish ticked) runs the

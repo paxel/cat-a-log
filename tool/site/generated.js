@@ -233,12 +233,18 @@ export function parseChangelog(text, file = "changelog") {
   return sections;
 }
 
-function readChangelog(repoRoot, suffix) {
-  const current = path.join(repoRoot, `CHANGELOG${suffix}.md`);
-  const older = path.join(repoRoot, `OLDER_CHANGES${suffix}.md`);
+/** The English changelog pair at the root; the German one, every section in one file, beside the site's sources. */
+const CHANGELOGS = {
+  en: ["CHANGELOG.md", "OLDER_CHANGES.md"],
+  de: ["site/changelog.de.md"],
+};
+
+function readChangelog(repoRoot, lang) {
   const sections = [];
-  if (fs.existsSync(current)) sections.push(...parseChangelog(fs.readFileSync(current, "utf8"), `CHANGELOG${suffix}.md`));
-  if (fs.existsSync(older)) sections.push(...parseChangelog(fs.readFileSync(older, "utf8"), `OLDER_CHANGES${suffix}.md`));
+  for (const file of CHANGELOGS[lang]) {
+    const full = path.join(repoRoot, file);
+    if (fs.existsSync(full)) sections.push(...parseChangelog(fs.readFileSync(full, "utf8"), file));
+  }
   return sections;
 }
 
@@ -251,13 +257,13 @@ function atLeast(version, floor) {
 }
 
 export function whatsNewPages(repoRoot = REPO_ROOT) {
-  const en = readChangelog(repoRoot, "");
-  const de = readChangelog(repoRoot, ".de");
+  const en = readChangelog(repoRoot, "en");
+  const de = readChangelog(repoRoot, "de");
   const deByVersion = new Map(de.map((s) => [s.version, s]));
   const enByVersion = new Map(en.map((s) => [s.version, s]));
   for (const s of en) {
     if (atLeast(s.version, GERMAN_FROM) && !deByVersion.has(s.version)) {
-      throw new Error(`CHANGELOG.de.md / OLDER_CHANGES.de.md: no German section for [${s.version}]`);
+      throw new Error(`site/changelog.de.md: no German section for [${s.version}]`);
     }
     const twin = deByVersion.get(s.version);
     if (twin && twin.date !== s.date) {
