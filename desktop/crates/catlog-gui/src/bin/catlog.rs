@@ -26,7 +26,11 @@ impl eframe::App for Native {
             self.title = title;
         }
         let size = ui.ctx().viewport_rect().size();
-        self.app.remember_window([size.x, size.y]);
+        let pos = ui
+            .ctx()
+            .input(|i| i.viewport().outer_rect)
+            .map(|r| [r.min.x, r.min.y]);
+        self.app.remember_window([size.x, size.y], pos);
     }
 }
 
@@ -49,14 +53,19 @@ fn main() {
         app.open_bundle_file(std::path::Path::new(&arg));
     }
     app.check_folder();
+    let mut viewport = egui::ViewportBuilder::default()
+        .with_title(catlog_core::APP_NAME)
+        // The app id the launcher entry's StartupWMClass names, so the
+        // taskbar shows the icon on Wayland.
+        .with_app_id(catlog_gui::settings::APP_ID)
+        .with_icon(catlog_gui::icon::window_icon())
+        .with_inner_size(app.window_size());
+    // Where it was left (#112); a Wayland compositor may ignore this.
+    if let Some(pos) = app.window_position() {
+        viewport = viewport.with_position(pos);
+    }
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_title(catlog_core::APP_NAME)
-            // The app id the launcher entry's StartupWMClass names, so the
-            // taskbar shows the icon on Wayland.
-            .with_app_id(catlog_gui::settings::APP_ID)
-            .with_icon(catlog_gui::icon::window_icon())
-            .with_inner_size(app.window_size()),
+        viewport,
         ..Default::default()
     };
     let result = eframe::run_native(

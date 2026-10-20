@@ -636,10 +636,31 @@ impl App {
         self.settings.settings.window.unwrap_or(DEFAULT_WINDOW_SIZE)
     }
 
-    /// Remembers the window size on the way out.
-    pub fn remember_window(&mut self, size: [f32; 2]) {
-        if size[0] > 200.0 && size[1] > 200.0 && self.settings.settings.window != Some(size) {
-            self.settings.settings.window = Some(size);
+    /// Where the window opens, when it was left somewhere.
+    pub fn window_position(&self) -> Option<[f32; 2]> {
+        self.settings.settings.window_pos
+    }
+
+    /// Remembers the window's size and place as they are, so the desk
+    /// looks the way it was left (#112). A tiny size is a glitch, a
+    /// place off the screen's top left a window being dragged or hidden:
+    /// neither is kept.
+    pub fn remember_window(&mut self, size: [f32; 2], pos: Option<[f32; 2]>) {
+        let settings = &mut self.settings.settings;
+        let mut changed = false;
+        if size[0] > 200.0 && size[1] > 200.0 && settings.window != Some(size) {
+            settings.window = Some(size);
+            changed = true;
+        }
+        if let Some(pos) = pos
+            && pos[0] >= 0.0
+            && pos[1] >= 0.0
+            && settings.window_pos != Some(pos)
+        {
+            settings.window_pos = Some(pos);
+            changed = true;
+        }
+        if changed {
             let _ = self.settings.save();
         }
     }
@@ -3544,16 +3565,26 @@ mod tests {
         h.run();
         h.get_by_label_contains(catlog_core::VERSION);
         assert_eq!(h.state().window_size(), DEFAULT_WINDOW_SIZE);
-        h.state_mut().remember_window([10.0, 10.0]);
+        h.state_mut()
+            .remember_window([10.0, 10.0], Some([-8.0, 30.0]));
         assert_eq!(
             h.state().window_size(),
             DEFAULT_WINDOW_SIZE,
             "a tiny size is a glitch"
         );
-        h.state_mut().remember_window([1000.0, 700.0]);
         assert_eq!(
-            SettingsFile::load(dir.path()).settings.window,
-            Some([1000.0, 700.0])
+            h.state().window_position(),
+            None,
+            "a place off the screen is not kept"
+        );
+        h.state_mut()
+            .remember_window([1000.0, 700.0], Some([120.0, 80.0]));
+        let saved = SettingsFile::load(dir.path()).settings;
+        assert_eq!(saved.window, Some([1000.0, 700.0]));
+        assert_eq!(
+            saved.window_pos,
+            Some([120.0, 80.0]),
+            "the place too (#112)"
         );
     }
 

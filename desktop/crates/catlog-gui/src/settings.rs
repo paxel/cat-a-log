@@ -16,6 +16,9 @@ pub struct AppSettings {
     pub locale: Option<String>,
     /// The window's size as it was left, in points.
     pub window: Option<[f32; 2]>,
+    /// Where the window stood when it was left, in points from the
+    /// screen's top left (#112). None opens where the system puts it.
+    pub window_pos: Option<[f32; 2]>,
     /// The list pane's width as it was left.
     pub pane_width: Option<f32>,
     pub intro_seen: bool,
