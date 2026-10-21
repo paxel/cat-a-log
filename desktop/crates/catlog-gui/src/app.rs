@@ -2182,6 +2182,9 @@ impl App {
                 ui.label(format!("{} {}", t.app_title(), catlog_core::VERSION));
                 ui.label(t.about_tagline());
                 ui.add_space(6.0);
+                if ui.link(t.documentation()).clicked() {
+                    links.push(documentation_url(t.locale()));
+                }
                 if ui.link(t.source_code()).clicked() {
                     links.push("https://github.com/paxel/catlog".to_string());
                 }
@@ -3342,6 +3345,13 @@ pub fn new_uuid() -> String {
 /// Where the Catalogs of this device live.
 pub fn catalogs_root(data_dir: &Path) -> PathBuf {
     data_dir.to_path_buf()
+}
+
+/// The documentation site, in the app's language where the site has one
+/// (English and German), English otherwise.
+pub fn documentation_url(locale: &str) -> String {
+    let lang = if locale == "de" { "de" } else { "en" };
+    format!("https://paxel.github.io/cat-a-log/{lang}/")
 }
 
 #[cfg(test)]
@@ -9343,13 +9353,24 @@ mod tests {
         h.get_by_label("About & feedback").click_accesskit();
         h.run();
         assert_eq!(h.state().modal(), Some(Modal::About));
+        h.get_by_label("Documentation").click();
+        h.run();
         h.get_by_label("Source code").click();
         h.run();
         h.get_by_label("Write the developer").click();
         h.run();
         let opened = urls.lock().unwrap().clone();
-        assert_eq!(opened[0], "https://github.com/paxel/catlog");
-        assert!(opened[1].starts_with("mailto:taum@tuta.io"));
+        assert_eq!(opened[0], "https://paxel.github.io/cat-a-log/en/");
+        assert_eq!(opened[1], "https://github.com/paxel/catlog");
+        assert!(opened[2].starts_with("mailto:taum@tuta.io"));
+        assert_eq!(
+            documentation_url("de"),
+            "https://paxel.github.io/cat-a-log/de/"
+        );
+        assert_eq!(
+            documentation_url("fr"),
+            "https://paxel.github.io/cat-a-log/en/"
+        );
         h.get_by_label("Open-source licenses").click();
         h.run();
         h.get_by_label_contains("Noto Sans");
