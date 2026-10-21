@@ -33,6 +33,9 @@ migrate_working_dir/
 **/build/
 **/coverage/
 
+# The documentation site's frames are rendered on the Pages runner (tool/frames.sh)
+site/assets/frames/
+
 # Symbolication related
 app.*.symbols
 

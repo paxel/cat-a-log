@@ -57,7 +57,7 @@ who made it, and you can look at any cat's story like a diary.
 
 | Home | A cat | The desk |
 |---|---|---|
-| ![Home](site/assets/frames/phone/en/home.png) | ![Cat](site/assets/frames/phone/en/cat.png) | ![Desk](site/assets/frames/desk/en/cards.png) |
+| ![Home](https://paxel.github.io/cat-a-log/assets/frames/phone/en/home.png) | ![Cat](https://paxel.github.io/cat-a-log/assets/frames/phone/en/cat.png) | ![Desk](https://paxel.github.io/cat-a-log/assets/frames/desk/en/cards.png) |
 
 Every screen of the phone and every view of the desk, with the flows step
 by step, in English and German: **[the documentation](https://paxel.github.io/cat-a-log/)**.

@@ -2,7 +2,8 @@
 // every page of the Phone and Start tracks and every step of every phone
 // flow, in English and German, written to site/assets/frames/phone/<lang>/.
 // Deterministic: the demo's day is pinned, the fonts are real, the tiles
-// come from disk; CI regenerates them and fails on a diff.
+// come from disk. The frames are not committed; the Pages workflow renders
+// them on the runner through tool/frames.sh.
 //
 // Regenerate with:
 //   flutter test test/screenshots/site_frames_test.dart --run-skipped --concurrency=1

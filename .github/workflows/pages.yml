@@ -3,6 +3,9 @@ name: Pages
 # Builds the documentation site (site/ -> site-dist/) on every push to summer,
 # every pull request and every release tag; deploys it to GitHub Pages only for
 # release tags, so the site always describes the app the stores have (#160).
+# The frames are rendered here, on the runner, never committed (#161, #162):
+# the phone's pages by the Flutter frame generator, the desk's by the kittest
+# harness over the same demo catalog, both from the checked-out tree.
 # Every build assembles every released minor version (the latest patch of
 # each tag that carries a site, under /vX.Y.Z/) plus the working tree at the
 # root, so a release whose docs no longer build fails on summer, not on
@@ -36,6 +39,33 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop
+
+      - name: System dependencies (sqlite3 and pdftoppm for the phone frames, software Vulkan for the desk's)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libsqlite3-dev poppler-utils mesa-vulkan-drivers libvulkan1 pkg-config libasound2-dev
+
+      - name: Fonts the phone generator draws with
+        run: flutter precache
+
+      - name: Render the frames, phone and desk, English and German
+        env:
+          FRAMES_JOBS: 4
+        run: |
+          flutter pub get
+          tool/frames.sh
 
       - name: Build site, every released minor version and the working tree
         run: node tool/site/build-all.js --base "/${{ github.event.repository.name }}/"

@@ -58,11 +58,13 @@ released minor version, the latest patch of each, under `/vX.Y.Z/`, and
 the header's version menu leads between them; an older version's pages
 point at the latest.
 
-The site's frames under `site/assets/frames/` are generated, not drawn:
-`tool/frames.sh` renders the phone's pages and flow steps (Flutter, both
-languages, the clock pinned to the demo's day) and the desk's (the kittest
-harness over the same demo catalog). CI regenerates them and fails on a
-diff, so a frame never shows an older app than the tag.
+The site's frames under `site/assets/frames/` are rendered, not drawn, and
+not committed: `tool/frames.sh` renders the phone's pages and flow steps
+(Flutter, both languages, the clock pinned to the demo's day) and the
+desk's (the kittest harness over the same demo catalog). The Pages
+workflow runs it on the runner before every site build, so a frame never
+shows an older app than the tag; a local site build needs it once, since a
+page whose frame is missing fails the build.
 
 The glossary page is built from `CONTEXT.md` and `site/glossary.de.md`,
 the fields page from the starter set in the Dart core, and What's new

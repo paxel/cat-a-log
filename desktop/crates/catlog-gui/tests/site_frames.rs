@@ -2,12 +2,13 @@
 //! suite: every view and modal of the Desk track and every step of the
 //! desk flows, drawn over the demo catalog in English and German and
 //! written to `site/assets/frames/desk/<lang>/`. The clock stands still
-//! and motion is off, so every run draws the same pictures; CI
-//! regenerates them and fails on a diff. Ignored like the snapshots:
-//! they need a GPU or a software Vulkan such as lavapipe.
+//! and motion is off, so every run draws the same pictures; the frames are
+//! not committed, the Pages workflow renders them on the runner through
+//! `tool/frames.sh`. Ignored like the snapshots: they need a GPU or a
+//! software Vulkan such as lavapipe.
 //!
 //! ```sh
-//! UPDATE_SNAPSHOTS=1 cargo test -p catlog-gui --test site_frames -- --ignored
+//! UPDATE_SNAPSHOTS=force cargo test -p catlog-gui --test site_frames -- --ignored
 //! ```
 
 use std::path::PathBuf;
