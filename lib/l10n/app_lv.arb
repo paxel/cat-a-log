@@ -148,6 +148,7 @@
   "aboutTagline": "Vietējs katalogs aprūpes kaķiem. Jūsu dati paliek jūsu ierīcēs — bez servera, bez konta.",
   "aboutTaglineNeutral": "Vietējs katalogs mājdzīvniekiem, par kuriem rūpējies. Jūsu dati paliek jūsu ierīcēs — bez servera, bez konta.",
   "versionLabel": "Versija {version} ({build})",
+  "documentation": "Dokumentācija",
   "sourceCode": "Pirmkods",
   "reportProblemOrIdea": "Ziņot par problēmu vai ideju",
   "githubIssues": "GitHub Issues",

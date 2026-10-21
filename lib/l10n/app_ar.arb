@@ -148,6 +148,7 @@
   "aboutTagline": "فهرس محلي لقطط الرعاية المؤقتة. بياناتك تبقى على أجهزتك — لا خادم ولا حساب.",
   "aboutTaglineNeutral": "فهرس محلي للحيوانات الأليفة التي ترعاها. بياناتك تبقى على أجهزتك — لا خادم ولا حساب.",
   "versionLabel": "الإصدار {version} ({build})",
+  "documentation": "التوثيق",
   "sourceCode": "الكود المصدري",
   "reportProblemOrIdea": "الإبلاغ عن مشكلة أو فكرة",
   "githubIssues": "GitHub Issues",

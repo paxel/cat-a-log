@@ -805,6 +805,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get documentation => '文档';
+
+  @override
   String get sourceCode => '源代码';
 
   @override

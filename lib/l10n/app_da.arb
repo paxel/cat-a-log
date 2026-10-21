@@ -148,6 +148,7 @@
   "aboutTagline": "Et lokalt katalog over plejekatte. Dine data bliver på dine enheder — ingen server, ingen konto.",
   "aboutTaglineNeutral": "Et lokalt katalog over de kæledyr, du passer. Dine data bliver på dine enheder — ingen server, ingen konto.",
   "versionLabel": "Version {version} ({build})",
+  "documentation": "Dokumentation",
   "sourceCode": "Kildekode",
   "reportProblemOrIdea": "Meld et problem eller en idé",
   "githubIssues": "GitHub Issues",

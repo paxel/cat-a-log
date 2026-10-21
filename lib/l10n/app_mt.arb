@@ -148,6 +148,7 @@
   "aboutTagline": "Katalgu lokali għal qtates f'fostering. Id-data tiegħek tibqa' fuq l-apparati tiegħek — l-ebda server, l-ebda kont.",
   "aboutTaglineNeutral": "Katalgu lokali għall-annimali domestiċi li tieħu ħsieb. Id-data tiegħek tibqa' fuq l-apparati tiegħek — l-ebda server, l-ebda kont.",
   "versionLabel": "Verżjoni {version} ({build})",
+  "documentation": "Dokumentazzjoni",
   "sourceCode": "Kodiċi sors",
   "reportProblemOrIdea": "Irrapporta problema jew idea",
   "githubIssues": "GitHub Issues",

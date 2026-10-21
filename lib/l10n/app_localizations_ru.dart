@@ -831,6 +831,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Документация';
+
+  @override
   String get sourceCode => 'Исходный код';
 
   @override

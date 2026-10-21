@@ -828,6 +828,9 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentacja';
+
+  @override
   String get sourceCode => 'Kod źródłowy';
 
   @override

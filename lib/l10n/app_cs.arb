@@ -148,6 +148,7 @@
   "aboutTagline": "Lokální katalog koček v dočasné péči. Vaše data zůstávají na vašich zařízeních — žádný server, žádný účet.",
   "aboutTaglineNeutral": "Lokální katalog mazlíčků, o které se staráte. Vaše data zůstávají na vašich zařízeních — žádný server, žádný účet.",
   "versionLabel": "Verze {version} ({build})",
+  "documentation": "Dokumentace",
   "sourceCode": "Zdrojový kód",
   "reportProblemOrIdea": "Nahlásit problém nebo nápad",
   "githubIssues": "GitHub Issues",

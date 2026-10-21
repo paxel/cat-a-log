@@ -238,6 +238,7 @@
   "aboutTagline": "Ein lokaler Katalog für Pflegekatzen. Deine Daten bleiben auf deinen Geräten — kein Server, kein Konto.",
   "aboutTaglineNeutral": "Ein lokaler Katalog für die Tiere, um die du dich kümmerst. Deine Daten bleiben auf deinen Geräten — kein Server, kein Konto.",
   "versionLabel": "Version {version} ({build})",
+  "documentation": "Dokumentation",
   "sourceCode": "Quellcode",
   "reportProblemOrIdea": "Problem oder Idee melden",
   "githubIssues": "GitHub Issues",

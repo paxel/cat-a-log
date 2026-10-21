@@ -541,6 +541,7 @@
       }
     }
   },
+  "documentation": "Documentation",
   "sourceCode": "Source code",
   "reportProblemOrIdea": "Report a problem or idea",
   "githubIssues": "GitHub issues",

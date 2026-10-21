@@ -830,6 +830,9 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Documentație';
+
+  @override
   String get sourceCode => 'Cod sursă';
 
   @override

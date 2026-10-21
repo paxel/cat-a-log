@@ -148,6 +148,7 @@
   "aboutTagline": "קטלוג מקומי לחתולי אומנה. הנתונים נשארים על המכשירים שלכם — בלי שרת, בלי חשבון.",
   "aboutTaglineNeutral": "קטלוג מקומי לחיות המחמד שאתם מטפלים בהן. הנתונים נשארים על המכשירים שלכם — בלי שרת, בלי חשבון.",
   "versionLabel": "גרסה {version} ({build})",
+  "documentation": "תיעוד",
   "sourceCode": "קוד מקור",
   "reportProblemOrIdea": "דיווח על בעיה או רעיון",
   "githubIssues": "GitHub Issues",

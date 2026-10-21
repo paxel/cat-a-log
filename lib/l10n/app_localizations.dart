@@ -1598,6 +1598,12 @@ abstract class AppLocalizations {
   /// **'Version {version} ({build})'**
   String versionLabel(String version, String build);
 
+  /// No description provided for @documentation.
+  ///
+  /// In en, this message translates to:
+  /// **'Documentation'**
+  String get documentation;
+
   /// No description provided for @sourceCode.
   ///
   /// In en, this message translates to:

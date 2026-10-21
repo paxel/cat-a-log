@@ -148,6 +148,7 @@
   "aboutTagline": "En lokal katalog for fosterkatter. Dataene dine blir på enhetene dine — ingen server, ingen konto.",
   "aboutTaglineNeutral": "En lokal katalog for kjæledyrene du tar deg av. Dataene dine blir på enhetene dine — ingen server, ingen konto.",
   "versionLabel": "Versjon {version} ({build})",
+  "documentation": "Dokumentasjon",
   "sourceCode": "Kildekode",
   "reportProblemOrIdea": "Meld et problem eller en idé",
   "githubIssues": "GitHub Issues",

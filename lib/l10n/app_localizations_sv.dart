@@ -830,6 +830,9 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentation';
+
+  @override
   String get sourceCode => 'Källkod';
 
   @override

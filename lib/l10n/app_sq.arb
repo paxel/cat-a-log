@@ -148,6 +148,7 @@
   "aboutTagline": "Katalog lokal për macet në kujdestari. Të dhënat tuaja mbeten në pajisjet tuaja — pa server, pa llogari.",
   "aboutTaglineNeutral": "Katalog lokal për kafshët shtëpiake që kujdesesh. Të dhënat tuaja mbeten në pajisjet tuaja — pa server, pa llogari.",
   "versionLabel": "Versioni {version} ({build})",
+  "documentation": "Dokumentacioni",
   "sourceCode": "Kodi burimor",
   "reportProblemOrIdea": "Raporto problem ose ide",
   "githubIssues": "GitHub Issues",

@@ -828,6 +828,9 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Belgeler';
+
+  @override
   String get sourceCode => 'Kaynak kodu';
 
   @override

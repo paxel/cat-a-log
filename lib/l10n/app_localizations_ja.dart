@@ -819,6 +819,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'ドキュメント';
+
+  @override
   String get sourceCode => 'ソースコード';
 
   @override

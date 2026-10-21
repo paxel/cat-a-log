@@ -829,6 +829,9 @@ class AppLocalizationsSk extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentácia';
+
+  @override
   String get sourceCode => 'Zdrojový kód';
 
   @override

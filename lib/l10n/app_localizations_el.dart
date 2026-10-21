@@ -835,6 +835,9 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Τεκμηρίωση';
+
+  @override
   String get sourceCode => 'Πηγαίος κώδικας';
 
   @override

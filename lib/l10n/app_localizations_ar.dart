@@ -828,6 +828,9 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'التوثيق';
+
+  @override
   String get sourceCode => 'الكود المصدري';
 
   @override

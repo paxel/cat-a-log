@@ -829,6 +829,9 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentáció';
+
+  @override
   String get sourceCode => 'Forráskód';
 
   @override

@@ -831,6 +831,9 @@ class AppLocalizationsDa extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentation';
+
+  @override
   String get sourceCode => 'Kildekode';
 
   @override

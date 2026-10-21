@@ -148,6 +148,7 @@
   "aboutTagline": "本地优先的寄养猫目录。数据只留在你的设备上——没有服务器，没有账号。",
   "aboutTaglineNeutral": "本地优先的宠物目录，记录你照顾的动物。数据只留在你的设备上——没有服务器，没有账号。",
   "versionLabel": "版本 {version}（{build}）",
+  "documentation": "文档",
   "sourceCode": "源代码",
   "reportProblemOrIdea": "反馈问题或想法",
   "githubIssues": "GitHub Issues",

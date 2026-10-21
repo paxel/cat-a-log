@@ -148,6 +148,7 @@
   "aboutTagline": "Helyi katalógus ideiglenesen befogadott macskákhoz. Adataid az eszközeiden maradnak — se szerver, se fiók.",
   "aboutTaglineNeutral": "Helyi katalógus a gondozott kisállataidhoz. Adataid az eszközeiden maradnak — se szerver, se fiók.",
   "versionLabel": "Verzió: {version} ({build})",
+  "documentation": "Dokumentáció",
   "sourceCode": "Forráskód",
   "reportProblemOrIdea": "Hiba vagy ötlet bejelentése",
   "githubIssues": "GitHub Issues",

@@ -833,6 +833,9 @@ class AppLocalizationsMk extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Документација';
+
+  @override
   String get sourceCode => 'Изворен код';
 
   @override

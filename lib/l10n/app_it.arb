@@ -148,6 +148,7 @@
   "aboutTagline": "Un catalogo locale per gatti in affido. I tuoi dati restano sui tuoi dispositivi — niente server, niente account.",
   "aboutTaglineNeutral": "Un catalogo locale per gli animali di cui ti prendi cura. I tuoi dati restano sui tuoi dispositivi — niente server, niente account.",
   "versionLabel": "Versione {version} ({build})",
+  "documentation": "Documentazione",
   "sourceCode": "Codice sorgente",
   "reportProblemOrIdea": "Segnala un problema o un'idea",
   "githubIssues": "Issue su GitHub",

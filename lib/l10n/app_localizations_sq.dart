@@ -831,6 +831,9 @@ class AppLocalizationsSq extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentacioni';
+
+  @override
   String get sourceCode => 'Kodi burimor';
 
   @override

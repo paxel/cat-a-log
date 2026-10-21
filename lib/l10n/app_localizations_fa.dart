@@ -828,6 +828,9 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'مستندات';
+
+  @override
   String get sourceCode => 'کد منبع';
 
   @override

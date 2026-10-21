@@ -13,6 +13,11 @@ const _repoUrl = 'https://github.com/paxel/catlog';
 const _issuesUrl = '$_repoUrl/issues';
 const _feedbackMail = 'taum@tuta.io';
 
+/// The documentation site, in the app's language where the site has one
+/// (English and German), English otherwise.
+String documentationUrl(String languageCode) =>
+    'https://paxel.github.io/cat-a-log/${languageCode == 'de' ? 'de' : 'en'}/';
+
 /// Where "buy me a coffee" points. Swap for your Ko-fi / Liberapay /
 /// BuyMeACoffee page once it exists. Hidden on iOS: Apple requires
 /// In-App Purchase for developer tips there (App Store rule 3.1.1).
@@ -68,6 +73,16 @@ class _AboutScreenState extends State<AboutScreen> {
           ),
         ),
         const SizedBox(height: 16),
+        Builder(builder: (context) {
+          final url =
+              documentationUrl(Localizations.localeOf(context).languageCode);
+          return ListTile(
+            leading: const Icon(Icons.menu_book_outlined),
+            title: Text(t.documentation),
+            subtitle: Text(url),
+            onTap: () => _open(url),
+          );
+        }),
         ListTile(
           leading: const Icon(Icons.code),
           title: Text(t.sourceCode),

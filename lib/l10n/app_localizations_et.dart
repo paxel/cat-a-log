@@ -829,6 +829,9 @@ class AppLocalizationsEt extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentatsioon';
+
+  @override
   String get sourceCode => 'Lähtekood';
 
   @override

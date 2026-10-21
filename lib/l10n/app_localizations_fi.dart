@@ -830,6 +830,9 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentaatio';
+
+  @override
   String get sourceCode => 'Lähdekoodi';
 
   @override

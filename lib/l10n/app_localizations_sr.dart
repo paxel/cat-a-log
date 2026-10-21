@@ -829,6 +829,9 @@ class AppLocalizationsSr extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Документација';
+
+  @override
   String get sourceCode => 'Изворни код';
 
   @override

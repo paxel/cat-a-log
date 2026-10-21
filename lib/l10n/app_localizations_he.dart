@@ -827,6 +827,9 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'תיעוד';
+
+  @override
   String get sourceCode => 'קוד מקור';
 
   @override

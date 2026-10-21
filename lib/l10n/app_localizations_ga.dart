@@ -833,6 +833,9 @@ class AppLocalizationsGa extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Doiciméadú';
+
+  @override
   String get sourceCode => 'Cód foinse';
 
   @override

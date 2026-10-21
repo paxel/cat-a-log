@@ -148,6 +148,7 @@
   "aboutTagline": "Staðbundin skrá yfir fósturketti. Gögnin þín verða áfram á tækjunum þínum — enginn þjónn, enginn aðgangur.",
   "aboutTaglineNeutral": "Staðbundin skrá yfir gæludýrin sem þú annast. Gögnin þín verða áfram á tækjunum þínum — enginn þjónn, enginn aðgangur.",
   "versionLabel": "Útgáfa {version} ({build})",
+  "documentation": "Leiðbeiningar",
   "sourceCode": "Frumkóði",
   "reportProblemOrIdea": "Tilkynna vandamál eða hugmynd",
   "githubIssues": "GitHub Issues",

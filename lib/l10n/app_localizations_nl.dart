@@ -832,6 +832,9 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Documentatie';
+
+  @override
   String get sourceCode => 'Broncode';
 
   @override

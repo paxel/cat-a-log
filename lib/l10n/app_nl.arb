@@ -148,6 +148,7 @@
   "aboutTagline": "Een lokale catalogus voor opvangkatten. Je gegevens blijven op je apparaten — geen server, geen account.",
   "aboutTaglineNeutral": "Een lokale catalogus voor de huisdieren waar je voor zorgt. Je gegevens blijven op je apparaten — geen server, geen account.",
   "versionLabel": "Versie {version} ({build})",
+  "documentation": "Documentatie",
   "sourceCode": "Broncode",
   "reportProblemOrIdea": "Probleem of idee melden",
   "githubIssues": "GitHub-issues",

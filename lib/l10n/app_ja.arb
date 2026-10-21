@@ -148,6 +148,7 @@
   "aboutTagline": "保護猫のためのローカルカタログ。データは端末に留まります — サーバーもアカウントも不要。",
   "aboutTaglineNeutral": "お世話しているペットのためのローカルカタログ。データは端末に留まります — サーバーもアカウントも不要。",
   "versionLabel": "バージョン {version} ({build})",
+  "documentation": "ドキュメント",
   "sourceCode": "ソースコード",
   "reportProblemOrIdea": "問題やアイデアを報告",
   "githubIssues": "GitHub Issues",

@@ -148,6 +148,7 @@
   "aboutTagline": "Lokalni katalog za mačke na udomljavanju. Vaši podaci ostaju na vašim uređajima — bez servera, bez naloga.",
   "aboutTaglineNeutral": "Lokalni katalog za ljubimce o kojima brinete. Vaši podaci ostaju na vašim uređajima — bez servera, bez naloga.",
   "versionLabel": "Verzija {version} ({build})",
+  "documentation": "Dokumentacija",
   "sourceCode": "Izvorni kod",
   "reportProblemOrIdea": "Prijavi problem ili ideju",
   "githubIssues": "GitHub Issues",

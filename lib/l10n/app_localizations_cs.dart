@@ -829,6 +829,9 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentace';
+
+  @override
   String get sourceCode => 'Zdrojový kód';
 
   @override

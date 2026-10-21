@@ -68,6 +68,18 @@ void main() {
       expect(find.text('Authors & bans'), findsNothing);
     });
 
+    testWidgets('links the documentation in the app language', (tester) async {
+      await pump(
+        tester,
+        AboutScreen(store: store),
+        size: const Size(500, 2000),
+      );
+      expect(find.text('Documentation'), findsOneWidget);
+      expect(find.text('https://paxel.github.io/cat-a-log/en/'), findsOneWidget);
+      expect(documentationUrl('de'), 'https://paxel.github.io/cat-a-log/de/');
+      expect(documentationUrl('fr'), 'https://paxel.github.io/cat-a-log/en/');
+    });
+
     testWidgets('the red button thanks you, and says so nowhere else', (
       tester,
     ) async {

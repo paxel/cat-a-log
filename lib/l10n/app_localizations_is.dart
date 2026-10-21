@@ -831,6 +831,9 @@ class AppLocalizationsIs extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Leiðbeiningar';
+
+  @override
   String get sourceCode => 'Frumkóði';
 
   @override

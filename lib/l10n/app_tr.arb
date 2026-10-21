@@ -148,6 +148,7 @@
   "aboutTagline": "Bakıma alınan kediler için yerel bir katalog. Verileriniz cihazlarınızda kalır — sunucu yok, hesap yok.",
   "aboutTaglineNeutral": "Baktığınız evcil hayvanlar için yerel bir katalog. Verileriniz cihazlarınızda kalır — sunucu yok, hesap yok.",
   "versionLabel": "Sürüm {version} ({build})",
+  "documentation": "Belgeler",
   "sourceCode": "Kaynak kodu",
   "reportProblemOrIdea": "Sorun veya fikir bildir",
   "githubIssues": "GitHub Issues",

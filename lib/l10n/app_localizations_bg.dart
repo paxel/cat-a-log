@@ -830,6 +830,9 @@ class AppLocalizationsBg extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Документация';
+
+  @override
   String get sourceCode => 'Изходен код';
 
   @override

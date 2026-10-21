@@ -148,6 +148,7 @@
   "aboutTagline": "Lokalny katalog kotów tymczasowych. Twoje dane zostają na Twoich urządzeniach — bez serwera, bez konta.",
   "aboutTaglineNeutral": "Lokalny katalog zwierząt, którymi się opiekujesz. Twoje dane zostają na Twoich urządzeniach — bez serwera, bez konta.",
   "versionLabel": "Wersja {version} ({build})",
+  "documentation": "Dokumentacja",
   "sourceCode": "Kod źródłowy",
   "reportProblemOrIdea": "Zgłoś problem lub pomysł",
   "githubIssues": "Issues na GitHubie",

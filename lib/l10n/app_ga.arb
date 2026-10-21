@@ -148,6 +148,7 @@
   "aboutTagline": "Catalóg áitiúil do chait altrama. Fanann do shonraí ar do ghléasanna — gan freastalaí, gan chuntas.",
   "aboutTaglineNeutral": "Catalóg áitiúil do na peataí a dtugann tú aire dóibh. Fanann do shonraí ar do ghléasanna — gan freastalaí, gan chuntas.",
   "versionLabel": "Leagan {version} ({build})",
+  "documentation": "Doiciméadú",
   "sourceCode": "Cód foinse",
   "reportProblemOrIdea": "Tuairiscigh fadhb nó smaoineamh",
   "githubIssues": "GitHub Issues",

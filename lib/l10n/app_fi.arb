@@ -148,6 +148,7 @@
   "aboutTagline": "Paikallinen luettelo sijaiskissoille. Tietosi pysyvät laitteillasi — ei palvelinta, ei tiliä.",
   "aboutTaglineNeutral": "Paikallinen luettelo lemmikeille, joista huolehdit. Tietosi pysyvät laitteillasi — ei palvelinta, ei tiliä.",
   "versionLabel": "Versio {version} ({build})",
+  "documentation": "Dokumentaatio",
   "sourceCode": "Lähdekoodi",
   "reportProblemOrIdea": "Ilmoita ongelmasta tai ideasta",
   "githubIssues": "GitHub Issues",

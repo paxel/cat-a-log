@@ -830,6 +830,9 @@ class AppLocalizationsMt extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentazzjoni';
+
+  @override
   String get sourceCode => 'Kodiċi sors';
 
   @override

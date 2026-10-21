@@ -148,6 +148,7 @@
   "aboutTagline": "Lokalni katalog za mačke v oskrbi. Vaši podatki ostanejo na vaših napravah — brez strežnika, brez računa.",
   "aboutTaglineNeutral": "Lokalni katalog za ljubljenčke, za katere skrbite. Vaši podatki ostanejo na vaših napravah — brez strežnika, brez računa.",
   "versionLabel": "Različica {version} ({build})",
+  "documentation": "Dokumentacija",
   "sourceCode": "Izvorna koda",
   "reportProblemOrIdea": "Prijavi težavo ali zamisel",
   "githubIssues": "GitHub Issues",

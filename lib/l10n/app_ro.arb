@@ -148,6 +148,7 @@
   "aboutTagline": "Un catalog local pentru pisici în plasament. Datele tale rămân pe dispozitivele tale — fără server, fără cont.",
   "aboutTaglineNeutral": "Un catalog local pentru animalele de care ai grijă. Datele tale rămân pe dispozitivele tale — fără server, fără cont.",
   "versionLabel": "Versiunea {version} ({build})",
+  "documentation": "Documentație",
   "sourceCode": "Cod sursă",
   "reportProblemOrIdea": "Raportează o problemă sau o idee",
   "githubIssues": "GitHub Issues",

@@ -148,6 +148,7 @@
   "aboutTagline": "Lokálny katalóg mačiek v dočasnej starostlivosti. Vaše dáta zostávajú na vašich zariadeniach — žiadny server, žiadny účet.",
   "aboutTaglineNeutral": "Lokálny katalóg miláčikov, o ktorých sa staráte. Vaše dáta zostávajú na vašich zariadeniach — žiadny server, žiadny účet.",
   "versionLabel": "Verzia {version} ({build})",
+  "documentation": "Dokumentácia",
   "sourceCode": "Zdrojový kód",
   "reportProblemOrIdea": "Nahlásiť problém alebo nápad",
   "githubIssues": "GitHub Issues",

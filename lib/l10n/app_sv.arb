@@ -148,6 +148,7 @@
   "aboutTagline": "En lokal katalog för jourhemskatter. Dina data stannar på dina enheter — ingen server, inget konto.",
   "aboutTaglineNeutral": "En lokal katalog för husdjuren du tar hand om. Dina data stannar på dina enheter — ingen server, inget konto.",
   "versionLabel": "Version {version} ({build})",
+  "documentation": "Dokumentation",
   "sourceCode": "Källkod",
   "reportProblemOrIdea": "Rapportera problem eller idé",
   "githubIssues": "GitHub Issues",

@@ -148,6 +148,7 @@
   "aboutTagline": "Un catalogue local pour chats en famille d'accueil. Tes données restent sur tes appareils — pas de serveur, pas de compte.",
   "aboutTaglineNeutral": "Un catalogue local pour les animaux dont tu t'occupes. Tes données restent sur tes appareils — pas de serveur, pas de compte.",
   "versionLabel": "Version {version} ({build})",
+  "documentation": "Documentation",
   "sourceCode": "Code source",
   "reportProblemOrIdea": "Signaler un problème ou une idée",
   "githubIssues": "Tickets GitHub",

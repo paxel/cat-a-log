@@ -830,6 +830,9 @@ class AppLocalizationsNo extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentasjon';
+
+  @override
   String get sourceCode => 'Kildekode';
 
   @override

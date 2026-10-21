@@ -868,6 +868,9 @@ class ModeLocalizations implements AppLocalizations {
   String get displayQr => base.displayQr;
 
   @override
+  String get documentation => base.documentation;
+
+  @override
   String get doneLabel => base.doneLabel;
 
   @override

@@ -148,6 +148,7 @@
   "aboutTagline": "Vietinis globojamų kačių katalogas. Jūsų duomenys lieka jūsų įrenginiuose — be serverio, be paskyros.",
   "aboutTaglineNeutral": "Vietinis augintinių, kuriais rūpiniesi, katalogas. Jūsų duomenys lieka jūsų įrenginiuose — be serverio, be paskyros.",
   "versionLabel": "Versija {version} ({build})",
+  "documentation": "Dokumentacija",
   "sourceCode": "Šaltinio kodas",
   "reportProblemOrIdea": "Pranešti apie problemą ar idėją",
   "githubIssues": "GitHub Issues",

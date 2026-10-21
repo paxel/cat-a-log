@@ -831,6 +831,9 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Документація';
+
+  @override
   String get sourceCode => 'Вихідний код';
 
   @override

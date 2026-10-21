@@ -831,6 +831,9 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Documentação';
+
+  @override
   String get sourceCode => 'Código-fonte';
 
   @override

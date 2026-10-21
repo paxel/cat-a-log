@@ -830,6 +830,9 @@ class AppLocalizationsLv extends AppLocalizations {
   }
 
   @override
+  String get documentation => 'Dokumentācija';
+
+  @override
   String get sourceCode => 'Pirmkods';
 
   @override

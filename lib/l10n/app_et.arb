@@ -148,6 +148,7 @@
   "aboutTagline": "Kohalik kataloog hoiukodukassidele. Sinu andmed jäävad sinu seadmetesse — ilma serverita, ilma kontota.",
   "aboutTaglineNeutral": "Kohalik kataloog lemmikloomadele, kelle eest hoolitsed. Sinu andmed jäävad sinu seadmetesse — ilma serverita, ilma kontota.",
   "versionLabel": "Versioon {version} ({build})",
+  "documentation": "Dokumentatsioon",
   "sourceCode": "Lähtekood",
   "reportProblemOrIdea": "Teata probleemist või ideest",
   "githubIssues": "GitHub Issues",
