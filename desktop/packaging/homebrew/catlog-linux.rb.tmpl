@@ -47,15 +47,15 @@ class Catlog < Formula
 
   # Homebrew's own share directory is not on a desktop session's XDG_DATA_DIRS, so the
   # entry above alone stays invisible to menus: the app could not be started at all.
-  # Homebrew on Linux runs this step outside a sandbox, so the launcher entry, the icons
-  # and the file type go into ~/.local/share here, which every session reads. Homebrew
-  # scrubs the environment first, so a custom XDG_DATA_HOME is not seen here; the
-  # caveat names the helper for that case. A home that cannot be written (a container,
-  # a bottle build) must not fail the install over a menu entry.
-  def post_install
-    system libexec/"install-icon.sh"
-  rescue ErrorDuringExecution
-    opoo "The launcher entry could not be installed; run catlog-install-icon yourself."
+  # This step puts the launcher entry, the icons and the file type into ~/.local/share,
+  # which every session reads. Declared steps replace the post_install method since
+  # Homebrew 7.0 (the method stops loading on 2027-12-11). Homebrew scrubs the
+  # environment first, so a custom XDG_DATA_HOME is not seen here; the caveat names the
+  # helper for that case. A home that cannot be written (a container, a bottle build, a
+  # post-install sandbox) must not fail the install over a menu entry: the desk writes
+  # the same entry itself on its first start.
+  post_install_steps do
+    run "install-icon.sh", base: :libexec, must_succeed: false
   end
 
   def caveats
