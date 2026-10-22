@@ -2,6 +2,11 @@
 
 Historical release notes for cat(a)log. The current version lives in [CHANGELOG.md](CHANGELOG.md).
 
+## [2.4.1] - 2026-10-20
+
+### Added
+- The documentation at <https://paxel.github.io/cat-a-log/>: every screen of the phone and every view of the desk on a page of its own, the flows step by step with a frame per step, the glossary, the file formats, every field, and what to do when something is wrong, in English and German. The site describes the released app, is updated with every release, and keeps every earlier version under the version menu in its header.
+
 ## [2.4.0] - 2026-10-20
 
 ### Added
