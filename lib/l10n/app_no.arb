@@ -1250,5 +1250,19 @@
   "sharedFolder": "Delt mappe",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ikke nå",
-  "changesCount": "{n, plural, one{1 endring} other{{n} endringer}}"
+  "changesCount": "{n, plural, one{1 endring} other{{n} endringer}}",
+  "playToys": "Lek",
+  "playIntro": "Legg enheten flatt foran katten din og start en leke. Løft enheten for å stoppe.",
+  "playIntroNeutral": "Legg enheten flatt foran kjæledyret ditt og start en leke. Løft enheten for å stoppe.",
+  "toyLaserDot": "Laserprikk",
+  "toyLaserDotHint": "En rød prikk som farer av sted og venter.",
+  "toyMouse": "Mus",
+  "toyMouseHint": "En mus som løper langs kantene og gjemmer seg.",
+  "toySounds": "Lekelyder",
+  "toyHoldToStop": "Hold for å stoppe",
+  "toyLastGame": "Siste lek: {catches} på {minutes}",
+  "toyCatches": "{n, plural, =0{ingen fangster} one{1 fangst} other{{n} fangster}}",
+  "toyMinutes": "{n, plural, =0{under ett minutt} one{1 minutt} other{{n} minutter}}",
+  "helpPlay": "Leker for katten din, uten reklame. En leke fyller skjermen og holder den på; hver pote som fanger den, teller. Å løfte enheten avslutter leken, og det gjør også å holde låsen i hjørnet i tre sekunder. Tilbake og sveip gjør ingenting mens den går.",
+  "helpPlayNeutral": "Leker for kjæledyret ditt, uten reklame. En leke fyller skjermen og holder den på; hver pote som fanger den, teller. Å løfte enheten avslutter leken, og det gjør også å holde låsen i hjørnet i tre sekunder. Tilbake og sveip gjør ingenting mens den går."
 }

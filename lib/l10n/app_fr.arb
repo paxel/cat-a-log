@@ -1250,5 +1250,19 @@
   "sharedFolder": "Dossier partagé",
   "pinLabel": "PIN : {pin}",
   "syncDismiss": "Pas maintenant",
-  "changesCount": "{n, plural, one{1 changement} other{{n} changements}}"
+  "changesCount": "{n, plural, one{1 changement} other{{n} changements}}",
+  "playToys": "Jouer",
+  "playIntro": "Pose l'appareil à plat devant ton chat et lance un jouet. Soulève l'appareil pour l'arrêter.",
+  "playIntroNeutral": "Pose l'appareil à plat devant ton animal et lance un jouet. Soulève l'appareil pour l'arrêter.",
+  "toyLaserDot": "Point laser",
+  "toyLaserDotHint": "Un point rouge qui file et attend.",
+  "toyMouse": "Souris",
+  "toyMouseHint": "Une souris qui court le long des bords et se cache.",
+  "toySounds": "Sons des jouets",
+  "toyHoldToStop": "Maintenir pour arrêter",
+  "toyLastGame": "Dernière partie : {catches} en {minutes}",
+  "toyCatches": "{n, plural, =0{aucune prise} one{1 prise} other{{n} prises}}",
+  "toyMinutes": "{n, plural, =0{moins d'une minute} one{1 minute} other{{n} minutes}}",
+  "helpPlay": "Des jouets pour ton chat, sans publicité. Un jouet remplit l'écran et le garde allumé ; chaque patte qui l'attrape compte. Soulever l'appareil termine la partie, tout comme maintenir le cadenas dans le coin pendant trois secondes. Retour et balayages ne font rien pendant le jeu.",
+  "helpPlayNeutral": "Des jouets pour ton animal, sans publicité. Un jouet remplit l'écran et le garde allumé ; chaque patte qui l'attrape compte. Soulever l'appareil termine la partie, tout comme maintenir le cadenas dans le coin pendant trois secondes. Retour et balayages ne font rien pendant le jeu."
 }

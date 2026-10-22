@@ -3738,4 +3738,71 @@ class AppLocalizationsFr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Jouer';
+
+  @override
+  String get playIntro =>
+      'Pose l\'appareil à plat devant ton chat et lance un jouet. Soulève l\'appareil pour l\'arrêter.';
+
+  @override
+  String get playIntroNeutral =>
+      'Pose l\'appareil à plat devant ton animal et lance un jouet. Soulève l\'appareil pour l\'arrêter.';
+
+  @override
+  String get toyLaserDot => 'Point laser';
+
+  @override
+  String get toyLaserDotHint => 'Un point rouge qui file et attend.';
+
+  @override
+  String get toyMouse => 'Souris';
+
+  @override
+  String get toyMouseHint =>
+      'Une souris qui court le long des bords et se cache.';
+
+  @override
+  String get toySounds => 'Sons des jouets';
+
+  @override
+  String get toyHoldToStop => 'Maintenir pour arrêter';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Dernière partie : $catches en $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n prises',
+      one: '1 prise',
+      zero: 'aucune prise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minutes',
+      one: '1 minute',
+      zero: 'moins d\'une minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Des jouets pour ton chat, sans publicité. Un jouet remplit l\'écran et le garde allumé ; chaque patte qui l\'attrape compte. Soulever l\'appareil termine la partie, tout comme maintenir le cadenas dans le coin pendant trois secondes. Retour et balayages ne font rien pendant le jeu.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Des jouets pour ton animal, sans publicité. Un jouet remplit l\'écran et le garde allumé ; chaque patte qui l\'attrape compte. Soulever l\'appareil termine la partie, tout comme maintenir le cadenas dans le coin pendant trois secondes. Retour et balayages ne font rien pendant le jeu.';
 }

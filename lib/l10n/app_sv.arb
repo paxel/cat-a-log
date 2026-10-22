@@ -1250,5 +1250,19 @@
   "sharedFolder": "Delad mapp",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Inte nu",
-  "changesCount": "{n, plural, one{1 ändring} other{{n} ändringar}}"
+  "changesCount": "{n, plural, one{1 ändring} other{{n} ändringar}}",
+  "playToys": "Lek",
+  "playIntro": "Lägg enheten platt framför din katt och starta en leksak. Lyft enheten för att stoppa.",
+  "playIntroNeutral": "Lägg enheten platt framför ditt husdjur och starta en leksak. Lyft enheten för att stoppa.",
+  "toyLaserDot": "Laserprick",
+  "toyLaserDotHint": "En röd prick som far iväg och väntar.",
+  "toyMouse": "Mus",
+  "toyMouseHint": "En mus som springer längs kanterna och gömmer sig.",
+  "toySounds": "Leksaksljud",
+  "toyHoldToStop": "Håll för att stoppa",
+  "toyLastGame": "Senaste leken: {catches} på {minutes}",
+  "toyCatches": "{n, plural, =0{inga fångster} one{1 fångst} other{{n} fångster}}",
+  "toyMinutes": "{n, plural, =0{under en minut} one{1 minut} other{{n} minuter}}",
+  "helpPlay": "Leksaker för din katt, utan reklam. En leksak fyller skärmen och håller den tänd; varje tass som fångar den räknas. Att lyfta enheten avslutar leken, liksom att hålla låset i hörnet i tre sekunder. Bakåt och svep gör ingenting medan den pågår.",
+  "helpPlayNeutral": "Leksaker för ditt husdjur, utan reklam. En leksak fyller skärmen och håller den tänd; varje tass som fångar den räknas. Att lyfta enheten avslutar leken, liksom att hålla låset i hörnet i tre sekunder. Bakåt och svep gör ingenting medan den pågår."
 }

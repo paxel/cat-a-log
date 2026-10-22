@@ -3728,4 +3728,70 @@ class AppLocalizationsFi extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Leiki';
+
+  @override
+  String get playIntro =>
+      'Aseta laite tasaisesti kissasi eteen ja käynnistä lelu. Nosta laite lopettaaksesi.';
+
+  @override
+  String get playIntroNeutral =>
+      'Aseta laite tasaisesti lemmikkisi eteen ja käynnistä lelu. Nosta laite lopettaaksesi.';
+
+  @override
+  String get toyLaserDot => 'Laserpiste';
+
+  @override
+  String get toyLaserDotHint => 'Punainen piste, joka syöksähtää ja odottaa.';
+
+  @override
+  String get toyMouse => 'Hiiri';
+
+  @override
+  String get toyMouseHint => 'Hiiri, joka juoksee reunoja pitkin ja piiloutuu.';
+
+  @override
+  String get toySounds => 'Lelujen äänet';
+
+  @override
+  String get toyHoldToStop => 'Pidä painettuna lopettaaksesi';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Viimeisin peli: $catches, $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n saalista',
+      one: '1 saalis',
+      zero: 'ei saaliita',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minuuttia',
+      one: '1 minuutti',
+      zero: 'alle minuutti',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Leluja kissallesi ilman mainoksia. Lelu täyttää näytön ja pitää sen päällä; jokainen tassu, joka sen nappaa, lasketaan. Laitteen nostaminen lopettaa pelin, samoin kulman lukon painaminen kolmen sekunnin ajan. Takaisin ja pyyhkäisyt eivät tee mitään pelin aikana.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Leluja lemmikillesi ilman mainoksia. Lelu täyttää näytön ja pitää sen päällä; jokainen tassu, joka sen nappaa, lasketaan. Laitteen nostaminen lopettaa pelin, samoin kulman lukon painaminen kolmen sekunnin ajan. Takaisin ja pyyhkäisyt eivät tee mitään pelin aikana.';
 }

@@ -1250,5 +1250,19 @@
   "sharedFolder": "Gedeelde map",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Niet nu",
-  "changesCount": "{n, plural, one{1 wijziging} other{{n} wijzigingen}}"
+  "changesCount": "{n, plural, one{1 wijziging} other{{n} wijzigingen}}",
+  "playToys": "Spelen",
+  "playIntro": "Leg het apparaat plat voor je kat en start een speeltje. Til het apparaat op om te stoppen.",
+  "playIntroNeutral": "Leg het apparaat plat voor je huisdier en start een speeltje. Til het apparaat op om te stoppen.",
+  "toyLaserDot": "Laserstip",
+  "toyLaserDotHint": "Een rode stip die wegschiet en wacht.",
+  "toyMouse": "Muis",
+  "toyMouseHint": "Een muis die langs de randen rent en zich verstopt.",
+  "toySounds": "Speeltjesgeluiden",
+  "toyHoldToStop": "Vasthouden om te stoppen",
+  "toyLastGame": "Laatste spel: {catches} in {minutes}",
+  "toyCatches": "{n, plural, =0{geen vangst} one{1 vangst} other{{n} vangsten}}",
+  "toyMinutes": "{n, plural, =0{minder dan een minuut} one{1 minuut} other{{n} minuten}}",
+  "helpPlay": "Speeltjes voor je kat, zonder reclame. Een speeltje vult het scherm en houdt het aan; elke poot die het vangt telt. Het apparaat optillen beëindigt het spel, net als het slot in de hoek drie seconden vasthouden. Terug en vegen doen niets zolang het loopt.",
+  "helpPlayNeutral": "Speeltjes voor je huisdier, zonder reclame. Een speeltje vult het scherm en houdt het aan; elke poot die het vangt telt. Het apparaat optillen beëindigt het spel, net als het slot in de hoek drie seconden vasthouden. Terug en vegen doen niets zolang het loopt."
 }

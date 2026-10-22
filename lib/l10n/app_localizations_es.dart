@@ -3738,4 +3738,70 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Jugar';
+
+  @override
+  String get playIntro =>
+      'Deja el dispositivo plano delante de tu gato e inicia un juguete. Levanta el dispositivo para pararlo.';
+
+  @override
+  String get playIntroNeutral =>
+      'Deja el dispositivo plano delante de tu mascota e inicia un juguete. Levanta el dispositivo para pararlo.';
+
+  @override
+  String get toyLaserDot => 'Punto láser';
+
+  @override
+  String get toyLaserDotHint => 'Un punto rojo que sale disparado y espera.';
+
+  @override
+  String get toyMouse => 'Ratón';
+
+  @override
+  String get toyMouseHint => 'Un ratón que corre por los bordes y se esconde.';
+
+  @override
+  String get toySounds => 'Sonidos de los juguetes';
+
+  @override
+  String get toyHoldToStop => 'Mantén pulsado para parar';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Última partida: $catches en $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n capturas',
+      one: '1 captura',
+      zero: 'ninguna captura',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minutos',
+      one: '1 minuto',
+      zero: 'menos de un minuto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Juguetes para tu gato, sin anuncios. Un juguete llena la pantalla y la mantiene encendida; cuenta cada pata que lo atrapa. Levantar el dispositivo termina la partida, y también mantener pulsado el candado de la esquina tres segundos. Atrás y los deslizamientos no hacen nada mientras juega.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Juguetes para tu mascota, sin anuncios. Un juguete llena la pantalla y la mantiene encendida; cuenta cada pata que lo atrapa. Levantar el dispositivo termina la partida, y también mantener pulsado el candado de la esquina tres segundos. Atrás y los deslizamientos no hacen nada mientras juega.';
 }

@@ -1250,5 +1250,19 @@
   "sharedFolder": "Pasta partilhada",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Agora não",
-  "changesCount": "{n, plural, one{1 alteração} other{{n} alterações}}"
+  "changesCount": "{n, plural, one{1 alteração} other{{n} alterações}}",
+  "playToys": "Brincar",
+  "playIntro": "Pousa o dispositivo plano à frente do teu gato e inicia um brinquedo. Levanta o dispositivo para o parar.",
+  "playIntroNeutral": "Pousa o dispositivo plano à frente do teu animal e inicia um brinquedo. Levanta o dispositivo para o parar.",
+  "toyLaserDot": "Ponto laser",
+  "toyLaserDotHint": "Um ponto vermelho que dispara e espera.",
+  "toyMouse": "Rato",
+  "toyMouseHint": "Um rato que corre pelas margens e se esconde.",
+  "toySounds": "Sons dos brinquedos",
+  "toyHoldToStop": "Manter premido para parar",
+  "toyLastGame": "Último jogo: {catches} em {minutes}",
+  "toyCatches": "{n, plural, =0{nenhuma captura} one{1 captura} other{{n} capturas}}",
+  "toyMinutes": "{n, plural, =0{menos de um minuto} one{1 minuto} other{{n} minutos}}",
+  "helpPlay": "Brinquedos para o teu gato, sem anúncios. Um brinquedo enche o ecrã e mantém-no ligado; conta cada pata que o apanha. Levantar o dispositivo termina o jogo, tal como manter premido o cadeado no canto durante três segundos. Voltar e deslizar não fazem nada enquanto corre.",
+  "helpPlayNeutral": "Brinquedos para o teu animal, sem anúncios. Um brinquedo enche o ecrã e mantém-no ligado; conta cada pata que o apanha. Levantar o dispositivo termina o jogo, tal como manter premido o cadeado no canto durante três segundos. Voltar e deslizar não fazem nada enquanto corre."
 }

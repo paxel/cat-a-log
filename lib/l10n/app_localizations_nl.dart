@@ -3731,4 +3731,71 @@ class AppLocalizationsNl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Spelen';
+
+  @override
+  String get playIntro =>
+      'Leg het apparaat plat voor je kat en start een speeltje. Til het apparaat op om te stoppen.';
+
+  @override
+  String get playIntroNeutral =>
+      'Leg het apparaat plat voor je huisdier en start een speeltje. Til het apparaat op om te stoppen.';
+
+  @override
+  String get toyLaserDot => 'Laserstip';
+
+  @override
+  String get toyLaserDotHint => 'Een rode stip die wegschiet en wacht.';
+
+  @override
+  String get toyMouse => 'Muis';
+
+  @override
+  String get toyMouseHint =>
+      'Een muis die langs de randen rent en zich verstopt.';
+
+  @override
+  String get toySounds => 'Speeltjesgeluiden';
+
+  @override
+  String get toyHoldToStop => 'Vasthouden om te stoppen';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Laatste spel: $catches in $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n vangsten',
+      one: '1 vangst',
+      zero: 'geen vangst',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minuten',
+      one: '1 minuut',
+      zero: 'minder dan een minuut',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Speeltjes voor je kat, zonder reclame. Een speeltje vult het scherm en houdt het aan; elke poot die het vangt telt. Het apparaat optillen beëindigt het spel, net als het slot in de hoek drie seconden vasthouden. Terug en vegen doen niets zolang het loopt.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Speeltjes voor je huisdier, zonder reclame. Een speeltje vult het scherm en houdt het aan; elke poot die het vangt telt. Het apparaat optillen beëindigt het spel, net als het slot in de hoek drie seconden vasthouden. Terug en vegen doen niets zolang het loopt.';
 }

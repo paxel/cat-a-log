@@ -3789,4 +3789,77 @@ class AppLocalizationsGa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Súgradh';
+
+  @override
+  String get playIntro =>
+      'Leag an gléas cothrom os comhair do chait agus tosaigh bréagán. Ardaigh an gléas chun é a stopadh.';
+
+  @override
+  String get playIntroNeutral =>
+      'Leag an gléas cothrom os comhair do pheata agus tosaigh bréagán. Ardaigh an gléas chun é a stopadh.';
+
+  @override
+  String get toyLaserDot => 'Ponc léasair';
+
+  @override
+  String get toyLaserDotHint => 'Ponc dearg a sciorrann agus a fhanann.';
+
+  @override
+  String get toyMouse => 'Luch';
+
+  @override
+  String get toyMouseHint =>
+      'Luch a ritheann feadh na n-imeall agus a théann i bhfolach.';
+
+  @override
+  String get toySounds => 'Fuaimeanna bréagán';
+
+  @override
+  String get toyHoldToStop => 'Coinnigh síos chun stopadh';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'An cluiche deireanach: $catches i $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n gabháil',
+      many: '$n ngabháil',
+      few: '$n ghabháil',
+      two: '$n ghabháil',
+      one: '1 ghabháil',
+      zero: 'gan aon ghabháil',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n nóiméad',
+      many: '$n nóiméad',
+      few: '$n nóiméad',
+      two: '$n nóiméad',
+      one: '1 nóiméad',
+      zero: 'níos lú ná nóiméad',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Bréagáin do do chat, gan fógraí. Líonann bréagán an scáileán agus coinníonn sé ar siúl é; comhairtear gach lapa a bheireann air. Cuireann ardú an ghléis deireadh leis an gcluiche, agus mar an gcéanna an glas sa chúinne a choinneáil síos ar feadh trí soicind. Ní dhéanann Siar ná svaidhpeanna faic le linn an chluiche.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Bréagáin do do pheata, gan fógraí. Líonann bréagán an scáileán agus coinníonn sé ar siúl é; comhairtear gach lapa a bheireann air. Cuireann ardú an ghléis deireadh leis an gcluiche, agus mar an gcéanna an glas sa chúinne a choinneáil síos ar feadh trí soicind. Ní dhéanann Siar ná svaidhpeanna faic le linn an chluiche.';
 }

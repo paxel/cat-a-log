@@ -1250,5 +1250,19 @@
   "sharedFolder": "Cartella condivisa",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Non ora",
-  "changesCount": "{n, plural, one{1 modifica} other{{n} modifiche}}"
+  "changesCount": "{n, plural, one{1 modifica} other{{n} modifiche}}",
+  "playToys": "Gioca",
+  "playIntro": "Appoggia il dispositivo in piano davanti al tuo gatto e avvia un gioco. Solleva il dispositivo per fermarlo.",
+  "playIntroNeutral": "Appoggia il dispositivo in piano davanti al tuo animale e avvia un gioco. Solleva il dispositivo per fermarlo.",
+  "toyLaserDot": "Punto laser",
+  "toyLaserDotHint": "Un punto rosso che sfreccia e aspetta.",
+  "toyMouse": "Topo",
+  "toyMouseHint": "Un topo che corre lungo i bordi e si nasconde.",
+  "toySounds": "Suoni dei giochi",
+  "toyHoldToStop": "Tieni premuto per fermare",
+  "toyLastGame": "Ultima partita: {catches} in {minutes}",
+  "toyCatches": "{n, plural, =0{nessuna presa} one{1 presa} other{{n} prese}}",
+  "toyMinutes": "{n, plural, =0{meno di un minuto} one{1 minuto} other{{n} minuti}}",
+  "helpPlay": "Giochi per il tuo gatto, senza pubblicità. Un gioco riempie lo schermo e lo tiene acceso; conta ogni zampa che lo prende. Sollevare il dispositivo termina la partita, così come tenere premuto il lucchetto nell'angolo per tre secondi. Indietro e gli scorrimenti non fanno nulla mentre gioca.",
+  "helpPlayNeutral": "Giochi per il tuo animale, senza pubblicità. Un gioco riempie lo schermo e lo tiene acceso; conta ogni zampa che lo prende. Sollevare il dispositivo termina la partita, così come tenere premuto il lucchetto nell'angolo per tre secondi. Indietro e gli scorrimenti non fanno nulla mentre gioca."
 }

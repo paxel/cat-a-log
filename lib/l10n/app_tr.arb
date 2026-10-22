@@ -1250,5 +1250,19 @@
   "sharedFolder": "Ortak klasör",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Şimdi değil",
-  "changesCount": "{n, plural, one{1 değişiklik} other{{n} değişiklik}}"
+  "changesCount": "{n, plural, one{1 değişiklik} other{{n} değişiklik}}",
+  "playToys": "Oyna",
+  "playIntro": "Cihazı kedinin önüne düz bırak ve bir oyuncak başlat. Durdurmak için cihazı kaldır.",
+  "playIntroNeutral": "Cihazı evcil hayvanının önüne düz bırak ve bir oyuncak başlat. Durdurmak için cihazı kaldır.",
+  "toyLaserDot": "Lazer nokta",
+  "toyLaserDotHint": "Fırlayıp bekleyen kırmızı bir nokta.",
+  "toyMouse": "Fare",
+  "toyMouseHint": "Kenarlar boyunca koşup saklanan bir fare.",
+  "toySounds": "Oyuncak sesleri",
+  "toyHoldToStop": "Durdurmak için basılı tut",
+  "toyLastGame": "Son oyun: {minutes} içinde {catches}",
+  "toyCatches": "{n, plural, =0{hiç yakalama yok} one{1 yakalama} other{{n} yakalama}}",
+  "toyMinutes": "{n, plural, =0{bir dakikadan az} one{1 dakika} other{{n} dakika}}",
+  "helpPlay": "Kedin için reklamsız oyuncaklar. Oyuncak ekranı doldurur ve açık tutar; onu yakalayan her pati sayılır. Cihazı kaldırmak oyunu bitirir, köşedeki kilidi üç saniye basılı tutmak da öyle. Oyun sürerken geri ve kaydırmalar hiçbir şey yapmaz.",
+  "helpPlayNeutral": "Evcil hayvanın için reklamsız oyuncaklar. Oyuncak ekranı doldurur ve açık tutar; onu yakalayan her pati sayılır. Cihazı kaldırmak oyunu bitirir, köşedeki kilidi üç saniye basılı tutmak da öyle. Oyun sürerken geri ve kaydırmalar hiçbir şey yapmaz."
 }

@@ -44,6 +44,7 @@ final Map<String, HelpText> helpTexts = {
   'vetReport': (t) => t.helpVetReport,
   'poster': (t) => t.helpPoster,
   'achievements': (t) => t.helpAchievements,
+  'play': (t) => t.helpPlay,
 };
 
 /// Opens the help page for a screen.

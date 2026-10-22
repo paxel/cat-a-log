@@ -1250,5 +1250,19 @@
   "sharedFolder": "Bendras aplankas",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ne dabar",
-  "changesCount": "{n, plural, one{{n} pakeitimas} few{{n} pakeitimai} other{{n} pakeitimų}}"
+  "changesCount": "{n, plural, one{{n} pakeitimas} few{{n} pakeitimai} other{{n} pakeitimų}}",
+  "playToys": "Žaisti",
+  "playIntro": "Padėk įrenginį plokščiai priešais katę ir paleisk žaislą. Pakelk įrenginį, kad sustabdytum.",
+  "playIntroNeutral": "Padėk įrenginį plokščiai priešais augintinį ir paleisk žaislą. Pakelk įrenginį, kad sustabdytum.",
+  "toyLaserDot": "Lazerio taškas",
+  "toyLaserDotHint": "Raudonas taškas, kuris nulekia ir laukia.",
+  "toyMouse": "Pelė",
+  "toyMouseHint": "Pelė, kuri bėga pakraščiais ir slepiasi.",
+  "toySounds": "Žaislų garsai",
+  "toyHoldToStop": "Laikyk, kad sustabdytum",
+  "toyLastGame": "Paskutinis žaidimas: {catches}, {minutes}",
+  "toyCatches": "{n, plural, =0{nė vieno pagavimo} one{{n} pagavimas} few{{n} pagavimai} other{{n} pagavimų}}",
+  "toyMinutes": "{n, plural, =0{mažiau nei minutė} one{{n} minutė} few{{n} minutės} other{{n} minučių}}",
+  "helpPlay": "Žaislai tavo katei, be reklamų. Žaislas užpildo ekraną ir laiko jį įjungtą; skaičiuojama kiekviena letena, kuri jį pagauna. Pakėlus įrenginį žaidimas baigiasi, taip pat tris sekundes palaikius spyną kampe. Atgal ir braukimai žaidžiant nieko nedaro.",
+  "helpPlayNeutral": "Žaislai tavo augintiniui, be reklamų. Žaislas užpildo ekraną ir laiko jį įjungtą; skaičiuojama kiekviena letena, kuri jį pagauna. Pakėlus įrenginį žaidimas baigiasi, taip pat tris sekundes palaikius spyną kampe. Atgal ir braukimai žaidžiant nieko nedaro."
 }

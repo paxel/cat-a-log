@@ -1250,5 +1250,19 @@
   "sharedFolder": "Sameiginleg mappa",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ekki núna",
-  "changesCount": "{n, plural, one{1 breyting} other{{n} breytingar}}"
+  "changesCount": "{n, plural, one{1 breyting} other{{n} breytingar}}",
+  "playToys": "Leika",
+  "playIntro": "Leggðu tækið flatt fyrir framan köttinn þinn og ræstu leikfang. Lyftu tækinu til að stöðva.",
+  "playIntroNeutral": "Leggðu tækið flatt fyrir framan gæludýrið þitt og ræstu leikfang. Lyftu tækinu til að stöðva.",
+  "toyLaserDot": "Leysipunktur",
+  "toyLaserDotHint": "Rauður punktur sem þýtur og bíður.",
+  "toyMouse": "Mús",
+  "toyMouseHint": "Mús sem hleypur meðfram brúnunum og felur sig.",
+  "toySounds": "Hljóð leikfanga",
+  "toyHoldToStop": "Haltu inni til að stöðva",
+  "toyLastGame": "Síðasti leikur: {catches} á {minutes}",
+  "toyCatches": "{n, plural, =0{engin veiði} one{1 veiði} other{{n} veiðar}}",
+  "toyMinutes": "{n, plural, =0{innan við mínúta} one{1 mínúta} other{{n} mínútur}}",
+  "helpPlay": "Leikföng fyrir köttinn þinn, án auglýsinga. Leikfang fyllir skjáinn og heldur honum kveiktum; hver loppa sem nær því telst. Að lyfta tækinu lýkur leiknum, og eins að halda lásnum í horninu inni í þrjár sekúndur. Til baka og strok gera ekkert á meðan.",
+  "helpPlayNeutral": "Leikföng fyrir gæludýrið þitt, án auglýsinga. Leikfang fyllir skjáinn og heldur honum kveiktum; hver loppa sem nær því telst. Að lyfta tækinu lýkur leiknum, og eins að halda lásnum í horninu inni í þrjár sekúndur. Til baka og strok gera ekkert á meðan."
 }

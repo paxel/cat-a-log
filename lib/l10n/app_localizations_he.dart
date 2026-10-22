@@ -3728,4 +3728,72 @@ class AppLocalizationsHe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'משחק';
+
+  @override
+  String get playIntro =>
+      'הנח את המכשיר שטוח מול החתול שלך והפעל צעצוע. הרם את המכשיר כדי לעצור.';
+
+  @override
+  String get playIntroNeutral =>
+      'הנח את המכשיר שטוח מול חיית המחמד שלך והפעל צעצוע. הרם את המכשיר כדי לעצור.';
+
+  @override
+  String get toyLaserDot => 'נקודת לייזר';
+
+  @override
+  String get toyLaserDotHint => 'נקודה אדומה שזינקת ומחכה.';
+
+  @override
+  String get toyMouse => 'עכבר';
+
+  @override
+  String get toyMouseHint => 'עכבר שרץ לאורך הקצוות ומתחבא.';
+
+  @override
+  String get toySounds => 'צלילי צעצועים';
+
+  @override
+  String get toyHoldToStop => 'החזק כדי לעצור';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'משחק אחרון: $catches ב־$minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n תפיסות',
+      two: 'שתי תפיסות',
+      one: 'תפיסה אחת',
+      zero: 'אף תפיסה',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n דקות',
+      two: 'שתי דקות',
+      one: 'דקה אחת',
+      zero: 'פחות מדקה',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'צעצועים לחתול שלך, בלי פרסומות. צעצוע ממלא את המסך ומשאיר אותו דולק; כל כפה שתופסת אותו נספרת. הרמת המכשיר מסיימת את המשחק, וכך גם החזקת המנעול בפינה שלוש שניות. חזרה והחלקות לא עושות דבר בזמן המשחק.';
+
+  @override
+  String get helpPlayNeutral =>
+      'צעצועים לחיית המחמד שלך, בלי פרסומות. צעצוע ממלא את המסך ומשאיר אותו דולק; כל כפה שתופסת אותו נספרת. הרמת המכשיר מסיימת את המשחק, וכך גם החזקת המנעול בפינה שלוש שניות. חזרה והחלקות לא עושות דבר בזמן המשחק.';
 }

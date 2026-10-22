@@ -3741,4 +3741,72 @@ class AppLocalizationsSr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Играј';
+
+  @override
+  String get playIntro =>
+      'Положи уређај равно испред мачке и покрени играчку. Подигни уређај да је зауставиш.';
+
+  @override
+  String get playIntroNeutral =>
+      'Положи уређај равно испред љубимца и покрени играчку. Подигни уређај да је зауставиш.';
+
+  @override
+  String get toyLaserDot => 'Ласерска тачка';
+
+  @override
+  String get toyLaserDotHint => 'Црвена тачка која јурне и чека.';
+
+  @override
+  String get toyMouse => 'Миш';
+
+  @override
+  String get toyMouseHint => 'Миш који трчи уз ивице и крије се.';
+
+  @override
+  String get toySounds => 'Звуци играчака';
+
+  @override
+  String get toyHoldToStop => 'Држи за заустављање';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Последња игра: $catches за $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n улова',
+      few: '$n улова',
+      one: '$n улов',
+      zero: 'ниједан улов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n минута',
+      few: '$n минута',
+      one: '$n минут',
+      zero: 'мање од минута',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Играчке за твоју мачку, без реклама. Играчка испуњава екран и држи га упаљеним; броји се свака шапа која је ухвати. Подизање уређаја завршава игру, као и држање катанца у углу три секунде. Назад и превлачења не раде ништа док траје.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Играчке за твог љубимца, без реклама. Играчка испуњава екран и држи га упаљеним; броји се свака шапа која је ухвати. Подизање уређаја завршава игру, као и држање катанца у углу три секунде. Назад и превлачења не раде ништа док траје.';
 }

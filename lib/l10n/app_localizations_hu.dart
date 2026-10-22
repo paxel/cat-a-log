@@ -3727,4 +3727,70 @@ class AppLocalizationsHu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Játék';
+
+  @override
+  String get playIntro =>
+      'Tedd le a készüléket laposan a macskád elé, és indíts egy játékot. Emeld fel a készüléket a leállításhoz.';
+
+  @override
+  String get playIntroNeutral =>
+      'Tedd le a készüléket laposan a kedvenced elé, és indíts egy játékot. Emeld fel a készüléket a leállításhoz.';
+
+  @override
+  String get toyLaserDot => 'Lézerpont';
+
+  @override
+  String get toyLaserDotHint => 'Egy piros pont, amely elsuhan és vár.';
+
+  @override
+  String get toyMouse => 'Egér';
+
+  @override
+  String get toyMouseHint => 'Egy egér, amely a széleken fut és elbújik.';
+
+  @override
+  String get toySounds => 'Játékhangok';
+
+  @override
+  String get toyHoldToStop => 'Tartsd lenyomva a leállításhoz';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Utolsó játék: $catches, $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fogás',
+      one: '1 fogás',
+      zero: 'nincs fogás',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n perc',
+      one: '1 perc',
+      zero: 'egy percnél kevesebb',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Játékok a macskádnak, reklámok nélkül. A játék kitölti a képernyőt és bekapcsolva tartja; minden mancs számít, amely elkapja. A készülék felemelése befejezi a játékot, ahogy a sarokban lévő lakat három másodperces nyomva tartása is. A Vissza és a húzások játék közben semmit sem csinálnak.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Játékok a kedvencednek, reklámok nélkül. A játék kitölti a képernyőt és bekapcsolva tartja; minden mancs számít, amely elkapja. A készülék felemelése befejezi a játékot, ahogy a sarokban lévő lakat három másodperces nyomva tartása is. A Vissza és a húzások játék közben semmit sem csinálnak.';
 }

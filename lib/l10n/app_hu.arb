@@ -1250,5 +1250,19 @@
   "sharedFolder": "Megosztott mappa",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Most nem",
-  "changesCount": "{n, plural, one{1 változás} other{{n} változás}}"
+  "changesCount": "{n, plural, one{1 változás} other{{n} változás}}",
+  "playToys": "Játék",
+  "playIntro": "Tedd le a készüléket laposan a macskád elé, és indíts egy játékot. Emeld fel a készüléket a leállításhoz.",
+  "playIntroNeutral": "Tedd le a készüléket laposan a kedvenced elé, és indíts egy játékot. Emeld fel a készüléket a leállításhoz.",
+  "toyLaserDot": "Lézerpont",
+  "toyLaserDotHint": "Egy piros pont, amely elsuhan és vár.",
+  "toyMouse": "Egér",
+  "toyMouseHint": "Egy egér, amely a széleken fut és elbújik.",
+  "toySounds": "Játékhangok",
+  "toyHoldToStop": "Tartsd lenyomva a leállításhoz",
+  "toyLastGame": "Utolsó játék: {catches}, {minutes}",
+  "toyCatches": "{n, plural, =0{nincs fogás} one{1 fogás} other{{n} fogás}}",
+  "toyMinutes": "{n, plural, =0{egy percnél kevesebb} one{1 perc} other{{n} perc}}",
+  "helpPlay": "Játékok a macskádnak, reklámok nélkül. A játék kitölti a képernyőt és bekapcsolva tartja; minden mancs számít, amely elkapja. A készülék felemelése befejezi a játékot, ahogy a sarokban lévő lakat három másodperces nyomva tartása is. A Vissza és a húzások játék közben semmit sem csinálnak.",
+  "helpPlayNeutral": "Játékok a kedvencednek, reklámok nélkül. A játék kitölti a képernyőt és bekapcsolva tartja; minden mancs számít, amely elkapja. A készülék felemelése befejezi a játékot, ahogy a sarokban lévő lakat három másodperces nyomva tartása is. A Vissza és a húzások játék közben semmit sem csinálnak."
 }

@@ -3741,4 +3741,72 @@ class AppLocalizationsSk extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Hrať';
+
+  @override
+  String get playIntro =>
+      'Polož zariadenie naplocho pred mačku a spusti hračku. Zdvihni zariadenie, aby si ju zastavil.';
+
+  @override
+  String get playIntroNeutral =>
+      'Polož zariadenie naplocho pred miláčika a spusti hračku. Zdvihni zariadenie, aby si ju zastavil.';
+
+  @override
+  String get toyLaserDot => 'Laserová bodka';
+
+  @override
+  String get toyLaserDotHint => 'Červená bodka, ktorá vystrelí a čaká.';
+
+  @override
+  String get toyMouse => 'Myš';
+
+  @override
+  String get toyMouseHint => 'Myš, ktorá behá popri okrajoch a schováva sa.';
+
+  @override
+  String get toySounds => 'Zvuky hračiek';
+
+  @override
+  String get toyHoldToStop => 'Podrž na zastavenie';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Posledná hra: $catches za $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n úlovkov',
+      few: '$n úlovky',
+      one: '1 úlovok',
+      zero: 'žiadny úlovok',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minút',
+      few: '$n minúty',
+      one: '1 minútu',
+      zero: 'menej ako minútu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Hračky pre tvoju mačku, bez reklám. Hračka vyplní obrazovku a nechá ju svietiť; ráta sa každá labka, ktorá ju chytí. Zdvihnutie zariadenia hru ukončí, rovnako ako podržanie zámku v rohu tri sekundy. Späť a potiahnutia počas hry nerobia nič.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Hračky pre tvojho miláčika, bez reklám. Hračka vyplní obrazovku a nechá ju svietiť; ráta sa každá labka, ktorá ju chytí. Zdvihnutie zariadenia hru ukončí, rovnako ako podržanie zámku v rohu tri sekundy. Späť a potiahnutia počas hry nerobia nič.';
 }

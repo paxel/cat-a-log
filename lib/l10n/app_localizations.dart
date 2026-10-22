@@ -6487,6 +6487,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{n, plural, one{1 change} other{{n} changes}}'**
   String changesCount(int n);
+
+  /// No description provided for @playToys.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get playToys;
+
+  /// No description provided for @playIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Lay the device flat in front of your cat and start a toy. Pick the device up to stop it.'**
+  String get playIntro;
+
+  /// No description provided for @playIntroNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Lay the device flat in front of your pet and start a toy. Pick the device up to stop it.'**
+  String get playIntroNeutral;
+
+  /// No description provided for @toyLaserDot.
+  ///
+  /// In en, this message translates to:
+  /// **'Laser dot'**
+  String get toyLaserDot;
+
+  /// No description provided for @toyLaserDotHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A red dot that darts and waits.'**
+  String get toyLaserDotHint;
+
+  /// No description provided for @toyMouse.
+  ///
+  /// In en, this message translates to:
+  /// **'Mouse'**
+  String get toyMouse;
+
+  /// No description provided for @toyMouseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A mouse that runs along the edges and hides.'**
+  String get toyMouseHint;
+
+  /// No description provided for @toySounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Toy sounds'**
+  String get toySounds;
+
+  /// No description provided for @toyHoldToStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to stop'**
+  String get toyHoldToStop;
+
+  /// No description provided for @toyLastGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Last game: {catches} in {minutes}'**
+  String toyLastGame(String catches, String minutes);
+
+  /// No description provided for @toyCatches.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =0{no catches} one{1 catch} other{{n} catches}}'**
+  String toyCatches(int n);
+
+  /// No description provided for @toyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =0{under a minute} one{1 minute} other{{n} minutes}}'**
+  String toyMinutes(int n);
+
+  /// No description provided for @helpPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Toys for your cat, without ads. A toy fills the screen and keeps it on; every paw that catches it counts. Picking the device up ends the game, and so does holding the lock in the corner for three seconds. Back and swipes do nothing while it runs.'**
+  String get helpPlay;
+
+  /// No description provided for @helpPlayNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Toys for your pet, without ads. A toy fills the screen and keeps it on; every paw that catches it counts. Picking the device up ends the game, and so does holding the lock in the corner for three seconds. Back and swipes do nothing while it runs.'**
+  String get helpPlayNeutral;
 }
 
 class _AppLocalizationsDelegate

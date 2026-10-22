@@ -3771,4 +3771,76 @@ class AppLocalizationsAr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'اللعب';
+
+  @override
+  String get playIntro =>
+      'ضع الجهاز مسطحًا أمام قطتك وابدأ لعبة. ارفع الجهاز لإيقافها.';
+
+  @override
+  String get playIntroNeutral =>
+      'ضع الجهاز مسطحًا أمام حيوانك الأليف وابدأ لعبة. ارفع الجهاز لإيقافها.';
+
+  @override
+  String get toyLaserDot => 'نقطة ليزر';
+
+  @override
+  String get toyLaserDotHint => 'نقطة حمراء تنطلق ثم تنتظر.';
+
+  @override
+  String get toyMouse => 'فأر';
+
+  @override
+  String get toyMouseHint => 'فأر يجري على الحواف ويختبئ.';
+
+  @override
+  String get toySounds => 'أصوات الألعاب';
+
+  @override
+  String get toyHoldToStop => 'اضغط مطولًا للإيقاف';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'آخر لعبة: $catches في $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n إمساك',
+      many: '$n إمساكًا',
+      few: '$n إمساكات',
+      two: 'إمساكان',
+      one: 'إمساك واحد',
+      zero: 'لا إمساك',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n دقيقة',
+      many: '$n دقيقة',
+      few: '$n دقائق',
+      two: 'دقيقتان',
+      one: 'دقيقة واحدة',
+      zero: 'أقل من دقيقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'ألعاب لقطتك بلا إعلانات. تملأ اللعبة الشاشة وتبقيها مضاءة؛ تُحسب كل مخلب يمسكها. رفع الجهاز ينهي اللعبة، وكذلك الضغط على القفل في الزاوية ثلاث ثوانٍ. الرجوع والسحب لا يفعلان شيئًا أثناء اللعب.';
+
+  @override
+  String get helpPlayNeutral =>
+      'ألعاب لحيوانك الأليف بلا إعلانات. تملأ اللعبة الشاشة وتبقيها مضاءة؛ تُحسب كل مخلب يمسكها. رفع الجهاز ينهي اللعبة، وكذلك الضغط على القفل في الزاوية ثلاث ثوانٍ. الرجوع والسحب لا يفعلان شيئًا أثناء اللعب.';
 }

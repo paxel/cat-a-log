@@ -1250,5 +1250,19 @@
   "sharedFolder": "Dijeljena mapa",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ne sada",
-  "changesCount": "{n, plural, one{{n} izmjena} few{{n} izmjene} other{{n} izmjena}}"
+  "changesCount": "{n, plural, one{{n} izmjena} few{{n} izmjene} other{{n} izmjena}}",
+  "playToys": "Igraj",
+  "playIntro": "Položi uređaj ravno ispred mačke i pokreni igračku. Podigni uređaj da je zaustaviš.",
+  "playIntroNeutral": "Položi uređaj ravno ispred ljubimca i pokreni igračku. Podigni uređaj da je zaustaviš.",
+  "toyLaserDot": "Laserska točka",
+  "toyLaserDotHint": "Crvena točka koja jurne i čeka.",
+  "toyMouse": "Miš",
+  "toyMouseHint": "Miš koji trči uz rubove i skriva se.",
+  "toySounds": "Zvukovi igračaka",
+  "toyHoldToStop": "Drži za zaustavljanje",
+  "toyLastGame": "Zadnja igra: {catches} u {minutes}",
+  "toyCatches": "{n, plural, =0{nijedan ulov} one{{n} ulov} few{{n} ulova} other{{n} ulova}}",
+  "toyMinutes": "{n, plural, =0{manje od minute} one{{n} minuti} few{{n} minute} other{{n} minuta}}",
+  "helpPlay": "Igračke za tvoju mačku, bez reklama. Igračka ispunjava zaslon i drži ga upaljenim; broji se svaka šapa koja je uhvati. Podizanje uređaja završava igru, kao i držanje lokota u kutu tri sekunde. Natrag i povlačenja ne rade ništa dok traje.",
+  "helpPlayNeutral": "Igračke za tvog ljubimca, bez reklama. Igračka ispunjava zaslon i drži ga upaljenim; broji se svaka šapa koja je uhvati. Podizanje uređaja završava igru, kao i držanje lokota u kutu tri sekunde. Natrag i povlačenja ne rade ništa dok traje."
 }

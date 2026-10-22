@@ -3737,4 +3737,70 @@ class AppLocalizationsIt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Gioca';
+
+  @override
+  String get playIntro =>
+      'Appoggia il dispositivo in piano davanti al tuo gatto e avvia un gioco. Solleva il dispositivo per fermarlo.';
+
+  @override
+  String get playIntroNeutral =>
+      'Appoggia il dispositivo in piano davanti al tuo animale e avvia un gioco. Solleva il dispositivo per fermarlo.';
+
+  @override
+  String get toyLaserDot => 'Punto laser';
+
+  @override
+  String get toyLaserDotHint => 'Un punto rosso che sfreccia e aspetta.';
+
+  @override
+  String get toyMouse => 'Topo';
+
+  @override
+  String get toyMouseHint => 'Un topo che corre lungo i bordi e si nasconde.';
+
+  @override
+  String get toySounds => 'Suoni dei giochi';
+
+  @override
+  String get toyHoldToStop => 'Tieni premuto per fermare';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Ultima partita: $catches in $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n prese',
+      one: '1 presa',
+      zero: 'nessuna presa',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minuti',
+      one: '1 minuto',
+      zero: 'meno di un minuto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Giochi per il tuo gatto, senza pubblicità. Un gioco riempie lo schermo e lo tiene acceso; conta ogni zampa che lo prende. Sollevare il dispositivo termina la partita, così come tenere premuto il lucchetto nell\'angolo per tre secondi. Indietro e gli scorrimenti non fanno nulla mentre gioca.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Giochi per il tuo animale, senza pubblicità. Un gioco riempie lo schermo e lo tiene acceso; conta ogni zampa che lo prende. Sollevare il dispositivo termina la partita, così come tenere premuto il lucchetto nell\'angolo per tre secondi. Indietro e gli scorrimenti non fanno nulla mentre gioca.';
 }

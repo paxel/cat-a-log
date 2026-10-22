@@ -3753,4 +3753,74 @@ class AppLocalizationsUk extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Грати';
+
+  @override
+  String get playIntro =>
+      'Поклади пристрій рівно перед котом і запусти іграшку. Підніми пристрій, щоб зупинити.';
+
+  @override
+  String get playIntroNeutral =>
+      'Поклади пристрій рівно перед улюбленцем і запусти іграшку. Підніми пристрій, щоб зупинити.';
+
+  @override
+  String get toyLaserDot => 'Лазерна точка';
+
+  @override
+  String get toyLaserDotHint => 'Червона точка, що метається й завмирає.';
+
+  @override
+  String get toyMouse => 'Миша';
+
+  @override
+  String get toyMouseHint => 'Миша, що бігає вздовж країв і ховається.';
+
+  @override
+  String get toySounds => 'Звуки іграшок';
+
+  @override
+  String get toyHoldToStop => 'Утримуй, щоб зупинити';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Остання гра: $catches за $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n ловлі',
+      many: '$n ловель',
+      few: '$n ловлі',
+      one: '$n ловля',
+      zero: 'жодної ловлі',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n хвилини',
+      many: '$n хвилин',
+      few: '$n хвилини',
+      one: '$n хвилину',
+      zero: 'менше хвилини',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Іграшки для твого кота, без реклами. Іграшка заповнює екран і не дає йому згаснути; рахується кожна лапа, що її впіймає. Підняття пристрою закінчує гру, як і утримання замка в куті три секунди. Назад і свайпи під час гри нічого не роблять.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Іграшки для твого улюбленця, без реклами. Іграшка заповнює екран і не дає йому згаснути; рахується кожна лапа, що її впіймає. Підняття пристрою закінчує гру, як і утримання замка в куті три секунди. Назад і свайпи під час гри нічого не роблять.';
 }

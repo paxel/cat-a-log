@@ -2053,5 +2053,22 @@
         "type": "int"
       }
     }
-  }
+  },
+  "playToys": "Play",
+  "playIntro": "Lay the device flat in front of your cat and start a toy. Pick the device up to stop it.",
+  "playIntroNeutral": "Lay the device flat in front of your pet and start a toy. Pick the device up to stop it.",
+  "toyLaserDot": "Laser dot",
+  "toyLaserDotHint": "A red dot that darts and waits.",
+  "toyMouse": "Mouse",
+  "toyMouseHint": "A mouse that runs along the edges and hides.",
+  "toySounds": "Toy sounds",
+  "toyHoldToStop": "Hold to stop",
+  "toyLastGame": "Last game: {catches} in {minutes}",
+  "@toyLastGame": {"placeholders": {"catches": {"type": "String"}, "minutes": {"type": "String"}}},
+  "toyCatches": "{n, plural, =0{no catches} one{1 catch} other{{n} catches}}",
+  "@toyCatches": {"placeholders": {"n": {"type": "int"}}},
+  "toyMinutes": "{n, plural, =0{under a minute} one{1 minute} other{{n} minutes}}",
+  "@toyMinutes": {"placeholders": {"n": {"type": "int"}}},
+  "helpPlay": "Toys for your cat, without ads. A toy fills the screen and keeps it on; every paw that catches it counts. Picking the device up ends the game, and so does holding the lock in the corner for three seconds. Back and swipes do nothing while it runs.",
+  "helpPlayNeutral": "Toys for your pet, without ads. A toy fills the screen and keeps it on; every paw that catches it counts. Picking the device up ends the game, and so does holding the lock in the corner for three seconds. Back and swipes do nothing while it runs."
 }

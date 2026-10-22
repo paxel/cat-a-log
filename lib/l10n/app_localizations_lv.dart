@@ -3745,4 +3745,70 @@ class AppLocalizationsLv extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Spēlēt';
+
+  @override
+  String get playIntro =>
+      'Novieto ierīci līdzeni kaķa priekšā un sāc rotaļlietu. Pacel ierīci, lai apturētu.';
+
+  @override
+  String get playIntroNeutral =>
+      'Novieto ierīci līdzeni mājdzīvnieka priekšā un sāc rotaļlietu. Pacel ierīci, lai apturētu.';
+
+  @override
+  String get toyLaserDot => 'Lāzera punkts';
+
+  @override
+  String get toyLaserDotHint => 'Sarkans punkts, kas aizšaujas un gaida.';
+
+  @override
+  String get toyMouse => 'Pele';
+
+  @override
+  String get toyMouseHint => 'Pele, kas skrien gar malām un paslēpjas.';
+
+  @override
+  String get toySounds => 'Rotaļlietu skaņas';
+
+  @override
+  String get toyHoldToStop => 'Turi, lai apturētu';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Pēdējā spēle: $catches, $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n noķērumi',
+      one: '$n noķērums',
+      zero: 'neviena noķēruma',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minūtes',
+      one: '$n minūte',
+      zero: 'mazāk par minūti',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Rotaļlietas tavam kaķim, bez reklāmām. Rotaļlieta aizpilda ekrānu un tur to ieslēgtu; skaitās katra ķepa, kas to noķer. Ierīces pacelšana beidz spēli, tāpat slēdzenes turēšana stūrī trīs sekundes. Atpakaļ un vilkšana spēles laikā neko nedara.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Rotaļlietas tavam mājdzīvniekam, bez reklāmām. Rotaļlieta aizpilda ekrānu un tur to ieslēgtu; skaitās katra ķepa, kas to noķer. Ierīces pacelšana beidz spēli, tāpat slēdzenes turēšana stūrī trīs sekundes. Atpakaļ un vilkšana spēles laikā neko nedara.';
 }

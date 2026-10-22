@@ -1250,5 +1250,19 @@
   "sharedFolder": "Skupna mapa",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ne zdaj",
-  "changesCount": "{n, plural, one{{n} sprememba} two{{n} spremembi} few{{n} spremembe} other{{n} sprememb}}"
+  "changesCount": "{n, plural, one{{n} sprememba} two{{n} spremembi} few{{n} spremembe} other{{n} sprememb}}",
+  "playToys": "Igraj",
+  "playIntro": "Položi napravo ravno pred mačko in zaženi igračo. Dvigni napravo, da jo ustaviš.",
+  "playIntroNeutral": "Položi napravo ravno pred ljubljenčka in zaženi igračo. Dvigni napravo, da jo ustaviš.",
+  "toyLaserDot": "Laserska pika",
+  "toyLaserDotHint": "Rdeča pika, ki šine in čaka.",
+  "toyMouse": "Miška",
+  "toyMouseHint": "Miška, ki teče ob robovih in se skriva.",
+  "toySounds": "Zvoki igrač",
+  "toyHoldToStop": "Pridrži za ustavitev",
+  "toyLastGame": "Zadnja igra: {catches} v {minutes}",
+  "toyCatches": "{n, plural, =0{noben ulov} one{{n} ulov} two{{n} ulova} few{{n} ulovi} other{{n} ulovov}}",
+  "toyMinutes": "{n, plural, =0{manj kot minuti} one{{n} minuti} two{{n} minutah} few{{n} minutah} other{{n} minutah}}",
+  "helpPlay": "Igrače za tvojo mačko, brez oglasov. Igrača zapolni zaslon in ga drži prižganega; šteje vsaka tačka, ki jo ujame. Dvig naprave konča igro, prav tako tri sekunde držanja ključavnice v kotu. Nazaj in poteg med igro ne naredita ničesar.",
+  "helpPlayNeutral": "Igrače za tvojega ljubljenčka, brez oglasov. Igrača zapolni zaslon in ga drži prižganega; šteje vsaka tačka, ki jo ujame. Dvig naprave konča igro, prav tako tri sekunde držanja ključavnice v kotu. Nazaj in poteg med igro ne naredita ničesar."
 }

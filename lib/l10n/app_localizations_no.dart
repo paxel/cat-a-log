@@ -3724,4 +3724,70 @@ class AppLocalizationsNo extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Lek';
+
+  @override
+  String get playIntro =>
+      'Legg enheten flatt foran katten din og start en leke. Løft enheten for å stoppe.';
+
+  @override
+  String get playIntroNeutral =>
+      'Legg enheten flatt foran kjæledyret ditt og start en leke. Løft enheten for å stoppe.';
+
+  @override
+  String get toyLaserDot => 'Laserprikk';
+
+  @override
+  String get toyLaserDotHint => 'En rød prikk som farer av sted og venter.';
+
+  @override
+  String get toyMouse => 'Mus';
+
+  @override
+  String get toyMouseHint => 'En mus som løper langs kantene og gjemmer seg.';
+
+  @override
+  String get toySounds => 'Lekelyder';
+
+  @override
+  String get toyHoldToStop => 'Hold for å stoppe';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Siste lek: $catches på $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fangster',
+      one: '1 fangst',
+      zero: 'ingen fangster',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minutter',
+      one: '1 minutt',
+      zero: 'under ett minutt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Leker for katten din, uten reklame. En leke fyller skjermen og holder den på; hver pote som fanger den, teller. Å løfte enheten avslutter leken, og det gjør også å holde låsen i hjørnet i tre sekunder. Tilbake og sveip gjør ingenting mens den går.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Leker for kjæledyret ditt, uten reklame. En leke fyller skjermen og holder den på; hver pote som fanger den, teller. Å løfte enheten avslutter leken, og det gjør også å holde låsen i hjørnet i tre sekunder. Tilbake og sveip gjør ingenting mens den går.';
 }

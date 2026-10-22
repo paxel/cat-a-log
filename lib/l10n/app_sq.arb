@@ -1250,5 +1250,19 @@
   "sharedFolder": "Dosje e përbashkët",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Jo tani",
-  "changesCount": "{n, plural, one{1 ndryshim} other{{n} ndryshime}}"
+  "changesCount": "{n, plural, one{1 ndryshim} other{{n} ndryshime}}",
+  "playToys": "Luaj",
+  "playIntro": "Vendose pajisjen të shtrirë para maces dhe nis një lodër. Ngrije pajisjen për ta ndalur.",
+  "playIntroNeutral": "Vendose pajisjen të shtrirë para kafshës dhe nis një lodër. Ngrije pajisjen për ta ndalur.",
+  "toyLaserDot": "Pikë lazeri",
+  "toyLaserDotHint": "Një pikë e kuqe që vërsulet dhe pret.",
+  "toyMouse": "Mi",
+  "toyMouseHint": "Një mi që vrapon përgjatë skajeve dhe fshihet.",
+  "toySounds": "Tingujt e lodrave",
+  "toyHoldToStop": "Mbaje për ta ndalur",
+  "toyLastGame": "Loja e fundit: {catches} në {minutes}",
+  "toyCatches": "{n, plural, =0{asnjë kapje} one{1 kapje} other{{n} kapje}}",
+  "toyMinutes": "{n, plural, =0{më pak se një minutë} one{1 minutë} other{{n} minuta}}",
+  "helpPlay": "Lodra për macen tënde, pa reklama. Lodra mbush ekranin dhe e mban ndezur; numërohet çdo putër që e kap. Ngritja e pajisjes e mbyll lojën, po ashtu mbajtja e drynit në cep për tre sekonda. Prapa dhe rrëshqitjet nuk bëjnë asgjë gjatë lojës.",
+  "helpPlayNeutral": "Lodra për kafshën tënde, pa reklama. Lodra mbush ekranin dhe e mban ndezur; numërohet çdo putër që e kap. Ngritja e pajisjes e mbyll lojën, po ashtu mbajtja e drynit në cep për tre sekonda. Prapa dhe rrëshqitjet nuk bëjnë asgjë gjatë lojës."
 }

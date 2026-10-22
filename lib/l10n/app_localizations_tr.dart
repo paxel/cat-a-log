@@ -3727,4 +3727,70 @@ class AppLocalizationsTr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Oyna';
+
+  @override
+  String get playIntro =>
+      'Cihazı kedinin önüne düz bırak ve bir oyuncak başlat. Durdurmak için cihazı kaldır.';
+
+  @override
+  String get playIntroNeutral =>
+      'Cihazı evcil hayvanının önüne düz bırak ve bir oyuncak başlat. Durdurmak için cihazı kaldır.';
+
+  @override
+  String get toyLaserDot => 'Lazer nokta';
+
+  @override
+  String get toyLaserDotHint => 'Fırlayıp bekleyen kırmızı bir nokta.';
+
+  @override
+  String get toyMouse => 'Fare';
+
+  @override
+  String get toyMouseHint => 'Kenarlar boyunca koşup saklanan bir fare.';
+
+  @override
+  String get toySounds => 'Oyuncak sesleri';
+
+  @override
+  String get toyHoldToStop => 'Durdurmak için basılı tut';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Son oyun: $minutes içinde $catches';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n yakalama',
+      one: '1 yakalama',
+      zero: 'hiç yakalama yok',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n dakika',
+      one: '1 dakika',
+      zero: 'bir dakikadan az',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Kedin için reklamsız oyuncaklar. Oyuncak ekranı doldurur ve açık tutar; onu yakalayan her pati sayılır. Cihazı kaldırmak oyunu bitirir, köşedeki kilidi üç saniye basılı tutmak da öyle. Oyun sürerken geri ve kaydırmalar hiçbir şey yapmaz.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Evcil hayvanın için reklamsız oyuncaklar. Oyuncak ekranı doldurur ve açık tutar; onu yakalayan her pati sayılır. Cihazı kaldırmak oyunu bitirir, köşedeki kilidi üç saniye basılı tutmak da öyle. Oyun sürerken geri ve kaydırmalar hiçbir şey yapmaz.';
 }

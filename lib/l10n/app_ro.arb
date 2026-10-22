@@ -1250,5 +1250,19 @@
   "sharedFolder": "Dosar partajat",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Nu acum",
-  "changesCount": "{n, plural, one{1 schimbare} few{{n} schimbări} other{{n} de schimbări}}"
+  "changesCount": "{n, plural, one{1 schimbare} few{{n} schimbări} other{{n} de schimbări}}",
+  "playToys": "Joacă",
+  "playIntro": "Pune dispozitivul pe plat în fața pisicii și pornește o jucărie. Ridică dispozitivul ca să o oprești.",
+  "playIntroNeutral": "Pune dispozitivul pe plat în fața animalului și pornește o jucărie. Ridică dispozitivul ca să o oprești.",
+  "toyLaserDot": "Punct laser",
+  "toyLaserDotHint": "Un punct roșu care țâșnește și așteaptă.",
+  "toyMouse": "Șoarece",
+  "toyMouseHint": "Un șoarece care aleargă pe margini și se ascunde.",
+  "toySounds": "Sunetele jucăriilor",
+  "toyHoldToStop": "Ține apăsat pentru oprire",
+  "toyLastGame": "Ultimul joc: {catches} în {minutes}",
+  "toyCatches": "{n, plural, =0{nicio prindere} one{1 prindere} few{{n} prinderi} other{{n} de prinderi}}",
+  "toyMinutes": "{n, plural, =0{sub un minut} one{1 minut} few{{n} minute} other{{n} de minute}}",
+  "helpPlay": "Jucării pentru pisica ta, fără reclame. O jucărie umple ecranul și îl ține aprins; contează fiecare labă care o prinde. Ridicarea dispozitivului încheie jocul, la fel ca ținerea lacătului din colț trei secunde. Înapoi și glisările nu fac nimic cât rulează.",
+  "helpPlayNeutral": "Jucării pentru animalul tău, fără reclame. O jucărie umple ecranul și îl ține aprins; contează fiecare labă care o prinde. Ridicarea dispozitivului încheie jocul, la fel ca ținerea lacătului din colț trei secunde. Înapoi și glisările nu fac nimic cât rulează."
 }

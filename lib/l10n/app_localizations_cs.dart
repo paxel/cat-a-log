@@ -3742,4 +3742,72 @@ class AppLocalizationsCs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Hrát';
+
+  @override
+  String get playIntro =>
+      'Polož zařízení naplocho před kočku a spusť hračku. Zvedni zařízení, aby ses zastavil.';
+
+  @override
+  String get playIntroNeutral =>
+      'Polož zařízení naplocho před mazlíčka a spusť hračku. Zvedni zařízení, aby ses zastavil.';
+
+  @override
+  String get toyLaserDot => 'Laserová tečka';
+
+  @override
+  String get toyLaserDotHint => 'Červená tečka, která vystřelí a čeká.';
+
+  @override
+  String get toyMouse => 'Myš';
+
+  @override
+  String get toyMouseHint => 'Myš, která běhá podél okrajů a schovává se.';
+
+  @override
+  String get toySounds => 'Zvuky hraček';
+
+  @override
+  String get toyHoldToStop => 'Podrž pro zastavení';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Poslední hra: $catches za $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n úlovků',
+      few: '$n úlovky',
+      one: '1 úlovek',
+      zero: 'žádný úlovek',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minut',
+      few: '$n minuty',
+      one: '1 minutu',
+      zero: 'méně než minutu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Hračky pro tvou kočku, bez reklam. Hračka vyplní obrazovku a nechá ji svítit; počítá se každá tlapka, která ji chytí. Zvednutí zařízení hru ukončí, stejně jako podržení zámku v rohu tři sekundy. Zpět a přejetí během hry nic nedělají.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Hračky pro tvého mazlíčka, bez reklam. Hračka vyplní obrazovku a nechá ji svítit; počítá se každá tlapka, která ji chytí. Zvednutí zařízení hru ukončí, stejně jako podržení zámku v rohu tři sekundy. Zpět a přejetí během hry nic nedělají.';
 }

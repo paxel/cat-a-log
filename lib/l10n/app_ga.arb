@@ -1250,5 +1250,19 @@
   "sharedFolder": "Fillteán comhroinnte",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ní anois",
-  "changesCount": "{n, plural, one{1 athrú} two{{n} athrú} few{{n} athrú} many{{n} n-athrú} other{{n} athrú}}"
+  "changesCount": "{n, plural, one{1 athrú} two{{n} athrú} few{{n} athrú} many{{n} n-athrú} other{{n} athrú}}",
+  "playToys": "Súgradh",
+  "playIntro": "Leag an gléas cothrom os comhair do chait agus tosaigh bréagán. Ardaigh an gléas chun é a stopadh.",
+  "playIntroNeutral": "Leag an gléas cothrom os comhair do pheata agus tosaigh bréagán. Ardaigh an gléas chun é a stopadh.",
+  "toyLaserDot": "Ponc léasair",
+  "toyLaserDotHint": "Ponc dearg a sciorrann agus a fhanann.",
+  "toyMouse": "Luch",
+  "toyMouseHint": "Luch a ritheann feadh na n-imeall agus a théann i bhfolach.",
+  "toySounds": "Fuaimeanna bréagán",
+  "toyHoldToStop": "Coinnigh síos chun stopadh",
+  "toyLastGame": "An cluiche deireanach: {catches} i {minutes}",
+  "toyCatches": "{n, plural, =0{gan aon ghabháil} one{1 ghabháil} two{{n} ghabháil} few{{n} ghabháil} many{{n} ngabháil} other{{n} gabháil}}",
+  "toyMinutes": "{n, plural, =0{níos lú ná nóiméad} one{1 nóiméad} two{{n} nóiméad} few{{n} nóiméad} many{{n} nóiméad} other{{n} nóiméad}}",
+  "helpPlay": "Bréagáin do do chat, gan fógraí. Líonann bréagán an scáileán agus coinníonn sé ar siúl é; comhairtear gach lapa a bheireann air. Cuireann ardú an ghléis deireadh leis an gcluiche, agus mar an gcéanna an glas sa chúinne a choinneáil síos ar feadh trí soicind. Ní dhéanann Siar ná svaidhpeanna faic le linn an chluiche.",
+  "helpPlayNeutral": "Bréagáin do do pheata, gan fógraí. Líonann bréagán an scáileán agus coinníonn sé ar siúl é; comhairtear gach lapa a bheireann air. Cuireann ardú an ghléis deireadh leis an gcluiche, agus mar an gcéanna an glas sa chúinne a choinneáil síos ar feadh trí soicind. Ní dhéanann Siar ná svaidhpeanna faic le linn an chluiche."
 }

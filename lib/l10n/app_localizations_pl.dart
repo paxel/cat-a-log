@@ -3753,4 +3753,72 @@ class AppLocalizationsPl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Zabawa';
+
+  @override
+  String get playIntro =>
+      'Połóż urządzenie płasko przed kotem i uruchom zabawkę. Podnieś urządzenie, aby ją zatrzymać.';
+
+  @override
+  String get playIntroNeutral =>
+      'Połóż urządzenie płasko przed zwierzakiem i uruchom zabawkę. Podnieś urządzenie, aby ją zatrzymać.';
+
+  @override
+  String get toyLaserDot => 'Kropka lasera';
+
+  @override
+  String get toyLaserDotHint => 'Czerwona kropka, która śmiga i czeka.';
+
+  @override
+  String get toyMouse => 'Mysz';
+
+  @override
+  String get toyMouseHint => 'Mysz, która biega wzdłuż krawędzi i się chowa.';
+
+  @override
+  String get toySounds => 'Dźwięki zabawek';
+
+  @override
+  String get toyHoldToStop => 'Przytrzymaj, aby zatrzymać';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Ostatnia zabawa: $catches w $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n złapań',
+      few: '$n złapania',
+      one: '1 złapanie',
+      zero: 'brak złapań',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minut',
+      few: '$n minuty',
+      one: '1 minutę',
+      zero: 'niecałą minutę',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Zabawki dla twojego kota, bez reklam. Zabawka wypełnia ekran i nie pozwala mu zgasnąć; liczy się każda łapa, która ją złapie. Podniesienie urządzenia kończy zabawę, podobnie jak przytrzymanie kłódki w rogu przez trzy sekundy. Wstecz i przesunięcia nic nie robią w trakcie.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Zabawki dla twojego zwierzaka, bez reklam. Zabawka wypełnia ekran i nie pozwala mu zgasnąć; liczy się każda łapa, która ją złapie. Podniesienie urządzenia kończy zabawę, podobnie jak przytrzymanie kłódki w rogu przez trzy sekundy. Wstecz i przesunięcia nic nie robią w trakcie.';
 }

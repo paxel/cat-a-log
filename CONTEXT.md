@@ -61,6 +61,10 @@ _Avoid_: group appointment, batch visit, multi-cat event
 A Catalog's choice to hold pets rather than cats (#93): an ordinary synced entry, so every device shows it the same way. It changes words (pet, household), the placeholder picture (a paw) and the proposed names — never the data. Older versions ignore it.
 _Avoid_: neutral mode, animal mode
 
+**Toy**:
+A game on the Play page for the animal, not for the human (#172): a laser dot or a mouse that a paw can catch. It runs full screen until the device is picked up or the lock in its corner is held; nothing it does is stored.
+_Avoid_: game, minigame
+
 **Unit Value**:
 A Field value that measures something — a number kept in the app's base unit (grams, centimetres, millilitres, °C) and shown, and entered, in the unit the device prefers (metric or imperial, from the region or chosen). Weight is the starter one.
 _Avoid_: measurement, metric

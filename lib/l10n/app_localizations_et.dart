@@ -3726,4 +3726,70 @@ class AppLocalizationsEt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Mängi';
+
+  @override
+  String get playIntro =>
+      'Aseta seade lamedalt oma kassi ette ja käivita mänguasi. Tõsta seade üles, et lõpetada.';
+
+  @override
+  String get playIntroNeutral =>
+      'Aseta seade lamedalt oma lemmiku ette ja käivita mänguasi. Tõsta seade üles, et lõpetada.';
+
+  @override
+  String get toyLaserDot => 'Laserpunkt';
+
+  @override
+  String get toyLaserDotHint => 'Punane punkt, mis sööstab ja ootab.';
+
+  @override
+  String get toyMouse => 'Hiir';
+
+  @override
+  String get toyMouseHint => 'Hiir, mis jookseb mööda servi ja peidab end.';
+
+  @override
+  String get toySounds => 'Mänguasjade helid';
+
+  @override
+  String get toyHoldToStop => 'Hoia lõpetamiseks';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Viimane mäng: $catches, $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n püüki',
+      one: '1 püük',
+      zero: 'ühtegi püüki',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minutit',
+      one: '1 minut',
+      zero: 'alla minuti',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Mänguasjad sinu kassile, ilma reklaamita. Mänguasi täidab ekraani ja hoiab selle sees; iga käpp, mis selle püüab, loeb. Seadme tõstmine lõpetab mängu, samuti nurgas oleva luku hoidmine kolm sekundit. Tagasi ja pühkimised ei tee mängu ajal midagi.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Mänguasjad sinu lemmikule, ilma reklaamita. Mänguasi täidab ekraani ja hoiab selle sees; iga käpp, mis selle püüab, loeb. Seadme tõstmine lõpetab mängu, samuti nurgas oleva luku hoidmine kolm sekundit. Tagasi ja pühkimised ei tee mängu ajal midagi.';
 }

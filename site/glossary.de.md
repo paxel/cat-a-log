@@ -59,6 +59,10 @@ _Avoid_: Gruppentermin, Sammelbesuch, Mehrkatzen-Ereignis
 Die Wahl eines Katalogs, Tiere statt Katzen zu halten: ein gewöhnlicher abgeglichener Eintrag, damit jedes Gerät ihn gleich zeigt. Er ändert Wörter (Tier, Haushalt), das Platzhalterbild (eine Pfote) und die vorgeschlagenen Namen; nie die Daten. Ältere Versionen ignorieren ihn.
 _Avoid_: neutraler Modus, Tiermodus
 
+**Spielzeug** [Toy]:
+Ein Spiel auf der Seite Spielen für das Tier, nicht für den Menschen (#172): ein Laserpunkt oder eine Maus, die eine Pfote fangen kann. Es läuft im Vollbild, bis das Gerät hochgehoben oder das Schloss in seiner Ecke gehalten wird; nichts davon wird gespeichert.
+_Avoid_: Spiel, Minispiel
+
 **Messwert** [Unit Value]:
 Ein Feldwert, der etwas misst: eine Zahl, in der Basiseinheit der App gespeichert (Gramm, Zentimeter, Milliliter, °C) und in der Einheit gezeigt und eingegeben, die das Gerät bevorzugt (metrisch oder imperial, aus der Region oder gewählt). Das Gewicht ist der Starter.
 _Avoid_: Messung, Metrik

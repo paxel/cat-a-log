@@ -1256,5 +1256,19 @@
   "sharedFolder": "Gemeinsamer Ordner",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Jetzt nicht",
-  "changesCount": "{n, plural, one{1 Änderung} other{{n} Änderungen}}"
+  "changesCount": "{n, plural, one{1 Änderung} other{{n} Änderungen}}",
+  "playToys": "Spielen",
+  "playIntro": "Leg das Gerät flach vor deine Katze und starte ein Spielzeug. Heb das Gerät hoch, um es zu beenden.",
+  "playIntroNeutral": "Leg das Gerät flach vor dein Haustier und starte ein Spielzeug. Heb das Gerät hoch, um es zu beenden.",
+  "toyLaserDot": "Laserpunkt",
+  "toyLaserDotHint": "Ein roter Punkt, der flitzt und wartet.",
+  "toyMouse": "Maus",
+  "toyMouseHint": "Eine Maus, die an den Rändern entlangläuft und sich versteckt.",
+  "toySounds": "Spielzeug-Geräusche",
+  "toyHoldToStop": "Halten zum Beenden",
+  "toyLastGame": "Letztes Spiel: {catches} in {minutes}",
+  "toyCatches": "{n, plural, =0{kein Fang} one{1 Fang} other{{n} Fänge}}",
+  "toyMinutes": "{n, plural, =0{unter einer Minute} one{1 Minute} other{{n} Minuten}}",
+  "helpPlay": "Spielzeug für deine Katze, ohne Werbung. Ein Spielzeug füllt den Bildschirm und hält ihn an; jede Pfote, die es fängt, zählt. Hochheben des Geräts beendet das Spiel, ebenso drei Sekunden Halten des Schlosses in der Ecke. Zurück und Wischen tun nichts, solange es läuft.",
+  "helpPlayNeutral": "Spielzeug für dein Haustier, ohne Werbung. Ein Spielzeug füllt den Bildschirm und hält ihn an; jede Pfote, die es fängt, zählt. Hochheben des Geräts beendet das Spiel, ebenso drei Sekunden Halten des Schlosses in der Ecke. Zurück und Wischen tun nichts, solange es läuft."
 }

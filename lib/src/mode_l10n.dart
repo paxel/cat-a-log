@@ -1186,6 +1186,12 @@ class ModeLocalizations implements AppLocalizations {
   String get helpModeration => base.helpModeration;
 
   @override
+  String get helpPlay => pets ? base.helpPlayNeutral : base.helpPlay;
+
+  @override
+  String get helpPlayNeutral => base.helpPlayNeutral;
+
+  @override
   String get helpPoster => base.helpPoster;
 
   @override
@@ -2077,6 +2083,15 @@ class ModeLocalizations implements AppLocalizations {
   String get play => base.play;
 
   @override
+  String get playIntro => pets ? base.playIntroNeutral : base.playIntro;
+
+  @override
+  String get playIntroNeutral => base.playIntroNeutral;
+
+  @override
+  String get playToys => base.playToys;
+
+  @override
   String get posterFrameHint => base.posterFrameHint;
 
   @override
@@ -2921,6 +2936,33 @@ class ModeLocalizations implements AppLocalizations {
 
   @override
   String get todaySection => base.todaySection;
+
+  @override
+  String toyCatches(int n) => base.toyCatches(n);
+
+  @override
+  String get toyHoldToStop => base.toyHoldToStop;
+
+  @override
+  String get toyLaserDot => base.toyLaserDot;
+
+  @override
+  String get toyLaserDotHint => base.toyLaserDotHint;
+
+  @override
+  String toyLastGame(String catches, String minutes) => base.toyLastGame(catches, minutes);
+
+  @override
+  String toyMinutes(int n) => base.toyMinutes(n);
+
+  @override
+  String get toyMouse => base.toyMouse;
+
+  @override
+  String get toyMouseHint => base.toyMouseHint;
+
+  @override
+  String get toySounds => base.toySounds;
 
   @override
   String trailOf(String name, int count) => base.trailOf(name, count);

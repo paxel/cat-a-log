@@ -3751,4 +3751,74 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Играть';
+
+  @override
+  String get playIntro =>
+      'Положи устройство ровно перед кошкой и запусти игрушку. Подними устройство, чтобы остановить.';
+
+  @override
+  String get playIntroNeutral =>
+      'Положи устройство ровно перед питомцем и запусти игрушку. Подними устройство, чтобы остановить.';
+
+  @override
+  String get toyLaserDot => 'Лазерная точка';
+
+  @override
+  String get toyLaserDotHint => 'Красная точка, которая мечется и замирает.';
+
+  @override
+  String get toyMouse => 'Мышь';
+
+  @override
+  String get toyMouseHint => 'Мышь, которая бегает вдоль краёв и прячется.';
+
+  @override
+  String get toySounds => 'Звуки игрушек';
+
+  @override
+  String get toyHoldToStop => 'Удерживай, чтобы остановить';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Последняя игра: $catches за $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n поимки',
+      many: '$n поимок',
+      few: '$n поимки',
+      one: '$n поимка',
+      zero: 'ни одной поимки',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n минуты',
+      many: '$n минут',
+      few: '$n минуты',
+      one: '$n минуту',
+      zero: 'меньше минуты',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Игрушки для твоей кошки, без рекламы. Игрушка занимает весь экран и не даёт ему погаснуть; считается каждая лапа, которая её поймает. Поднятие устройства заканчивает игру, как и удержание замка в углу три секунды. Назад и свайпы во время игры ничего не делают.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Игрушки для твоего питомца, без рекламы. Игрушка занимает весь экран и не даёт ему погаснуть; считается каждая лапа, которая её поймает. Поднятие устройства заканчивает игру, как и удержание замка в углу три секунды. Назад и свайпы во время игры ничего не делают.';
 }

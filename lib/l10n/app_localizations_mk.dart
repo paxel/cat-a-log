@@ -3728,4 +3728,70 @@ class AppLocalizationsMk extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Играј';
+
+  @override
+  String get playIntro =>
+      'Стави го уредот рамно пред мачката и вклучи играчка. Подигни го уредот за да ја запреш.';
+
+  @override
+  String get playIntroNeutral =>
+      'Стави го уредот рамно пред миленикот и вклучи играчка. Подигни го уредот за да ја запреш.';
+
+  @override
+  String get toyLaserDot => 'Ласерска точка';
+
+  @override
+  String get toyLaserDotHint => 'Црвена точка што стрелнува и чека.';
+
+  @override
+  String get toyMouse => 'Глушец';
+
+  @override
+  String get toyMouseHint => 'Глушец што трча по рабовите и се крие.';
+
+  @override
+  String get toySounds => 'Звуци на играчките';
+
+  @override
+  String get toyHoldToStop => 'Држи за запирање';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Последна игра: $catches за $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n улови',
+      one: '$n улов',
+      zero: 'ниту еден улов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n минути',
+      one: '$n минута',
+      zero: 'помалку од минута',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Играчки за твојата мачка, без реклами. Играчката го исполнува екранот и го држи вклучен; се брои секоја шепа што ја фаќа. Подигнувањето на уредот ја завршува играта, како и држењето на катанецот во аголот три секунди. Назад и повлекувањата не прават ништо додека трае.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Играчки за твојот миленик, без реклами. Играчката го исполнува екранот и го држи вклучен; се брои секоја шепа што ја фаќа. Подигнувањето на уредот ја завршува играта, како и држењето на катанецот во аголот три секунди. Назад и повлекувањата не прават ништо додека трае.';
 }

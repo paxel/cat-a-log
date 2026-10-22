@@ -1250,5 +1250,19 @@
   "sharedFolder": "Jagatud kaust",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Mitte praegu",
-  "changesCount": "{n, plural, one{1 muudatus} other{{n} muudatust}}"
+  "changesCount": "{n, plural, one{1 muudatus} other{{n} muudatust}}",
+  "playToys": "Mängi",
+  "playIntro": "Aseta seade lamedalt oma kassi ette ja käivita mänguasi. Tõsta seade üles, et lõpetada.",
+  "playIntroNeutral": "Aseta seade lamedalt oma lemmiku ette ja käivita mänguasi. Tõsta seade üles, et lõpetada.",
+  "toyLaserDot": "Laserpunkt",
+  "toyLaserDotHint": "Punane punkt, mis sööstab ja ootab.",
+  "toyMouse": "Hiir",
+  "toyMouseHint": "Hiir, mis jookseb mööda servi ja peidab end.",
+  "toySounds": "Mänguasjade helid",
+  "toyHoldToStop": "Hoia lõpetamiseks",
+  "toyLastGame": "Viimane mäng: {catches}, {minutes}",
+  "toyCatches": "{n, plural, =0{ühtegi püüki} one{1 püük} other{{n} püüki}}",
+  "toyMinutes": "{n, plural, =0{alla minuti} one{1 minut} other{{n} minutit}}",
+  "helpPlay": "Mänguasjad sinu kassile, ilma reklaamita. Mänguasi täidab ekraani ja hoiab selle sees; iga käpp, mis selle püüab, loeb. Seadme tõstmine lõpetab mängu, samuti nurgas oleva luku hoidmine kolm sekundit. Tagasi ja pühkimised ei tee mängu ajal midagi.",
+  "helpPlayNeutral": "Mänguasjad sinu lemmikule, ilma reklaamita. Mänguasi täidab ekraani ja hoiab selle sees; iga käpp, mis selle püüab, loeb. Seadme tõstmine lõpetab mängu, samuti nurgas oleva luku hoidmine kolm sekundit. Tagasi ja pühkimised ei tee mängu ajal midagi."
 }

@@ -1250,5 +1250,19 @@
   "sharedFolder": "共有フォルダー",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "今はしない",
-  "changesCount": "{n}件の変更"
+  "changesCount": "{n}件の変更",
+  "playToys": "遊ぶ",
+  "playIntro": "端末を猫の前に平らに置いて、おもちゃを始めます。端末を持ち上げると止まります。",
+  "playIntroNeutral": "端末をペットの前に平らに置いて、おもちゃを始めます。端末を持ち上げると止まります。",
+  "toyLaserDot": "レーザーポイント",
+  "toyLaserDotHint": "素早く動いては止まる赤い点。",
+  "toyMouse": "ネズミ",
+  "toyMouseHint": "画面の端を走って隠れるネズミ。",
+  "toySounds": "おもちゃの音",
+  "toyHoldToStop": "長押しで終了",
+  "toyLastGame": "前回: {minutes}で{catches}",
+  "toyCatches": "{n, plural, =0{捕獲なし} other{{n}回捕獲}}",
+  "toyMinutes": "{n, plural, =0{1分未満} other{{n}分}}",
+  "helpPlay": "広告のない猫用おもちゃ。おもちゃは画面いっぱいに表示され、画面を点けたままにします。捕まえた前足はすべて数えます。端末を持ち上げるか、隅の鍵を3秒間長押しすると終了します。遊んでいる間、戻る操作やスワイプは何もしません。",
+  "helpPlayNeutral": "広告のないペット用おもちゃ。おもちゃは画面いっぱいに表示され、画面を点けたままにします。捕まえた前足はすべて数えます。端末を持ち上げるか、隅の鍵を3秒間長押しすると終了します。遊んでいる間、戻る操作やスワイプは何もしません。"
 }

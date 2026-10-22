@@ -131,6 +131,12 @@ Future<void> playSound(SoundChoice choice) async {
     OwnSound(:final path) => DeviceFileSource(path),
   };
   if (source == null) return;
+  await playSource(source);
+}
+
+/// Plays one source once, as a game sound that never takes the audio
+/// from another app; silence when the device has no audio to give.
+Future<void> playSource(Source source) async {
   final player = AudioPlayer();
   try {
     await player.setAudioContext(

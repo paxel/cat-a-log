@@ -1250,5 +1250,19 @@
   "sharedFolder": "Koplietota mape",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ne tagad",
-  "changesCount": "{n, plural, zero{{n} izmaiņu} one{{n} izmaiņa} other{{n} izmaiņas}}"
+  "changesCount": "{n, plural, zero{{n} izmaiņu} one{{n} izmaiņa} other{{n} izmaiņas}}",
+  "playToys": "Spēlēt",
+  "playIntro": "Novieto ierīci līdzeni kaķa priekšā un sāc rotaļlietu. Pacel ierīci, lai apturētu.",
+  "playIntroNeutral": "Novieto ierīci līdzeni mājdzīvnieka priekšā un sāc rotaļlietu. Pacel ierīci, lai apturētu.",
+  "toyLaserDot": "Lāzera punkts",
+  "toyLaserDotHint": "Sarkans punkts, kas aizšaujas un gaida.",
+  "toyMouse": "Pele",
+  "toyMouseHint": "Pele, kas skrien gar malām un paslēpjas.",
+  "toySounds": "Rotaļlietu skaņas",
+  "toyHoldToStop": "Turi, lai apturētu",
+  "toyLastGame": "Pēdējā spēle: {catches}, {minutes}",
+  "toyCatches": "{n, plural, =0{neviena noķēruma} one{{n} noķērums} other{{n} noķērumi}}",
+  "toyMinutes": "{n, plural, =0{mazāk par minūti} one{{n} minūte} other{{n} minūtes}}",
+  "helpPlay": "Rotaļlietas tavam kaķim, bez reklāmām. Rotaļlieta aizpilda ekrānu un tur to ieslēgtu; skaitās katra ķepa, kas to noķer. Ierīces pacelšana beidz spēli, tāpat slēdzenes turēšana stūrī trīs sekundes. Atpakaļ un vilkšana spēles laikā neko nedara.",
+  "helpPlayNeutral": "Rotaļlietas tavam mājdzīvniekam, bez reklāmām. Rotaļlieta aizpilda ekrānu un tur to ieslēgtu; skaitās katra ķepa, kas to noķer. Ierīces pacelšana beidz spēli, tāpat slēdzenes turēšana stūrī trīs sekundes. Atpakaļ un vilkšana spēles laikā neko nedara."
 }

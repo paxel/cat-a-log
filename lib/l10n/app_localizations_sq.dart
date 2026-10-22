@@ -3727,4 +3727,70 @@ class AppLocalizationsSq extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Luaj';
+
+  @override
+  String get playIntro =>
+      'Vendose pajisjen të shtrirë para maces dhe nis një lodër. Ngrije pajisjen për ta ndalur.';
+
+  @override
+  String get playIntroNeutral =>
+      'Vendose pajisjen të shtrirë para kafshës dhe nis një lodër. Ngrije pajisjen për ta ndalur.';
+
+  @override
+  String get toyLaserDot => 'Pikë lazeri';
+
+  @override
+  String get toyLaserDotHint => 'Një pikë e kuqe që vërsulet dhe pret.';
+
+  @override
+  String get toyMouse => 'Mi';
+
+  @override
+  String get toyMouseHint => 'Një mi që vrapon përgjatë skajeve dhe fshihet.';
+
+  @override
+  String get toySounds => 'Tingujt e lodrave';
+
+  @override
+  String get toyHoldToStop => 'Mbaje për ta ndalur';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Loja e fundit: $catches në $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n kapje',
+      one: '1 kapje',
+      zero: 'asnjë kapje',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minuta',
+      one: '1 minutë',
+      zero: 'më pak se një minutë',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Lodra për macen tënde, pa reklama. Lodra mbush ekranin dhe e mban ndezur; numërohet çdo putër që e kap. Ngritja e pajisjes e mbyll lojën, po ashtu mbajtja e drynit në cep për tre sekonda. Prapa dhe rrëshqitjet nuk bëjnë asgjë gjatë lojës.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Lodra për kafshën tënde, pa reklama. Lodra mbush ekranin dhe e mban ndezur; numërohet çdo putër që e kap. Ngritja e pajisjes e mbyll lojën, po ashtu mbajtja e drynit në cep për tre sekonda. Prapa dhe rrëshqitjet nuk bëjnë asgjë gjatë lojës.';
 }

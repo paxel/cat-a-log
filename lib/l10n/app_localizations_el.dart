@@ -3739,4 +3739,70 @@ class AppLocalizationsEl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Παιχνίδι';
+
+  @override
+  String get playIntro =>
+      'Ακούμπησε τη συσκευή επίπεδα μπροστά στη γάτα σου και ξεκίνα ένα παιχνίδι. Σήκωσε τη συσκευή για να σταματήσει.';
+
+  @override
+  String get playIntroNeutral =>
+      'Ακούμπησε τη συσκευή επίπεδα μπροστά στο κατοικίδιό σου και ξεκίνα ένα παιχνίδι. Σήκωσε τη συσκευή για να σταματήσει.';
+
+  @override
+  String get toyLaserDot => 'Κουκκίδα λέιζερ';
+
+  @override
+  String get toyLaserDotHint => 'Μια κόκκινη κουκκίδα που ορμά και περιμένει.';
+
+  @override
+  String get toyMouse => 'Ποντίκι';
+
+  @override
+  String get toyMouseHint => 'Ένα ποντίκι που τρέχει στις άκρες και κρύβεται.';
+
+  @override
+  String get toySounds => 'Ήχοι παιχνιδιών';
+
+  @override
+  String get toyHoldToStop => 'Κράτησε για διακοπή';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Τελευταίο παιχνίδι: $catches σε $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n συλλήψεις',
+      one: '1 σύλληψη',
+      zero: 'καμία σύλληψη',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n λεπτά',
+      one: '1 λεπτό',
+      zero: 'κάτω από ένα λεπτό',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Παιχνίδια για τη γάτα σου, χωρίς διαφημίσεις. Ένα παιχνίδι γεμίζει την οθόνη και την κρατά αναμμένη· μετρά κάθε πατούσα που το πιάνει. Το σήκωμα της συσκευής τελειώνει το παιχνίδι, όπως και το κράτημα της κλειδαριάς στη γωνία για τρία δευτερόλεπτα. Πίσω και σαρώσεις δεν κάνουν τίποτα όσο τρέχει.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Παιχνίδια για το κατοικίδιό σου, χωρίς διαφημίσεις. Ένα παιχνίδι γεμίζει την οθόνη και την κρατά αναμμένη· μετρά κάθε πατούσα που το πιάνει. Το σήκωμα της συσκευής τελειώνει το παιχνίδι, όπως και το κράτημα της κλειδαριάς στη γωνία για τρία δευτερόλεπτα. Πίσω και σαρώσεις δεν κάνουν τίποτα όσο τρέχει.';
 }

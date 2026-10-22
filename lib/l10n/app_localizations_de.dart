@@ -3737,4 +3737,71 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Spielen';
+
+  @override
+  String get playIntro =>
+      'Leg das Gerät flach vor deine Katze und starte ein Spielzeug. Heb das Gerät hoch, um es zu beenden.';
+
+  @override
+  String get playIntroNeutral =>
+      'Leg das Gerät flach vor dein Haustier und starte ein Spielzeug. Heb das Gerät hoch, um es zu beenden.';
+
+  @override
+  String get toyLaserDot => 'Laserpunkt';
+
+  @override
+  String get toyLaserDotHint => 'Ein roter Punkt, der flitzt und wartet.';
+
+  @override
+  String get toyMouse => 'Maus';
+
+  @override
+  String get toyMouseHint =>
+      'Eine Maus, die an den Rändern entlangläuft und sich versteckt.';
+
+  @override
+  String get toySounds => 'Spielzeug-Geräusche';
+
+  @override
+  String get toyHoldToStop => 'Halten zum Beenden';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Letztes Spiel: $catches in $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Fänge',
+      one: '1 Fang',
+      zero: 'kein Fang',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Minuten',
+      one: '1 Minute',
+      zero: 'unter einer Minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Spielzeug für deine Katze, ohne Werbung. Ein Spielzeug füllt den Bildschirm und hält ihn an; jede Pfote, die es fängt, zählt. Hochheben des Geräts beendet das Spiel, ebenso drei Sekunden Halten des Schlosses in der Ecke. Zurück und Wischen tun nichts, solange es läuft.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Spielzeug für dein Haustier, ohne Werbung. Ein Spielzeug füllt den Bildschirm und hält ihn an; jede Pfote, die es fängt, zählt. Hochheben des Geräts beendet das Spiel, ebenso drei Sekunden Halten des Schlosses in der Ecke. Zurück und Wischen tun nichts, solange es läuft.';
 }

@@ -1250,5 +1250,19 @@
   "sharedFolder": "Sdílená složka",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Teď ne",
-  "changesCount": "{n, plural, one{1 změna} few{{n} změny} other{{n} změn}}"
+  "changesCount": "{n, plural, one{1 změna} few{{n} změny} other{{n} změn}}",
+  "playToys": "Hrát",
+  "playIntro": "Polož zařízení naplocho před kočku a spusť hračku. Zvedni zařízení, abys ji zastavil.",
+  "playIntroNeutral": "Polož zařízení naplocho před mazlíčka a spusť hračku. Zvedni zařízení, abys ji zastavil.",
+  "toyLaserDot": "Laserová tečka",
+  "toyLaserDotHint": "Červená tečka, která vystřelí a čeká.",
+  "toyMouse": "Myš",
+  "toyMouseHint": "Myš, která běhá podél okrajů a schovává se.",
+  "toySounds": "Zvuky hraček",
+  "toyHoldToStop": "Podrž pro zastavení",
+  "toyLastGame": "Poslední hra: {catches} za {minutes}",
+  "toyCatches": "{n, plural, =0{žádný úlovek} one{1 úlovek} few{{n} úlovky} other{{n} úlovků}}",
+  "toyMinutes": "{n, plural, =0{méně než minutu} one{1 minutu} few{{n} minuty} other{{n} minut}}",
+  "helpPlay": "Hračky pro tvou kočku, bez reklam. Hračka vyplní obrazovku a nechá ji svítit; počítá se každá tlapka, která ji chytí. Zvednutí zařízení hru ukončí, stejně jako podržení zámku v rohu tři sekundy. Zpět a přejetí během hry nic nedělají.",
+  "helpPlayNeutral": "Hračky pro tvého mazlíčka, bez reklam. Hračka vyplní obrazovku a nechá ji svítit; počítá se každá tlapka, která ji chytí. Zvednutí zařízení hru ukončí, stejně jako podržení zámku v rohu tři sekundy. Zpět a přejetí během hry nic nedělají."
 }

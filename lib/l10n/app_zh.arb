@@ -1250,5 +1250,19 @@
   "sharedFolder": "共享文件夹",
   "pinLabel": "PIN：{pin}",
   "syncDismiss": "暂不",
-  "changesCount": "{n} 项更改"
+  "changesCount": "{n} 项更改",
+  "playToys": "玩耍",
+  "playIntro": "把设备平放在猫面前，然后启动一个玩具。拿起设备即可停止。",
+  "playIntroNeutral": "把设备平放在宠物面前，然后启动一个玩具。拿起设备即可停止。",
+  "toyLaserDot": "激光点",
+  "toyLaserDotHint": "一个会飞窜又停住的红点。",
+  "toyMouse": "老鼠",
+  "toyMouseHint": "一只沿着边缘跑并会躲起来的老鼠。",
+  "toySounds": "玩具声音",
+  "toyHoldToStop": "长按停止",
+  "toyLastGame": "上一局：{minutes}内{catches}",
+  "toyCatches": "{n, plural, =0{没有抓到} other{抓到{n}次}}",
+  "toyMinutes": "{n, plural, =0{不到一分钟} other{{n}分钟}}",
+  "helpPlay": "给猫的玩具，没有广告。玩具铺满屏幕并保持屏幕常亮；每只抓到它的爪子都会计数。拿起设备会结束游戏，按住角落的锁三秒也会。游戏进行时，返回和滑动都不起作用。",
+  "helpPlayNeutral": "给宠物的玩具，没有广告。玩具铺满屏幕并保持屏幕常亮；每只抓到它的爪子都会计数。拿起设备会结束游戏，按住角落的锁三秒也会。游戏进行时，返回和滑动都不起作用。"
 }

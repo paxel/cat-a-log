@@ -1250,5 +1250,19 @@
   "sharedFolder": "Wspólny folder",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Nie teraz",
-  "changesCount": "{n, plural, one{1 zmiana} few{{n} zmiany} other{{n} zmian}}"
+  "changesCount": "{n, plural, one{1 zmiana} few{{n} zmiany} other{{n} zmian}}",
+  "playToys": "Zabawa",
+  "playIntro": "Połóż urządzenie płasko przed kotem i uruchom zabawkę. Podnieś urządzenie, aby ją zatrzymać.",
+  "playIntroNeutral": "Połóż urządzenie płasko przed zwierzakiem i uruchom zabawkę. Podnieś urządzenie, aby ją zatrzymać.",
+  "toyLaserDot": "Kropka lasera",
+  "toyLaserDotHint": "Czerwona kropka, która śmiga i czeka.",
+  "toyMouse": "Mysz",
+  "toyMouseHint": "Mysz, która biega wzdłuż krawędzi i się chowa.",
+  "toySounds": "Dźwięki zabawek",
+  "toyHoldToStop": "Przytrzymaj, aby zatrzymać",
+  "toyLastGame": "Ostatnia zabawa: {catches} w {minutes}",
+  "toyCatches": "{n, plural, =0{brak złapań} one{1 złapanie} few{{n} złapania} other{{n} złapań}}",
+  "toyMinutes": "{n, plural, =0{niecałą minutę} one{1 minutę} few{{n} minuty} other{{n} minut}}",
+  "helpPlay": "Zabawki dla twojego kota, bez reklam. Zabawka wypełnia ekran i nie pozwala mu zgasnąć; liczy się każda łapa, która ją złapie. Podniesienie urządzenia kończy zabawę, podobnie jak przytrzymanie kłódki w rogu przez trzy sekundy. Wstecz i przesunięcia nic nie robią w trakcie.",
+  "helpPlayNeutral": "Zabawki dla twojego zwierzaka, bez reklam. Zabawka wypełnia ekran i nie pozwala mu zgasnąć; liczy się każda łapa, która ją złapie. Podniesienie urządzenia kończy zabawę, podobnie jak przytrzymanie kłódki w rogu przez trzy sekundy. Wstecz i przesunięcia nic nie robią w trakcie."
 }

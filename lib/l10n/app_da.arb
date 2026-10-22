@@ -1250,5 +1250,19 @@
   "sharedFolder": "Delt mappe",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ikke nu",
-  "changesCount": "{n, plural, one{1 ændring} other{{n} ændringer}}"
+  "changesCount": "{n, plural, one{1 ændring} other{{n} ændringer}}",
+  "playToys": "Leg",
+  "playIntro": "Læg enheden fladt foran din kat og start et legetøj. Løft enheden for at stoppe.",
+  "playIntroNeutral": "Læg enheden fladt foran dit kæledyr og start et legetøj. Løft enheden for at stoppe.",
+  "toyLaserDot": "Laserprik",
+  "toyLaserDotHint": "En rød prik, der farer af sted og venter.",
+  "toyMouse": "Mus",
+  "toyMouseHint": "En mus, der løber langs kanterne og gemmer sig.",
+  "toySounds": "Legetøjslyde",
+  "toyHoldToStop": "Hold for at stoppe",
+  "toyLastGame": "Sidste spil: {catches} på {minutes}",
+  "toyCatches": "{n, plural, =0{ingen fangster} one{1 fangst} other{{n} fangster}}",
+  "toyMinutes": "{n, plural, =0{under et minut} one{1 minut} other{{n} minutter}}",
+  "helpPlay": "Legetøj til din kat, uden reklamer. Et legetøj fylder skærmen og holder den tændt; hver pote, der fanger det, tæller. At løfte enheden afslutter spillet, og det gør det også at holde låsen i hjørnet i tre sekunder. Tilbage og swipe gør intet, mens det kører.",
+  "helpPlayNeutral": "Legetøj til dit kæledyr, uden reklamer. Et legetøj fylder skærmen og holder den tændt; hver pote, der fanger det, tæller. At løfte enheden afslutter spillet, og det gør det også at holde låsen i hjørnet i tre sekunder. Tilbage og swipe gør intet, mens det kører."
 }

@@ -3551,4 +3551,66 @@ class AppLocalizationsZh extends AppLocalizations {
   String changesCount(int n) {
     return '$n 项更改';
   }
+
+  @override
+  String get playToys => '玩耍';
+
+  @override
+  String get playIntro => '把设备平放在猫面前，然后启动一个玩具。拿起设备即可停止。';
+
+  @override
+  String get playIntroNeutral => '把设备平放在宠物面前，然后启动一个玩具。拿起设备即可停止。';
+
+  @override
+  String get toyLaserDot => '激光点';
+
+  @override
+  String get toyLaserDotHint => '一个会飞窜又停住的红点。';
+
+  @override
+  String get toyMouse => '老鼠';
+
+  @override
+  String get toyMouseHint => '一只沿着边缘跑并会躲起来的老鼠。';
+
+  @override
+  String get toySounds => '玩具声音';
+
+  @override
+  String get toyHoldToStop => '长按停止';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return '上一局：$minutes内$catches';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '抓到$n次',
+      zero: '没有抓到',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n分钟',
+      zero: '不到一分钟',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      '给猫的玩具，没有广告。玩具铺满屏幕并保持屏幕常亮；每只抓到它的爪子都会计数。拿起设备会结束游戏，按住角落的锁三秒也会。游戏进行时，返回和滑动都不起作用。';
+
+  @override
+  String get helpPlayNeutral =>
+      '给宠物的玩具，没有广告。玩具铺满屏幕并保持屏幕常亮；每只抓到它的爪子都会计数。拿起设备会结束游戏，按住角落的锁三秒也会。游戏进行时，返回和滑动都不起作用。';
 }

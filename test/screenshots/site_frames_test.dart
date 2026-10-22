@@ -26,6 +26,7 @@ import 'package:catlog/src/map/cached_tiles.dart';
 import 'package:catlog/src/notes.dart';
 import 'package:catlog/src/pet_mode.dart';
 import 'package:catlog/src/screens/achievements_screen.dart';
+import 'package:catlog/src/screens/play_screen.dart';
 import 'package:catlog/src/screens/agenda_screen.dart';
 import 'package:catlog/src/screens/archive_screen.dart';
 import 'package:catlog/src/screens/backups_screen.dart';
@@ -158,6 +159,7 @@ void main() {
         'fields': () => FieldsScreen(store: store),
         'achievements': () => AchievementsScreen(manager: manager, stores: [store]),
         'settings': () => SettingsScreen(store: store),
+        'play': () => PlayScreen(store: store),
       };
       final coats = {
         'home': FurPattern.tabby, 'clowder': FurPattern.cheetah, 'cat': FurPattern.rosettes,

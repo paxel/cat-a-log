@@ -3741,4 +3741,72 @@ class AppLocalizationsHr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Igraj';
+
+  @override
+  String get playIntro =>
+      'Položi uređaj ravno ispred mačke i pokreni igračku. Podigni uređaj da je zaustaviš.';
+
+  @override
+  String get playIntroNeutral =>
+      'Položi uređaj ravno ispred ljubimca i pokreni igračku. Podigni uređaj da je zaustaviš.';
+
+  @override
+  String get toyLaserDot => 'Laserska točka';
+
+  @override
+  String get toyLaserDotHint => 'Crvena točka koja jurne i čeka.';
+
+  @override
+  String get toyMouse => 'Miš';
+
+  @override
+  String get toyMouseHint => 'Miš koji trči uz rubove i skriva se.';
+
+  @override
+  String get toySounds => 'Zvukovi igračaka';
+
+  @override
+  String get toyHoldToStop => 'Drži za zaustavljanje';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Zadnja igra: $catches u $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n ulova',
+      few: '$n ulova',
+      one: '$n ulov',
+      zero: 'nijedan ulov',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minuta',
+      few: '$n minute',
+      one: '$n minuti',
+      zero: 'manje od minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Igračke za tvoju mačku, bez reklama. Igračka ispunjava zaslon i drži ga upaljenim; broji se svaka šapa koja je uhvati. Podizanje uređaja završava igru, kao i držanje lokota u kutu tri sekunde. Natrag i povlačenja ne rade ništa dok traje.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Igračke za tvog ljubimca, bez reklama. Igračka ispunjava zaslon i drži ga upaljenim; broji se svaka šapa koja je uhvati. Podizanje uređaja završava igru, kao i držanje lokota u kutu tri sekunde. Natrag i povlačenja ne rade ništa dok traje.';
 }

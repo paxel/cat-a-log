@@ -3752,4 +3752,72 @@ class AppLocalizationsLt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Žaisti';
+
+  @override
+  String get playIntro =>
+      'Padėk įrenginį plokščiai priešais katę ir paleisk žaislą. Pakelk įrenginį, kad sustabdytum.';
+
+  @override
+  String get playIntroNeutral =>
+      'Padėk įrenginį plokščiai priešais augintinį ir paleisk žaislą. Pakelk įrenginį, kad sustabdytum.';
+
+  @override
+  String get toyLaserDot => 'Lazerio taškas';
+
+  @override
+  String get toyLaserDotHint => 'Raudonas taškas, kuris nulekia ir laukia.';
+
+  @override
+  String get toyMouse => 'Pelė';
+
+  @override
+  String get toyMouseHint => 'Pelė, kuri bėga pakraščiais ir slepiasi.';
+
+  @override
+  String get toySounds => 'Žaislų garsai';
+
+  @override
+  String get toyHoldToStop => 'Laikyk, kad sustabdytum';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Paskutinis žaidimas: $catches, $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n pagavimų',
+      few: '$n pagavimai',
+      one: '$n pagavimas',
+      zero: 'nė vieno pagavimo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minučių',
+      few: '$n minutės',
+      one: '$n minutė',
+      zero: 'mažiau nei minutė',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Žaislai tavo katei, be reklamų. Žaislas užpildo ekraną ir laiko jį įjungtą; skaičiuojama kiekviena letena, kuri jį pagauna. Pakėlus įrenginį žaidimas baigiasi, taip pat tris sekundes palaikius spyną kampe. Atgal ir braukimai žaidžiant nieko nedaro.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Žaislai tavo augintiniui, be reklamų. Žaislas užpildo ekraną ir laiko jį įjungtą; skaičiuojama kiekviena letena, kuri jį pagauna. Pakėlus įrenginį žaidimas baigiasi, taip pat tris sekundes palaikius spyną kampe. Atgal ir braukimai žaidžiant nieko nedaro.';
 }

@@ -3759,4 +3759,74 @@ class AppLocalizationsSl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Igraj';
+
+  @override
+  String get playIntro =>
+      'Položi napravo ravno pred mačko in zaženi igračo. Dvigni napravo, da jo ustaviš.';
+
+  @override
+  String get playIntroNeutral =>
+      'Položi napravo ravno pred ljubljenčka in zaženi igračo. Dvigni napravo, da jo ustaviš.';
+
+  @override
+  String get toyLaserDot => 'Laserska pika';
+
+  @override
+  String get toyLaserDotHint => 'Rdeča pika, ki šine in čaka.';
+
+  @override
+  String get toyMouse => 'Miška';
+
+  @override
+  String get toyMouseHint => 'Miška, ki teče ob robovih in se skriva.';
+
+  @override
+  String get toySounds => 'Zvoki igrač';
+
+  @override
+  String get toyHoldToStop => 'Pridrži za ustavitev';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Zadnja igra: $catches v $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n ulovov',
+      few: '$n ulovi',
+      two: '$n ulova',
+      one: '$n ulov',
+      zero: 'noben ulov',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minutah',
+      few: '$n minutah',
+      two: '$n minutah',
+      one: '$n minuti',
+      zero: 'manj kot minuti',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Igrače za tvojo mačko, brez oglasov. Igrača zapolni zaslon in ga drži prižganega; šteje vsaka tačka, ki jo ujame. Dvig naprave konča igro, prav tako tri sekunde držanja ključavnice v kotu. Nazaj in poteg med igro ne naredita ničesar.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Igrače za tvojega ljubljenčka, brez oglasov. Igrača zapolni zaslon in ga drži prižganega; šteje vsaka tačka, ki jo ujame. Dvig naprave konča igro, prav tako tri sekunde držanja ključavnice v kotu. Nazaj in poteg med igro ne naredita ničesar.';
 }

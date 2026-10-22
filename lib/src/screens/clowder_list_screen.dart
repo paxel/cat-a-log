@@ -13,6 +13,7 @@ import '../widgets/cat_avatar.dart';
 import '../widgets/cat_ear.dart';
 import '../field_labels.dart';
 import 'about_screen.dart';
+import 'play_screen.dart';
 import 'achievements_screen.dart';
 import 'conflicts_screen.dart';
 import 'settings_screen.dart';
@@ -321,6 +322,14 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
                     manager: manager, stores: [widget.store]),
               )),
             ),
+          // Toys for the cat, right before Settings (#172).
+          PageAction(
+            icon: Icons.toys_outlined,
+            label: context.t.playToys,
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => PlayScreen(store: widget.store),
+            )),
+          ),
           PageAction(
             icon: Icons.settings_outlined,
             label: context.t.settings,

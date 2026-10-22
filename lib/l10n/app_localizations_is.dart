@@ -3731,4 +3731,70 @@ class AppLocalizationsIs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Leika';
+
+  @override
+  String get playIntro =>
+      'Leggðu tækið flatt fyrir framan köttinn þinn og ræstu leikfang. Lyftu tækinu til að stöðva.';
+
+  @override
+  String get playIntroNeutral =>
+      'Leggðu tækið flatt fyrir framan gæludýrið þitt og ræstu leikfang. Lyftu tækinu til að stöðva.';
+
+  @override
+  String get toyLaserDot => 'Leysipunktur';
+
+  @override
+  String get toyLaserDotHint => 'Rauður punktur sem þýtur og bíður.';
+
+  @override
+  String get toyMouse => 'Mús';
+
+  @override
+  String get toyMouseHint => 'Mús sem hleypur meðfram brúnunum og felur sig.';
+
+  @override
+  String get toySounds => 'Hljóð leikfanga';
+
+  @override
+  String get toyHoldToStop => 'Haltu inni til að stöðva';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Síðasti leikur: $catches á $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n veiðar',
+      one: '1 veiði',
+      zero: 'engin veiði',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n mínútur',
+      one: '1 mínúta',
+      zero: 'innan við mínúta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Leikföng fyrir köttinn þinn, án auglýsinga. Leikfang fyllir skjáinn og heldur honum kveiktum; hver loppa sem nær því telst. Að lyfta tækinu lýkur leiknum, og eins að halda lásnum í horninu inni í þrjár sekúndur. Til baka og strok gera ekkert á meðan.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Leikföng fyrir gæludýrið þitt, án auglýsinga. Leikfang fyllir skjáinn og heldur honum kveiktum; hver loppa sem nær því telst. Að lyfta tækinu lýkur leiknum, og eins að halda lásnum í horninu inni í þrjár sekúndur. Til baka og strok gera ekkert á meðan.';
 }

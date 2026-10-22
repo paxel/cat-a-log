@@ -3744,4 +3744,70 @@ class AppLocalizationsMt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Ilgħab';
+
+  @override
+  String get playIntro =>
+      'Poġġi l-apparat ċatt quddiem il-qattus tiegħek u ibda ġugarell. Erfa\' l-apparat biex twaqqfu.';
+
+  @override
+  String get playIntroNeutral =>
+      'Poġġi l-apparat ċatt quddiem l-annimal tiegħek u ibda ġugarell. Erfa\' l-apparat biex twaqqfu.';
+
+  @override
+  String get toyLaserDot => 'Tikka tal-laser';
+
+  @override
+  String get toyLaserDotHint => 'Tikka ħamra li taqbeż u tistenna.';
+
+  @override
+  String get toyMouse => 'Ġurdien';
+
+  @override
+  String get toyMouseHint => 'Ġurdien li jiġri mat-truf u jinħeba.';
+
+  @override
+  String get toySounds => 'Ħsejjes tal-ġugarelli';
+
+  @override
+  String get toyHoldToStop => 'Żomm biex twaqqaf';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'L-aħħar logħba: $catches f\'$minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n qabdiet',
+      one: 'qabda waħda',
+      zero: 'l-ebda qabda',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minuti',
+      one: 'minuta',
+      zero: 'inqas minn minuta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Ġugarelli għall-qattus tiegħek, mingħajr reklami. Ġugarell jimla l-iskrin u jżommu mixgħul; kull saqajn li taqbdu tgħodd. Li terfa\' l-apparat itemm il-logħba, u hekk ukoll iżżomm is-serratura fil-kantuniera għal tliet sekondi. Lura u l-iswajps ma jagħmlu xejn waqt il-logħba.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Ġugarelli għall-annimal tiegħek, mingħajr reklami. Ġugarell jimla l-iskrin u jżommu mixgħul; kull saqajn li taqbdu tgħodd. Li terfa\' l-apparat itemm il-logħba, u hekk ukoll iżżomm is-serratura fil-kantuniera għal tliet sekondi. Lura u l-iswajps ma jagħmlu xejn waqt il-logħba.';
 }

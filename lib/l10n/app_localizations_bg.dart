@@ -3725,4 +3725,70 @@ class AppLocalizationsBg extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Игра';
+
+  @override
+  String get playIntro =>
+      'Сложи устройството хоризонтално пред котката и пусни играчка. Вдигни устройството, за да я спреш.';
+
+  @override
+  String get playIntroNeutral =>
+      'Сложи устройството хоризонтално пред любимеца и пусни играчка. Вдигни устройството, за да я спреш.';
+
+  @override
+  String get toyLaserDot => 'Лазерна точка';
+
+  @override
+  String get toyLaserDotHint => 'Червена точка, която стрелва и чака.';
+
+  @override
+  String get toyMouse => 'Мишка';
+
+  @override
+  String get toyMouseHint => 'Мишка, която тича покрай ръбовете и се крие.';
+
+  @override
+  String get toySounds => 'Звуци на играчките';
+
+  @override
+  String get toyHoldToStop => 'Задръж за спиране';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Последна игра: $catches за $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n улова',
+      one: '1 улов',
+      zero: 'нито един улов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n минути',
+      one: '1 минута',
+      zero: 'под минута',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Играчки за котката ти, без реклами. Играчката запълва екрана и го държи включен; брои се всяка лапа, която я хване. Вдигането на устройството приключва играта, както и задържането на катинара в ъгъла три секунди. Назад и плъзганията не правят нищо, докато тече.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Играчки за любимеца ти, без реклами. Играчката запълва екрана и го държи включен; брои се всяка лапа, която я хване. Вдигането на устройството приключва играта, както и задържането на катинара в ъгъла три секунди. Назад и плъзганията не правят нищо, докато тече.';
 }

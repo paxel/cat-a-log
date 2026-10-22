@@ -1250,5 +1250,19 @@
   "sharedFolder": "Carpeta compartida",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ahora no",
-  "changesCount": "{n, plural, one{1 cambio} other{{n} cambios}}"
+  "changesCount": "{n, plural, one{1 cambio} other{{n} cambios}}",
+  "playToys": "Jugar",
+  "playIntro": "Deja el dispositivo plano delante de tu gato e inicia un juguete. Levanta el dispositivo para pararlo.",
+  "playIntroNeutral": "Deja el dispositivo plano delante de tu mascota e inicia un juguete. Levanta el dispositivo para pararlo.",
+  "toyLaserDot": "Punto láser",
+  "toyLaserDotHint": "Un punto rojo que sale disparado y espera.",
+  "toyMouse": "Ratón",
+  "toyMouseHint": "Un ratón que corre por los bordes y se esconde.",
+  "toySounds": "Sonidos de los juguetes",
+  "toyHoldToStop": "Mantén pulsado para parar",
+  "toyLastGame": "Última partida: {catches} en {minutes}",
+  "toyCatches": "{n, plural, =0{ninguna captura} one{1 captura} other{{n} capturas}}",
+  "toyMinutes": "{n, plural, =0{menos de un minuto} one{1 minuto} other{{n} minutos}}",
+  "helpPlay": "Juguetes para tu gato, sin anuncios. Un juguete llena la pantalla y la mantiene encendida; cuenta cada pata que lo atrapa. Levantar el dispositivo termina la partida, y también mantener pulsado el candado de la esquina tres segundos. Atrás y los deslizamientos no hacen nada mientras juega.",
+  "helpPlayNeutral": "Juguetes para tu mascota, sin anuncios. Un juguete llena la pantalla y la mantiene encendida; cuenta cada pata que lo atrapa. Levantar el dispositivo termina la partida, y también mantener pulsado el candado de la esquina tres segundos. Atrás y los deslizamientos no hacen nada mientras juega."
 }

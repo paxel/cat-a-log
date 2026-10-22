@@ -1250,5 +1250,19 @@
   "sharedFolder": "Folder kondiviż",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Mhux issa",
-  "changesCount": "{n, plural, one{bidla waħda} other{{n} bidliet}}"
+  "changesCount": "{n, plural, one{bidla waħda} other{{n} bidliet}}",
+  "playToys": "Ilgħab",
+  "playIntro": "Poġġi l-apparat ċatt quddiem il-qattus tiegħek u ibda ġugarell. Erfa' l-apparat biex twaqqfu.",
+  "playIntroNeutral": "Poġġi l-apparat ċatt quddiem l-annimal tiegħek u ibda ġugarell. Erfa' l-apparat biex twaqqfu.",
+  "toyLaserDot": "Tikka tal-laser",
+  "toyLaserDotHint": "Tikka ħamra li taqbeż u tistenna.",
+  "toyMouse": "Ġurdien",
+  "toyMouseHint": "Ġurdien li jiġri mat-truf u jinħeba.",
+  "toySounds": "Ħsejjes tal-ġugarelli",
+  "toyHoldToStop": "Żomm biex twaqqaf",
+  "toyLastGame": "L-aħħar logħba: {catches} f'{minutes}",
+  "toyCatches": "{n, plural, =0{l-ebda qabda} one{qabda waħda} other{{n} qabdiet}}",
+  "toyMinutes": "{n, plural, =0{inqas minn minuta} one{minuta} other{{n} minuti}}",
+  "helpPlay": "Ġugarelli għall-qattus tiegħek, mingħajr reklami. Ġugarell jimla l-iskrin u jżommu mixgħul; kull saqajn li taqbdu tgħodd. Li terfa' l-apparat itemm il-logħba, u hekk ukoll iżżomm is-serratura fil-kantuniera għal tliet sekondi. Lura u l-iswajps ma jagħmlu xejn waqt il-logħba.",
+  "helpPlayNeutral": "Ġugarelli għall-annimal tiegħek, mingħajr reklami. Ġugarell jimla l-iskrin u jżommu mixgħul; kull saqajn li taqbdu tgħodd. Li terfa' l-apparat itemm il-logħba, u hekk ukoll iżżomm is-serratura fil-kantuniera għal tliet sekondi. Lura u l-iswajps ma jagħmlu xejn waqt il-logħba."
 }

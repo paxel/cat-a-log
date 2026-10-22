@@ -3726,4 +3726,70 @@ class AppLocalizationsDa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Leg';
+
+  @override
+  String get playIntro =>
+      'Læg enheden fladt foran din kat og start et legetøj. Løft enheden for at stoppe.';
+
+  @override
+  String get playIntroNeutral =>
+      'Læg enheden fladt foran dit kæledyr og start et legetøj. Løft enheden for at stoppe.';
+
+  @override
+  String get toyLaserDot => 'Laserprik';
+
+  @override
+  String get toyLaserDotHint => 'En rød prik, der farer af sted og venter.';
+
+  @override
+  String get toyMouse => 'Mus';
+
+  @override
+  String get toyMouseHint => 'En mus, der løber langs kanterne og gemmer sig.';
+
+  @override
+  String get toySounds => 'Legetøjslyde';
+
+  @override
+  String get toyHoldToStop => 'Hold for at stoppe';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Sidste spil: $catches på $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fangster',
+      one: '1 fangst',
+      zero: 'ingen fangster',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minutter',
+      one: '1 minut',
+      zero: 'under et minut',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Legetøj til din kat, uden reklamer. Et legetøj fylder skærmen og holder den tændt; hver pote, der fanger det, tæller. At løfte enheden afslutter spillet, og det gør det også at holde låsen i hjørnet i tre sekunder. Tilbage og swipe gør intet, mens det kører.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Legetøj til dit kæledyr, uden reklamer. Et legetøj fylder skærmen og holder den tændt; hver pote, der fanger det, tæller. At løfte enheden afslutter spillet, og det gør det også at holde låsen i hjørnet i tre sekunder. Tilbage og swipe gør intet, mens det kører.';
 }

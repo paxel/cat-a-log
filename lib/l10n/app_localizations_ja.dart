@@ -3592,4 +3592,66 @@ class AppLocalizationsJa extends AppLocalizations {
   String changesCount(int n) {
     return '$n件の変更';
   }
+
+  @override
+  String get playToys => '遊ぶ';
+
+  @override
+  String get playIntro => '端末を猫の前に平らに置いて、おもちゃを始めます。端末を持ち上げると止まります。';
+
+  @override
+  String get playIntroNeutral => '端末をペットの前に平らに置いて、おもちゃを始めます。端末を持ち上げると止まります。';
+
+  @override
+  String get toyLaserDot => 'レーザーポイント';
+
+  @override
+  String get toyLaserDotHint => '素早く動いては止まる赤い点。';
+
+  @override
+  String get toyMouse => 'ネズミ';
+
+  @override
+  String get toyMouseHint => '画面の端を走って隠れるネズミ。';
+
+  @override
+  String get toySounds => 'おもちゃの音';
+
+  @override
+  String get toyHoldToStop => '長押しで終了';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return '前回: $minutesで$catches';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n回捕獲',
+      zero: '捕獲なし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n分',
+      zero: '1分未満',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      '広告のない猫用おもちゃ。おもちゃは画面いっぱいに表示され、画面を点けたままにします。捕まえた前足はすべて数えます。端末を持ち上げるか、隅の鍵を3秒間長押しすると終了します。遊んでいる間、戻る操作やスワイプは何もしません。';
+
+  @override
+  String get helpPlayNeutral =>
+      '広告のないペット用おもちゃ。おもちゃは画面いっぱいに表示され、画面を点けたままにします。捕まえた前足はすべて数えます。端末を持ち上げるか、隅の鍵を3秒間長押しすると終了します。遊んでいる間、戻る操作やスワイプは何もしません。';
 }

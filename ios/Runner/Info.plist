@@ -78,6 +78,8 @@
 	<string>Record where a stray cat was seen (Stray Cam and sightings).</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Record where a stray cat was seen (Stray Cam and sightings). The app never tracks location in the background.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Notice when you pick the device up, to end a toy your cat is playing with.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Put reminder due dates into a cat(a)log calendar, if you turn the mirror on.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>

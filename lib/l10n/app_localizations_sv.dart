@@ -3724,4 +3724,71 @@ class AppLocalizationsSv extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Lek';
+
+  @override
+  String get playIntro =>
+      'Lägg enheten platt framför din katt och starta en leksak. Lyft enheten för att stoppa.';
+
+  @override
+  String get playIntroNeutral =>
+      'Lägg enheten platt framför ditt husdjur och starta en leksak. Lyft enheten för att stoppa.';
+
+  @override
+  String get toyLaserDot => 'Laserprick';
+
+  @override
+  String get toyLaserDotHint => 'En röd prick som far iväg och väntar.';
+
+  @override
+  String get toyMouse => 'Mus';
+
+  @override
+  String get toyMouseHint =>
+      'En mus som springer längs kanterna och gömmer sig.';
+
+  @override
+  String get toySounds => 'Leksaksljud';
+
+  @override
+  String get toyHoldToStop => 'Håll för att stoppa';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Senaste leken: $catches på $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fångster',
+      one: '1 fångst',
+      zero: 'inga fångster',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minuter',
+      one: '1 minut',
+      zero: 'under en minut',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Leksaker för din katt, utan reklam. En leksak fyller skärmen och håller den tänd; varje tass som fångar den räknas. Att lyfta enheten avslutar leken, liksom att hålla låset i hörnet i tre sekunder. Bakåt och svep gör ingenting medan den pågår.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Leksaker för ditt husdjur, utan reklam. En leksak fyller skärmen och håller den tänd; varje tass som fångar den räknas. Att lyfta enheten avslutar leken, liksom att hålla låset i hörnet i tre sekunder. Bakåt och svep gör ingenting medan den pågår.';
 }

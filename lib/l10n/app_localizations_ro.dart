@@ -3744,4 +3744,73 @@ class AppLocalizationsRo extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Joacă';
+
+  @override
+  String get playIntro =>
+      'Pune dispozitivul pe plat în fața pisicii și pornește o jucărie. Ridică dispozitivul ca să o oprești.';
+
+  @override
+  String get playIntroNeutral =>
+      'Pune dispozitivul pe plat în fața animalului și pornește o jucărie. Ridică dispozitivul ca să o oprești.';
+
+  @override
+  String get toyLaserDot => 'Punct laser';
+
+  @override
+  String get toyLaserDotHint => 'Un punct roșu care țâșnește și așteaptă.';
+
+  @override
+  String get toyMouse => 'Șoarece';
+
+  @override
+  String get toyMouseHint =>
+      'Un șoarece care aleargă pe margini și se ascunde.';
+
+  @override
+  String get toySounds => 'Sunetele jucăriilor';
+
+  @override
+  String get toyHoldToStop => 'Ține apăsat pentru oprire';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Ultimul joc: $catches în $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n de prinderi',
+      few: '$n prinderi',
+      one: '1 prindere',
+      zero: 'nicio prindere',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n de minute',
+      few: '$n minute',
+      one: '1 minut',
+      zero: 'sub un minut',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Jucării pentru pisica ta, fără reclame. O jucărie umple ecranul și îl ține aprins; contează fiecare labă care o prinde. Ridicarea dispozitivului încheie jocul, la fel ca ținerea lacătului din colț trei secunde. Înapoi și glisările nu fac nimic cât rulează.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Jucării pentru animalul tău, fără reclame. O jucărie umple ecranul și îl ține aprins; contează fiecare labă care o prinde. Ridicarea dispozitivului încheie jocul, la fel ca ținerea lacătului din colț trei secunde. Înapoi și glisările nu fac nimic cât rulează.';
 }

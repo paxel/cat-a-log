@@ -3667,4 +3667,70 @@ class AppLocalizationsFa extends AppLocalizations {
   String changesCount(int n) {
     return '$n تغییر';
   }
+
+  @override
+  String get playToys => 'بازی';
+
+  @override
+  String get playIntro =>
+      'دستگاه را صاف جلوی گربه‌ات بگذار و یک اسباب‌بازی را شروع کن. برای توقف، دستگاه را بردار.';
+
+  @override
+  String get playIntroNeutral =>
+      'دستگاه را صاف جلوی حیوان خانگی‌ات بگذار و یک اسباب‌بازی را شروع کن. برای توقف، دستگاه را بردار.';
+
+  @override
+  String get toyLaserDot => 'نقطه لیزر';
+
+  @override
+  String get toyLaserDotHint => 'نقطه‌ای قرمز که می‌جهد و منتظر می‌ماند.';
+
+  @override
+  String get toyMouse => 'موش';
+
+  @override
+  String get toyMouseHint => 'موشی که در لبه‌ها می‌دود و پنهان می‌شود.';
+
+  @override
+  String get toySounds => 'صدای اسباب‌بازی‌ها';
+
+  @override
+  String get toyHoldToStop => 'برای توقف نگه دار';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'بازی آخر: $catches در $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n گرفتن',
+      one: '۱ گرفتن',
+      zero: 'بدون گرفتن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n دقیقه',
+      one: '۱ دقیقه',
+      zero: 'کمتر از یک دقیقه',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'اسباب‌بازی برای گربه‌ات، بدون تبلیغ. اسباب‌بازی صفحه را پر می‌کند و روشن نگه می‌دارد؛ هر پنجه‌ای که آن را بگیرد شمرده می‌شود. برداشتن دستگاه بازی را تمام می‌کند، و نگه داشتن قفل گوشه به مدت سه ثانیه هم. برگشت و کشیدن در طول بازی کاری نمی‌کنند.';
+
+  @override
+  String get helpPlayNeutral =>
+      'اسباب‌بازی برای حیوان خانگی‌ات، بدون تبلیغ. اسباب‌بازی صفحه را پر می‌کند و روشن نگه می‌دارد؛ هر پنجه‌ای که آن را بگیرد شمرده می‌شود. برداشتن دستگاه بازی را تمام می‌کند، و نگه داشتن قفل گوشه به مدت سه ثانیه هم. برگشت و کشیدن در طول بازی کاری نمی‌کنند.';
 }

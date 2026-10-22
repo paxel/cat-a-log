@@ -3726,4 +3726,70 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Play';
+
+  @override
+  String get playIntro =>
+      'Lay the device flat in front of your cat and start a toy. Pick the device up to stop it.';
+
+  @override
+  String get playIntroNeutral =>
+      'Lay the device flat in front of your pet and start a toy. Pick the device up to stop it.';
+
+  @override
+  String get toyLaserDot => 'Laser dot';
+
+  @override
+  String get toyLaserDotHint => 'A red dot that darts and waits.';
+
+  @override
+  String get toyMouse => 'Mouse';
+
+  @override
+  String get toyMouseHint => 'A mouse that runs along the edges and hides.';
+
+  @override
+  String get toySounds => 'Toy sounds';
+
+  @override
+  String get toyHoldToStop => 'Hold to stop';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Last game: $catches in $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n catches',
+      one: '1 catch',
+      zero: 'no catches',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minutes',
+      one: '1 minute',
+      zero: 'under a minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Toys for your cat, without ads. A toy fills the screen and keeps it on; every paw that catches it counts. Picking the device up ends the game, and so does holding the lock in the corner for three seconds. Back and swipes do nothing while it runs.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Toys for your pet, without ads. A toy fills the screen and keeps it on; every paw that catches it counts. Picking the device up ends the game, and so does holding the lock in the corner for three seconds. Back and swipes do nothing while it runs.';
 }

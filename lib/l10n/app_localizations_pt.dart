@@ -3730,4 +3730,70 @@ class AppLocalizationsPt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playToys => 'Brincar';
+
+  @override
+  String get playIntro =>
+      'Pousa o dispositivo plano à frente do teu gato e inicia um brinquedo. Levanta o dispositivo para o parar.';
+
+  @override
+  String get playIntroNeutral =>
+      'Pousa o dispositivo plano à frente do teu animal e inicia um brinquedo. Levanta o dispositivo para o parar.';
+
+  @override
+  String get toyLaserDot => 'Ponto laser';
+
+  @override
+  String get toyLaserDotHint => 'Um ponto vermelho que dispara e espera.';
+
+  @override
+  String get toyMouse => 'Rato';
+
+  @override
+  String get toyMouseHint => 'Um rato que corre pelas margens e se esconde.';
+
+  @override
+  String get toySounds => 'Sons dos brinquedos';
+
+  @override
+  String get toyHoldToStop => 'Manter premido para parar';
+
+  @override
+  String toyLastGame(String catches, String minutes) {
+    return 'Último jogo: $catches em $minutes';
+  }
+
+  @override
+  String toyCatches(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n capturas',
+      one: '1 captura',
+      zero: 'nenhuma captura',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toyMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minutos',
+      one: '1 minuto',
+      zero: 'menos de um minuto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpPlay =>
+      'Brinquedos para o teu gato, sem anúncios. Um brinquedo enche o ecrã e mantém-no ligado; conta cada pata que o apanha. Levantar o dispositivo termina o jogo, tal como manter premido o cadeado no canto durante três segundos. Voltar e deslizar não fazem nada enquanto corre.';
+
+  @override
+  String get helpPlayNeutral =>
+      'Brinquedos para o teu animal, sem anúncios. Um brinquedo enche o ecrã e mantém-no ligado; conta cada pata que o apanha. Levantar o dispositivo termina o jogo, tal como manter premido o cadeado no canto durante três segundos. Voltar e deslizar não fazem nada enquanto corre.';
 }

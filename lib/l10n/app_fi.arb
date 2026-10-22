@@ -1250,5 +1250,19 @@
   "sharedFolder": "Jaettu kansio",
   "pinLabel": "PIN: {pin}",
   "syncDismiss": "Ei nyt",
-  "changesCount": "{n, plural, one{1 muutos} other{{n} muutosta}}"
+  "changesCount": "{n, plural, one{1 muutos} other{{n} muutosta}}",
+  "playToys": "Leiki",
+  "playIntro": "Aseta laite tasaisesti kissasi eteen ja käynnistä lelu. Nosta laite lopettaaksesi.",
+  "playIntroNeutral": "Aseta laite tasaisesti lemmikkisi eteen ja käynnistä lelu. Nosta laite lopettaaksesi.",
+  "toyLaserDot": "Laserpiste",
+  "toyLaserDotHint": "Punainen piste, joka syöksähtää ja odottaa.",
+  "toyMouse": "Hiiri",
+  "toyMouseHint": "Hiiri, joka juoksee reunoja pitkin ja piiloutuu.",
+  "toySounds": "Lelujen äänet",
+  "toyHoldToStop": "Pidä painettuna lopettaaksesi",
+  "toyLastGame": "Viimeisin peli: {catches}, {minutes}",
+  "toyCatches": "{n, plural, =0{ei saaliita} one{1 saalis} other{{n} saalista}}",
+  "toyMinutes": "{n, plural, =0{alle minuutti} one{1 minuutti} other{{n} minuuttia}}",
+  "helpPlay": "Leluja kissallesi ilman mainoksia. Lelu täyttää näytön ja pitää sen päällä; jokainen tassu, joka sen nappaa, lasketaan. Laitteen nostaminen lopettaa pelin, samoin kulman lukon painaminen kolmen sekunnin ajan. Takaisin ja pyyhkäisyt eivät tee mitään pelin aikana.",
+  "helpPlayNeutral": "Leluja lemmikillesi ilman mainoksia. Lelu täyttää näytön ja pitää sen päällä; jokainen tassu, joka sen nappaa, lasketaan. Laitteen nostaminen lopettaa pelin, samoin kulman lukon painaminen kolmen sekunnin ajan. Takaisin ja pyyhkäisyt eivät tee mitään pelin aikana."
 }
