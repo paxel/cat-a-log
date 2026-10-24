@@ -2186,10 +2186,10 @@ impl App {
                     links.push(documentation_url(t.locale()));
                 }
                 if ui.link(t.source_code()).clicked() {
-                    links.push("https://github.com/paxel/catlog".to_string());
+                    links.push("https://github.com/paxel/cat-a-log".to_string());
                 }
                 if ui.link(t.report_problem_or_idea()).clicked() {
-                    links.push("https://github.com/paxel/catlog/issues".to_string());
+                    links.push("https://github.com/paxel/cat-a-log/issues".to_string());
                 }
                 if ui.link(t.write_the_developer()).clicked() {
                     links.push(format!(
@@ -9361,7 +9361,7 @@ mod tests {
         h.run();
         let opened = urls.lock().unwrap().clone();
         assert_eq!(opened[0], "https://paxel.github.io/cat-a-log/en/");
-        assert_eq!(opened[1], "https://github.com/paxel/catlog");
+        assert_eq!(opened[1], "https://github.com/paxel/cat-a-log");
         assert!(opened[2].starts_with("mailto:taum@tuta.io"));
         assert_eq!(
             documentation_url("de"),

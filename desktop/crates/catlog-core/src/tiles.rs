@@ -11,7 +11,7 @@ use crate::error::Error;
 
 /// The tile server, and the name the app gives when asking it.
 pub const TILE_URL: &str = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-pub const TILE_USER_AGENT: &str = "catlog/2.0 (+https://github.com/paxel/catlog)";
+pub const TILE_USER_AGENT: &str = "catlog/2.0 (+https://github.com/paxel/cat-a-log)";
 
 /// The largest tile response kept: OSM tiles are well under 100 KB.
 pub const MAX_TILE_BYTES: usize = 2 << 20;

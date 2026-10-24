@@ -64,14 +64,14 @@ by step, in English and German: **[the documentation](https://paxel.github.io/ca
 
 ## Get it
 
-Everything is on the **[download page](https://github.com/paxel/catlog/releases)**.
+Everything is on the **[download page](https://github.com/paxel/cat-a-log/releases)**.
 
 - **Android phone or tablet**: download the file ending in
   `arm64-v8a.apk`, open it, and allow the installation when the phone asks.
   Prefer automatic updates? Add [our F-Droid
-  repository](https://paxel.github.io/catlog/fdroid/) to the F-Droid app.
+  repository](https://paxel.github.io/fdroid/) to the F-Droid app.
 - **iPhone / iPad**: currently as a beta through Apple's TestFlight —
-  [ask us](https://github.com/paxel/catlog/issues) and we'll invite you.
+  [ask us](https://github.com/paxel/cat-a-log/issues) and we'll invite you.
 - **Windows**: download the file ending in `windows-x86_64.zip`, unpack it
   anywhere, double-click `catlog.exe`.
 - **Mac**: download the `.dmg` for your Mac (`arm64` for newer Macs,
@@ -88,7 +88,7 @@ the app.
 
 ## Questions, problems, ideas
 
-Write us: [github.com/paxel/catlog/issues](https://github.com/paxel/catlog/issues)
+Write us: [github.com/paxel/cat-a-log/issues](https://github.com/paxel/cat-a-log/issues)
 — in whatever language you like.
 
 ---

@@ -14,7 +14,7 @@ import http from "node:http";
 import { fileURLToPath } from "node:url";
 import { REPO_ROOT, decodeEntities, escapeHtml, readVersion, slugify, stripTags } from "./common.js";
 import { generatedPages } from "./generated.js";
-export const REPO_URL = "https://github.com/paxel/catlog";
+export const REPO_URL = "https://github.com/paxel/cat-a-log";
 export const SITE_URL = "https://paxel.github.io/cat-a-log/";
 
 /** The two trees, and what the header calls them. */

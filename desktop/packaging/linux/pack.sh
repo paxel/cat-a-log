@@ -49,7 +49,7 @@ Priority: optional
 Architecture: $deb_arch
 Maintainer: paxel <taum@tuta.io>
 Depends: libc6, libxkbcommon0, libasound2t64 | libasound2
-Homepage: https://github.com/paxel/catlog
+Homepage: https://github.com/paxel/cat-a-log
 Description: Local-first catalog for foster cats
  cat(a)log keeps the cats, clowders, chores and photos of a foster
  home on this machine and syncs through a shared folder or a file,

@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_map/flutter_map.dart';
 
-const tileUserAgent = 'catlog/0.1 (+https://github.com/paxel/catlog)';
+const tileUserAgent = 'catlog/0.1 (+https://github.com/paxel/cat-a-log)';
 
 /// OSM tiles with a simple disk cache: once a tile was seen, it renders
 /// offline forever (visited areas only — no bulk pre-download).

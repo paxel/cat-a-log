@@ -25,7 +25,7 @@ typedef GeocodeSearch = Future<List<GeoHit>> Function(String query);
 /// asked to locate the owner's address; no reverse geocoding anywhere.
 Future<List<GeoHit>> nominatimSearch(String query) async {
   final client = HttpClient()
-    ..userAgent = 'catlog/0.2 (https://github.com/paxel/catlog)'
+    ..userAgent = 'catlog/0.2 (https://github.com/paxel/cat-a-log)'
     ..connectionTimeout = const Duration(seconds: 10);
   try {
     final uri = Uri.https('nominatim.openstreetmap.org', '/search', {

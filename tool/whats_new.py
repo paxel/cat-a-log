@@ -9,7 +9,7 @@ full changelog.
 import sys
 
 LIMIT = 440
-FULL = "All changes: https://github.com/paxel/catlog/blob/HEAD/CHANGELOG.md"
+FULL = "All changes: https://github.com/paxel/cat-a-log/blob/HEAD/CHANGELOG.md"
 
 
 def section(version, lines):

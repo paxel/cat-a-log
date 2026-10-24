@@ -9,7 +9,7 @@ import '../l10n.dart';
 import '../exclusive.dart';
 import '../layout.dart';
 
-const _repoUrl = 'https://github.com/paxel/catlog';
+const _repoUrl = 'https://github.com/paxel/cat-a-log';
 const _issuesUrl = '$_repoUrl/issues';
 const _feedbackMail = 'taum@tuta.io';
 
