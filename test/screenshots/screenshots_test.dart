@@ -200,12 +200,14 @@ void main() {
     };
 
     // The docs set, then the store sets: Apple 6.9" iPhone (1320×2868
-    // @3x) and 13" iPad (2064×2752 @2x); Google Play phone (9:16) and
-    // 10-inch tablet.
+    // @3x), 6.3" iPhone (1206×2622 @3x, the class App Store Connect
+    // requires) and 13" iPad (2064×2752 @2x); Google Play phone (9:16)
+    // and 10-inch tablet.
     Directory('docs/screenshots/appstore').createSync(recursive: true);
     Directory('docs/screenshots/play').createSync(recursive: true);
     Directory('docs/screenshots/tablet').createSync(recursive: true);
     const phone = Size(1320, 2868);
+    const phone63 = Size(1206, 2622);
     const pad = Size(2064, 2752);
     const play = Size(1080, 1920);
     const tablet = Size(1440, 2560);
@@ -216,6 +218,13 @@ void main() {
         entry.value(),
         'appstore/iphone-${entry.key}',
         physical: phone,
+        dpr: 3,
+      );
+      await shoot(
+        tester,
+        entry.value(),
+        'appstore/iphone63-${entry.key}',
+        physical: phone63,
         dpr: 3,
       );
       await shoot(
