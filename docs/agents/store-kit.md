@@ -12,6 +12,14 @@ app; the method lives in the skill.
 | App Store id | `6801824418` |
 | Play page | <https://play.google.com/store/apps/details?id=io.github.paxel.catlog> |
 | App Store page | <https://apps.apple.com/us/app/cat-a-log/id6801824418> |
+| Privacy policy | <https://paxel.github.io/cat-a-log/privacy-policy.html> (German: <https://paxel.github.io/cat-a-log/de/reference/privacy-policy.html>) |
+
+## Kit pages
+
+The same two pages are republished every release (pass the link as `url`):
+
+- Play Kit: <https://claude.ai/artifact/VMpcJLdRv35nZr3hWcoGEh>
+- App Store Kit: <https://claude.ai/artifact/XKTmUQJP8b18gs6wuULv82>
 
 ## Locales
 
@@ -46,7 +54,10 @@ with real fonts and pre-downloaded tiles, and writes:
 | Play phone | `docs/screenshots/play/play-NN-name.png` | 1080 × 1920 |
 | Play tablet | `docs/screenshots/tablet/tablet10-NN-name.png` | 1440 × 2560 |
 | App Store iPhone 6.9″ | `docs/screenshots/appstore/iphone-NN-name.png` | 1320 × 2868 |
+| App Store iPhone 6.3″ | `docs/screenshots/appstore/iphone63-NN-name.png` | 1206 × 2622 |
 | App Store iPad 13″ | `docs/screenshots/appstore/ipad-NN-name.png` | 2064 × 2752 |
+
+App Store Connect requires the 6.3″ iPhone class and the 13″ iPad; the 6.9″ set is optional and does not stand in for the 6.3″ one. The iPhone Duo classes (1398 × 2034 outer, 2007 × 2853 inner) are optional until April 2027, required then for builds on the iOS 27.1 SDK or later.
 
 The twelve frames, in store order:
 
