@@ -97,8 +97,10 @@ class _CachedTileImage extends ImageProvider<_CachedTileImage> {
     // the stream disposes itself and the arriving image throws "Stream
     // has been disposed". The handle lives exactly as long as the load;
     // the completer's own then() runs first, so the image still lands.
+    // A failed download reaches the tile through the completer; the copy
+    // whenComplete returns would carry the same error to the crash screen.
     final handle = completer.keepAlive();
-    future.whenComplete(handle.dispose);
+    future.whenComplete(handle.dispose).ignore();
     return completer;
   }
 

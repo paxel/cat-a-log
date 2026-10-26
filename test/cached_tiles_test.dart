@@ -47,4 +47,36 @@ void main() {
     });
     expect(tester.takeException(), isNull);
   });
+  testWidgets('a failed tile download does not escape as an uncaught error',
+      (tester) async {
+    final overrides = HttpOverrides.current;
+    HttpOverrides.global = null;
+    addTearDown(() => HttpOverrides.global = overrides);
+    final dir = Directory.systemTemp.createTempSync('catlog_tiles');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    Object? failure;
+    await tester.runAsync(() async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(() => server.close(force: true));
+      // The tile server drops the connection instead of answering.
+      server.listen((req) async {
+        final socket = await req.response.detachSocket();
+        socket.destroy();
+      });
+      final provider = DiskCachingTileProvider(dir);
+      final image = provider.getImage(
+          const TileCoordinates(1, 2, 3),
+          TileLayer(
+              urlTemplate: 'http://127.0.0.1:${server.port}/{z}/{x}/{y}.png'));
+      final completer = (image as dynamic).loadImage(
+              image, PaintingBinding.instance.instantiateImageCodecWithSize)
+          as ImageStreamCompleter;
+      // The tile widget handles its own error; nothing else may see it.
+      completer.addListener(ImageStreamListener((_, _) {},
+          onError: (error, _) => failure = error));
+      await Future<void>.delayed(const Duration(milliseconds: 800));
+    });
+    expect(failure, isNotNull);
+    expect(tester.takeException(), isNull);
+  });
 }
