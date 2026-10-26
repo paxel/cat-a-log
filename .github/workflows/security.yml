@@ -1,6 +1,7 @@
 # Fails only when a dependency has a known vulnerability (OSV database, from pubspec.lock and desktop/Cargo.lock). Runs weekly and
 # on demand, because new advisories appear without any change in this repo.
-# Warnings such as unmaintained or yanked packages are reported but never fail it.
+# Notices without a fix, such as an unmaintained package, are accepted with a reason in
+# desktop/osv-scanner.toml; anything not listed there fails it.
 name: Security
 
 on:

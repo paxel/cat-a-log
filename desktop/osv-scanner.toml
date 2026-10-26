@@ -1,0 +1,18 @@
+# Advisories the Security workflow accepts for this lockfile. Only "unmaintained"
+# notices without a fixed version belong here; a vulnerability gets fixed instead.
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0192"
+reason = "ttf-parser is unmaintained, no fixed version. Used directly for glyph widths in the PDF export and through lopdf and ab_glyph (winit, egui)."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0371"
+reason = "zbus_names is unmaintained, no fixed version. Comes from eframe's Linux accessibility bus (accesskit, atspi); leaves with an egui update."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0370"
+reason = "zvariant is unmaintained, no fixed version. Comes from eframe's Linux accessibility bus (accesskit, atspi); leaves with an egui update."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0372"
+reason = "zvariant_derive is unmaintained, no fixed version. Comes from eframe's Linux accessibility bus (accesskit, atspi); leaves with an egui update."
