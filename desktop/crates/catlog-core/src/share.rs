@@ -296,7 +296,7 @@ mod tests {
         assert!(entries.iter().any(|e| e["field"] == "$profile"));
         let mut archive = zip::ZipArchive::new(std::io::Cursor::new(with)).unwrap();
         let names: Vec<String> = (0..archive.len())
-            .map(|i| archive.by_index(i).unwrap().name().to_string())
+            .map(|i| archive.by_index(i).unwrap().name().unwrap().to_string())
             .collect();
         assert_eq!(names.iter().filter(|n| n.starts_with("blobs/")).count(), 2);
         // A private Field stays home.

@@ -131,7 +131,7 @@ impl Catalog {
             if f.is_dir() {
                 continue;
             }
-            let name = f.name().to_string();
+            let name = f.name()?.to_string();
             if name.starts_with("blobs/") {
                 if f.size() > MAX_BLOB_BYTES {
                     continue;
@@ -220,7 +220,7 @@ mod tests {
         a.write_bundle(&path, false).unwrap();
         let names: Vec<String> = {
             let z = zip::ZipArchive::new(std::fs::File::open(&path).unwrap()).unwrap();
-            z.file_names().map(String::from).collect()
+            z.file_names().map(|n| n.unwrap().to_string()).collect()
         };
         assert!(names.contains(&"entries.jsonl".to_string()));
         assert!(names.contains(&KEYS_FILE.to_string()));
@@ -245,7 +245,7 @@ mod tests {
         a.write_bundle(&path, false).unwrap();
         let names: Vec<String> = {
             let z = zip::ZipArchive::new(std::fs::File::open(&path).unwrap()).unwrap();
-            z.file_names().map(String::from).collect()
+            z.file_names().map(|n| n.unwrap().to_string()).collect()
         };
         assert!(names.contains(&"entries2.jsonl".to_string()));
         assert!(names.contains(&"format".to_string()));
