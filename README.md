@@ -5,6 +5,15 @@
 <h1 align="center">cat(a)log</h1>
 
 <p align="center">
+  <a href="https://github.com/paxel/cat-a-log/actions/workflows/ci.yml"><img src="https://github.com/paxel/cat-a-log/actions/workflows/ci.yml/badge.svg?branch=summer" alt="CI"/></a>
+  <a href="https://github.com/paxel/cat-a-log/actions/workflows/security.yml"><img src="https://github.com/paxel/cat-a-log/actions/workflows/security.yml/badge.svg?branch=summer" alt="Security"/></a>
+  <a href="https://github.com/paxel/cat-a-log/releases/latest"><img src="https://img.shields.io/github/v/release/paxel/cat-a-log" alt="Release"/></a>
+  <a href="#get-it"><img src="https://img.shields.io/badge/F--Droid-paxel.github.io-1976D2?logo=f-droid" alt="F-Droid repository"/></a>
+  <a href="#get-it"><img src="https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20Windows%20%7C%20macOS%20%7C%20Linux-informational" alt="Platforms"/></a>
+  <a href="LICENSE-MIT"><img src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue" alt="License"/></a>
+</p>
+
+<p align="center">
   <b>The app for people who foster cats.</b><br/>
   Everything stays on your phone — no account, no cloud, no tracking. Free.
 </p>
