@@ -18,11 +18,15 @@
 #   build-macos    — Rust desktop: unsigned catlog.app in a .dmg, per arch
 #   render-channels — Homebrew cask + formula and Scoop manifest rendered from
 #                    the artifacts, uploaded as an artifact on every run
+#   ios            — the iPhone app built unsigned and its XCTest target run
+#                    on a simulator (ios.yml); a gate for TestFlight
+#   testflight     — signed iPhone build, uploaded to TestFlight when
+#                    publishing
 #   release        — GitHub Release, notes = the CHANGELOG section for the tag
 #   channels       — the rendered files pushed to the tap and the bucket, after
 #                    the Release, when publishing
 #
-# Publishing (Play, F-Droid, the Release, the tap and the bucket) happens
+# Publishing (Play, TestFlight, F-Droid, the Release, the tap and the bucket) happens
 # on a tag, or on a manual dispatch that says publish=true. A dispatch
 # without it is the dry run: every artifact is built and uploaded, nothing
 # leaves GitHub.
@@ -525,6 +529,73 @@ jobs:
         with:
           name: channels
           path: out/*
+
+  # The iPhone app built unsigned and its XCTest target run on a simulator
+  # (ios.yml, the same job as on every push to a branch); a gate: the
+  # TestFlight upload needs it (cat-1020).
+  ios:
+    name: iOS
+    needs: gate
+    uses: ./.github/workflows/ios.yml
+    permissions:
+      contents: read
+
+  # Signed iOS build (ADR-0003: no local Mac), uploaded to TestFlight when
+  # publishing; a dry run builds and signs only. Behind the gate and the
+  # iOS tests, like every other channel.
+  #
+  # Requires these repository secrets (see docs/ci-ios-signing.md):
+  #   IOS_CERTIFICATE_BASE64   distribution certificate (.p12, base64)
+  #   IOS_CERTIFICATE_PASSWORD password of that .p12
+  #   IOS_PROFILE_BASE64       App Store provisioning profile (base64)
+  #   APPSTORE_ISSUER_ID       App Store Connect API issuer id
+  #   APPSTORE_KEY_ID          App Store Connect API key id
+  #   APPSTORE_PRIVATE_KEY     App Store Connect API private key (.p8 contents)
+  testflight:
+    name: iOS to TestFlight
+    needs: ios
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+      - name: Import signing certificate
+        uses: apple-actions/import-codesign-certs@63fff01cd422d4b7b855d40ca1e9d34d2de9427d # v3.0.0
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+      - name: Install provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_PROFILE_BASE64 }}" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/catlog.mobileprovision
+      - run: flutter pub get
+      - name: Pin manual signing for the archive build
+        run: |
+          for f in ios/Flutter/Release.xcconfig ios/Flutter/Debug.xcconfig; do
+            cat >> "$f" <<'EOF'
+          CODE_SIGN_STYLE = Manual
+          DEVELOPMENT_TEAM = 5Q2A853F9A
+          PROVISIONING_PROFILE_SPECIFIER = catlog appstore
+          CODE_SIGN_IDENTITY = Apple Distribution
+          EOF
+          done
+      # This workflow's run counter, as for the Android version codes:
+      # one counter for every store build (#39). It stands well above the
+      # numbers the separate TestFlight workflow used.
+      - name: Build signed IPA
+        run: flutter build ipa --release --build-number=$((GITHUB_RUN_NUMBER + 100)) --export-options-plist=ios/ExportOptions.plist
+      - name: Upload to TestFlight
+        if: env.PUBLISH == 'true'
+        uses: apple-actions/upload-testflight-build@9fd28d4e690396e43caca69cef54cccccce77034 # v3.0.1
+        with:
+          app-path: build/ios/ipa/catlog.ipa
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
   # Only after the Release exists: the cask and the manifest point at its
   # assets, so nothing may be pushed before they are there.
