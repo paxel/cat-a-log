@@ -41,6 +41,11 @@ jobs:
           flutter pub get
           flutter analyze --fatal-infos
           flutter test
+      # flutter pub get runs gen-l10n, which lists every message missing
+      # in a locale in build/untranslated.json (l10n.yaml); any of them
+      # fails the build (cat-1009).
+      - name: No untranslated strings
+        run: test "$(tr -d '[:space:]' < build/untranslated.json)" = "{}"
       - name: Tools — test
         run: python3 -m unittest discover -s tool -p 'test_*.py'
 

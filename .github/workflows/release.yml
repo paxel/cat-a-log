@@ -8,7 +8,7 @@
 #                    the Rust desktop's tests, tag = pubspec = Cargo versions,
 #                    no known vulnerability in a lockfile, a CHANGELOG section
 #                    for the version, no open high or critical code-scanning
-#                    alert, Dart format)
+#                    alert, Dart format, no untranslated string)
 #   build-android  — signed per-ABI + universal APKs
 #   build-linux    — Rust desktop: tar.gz, .deb and AppImage per arch
 #   build-windows  — Rust desktop: zip with catlog.exe
@@ -155,6 +155,11 @@ jobs:
           flutter pub get
           flutter analyze --fatal-infos
           flutter test
+      # flutter pub get runs gen-l10n, which lists every message missing
+      # in a locale in build/untranslated.json (l10n.yaml); any of them
+      # fails the build (cat-1009).
+      - name: No untranslated strings
+        run: test "$(tr -d '[:space:]' < build/untranslated.json)" = "{}"
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
         with:
           components: rustfmt, clippy

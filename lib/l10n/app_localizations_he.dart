@@ -3744,7 +3744,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get toyLaserDot => 'נקודת לייזר';
 
   @override
-  String get toyLaserDotHint => 'נקודה אדומה שזינקת ומחכה.';
+  String get toyLaserDotHint => 'נקודה אדומה שמזנקת ומחכה.';
 
   @override
   String get toyMouse => 'עכבר';
