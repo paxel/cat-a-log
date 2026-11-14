@@ -107,7 +107,8 @@ jobs:
       # branch that holds this commit is listed, and one of severity high
       # or critical (security severity, or rule severity error) stops the
       # release. A branch CodeQL never analysed is skipped; none analysed
-      # at all stops it too.
+      # at all stops it too. CodeQL's alerts only: OpenSSF Scorecard's
+      # (cat-1021) grade the repository's settings, not the code.
       - name: No open high or critical code-scanning alert
         env:
           GH_TOKEN: ${{ github.token }}
@@ -117,7 +118,7 @@ jobs:
           analysed=0
           blocking=0
           for b in $branches; do
-            if ! gh api --paginate "repos/$GITHUB_REPOSITORY/code-scanning/alerts?ref=refs/heads/$b&state=open&per_page=100" \
+            if ! gh api --paginate "repos/$GITHUB_REPOSITORY/code-scanning/alerts?ref=refs/heads/$b&state=open&tool_name=CodeQL&per_page=100" \
               --jq '.[] | [(.rule.security_severity_level // "-"), .rule.severity, .rule.id, .most_recent_instance.location.path, .html_url] | @tsv' \
               > "$RUNNER_TEMP/alerts.tsv" 2> "$RUNNER_TEMP/error.txt"; then
               if grep -q 'no analysis found' "$RUNNER_TEMP/error.txt"; then
