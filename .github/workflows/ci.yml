@@ -5,6 +5,10 @@ on:
     branches: ["**"]
   pull_request:
 
+# Read-only by default; a job that writes widens it itself.
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Analyze & test (Linux)

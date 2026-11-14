@@ -44,6 +44,10 @@ on:
         type: boolean
         default: false
 
+# Read-only by default; a job that writes widens it itself.
+permissions:
+  contents: read
+
 env:
   RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
   # Every publishing step asks this; the artifacts are built regardless.

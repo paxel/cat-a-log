@@ -15,6 +15,10 @@ on:
   push:
     tags: ['v*']
 
+# Read-only by default; a job that writes widens it itself.
+permissions:
+  contents: read
+
 jobs:
   testflight:
     name: Build, sign, upload
