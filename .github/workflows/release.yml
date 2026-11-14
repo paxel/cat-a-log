@@ -9,6 +9,8 @@
 #                    no known vulnerability in a lockfile, a CHANGELOG section
 #                    for the version, no open high or critical code-scanning
 #                    alert, Dart format, no untranslated string)
+#   geiger         — cargo geiger, report-only: unsafe counts in the log,
+#                    never blocks
 #   build-android  — signed per-ABI + universal APKs, refused when signed
 #                    with the debug key
 #   build-linux    — Rust desktop: tar.gz, .deb and AppImage per arch
@@ -175,6 +177,31 @@ jobs:
           cargo fmt --check
           cargo clippy --workspace --all-targets --locked -- -D warnings
           cargo test --workspace --locked
+
+  # Report-only (cat-1011): the unsafe counts of the desktop and its
+  # dependencies, for the log. cargo geiger is known to abort on some
+  # workspaces, so the job and its run may fail without failing the
+  # release, and nothing needs it. The real rule is clippy's `unsafe_code`
+  # workspace lint.
+  geiger:
+    name: Unsafe code report (cargo geiger, report-only)
+    if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 90
+    env:
+      CARGO_PROFILE_DEV_DEBUG: line-tables-only
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: System libraries (ALSA for the sounds)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev pkg-config
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
+      - run: cargo install cargo-geiger --locked --version 0.14.0
+      # geiger wants a package, not the virtual workspace root; the GUI
+      # crate pulls in the other two.
+      - name: Desktop
+        continue-on-error: true
+        run: cargo geiger --manifest-path "$GITHUB_WORKSPACE/desktop/crates/catlog-gui/Cargo.toml"
 
   # Runs on every branch push AND every tag — the gate blocks the
   # release-only jobs, not the internal-testing bundle.
