@@ -329,15 +329,17 @@ class _MapScreenState extends State<MapScreen>
     if (widget.tileProvider != null) {
       _tiles = widget.tileProvider;
     } else {
-      getApplicationSupportDirectory().then((dir) {
-        if (mounted) {
-          setState(
-            () => _tiles = DiskCachingTileProvider(
-              Directory('${dir.path}/tiles'),
-            ),
-          );
-        }
-      });
+      unawaited(
+        getApplicationSupportDirectory().then((dir) {
+          if (mounted) {
+            setState(
+              () => _tiles = DiskCachingTileProvider(
+                Directory('${dir.path}/tiles'),
+              ),
+            );
+          }
+        }),
+      );
     }
   }
 
@@ -534,7 +536,7 @@ class _MapScreenState extends State<MapScreen>
         if (pin.seq case final seq?) store.removeEntry(seq);
       case 'history':
         await Navigator.of(context).push(
-          MaterialPageRoute(
+          MaterialPageRoute<void>(
             builder: (_) => TimelineScreen(
               store: store,
               entityId: pin.id,
@@ -576,7 +578,7 @@ class _MapScreenState extends State<MapScreen>
     switch (action) {
       case 'history':
         await Navigator.of(context).push(
-          MaterialPageRoute(
+          MaterialPageRoute<void>(
             builder: (_) => def != null
                 ? FieldHistoryScreen(store: store, entityId: id, def: def)
                 : TimelineScreen(store: store, entityId: id, field: field),
@@ -894,7 +896,7 @@ class _MapScreenState extends State<MapScreen>
           TextButton(
             onPressed: () async {
               await Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => id.startsWith('clowder:')
                       ? ClowderDetailScreen(store: store, clowderId: id)
                       : CatDetailScreen(store: store, catId: id),

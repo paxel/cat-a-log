@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -187,7 +189,7 @@ BundleResult importBundle(CatalogStore store, String path) {
   try {
     return _importArchive(store, ZipDecoder().decodeBuffer(input));
   } finally {
-    input.close();
+    unawaited(input.close());
   }
 }
 

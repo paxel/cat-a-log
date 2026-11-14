@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -33,7 +35,7 @@ class _RemoteScreenState extends State<RemoteScreen> {
   @override
   void initState() {
     super.initState();
-    _describeFolder();
+    unawaited(_describeFolder());
   }
 
   Future<void> _describeFolder() async {
@@ -61,7 +63,7 @@ class _RemoteScreenState extends State<RemoteScreen> {
     widget.store.setLocalSetting(syncWatchKey, '1');
     resetSyncBaselines(widget.store);
     _folderLabel = null;
-    _describeFolder();
+    unawaited(_describeFolder());
     setState(() {});
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:typed_data';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -38,12 +40,14 @@ void main() {
   testWidgets('location denied: no cat, dialog explains', (tester) async {
     final context = await _pumpHost(tester);
     String? result = 'sentinel';
-    strayCam(
-      context,
-      store,
-      locate: () async => (pos: null, failure: LocationFailure.denied),
-      pickPhoto: (_) async => fail('camera must not open'),
-    ).then((r) => result = r);
+    unawaited(
+      strayCam(
+        context,
+        store,
+        locate: () async => (pos: null, failure: LocationFailure.denied),
+        pickPhoto: (_) async => fail('camera must not open'),
+      ).then((r) => result = r),
+    );
     await tester.pumpAndSettle();
     expect(
       find.text(
@@ -64,16 +68,18 @@ void main() {
     final context = await _pumpHost(tester);
     var opened = false;
     String? result = 'sentinel';
-    strayCam(
-      context,
-      store,
-      locate: () async => (pos: null, failure: LocationFailure.serviceOff),
-      pickPhoto: (_) async => fail('camera must not open'),
-      openLocationSettings: () async {
-        opened = true;
-        return true;
-      },
-    ).then((r) => result = r);
+    unawaited(
+      strayCam(
+        context,
+        store,
+        locate: () async => (pos: null, failure: LocationFailure.serviceOff),
+        pickPhoto: (_) async => fail('camera must not open'),
+        openLocationSettings: () async {
+          opened = true;
+          return true;
+        },
+      ).then((r) => result = r),
+    );
     await tester.pumpAndSettle();
     expect(
       find.text(
@@ -93,16 +99,18 @@ void main() {
     final context = await _pumpHost(tester);
     var opened = false;
     String? result = 'sentinel';
-    strayCam(
-      context,
-      store,
-      locate: () async => (pos: null, failure: LocationFailure.deniedForever),
-      pickPhoto: (_) async => fail('camera must not open'),
-      openSettings: () async {
-        opened = true;
-        return true;
-      },
-    ).then((r) => result = r);
+    unawaited(
+      strayCam(
+        context,
+        store,
+        locate: () async => (pos: null, failure: LocationFailure.deniedForever),
+        pickPhoto: (_) async => fail('camera must not open'),
+        openSettings: () async {
+          opened = true;
+          return true;
+        },
+      ).then((r) => result = r),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Open settings'), findsOneWidget);
     await tester.tap(find.text('Open settings'));

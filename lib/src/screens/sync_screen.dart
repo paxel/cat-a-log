@@ -51,7 +51,9 @@ class SyncScreen extends StatelessWidget {
             title: t.syncChooserInPerson,
             subtitle: t.syncChooserInPersonSub,
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => InPersonScreen(store: store)),
+              MaterialPageRoute<void>(
+                builder: (_) => InPersonScreen(store: store),
+              ),
             ),
           ),
           _ChooserCard(
@@ -59,7 +61,9 @@ class SyncScreen extends StatelessWidget {
             title: t.syncChooserRemote,
             subtitle: t.syncChooserRemoteSub,
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => RemoteScreen(store: store)),
+              MaterialPageRoute<void>(
+                builder: (_) => RemoteScreen(store: store),
+              ),
             ),
           ),
           _ChooserCard(
@@ -67,7 +71,9 @@ class SyncScreen extends StatelessWidget {
             title: t.syncChooserMessenger,
             subtitle: t.syncChooserMessengerSub,
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => MessengerScreen(store: store)),
+              MaterialPageRoute<void>(
+                builder: (_) => MessengerScreen(store: store),
+              ),
             ),
           ),
         ],

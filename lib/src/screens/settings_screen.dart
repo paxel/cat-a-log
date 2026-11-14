@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
@@ -183,11 +185,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             value: reminderCatSound(widget.store),
             onChanged: (v) => setState(() {
               setReminderCatSound(widget.store, v);
-              refreshChoreReminders(
-                widget.store,
-                body: (c) =>
-                    widget.store.current(c.entity, Keys.name) ??
-                    context.t.unnamed,
+              unawaited(
+                refreshChoreReminders(
+                  widget.store,
+                  body: (c) =>
+                      widget.store.current(c.entity, Keys.name) ??
+                      context.t.unnamed,
+                ),
               );
             }),
           ),
@@ -204,7 +208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               leading: const Icon(Icons.emoji_events_outlined),
               title: Text(t.achievementsTitle),
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => AchievementsScreen(
                     manager: catalogManager!,
                     stores: [widget.store],
@@ -219,7 +223,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: Text(t.backupsTitle),
               subtitle: Text(t.backupsSubtitle),
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => BackupsScreen(store: widget.store),
                 ),
               ),
@@ -230,7 +234,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: Text(t.toastSettingsTitle),
             subtitle: Text(t.toastSettingsSubtitle),
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
+              MaterialPageRoute<void>(
                 builder: (_) => ToastSettingsScreen(store: widget.store),
               ),
             ),
@@ -248,7 +252,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             leading: const Icon(Icons.slideshow_outlined),
             title: Text(t.introReplayTitle),
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
+              MaterialPageRoute<void>(
                 builder: (_) => IntroScreen(
                   store: widget.store,
                   onDone: () => Navigator.of(context).pop(),
@@ -280,7 +284,7 @@ class _SoundDialogState extends State<SoundDialog> {
   void _choose(SoundChoice choice) {
     setSound(widget.store, widget.moment, choice);
     setState(() => _choice = choice);
-    playSound(choice);
+    unawaited(playSound(choice));
   }
 
   Future<void> _own() async {

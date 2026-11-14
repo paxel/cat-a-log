@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 import 'dart:math';
 
@@ -87,16 +89,18 @@ class _InPersonScreenState extends State<InPersonScreen> {
   @override
   void initState() {
     super.initState();
-    _pokeLocalNetwork();
-    Connectivity().checkConnectivity().then((types) {
-      if (mounted) {
-        setState(
-          () => _onLocalNetwork =
-              types.contains(ConnectivityResult.wifi) ||
-              types.contains(ConnectivityResult.ethernet),
-        );
-      }
-    });
+    unawaited(_pokeLocalNetwork());
+    unawaited(
+      Connectivity().checkConnectivity().then((types) {
+        if (mounted) {
+          setState(
+            () => _onLocalNetwork =
+                types.contains(ConnectivityResult.wifi) ||
+                types.contains(ConnectivityResult.ethernet),
+          );
+        }
+      }),
+    );
   }
 
   /// iOS gates outgoing LAN connections behind the Local Network
@@ -112,8 +116,9 @@ class _InPersonScreenState extends State<InPersonScreen> {
 
   @override
   void dispose() {
-    _host?.stop();
-    if (_hotspotQr != null) stopHotspot();
+    final host = _host;
+    if (host != null) unawaited(host.stop());
+    if (_hotspotQr != null) unawaited(stopHotspot());
     _code.dispose();
     super.dispose();
   }
@@ -195,12 +200,14 @@ class _InPersonScreenState extends State<InPersonScreen> {
     if (!mounted) return;
     setState(() => _sessions++);
     if (needsAttention(report)) {
-      showImportSummary(
-        context,
-        widget.store,
-        applied,
-        undo: moment,
-        report: report,
+      unawaited(
+        showImportSummary(
+          context,
+          widget.store,
+          applied,
+          undo: moment,
+          report: report,
+        ),
       );
     } else {
       NoteQueue.instance.add(
@@ -524,7 +531,9 @@ class _InPersonScreenState extends State<InPersonScreen> {
               autocorrect: false,
               onChanged: (v) {
                 if (_codeError != null) setState(() => _codeError = null);
-                if (!_joining && decodePairCode(v) != null) _joinWith(v);
+                if (!_joining && decodePairCode(v) != null) {
+                  unawaited(_joinWith(v));
+                }
               },
             ),
           ],

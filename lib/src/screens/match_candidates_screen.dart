@@ -164,7 +164,7 @@ class _MatchCandidatesScreenState extends State<MatchCandidatesScreen> {
                           : const Icon(Icons.merge_type),
                       onTap: () => _confirm(c),
                       onLongPress: () => Navigator.of(context).push(
-                        MaterialPageRoute(
+                        MaterialPageRoute<void>(
                           builder: (_) =>
                               CatDetailScreen(store: store, catId: c.a),
                         ),

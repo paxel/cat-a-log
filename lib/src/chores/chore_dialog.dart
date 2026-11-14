@@ -535,7 +535,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
               leading: const Icon(Icons.history),
               title: Text(t.choreHistory),
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) =>
                       ChoreHistoryScreen(store: store, chore: existing!),
                 ),

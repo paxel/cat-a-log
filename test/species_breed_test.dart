@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:catlog/l10n/app_localizations.dart';
 import 'package:catlog/l10n/app_localizations_de.dart';
@@ -82,7 +84,9 @@ void main() {
   ) async {
     final context = await pump(tester, const SizedBox());
     NameAndDate? result;
-    askNameAndDate(context, 'New', species: 'rabbit').then((r) => result = r);
+    unawaited(
+      askNameAndDate(context, 'New', species: 'rabbit').then((r) => result = r),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Rabbit'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, 'Hoppel');
@@ -95,7 +99,7 @@ void main() {
   testWidgets('without a species the dialog stays as it was', (tester) async {
     final context = await pump(tester, const SizedBox());
     NameAndDate? result;
-    askNameAndDate(context, 'New').then((r) => result = r);
+    unawaited(askNameAndDate(context, 'New').then((r) => result = r));
     await tester.pumpAndSettle();
     expect(find.byType(DropdownButtonFormField<String>), findsNothing);
     await tester.enterText(find.byType(TextField).first, 'Miezi');
@@ -113,7 +117,9 @@ void main() {
     store.setLocalSetting(lastSpeciesKey, 'rabbit');
     final context = await pump(tester, const SizedBox());
     String? created;
-    createAnimal(context, store, title: 'New').then((id) => created = id);
+    unawaited(
+      createAnimal(context, store, title: 'New').then((id) => created = id),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Rabbit'), findsOneWidget);
     await tester.tap(find.text('Rabbit'));
@@ -134,7 +140,9 @@ void main() {
     addTearDown(store.close);
     final context = await pump(tester, const SizedBox());
     String? created;
-    createAnimal(context, store, title: 'New').then((id) => created = id);
+    unawaited(
+      createAnimal(context, store, title: 'New').then((id) => created = id),
+    );
     await tester.pumpAndSettle();
     expect(find.byType(DropdownButtonFormField<String>), findsNothing);
     await tester.enterText(find.byType(TextField).first, 'Miezi');

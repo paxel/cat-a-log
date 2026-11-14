@@ -43,7 +43,7 @@ class StraysScreen extends StatelessWidget {
     if (catId == null || !context.mounted) return;
     refresh();
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) =>
             CatDetailScreen(store: store, catId: catId, startEditing: true),
       ),
@@ -89,7 +89,7 @@ class StraysScreen extends StatelessWidget {
     // are fields there, nothing asks in the way.
     if (catId != null && context.mounted) {
       await Navigator.of(context).push(
-        MaterialPageRoute(
+        MaterialPageRoute<void>(
           builder: (_) => CatDetailScreen(
             store: store,
             catId: catId,
@@ -138,7 +138,7 @@ class StraysScreen extends StatelessWidget {
           label: context.t.matchCandidatesTitle,
           onPressed: () async {
             await Navigator.of(context).push(
-              MaterialPageRoute(
+              MaterialPageRoute<void>(
                 builder: (_) => MatchCandidatesScreen(store: store),
               ),
             );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:typed_data';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -67,13 +69,15 @@ class _PhotoViewerScreenState extends State<PhotoViewerScreen> {
             onPressed: () {
               final bytes = _bytesFor(widget.hashes[_current]);
               if (bytes == null) return;
-              shareFiles(context, [
-                XFile.fromData(
-                  bytes,
-                  mimeType: 'image/jpeg',
-                  name: '${widget.name}-${_current + 1}.jpg',
-                ),
-              ]);
+              unawaited(
+                shareFiles(context, [
+                  XFile.fromData(
+                    bytes,
+                    mimeType: 'image/jpeg',
+                    name: '${widget.name}-${_current + 1}.jpg',
+                  ),
+                ]),
+              );
             },
           ),
         ],

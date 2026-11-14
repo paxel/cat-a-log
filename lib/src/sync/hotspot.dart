@@ -19,7 +19,10 @@ class HotspotInfo {
 }
 
 Future<HotspotInfo> startHotspot() async {
-  final map = (await _channel.invokeMethod<Map>('startHotspot'))!;
+  final map = await _channel.invokeMethod<Map<Object?, Object?>>(
+    'startHotspot',
+  );
+  if (map == null) throw StateError('startHotspot answered nothing');
   return HotspotInfo(
     map['ssid'] as String,
     map['pass'] as String,

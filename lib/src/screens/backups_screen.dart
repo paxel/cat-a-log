@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -60,10 +62,12 @@ class _BackupsScreenState extends State<BackupsScreen> {
   @override
   void initState() {
     super.initState();
-    restoredFromBackupAt().then((at) {
-      if (mounted) setState(() => _restored = at);
-    });
-    _nameFolder();
+    unawaited(
+      restoredFromBackupAt().then((at) {
+        if (mounted) setState(() => _restored = at);
+      }),
+    );
+    unawaited(_nameFolder());
   }
 
   Future<void> _nameFolder() async {

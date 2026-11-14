@@ -130,7 +130,7 @@ class Tamper {
   /// Appends a line to both files: [edit] applied to a copy of [last].
   void forgeAfterLast(
       Map<String, dynamic> Function(Map<String, dynamic>) edit) {
-    final row = {...last, 'dseq': last['dseq'] + 1};
+    final row = {...last, 'dseq': (last['dseq'] as int) + 1};
     folderLines.add(edit({...row}));
     bundleLines.add(edit({...row}));
   }

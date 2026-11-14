@@ -76,6 +76,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
+          flutter-version: 3.47.9
           cache: true
       - name: Install sqlite3 for pure-Dart core tests
         run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
@@ -217,6 +218,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
+          flutter-version: 3.47.9
           cache: true
       - name: Write signing config from secrets
         run: |

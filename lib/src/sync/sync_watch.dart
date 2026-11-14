@@ -168,7 +168,7 @@ class SyncWatcher extends ChangeNotifier {
     stop();
     if (!store.isOpen) return;
     _timer = Timer.periodic(syncWatchEvery, (_) => check());
-    check();
+    unawaited(check());
   }
 
   /// Nothing waits any more: a manual sync took it, or the folder moved

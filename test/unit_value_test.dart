@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:catlog/l10n/app_localizations.dart';
 import 'package:catlog/l10n/app_localizations_de.dart';
@@ -65,7 +67,7 @@ void main() {
   testWidgets('the editor shows kilograms and stores grams', (tester) async {
     final context = await pump(tester);
     FieldEdit? edit;
-    editFieldValue(context, weight, '4250').then((e) => edit = e);
+    unawaited(editFieldValue(context, weight, '4250').then((e) => edit = e));
     await tester.pumpAndSettle();
     expect(find.text('4.25'), findsOneWidget);
     expect(find.text('kg'), findsOneWidget);
@@ -79,7 +81,7 @@ void main() {
     unitSystem.value = UnitSystem.imperial;
     final context = await pump(tester);
     FieldEdit? edit;
-    editFieldValue(context, weight, '4250').then((e) => edit = e);
+    unawaited(editFieldValue(context, weight, '4250').then((e) => edit = e));
     await tester.pumpAndSettle();
     expect(find.text('9.37'), findsOneWidget);
     expect(find.text('lb'), findsOneWidget);
@@ -93,7 +95,7 @@ void main() {
     tester,
   ) async {
     final context = await pump(tester);
-    editFieldValue(context, weight, '4250');
+    unawaited(editFieldValue(context, weight, '4250'));
     await tester.pumpAndSettle();
     expect(find.text('4.25'), findsOneWidget);
     await tester.tap(find.byTooltip('Clear'));

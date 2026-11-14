@@ -424,7 +424,7 @@ class FolderManifest {
         private: m['private'] == true,
         vector: (m['vector'] as Map).cast<String, int>(),
         segments: [
-          for (final s in (m['segments'] as List).cast<Map>())
+          for (final s in (m['segments'] as List).cast<Map<String, dynamic>>())
             (s['name'] as String, s['lines'] as int)
         ],
       );

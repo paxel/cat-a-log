@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
@@ -28,18 +30,20 @@ void mirrorAfterChange(
     noteFailed(message);
   }
 
-  reconcileCalendarOnce(store, port ?? DeviceCalendarPort(), t)
-      .then((outcome) {
-        final message = mirrorFailureMessage(t, outcome);
-        if (message != null) fail(message);
-      })
-      .catchError((Object e) {
-        // The calendar answered with an error (the platform's own wording
-        // beats a guess): the mirror goes off, named, instead of the app
-        // going down on every start — the 1.0.0 lesson, once more.
-        if (e is StateError && !store.isOpen) return;
-        fail(e is CalendarPortException ? e.message : '$e');
-      });
+  unawaited(
+    reconcileCalendarOnce(store, port ?? DeviceCalendarPort(), t)
+        .then((outcome) {
+          final message = mirrorFailureMessage(t, outcome);
+          if (message != null) fail(message);
+        })
+        .catchError((Object e) {
+          // The calendar answered with an error (the platform's own wording
+          // beats a guess): the mirror goes off, named, instead of the app
+          // going down on every start — the 1.0.0 lesson, once more.
+          if (e is StateError && !store.isOpen) return;
+          fail(e is CalendarPortException ? e.message : '$e');
+        }),
+  );
 }
 
 /// "Resync calendar" from the agenda menu: deletes what cat(a)log wrote

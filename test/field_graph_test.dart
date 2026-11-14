@@ -185,6 +185,9 @@ void main() {
     );
     final state = tester.state(find.byType(FieldGraphScreen)) as dynamic;
     final png = await tester.runAsync(
+      // The screen's state class is private; the test reaches its export
+      // through dynamic on purpose.
+      // ignore: avoid_dynamic_calls
       () => state.pictureAsPng() as Future<Uint8List>,
     );
     expect(png!.length, greaterThan(1000));

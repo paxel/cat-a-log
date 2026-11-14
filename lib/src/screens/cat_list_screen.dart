@@ -207,7 +207,7 @@ class _CatListScreenState extends State<CatListScreen> {
 
   Future<void> _openCat(String catId) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => CatDetailScreen(store: store, catId: catId),
       ),
     );

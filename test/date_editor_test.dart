@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:catlog/l10n/app_localizations.dart';
 import 'package:catlog/src/field_editing.dart';
@@ -46,7 +48,7 @@ void main() {
   testWidgets('a typed month is stored as a month', (tester) async {
     final context = await pump(tester);
     FieldEdit? edit;
-    editFieldValue(context, def, '2026-08-18').then((e) => edit = e);
+    unawaited(editFieldValue(context, def, '2026-08-18').then((e) => edit = e));
     await tester.pumpAndSettle();
     expect(find.text('2026-08-18'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, '05.2021');
@@ -58,7 +60,7 @@ void main() {
 
   testWidgets('a wrong spelling is named, a bare year is fine', (tester) async {
     final context = await pump(tester);
-    editFieldValue(context, def, null);
+    unawaited(editFieldValue(context, def, null));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'last summer');
     await tester.pumpAndSettle();
@@ -70,7 +72,7 @@ void main() {
 
   testWidgets('the calendar behind the icon fills the field', (tester) async {
     final context = await pump(tester);
-    editFieldValue(context, def, '2026-08-18');
+    unawaited(editFieldValue(context, def, '2026-08-18'));
     await tester.pumpAndSettle();
     await tester.tap(calendarIcon);
     await tester.pumpAndSettle();
@@ -93,7 +95,7 @@ void main() {
       options: const [],
     );
     FieldEdit? edit;
-    editFieldValue(context, birth, null).then((e) => edit = e);
+    unawaited(editFieldValue(context, birth, null).then((e) => edit = e));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, '2099');
     await tester.pumpAndSettle();

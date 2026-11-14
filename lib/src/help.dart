@@ -55,7 +55,7 @@ Future<void> showHelp(
 ) async {
   if (!helpTexts.containsKey(screenId)) return;
   await Navigator.of(context).push(
-    MaterialPageRoute(
+    MaterialPageRoute<void>(
       builder: (_) => HelpScreen(store: store, screenId: screenId),
     ),
   );

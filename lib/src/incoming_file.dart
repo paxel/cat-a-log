@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -48,28 +50,36 @@ void initIncomingFiles(
       import(call.arguments as String);
     }
     if (call.method == 'sharedImages') {
-      handleSharedImages(
-        navigator,
-        store(),
-        (call.arguments as List).cast<String>(),
+      unawaited(
+        handleSharedImages(
+          navigator,
+          store(),
+          (call.arguments as List).cast<String>(),
+        ),
       );
     }
   });
   if (Platform.isAndroid || Platform.isIOS) {
-    _channel
-        .invokeMethod<String>('pending')
-        .then((path) {
-          if (path != null) import(path);
-        })
-        .catchError((_) => null);
-    _channel
-        .invokeMethod<List<Object?>>('pendingImages')
-        .then((paths) {
-          if (paths != null && paths.isNotEmpty) {
-            handleSharedImages(navigator, store(), paths.cast<String>());
-          }
-        })
-        .catchError((_) => null);
+    unawaited(
+      _channel
+          .invokeMethod<String>('pending')
+          .then((path) {
+            if (path != null) import(path);
+          })
+          .catchError((_) => null),
+    );
+    unawaited(
+      _channel
+          .invokeMethod<List<Object?>>('pendingImages')
+          .then((paths) {
+            if (paths != null && paths.isNotEmpty) {
+              unawaited(
+                handleSharedImages(navigator, store(), paths.cast<String>()),
+              );
+            }
+          })
+          .catchError((_) => null),
+    );
   }
   // Desktop: the associated file arrives as a launch argument.
   for (final arg in args) {

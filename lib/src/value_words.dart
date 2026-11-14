@@ -78,7 +78,7 @@ String? documentWords(String raw) {
   }
   if (parsed is! Map) return null;
   final lines = <String>[];
-  void walk(Map map, int depth) {
+  void walk(Map<Object?, Object?> map, int depth) {
     final pad = '  ' * depth;
     for (final entry in map.entries) {
       final v = entry.value;

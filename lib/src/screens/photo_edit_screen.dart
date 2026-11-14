@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:isolate';
 import 'dart:typed_data';
 
@@ -50,7 +52,7 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
   @override
   void initState() {
     super.initState();
-    _readSize();
+    unawaited(_readSize());
   }
 
   /// The photo's size from its header alone. A full decode of a

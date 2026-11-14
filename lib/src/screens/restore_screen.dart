@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -72,7 +74,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    unawaited(_load());
   }
 
   Future<void> _load() async {

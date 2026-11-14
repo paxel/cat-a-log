@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -107,7 +109,7 @@ Future<void> explainLocationFailure(
           FilledButton(
             onPressed: () {
               Navigator.of(context).pop();
-              openSettings();
+              unawaited(openSettings());
             },
             child: Text(t.openSettings),
           ),

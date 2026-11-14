@@ -193,11 +193,11 @@ class _VideoFramesScreenState extends State<VideoFramesScreen> {
                   onChangeStart: (_) => player.pause(),
                   onChanged: (v) {
                     setState(() => _drag = v);
-                    _scrub(v);
+                    unawaited(_scrub(v));
                   },
                   onChangeEnd: (v) {
                     setState(() => _drag = null);
-                    _scrub(v, settle: true);
+                    unawaited(_scrub(v, settle: true));
                   },
                 ),
                 Text(

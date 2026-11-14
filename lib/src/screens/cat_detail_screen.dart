@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:typed_data';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -167,7 +169,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
     final pos = CatalogStore.parsePosition(value);
     if (pos == null) return;
     Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => MapScreen(
           store: store,
           initialCenter: LatLng(pos.$1, pos.$2),
@@ -201,7 +203,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
   Future<void> _openEntity(String entityId) async {
     if (entityId == id) return;
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => CatDetailScreen(store: store, catId: entityId),
       ),
     );
@@ -213,9 +215,11 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
     afterChoreTick(context, store, manager: catalogManager);
     setState(() {});
     mirrorAfterChange(context, store);
-    refreshChoreReminders(
-      store,
-      body: (c) => store.current(c.entity, Keys.name) ?? context.t.unnamed,
+    unawaited(
+      refreshChoreReminders(
+        store,
+        body: (c) => store.current(c.entity, Keys.name) ?? context.t.unnamed,
+      ),
     );
   }
 
@@ -324,7 +328,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
 
   Future<void> _openTimeline({String? field}) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) =>
             TimelineScreen(store: store, entityId: id, field: field),
       ),
@@ -497,7 +501,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
             label: Text(store.current(catId, Keys.name) ?? '?'),
             onPressed: () async {
               await Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => CatDetailScreen(store: store, catId: catId),
                 ),
               );
@@ -553,7 +557,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
           // at the finger — the app-wide gesture convention.
           return GestureDetector(
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
+              MaterialPageRoute<void>(
                 builder: (_) => PhotoViewerScreen(
                   store: store,
                   hashes: images,
@@ -621,7 +625,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               icon: Icons.badge_outlined,
               label: context.t.card,
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => CardScreen(store: store, catId: id),
                 ),
               ),
@@ -642,7 +646,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               icon: Icons.medical_information_outlined,
               label: context.t.vetReportMenu,
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => VetReportScreen(store: store, catId: id),
                 ),
               ),
@@ -652,7 +656,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               icon: Icons.campaign_outlined,
               label: context.t.posterMenu,
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => MissingPosterScreen(store: store, catId: id),
                 ),
               ),
@@ -682,7 +686,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               icon: Icons.public,
               label: context.t.sharePublicly,
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => SharePubliclyScreen(store: store, catId: id),
                 ),
               ),
@@ -762,7 +766,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               // values are buttons on the row.
               onConflict: (_) async {
                 await Navigator.of(context).push(
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (_) => ConflictsScreen(store: store),
                   ),
                 );
@@ -771,7 +775,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               // A correction or removal there shows here on return.
               onHistory: (def) async {
                 await Navigator.of(context).push(
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (_) => FieldHistoryScreen(
                       store: store,
                       entityId: id,
@@ -784,13 +788,13 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               onShowMap: _showOnMap,
               onLookup: (def, value) => openLookup(context, def, value),
               onGraph: (def) => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) =>
                       FieldGraphScreen(store: store, entityId: id, def: def),
                 ),
               ),
               onValueHistory: (def) => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) =>
                       FieldHistoryScreen(store: store, entityId: id, def: def),
                 ),

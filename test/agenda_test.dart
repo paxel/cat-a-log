@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:catlog/l10n/app_localizations.dart';
 import 'package:catlog/src/field_editing.dart';
@@ -222,7 +224,7 @@ void main() {
         ),
       ),
     );
-    editFieldValue(context, def, null).then((e) => edit = e);
+    unawaited(editFieldValue(context, def, null).then((e) => edit = e));
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.alarm), findsNothing);
     await tester.enterText(find.byType(TextField).first, 'vet visit');

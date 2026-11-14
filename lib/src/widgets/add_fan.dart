@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// One way to add something: its icon, its words, what it does.
@@ -45,7 +47,7 @@ class _AddFanState extends State<AddFan> with SingleTickerProviderStateMixin {
 
   void _toggle() {
     if (_open) {
-      _close();
+      unawaited(_close());
     } else {
       _openFan();
     }

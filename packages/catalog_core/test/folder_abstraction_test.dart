@@ -53,7 +53,8 @@ void main() {
     final own = segmentName(a.deviceId, 1);
     final lines = utf8.decode(folder.dirs['']![own]!).split('\n');
     final last = (jsonDecode(lines.last) as Map).cast<String, dynamic>();
-    lines.add(jsonEncode({...last, 'dseq': last['dseq'] + 1, 'value': 'x'}));
+    lines.add(
+        jsonEncode({...last, 'dseq': (last['dseq'] as int) + 1, 'value': 'x'}));
     await folder.write('', own, utf8.encode(lines.join('\n')));
     final manifest =
         FolderManifest.parse(folder.dirs['']![manifestName(a.deviceId)])!;

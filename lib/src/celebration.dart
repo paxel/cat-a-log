@@ -134,13 +134,13 @@ void maybeCelebrateAdoption(
 /// The moment's sound as chosen, and confetti when celebrations are
 /// on: an adoption, a day of chores all done, an achievement.
 void celebrate(BuildContext context, CatalogStore store, Cheer cheer) {
-  playMoment(store, cheer);
+  unawaited(playMoment(store, cheer));
   if (celebrationsEnabled(store)) _showConfetti(context);
 }
 
 /// The sound of a tick, as chosen; no confetti.
 void tickSound(CatalogStore store) {
-  playMoment(store, Cheer.tick);
+  unawaited(playMoment(store, Cheer.tick));
 }
 
 /// Completes on the first event of [events], when the stream closes

@@ -210,7 +210,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
     if (_choreOf(e) case final chore?) {
       if (_tickDue(e) != null) {
         await Navigator.of(context).push(
-          MaterialPageRoute(
+          MaterialPageRoute<void>(
             builder: (_) => ChoreHistoryScreen(store: store, chore: chore),
           ),
         );
@@ -277,7 +277,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
   /// this value's dot marked.
   Future<void> _showOnMap(Entry e, LatLng spot) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => MapScreen(
           store: store,
           initialCenter: spot,

@@ -233,7 +233,8 @@ class _CatalogSettingsScreenState extends State<CatalogSettingsScreen> {
   }
 
   Future<void> _push(Widget screen) async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
+    await Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => screen));
     if (mounted) setState(() {});
   }
 

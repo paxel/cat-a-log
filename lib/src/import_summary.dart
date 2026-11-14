@@ -446,7 +446,7 @@ Future<void> showImportSummary(
   final review = reviewImport(store, applied, report: report);
   if (review.isEmpty || !context.mounted) return;
   await Navigator.of(context).push(
-    MaterialPageRoute(
+    MaterialPageRoute<void>(
       fullscreenDialog: true,
       builder: (_) => ArrivalScreen(
         store: store,
@@ -567,7 +567,7 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
 
   void _openChanges(EntityArrival a) {
     Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => _ChangesScreen(store: store, arrival: a),
       ),
     );

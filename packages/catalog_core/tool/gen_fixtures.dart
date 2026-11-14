@@ -150,9 +150,9 @@ Future<void> main(List<String> args) async {
       folderReader.close();
       bundleReader.close();
       index.writeln('- `${scenario.name}`: ${scenario.about}');
-      stdout
-          .writeln('${scenario.name}: ${viaFolder['entries'].length} entries, '
-              '${viaFolder['blobs'].length} photos');
+      stdout.writeln(
+          '${scenario.name}: ${(viaFolder['entries'] as List).length} entries, '
+          '${(viaFolder['blobs'] as List).length} photos');
     } finally {
       work.deleteSync(recursive: true);
     }

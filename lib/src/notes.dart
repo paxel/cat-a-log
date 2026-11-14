@@ -256,7 +256,7 @@ class NoteStrip extends StatelessWidget {
   void _open(BuildContext context, Note note) {
     if (note.kind == NoteKind.failed) {
       queue.open(note);
-      showFailureDialog(openIn?.call() ?? context, note);
+      unawaited(showFailureDialog(openIn?.call() ?? context, note));
     } else if (note.onTap != null) {
       queue.open(note);
     }
@@ -473,7 +473,9 @@ Future<void> showFailureDialog(BuildContext context, Note note) {
         FilledButton(
           onPressed: () {
             Navigator.of(context).pop();
-            mailCrashReport('${note.text(t)}\n\n${note.detail ?? ''}');
+            unawaited(
+              mailCrashReport('${note.text(t)}\n\n${note.detail ?? ''}'),
+            );
           },
           child: Text(t.failureReport),
         ),

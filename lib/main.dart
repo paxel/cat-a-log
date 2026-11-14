@@ -245,12 +245,14 @@ class _CatlogAppState extends State<CatlogApp>
     final context = navigatorKey.currentContext;
     if (context == null || !context.mounted) return;
     if (needsAttention(result.report)) {
-      showImportSummary(
-        context,
-        _store,
-        result.applied,
-        undo: undo,
-        report: result.report,
+      unawaited(
+        showImportSummary(
+          context,
+          _store,
+          result.applied,
+          undo: undo,
+          report: result.report,
+        ),
       );
       return;
     }
@@ -275,7 +277,7 @@ class _CatlogAppState extends State<CatlogApp>
       detail: '$error',
       pageLabel: (t) => t.sync,
       onOpenPage: () => navigatorKey.currentState?.push(
-        MaterialPageRoute(builder: (_) => SyncScreen(store: _store)),
+        MaterialPageRoute<void>(builder: (_) => SyncScreen(store: _store)),
       ),
     ),
   );
@@ -333,9 +335,11 @@ class _CatlogAppState extends State<CatlogApp>
   /// on resume and after every change.
   void _refreshReminders() {
     if (!_store.isOpen) return;
-    refreshChoreReminders(
-      _store,
-      body: (c) => _store.current(c.entity, Keys.name) ?? '',
+    unawaited(
+      refreshChoreReminders(
+        _store,
+        body: (c) => _store.current(c.entity, Keys.name) ?? '',
+      ),
     );
   }
 
@@ -433,8 +437,8 @@ class _CatlogAppState extends State<CatlogApp>
         state == AppLifecycleState.inactive) {
       // What was gathered goes to the folder before the phone is put
       // down; the backup follows.
-      _watcher.flush();
-      autoBackup(_store);
+      unawaited(_watcher.flush());
+      unawaited(autoBackup(_store));
       markCleanExit();
     }
     if (state == AppLifecycleState.resumed) {
@@ -477,7 +481,7 @@ class _CatlogAppState extends State<CatlogApp>
                   LogicalKeyboardKey.keyF,
                   control: true,
                 ): () => navigatorKey.currentState?.push(
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (context) => CatListScreen(
                       store: _store,
                       title: context.t.cats,
@@ -490,7 +494,9 @@ class _CatlogAppState extends State<CatlogApp>
                   LogicalKeyboardKey.keyK,
                   control: true,
                 ): () => navigatorKey.currentState?.push(
-                  MaterialPageRoute(builder: (_) => SyncScreen(store: _store)),
+                  MaterialPageRoute<void>(
+                    builder: (_) => SyncScreen(store: _store),
+                  ),
                 ),
                 const SingleActivator(
                   LogicalKeyboardKey.keyB,

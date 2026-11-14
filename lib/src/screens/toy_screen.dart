@@ -68,7 +68,9 @@ class _ToyScreenState extends State<ToyScreen>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    unawaited(
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky),
+    );
     _quietly(WakelockPlus.enable);
     _motion = widget.motion().listen(
       (m) {
@@ -83,7 +85,7 @@ class _ToyScreenState extends State<ToyScreen>
 
   static void _quietly(Future<void> Function() call) {
     try {
-      call().catchError((Object _) {});
+      unawaited(call().catchError((Object _) {}));
     } catch (_) {
       // No wake lock on this device: the screen sleeps as it is set to.
     }
@@ -102,7 +104,7 @@ class _ToyScreenState extends State<ToyScreen>
 
   void _play(ToySound sound) {
     if (!widget.sounds) return;
-    playSource(BytesSource(toySound(sound), mimeType: 'audio/wav'));
+    unawaited(playSource(BytesSource(toySound(sound), mimeType: 'audio/wav')));
   }
 
   void _paw(PointerDownEvent event) {
@@ -121,9 +123,9 @@ class _ToyScreenState extends State<ToyScreen>
   @override
   void dispose() {
     _ticker.dispose();
-    _motion?.cancel();
+    _motion?.cancel().ignore();
     _quietly(WakelockPlus.disable);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
     super.dispose();
   }
 

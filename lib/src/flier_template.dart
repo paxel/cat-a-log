@@ -152,7 +152,9 @@ class FlierTemplateSet {
     final json = jsonDecode(source) as Map<String, dynamic>;
     return FlierTemplateSet(
       [
-        for (final t in (json['templates'] as List? ?? const []))
+        for (final t
+            in (json['templates'] as List? ?? const [])
+                .cast<Map<String, dynamic>>())
           FlierTemplate(
             name: t['name'] as String,
             registry: t['registry'] as String,

@@ -171,7 +171,7 @@ void main() {
       req.write(
         jsonEncode({
           'vector': vector,
-          'entries': const [],
+          'entries': const <Object?>[],
           'author': 'old',
           'deviceName': 'old-phone',
           'deviceId': 'dev-old',
@@ -239,7 +239,7 @@ void main() {
       jsonEncode({
         'format': 99,
         'vector': const <String, int>{},
-        'entries': const [],
+        'entries': const <Object?>[],
         'author': 'future',
         'deviceName': 'future-phone',
         'deviceId': 'dev-future',
@@ -378,7 +378,7 @@ void main() {
         jsonEncode({
           'format': 2,
           'vector': const <String, int>{},
-          'entries': const [],
+          'entries': const <Object?>[],
           'author': 'old',
           'deviceName': 'old-phone',
           'deviceId': 'dev-old',

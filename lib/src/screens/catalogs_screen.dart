@@ -83,7 +83,7 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
   /// may have changed or a catalog may be gone.
   Future<void> _openSettings(CatalogInfo catalog) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => CatalogSettingsScreen(
           catalogs: widget.catalogs,
           catalog: catalog,
@@ -137,7 +137,7 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
             leading: const Icon(Icons.restore),
             title: Text(t.restoreBackupsMenu),
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
+              MaterialPageRoute<void>(
                 builder: (_) => RestoreScreen(
                   catalogs: widget.catalogs,
                   skipWhenEmpty: false,
@@ -257,7 +257,7 @@ Future<void> showCatalogSwitcher(
   if (picked == null || !context.mounted) return;
   if (picked == 'manage') {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => CatalogsScreen(
           catalogs: catalogs,
           storeOf: storeOf,

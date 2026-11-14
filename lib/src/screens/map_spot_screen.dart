@@ -64,7 +64,8 @@ class MapSpotScreen extends StatelessWidget {
     final page = pin.id.startsWith('clowder:')
         ? ClowderDetailScreen(store: store, clowderId: pin.id)
         : CatDetailScreen(store: store, catId: pin.id);
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+    await Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => page));
   }
 
   @override

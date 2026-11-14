@@ -4,4 +4,27 @@ analyzer:
     - android/**
     - ios/**
     - web/**
+  # Strict typing and the async and resource rules raised to errors
+  # (cat-1015), as in oldbrainfix: no implicit dynamic, no dropped
+  # Future, no stream or sink left open.
+  language:
+    strict-casts: true
+    strict-raw-types: true
+    strict-inference: true
+  errors:
+    avoid_dynamic_calls: error
+    unawaited_futures: error
+    discarded_futures: error
+    cancel_subscriptions: error
+    close_sinks: error
+    use_build_context_synchronously: error
 include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    - avoid_dynamic_calls
+    - unawaited_futures
+    - discarded_futures
+    - cancel_subscriptions
+    - close_sinks
+    - use_build_context_synchronously

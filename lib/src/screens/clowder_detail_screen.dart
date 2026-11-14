@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
@@ -204,7 +206,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
     if (catId == null || !mounted) return;
     setState(() {});
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) =>
             CatDetailScreen(store: store, catId: catId, startEditing: true),
       ),
@@ -265,7 +267,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
     final pos = CatalogStore.parsePosition(value);
     if (pos == null) return;
     Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => MapScreen(
           store: store,
           initialCenter: LatLng(pos.$1, pos.$2),
@@ -301,9 +303,11 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
     afterChoreTick(context, store, manager: catalogManager);
     setState(() {});
     mirrorAfterChange(context, store);
-    refreshChoreReminders(
-      store,
-      body: (c) => store.current(c.entity, Keys.name) ?? context.t.unnamed,
+    unawaited(
+      refreshChoreReminders(
+        store,
+        body: (c) => store.current(c.entity, Keys.name) ?? context.t.unnamed,
+      ),
     );
   }
 
@@ -408,7 +412,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
 
   Future<void> _openCat(String catId) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => CatDetailScreen(store: store, catId: catId),
       ),
     );
@@ -431,13 +435,15 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
       // are buttons on the row.
       onConflict: (_) async {
         await Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => ConflictsScreen(store: store)),
+          MaterialPageRoute<void>(
+            builder: (_) => ConflictsScreen(store: store),
+          ),
         );
         if (mounted) setState(() {});
       },
       onHistory: (def) async {
         await Navigator.of(context).push(
-          MaterialPageRoute(
+          MaterialPageRoute<void>(
             builder: (_) =>
                 FieldHistoryScreen(store: store, entityId: id, def: def),
           ),
@@ -446,7 +452,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
         if (mounted) setState(() {});
       },
       onValueHistory: (def) => Navigator.of(context).push(
-        MaterialPageRoute(
+        MaterialPageRoute<void>(
           builder: (_) =>
               FieldHistoryScreen(store: store, entityId: id, def: def),
         ),
@@ -497,7 +503,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
               label: Text(context.t.catList),
               onPressed: () async {
                 await Navigator.of(context).push(
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (_) => CatListScreen(
                       store: store,
                       title: name,
@@ -542,7 +548,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
               icon: Icons.badge_outlined,
               label: context.t.card,
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) =>
                       ClowderCardScreen(store: store, clowderId: id),
                 ),
@@ -558,7 +564,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
               label: context.t.timeline,
               onPressed: () async {
                 await Navigator.of(context).push(
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (_) => TimelineScreen(store: store, entityId: id),
                   ),
                 );
@@ -673,7 +679,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
       // Tap opens the cat; a hold, with the cat ear, its printed Card.
       // Right-click stays as the desktop way to the same.
       void card() => Navigator.of(context).push(
-        MaterialPageRoute(
+        MaterialPageRoute<void>(
           builder: (_) => CardScreen(store: store, catId: cat.id),
         ),
       );

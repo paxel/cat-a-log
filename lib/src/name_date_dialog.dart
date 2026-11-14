@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -109,7 +111,7 @@ class _NameDateDialogState extends State<_NameDateDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.propose != null) _reroll();
+    if (widget.propose != null) unawaited(_reroll());
   }
 
   Future<void> _reroll() async {

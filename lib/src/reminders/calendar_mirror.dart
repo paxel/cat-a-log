@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -193,7 +195,7 @@ Future<MirrorOutcome> reconcileCalendarOnce(
   final run = reconcileCalendar(store, port, t)
       .timeout(timeout)
       .whenComplete(() {
-        _running.remove(store);
+        unawaited(_running.remove(store));
       })
       .catchError((Object e) {
         _queued.remove(store);

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
@@ -105,7 +107,9 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
       if (!agendaAutoOpened && agendaWantsAttention(widget.store)) {
         agendaAutoOpened = true;
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => AgendaScreen(store: widget.store)),
+          MaterialPageRoute<void>(
+            builder: (_) => AgendaScreen(store: widget.store),
+          ),
         );
       }
       if (!mounted) return;
@@ -114,13 +118,15 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
       // Reminders set in editors or arrived by sync reach the device
       // calendar without a visit to the agenda.
       mirrorAfterChange(context, widget.store);
-      runSpotlights(context, widget.store, 'home');
+      unawaited(runSpotlights(context, widget.store, 'home'));
     });
   }
 
   Future<void> _openConflicts() async {
     await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => ConflictsScreen(store: widget.store)),
+      MaterialPageRoute<void>(
+        builder: (_) => ConflictsScreen(store: widget.store),
+      ),
     );
     if (mounted) setState(() {});
   }
@@ -128,14 +134,18 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
   /// Language and units may change in there: rebuild on return.
   Future<void> _openSettings() async {
     await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => SettingsScreen(store: widget.store)),
+      MaterialPageRoute<void>(
+        builder: (_) => SettingsScreen(store: widget.store),
+      ),
     );
     if (mounted) setState(() {});
   }
 
   Future<void> _openAgenda() async {
     await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => AgendaScreen(store: widget.store)),
+      MaterialPageRoute<void>(
+        builder: (_) => AgendaScreen(store: widget.store),
+      ),
     );
     if (!mounted) return;
     setState(() {});
@@ -151,7 +161,8 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
       setState(() {});
       return;
     }
-    await Navigator.of(context).push(MaterialPageRoute(builder: page.build));
+    await Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: page.build));
     if (mounted) setState(() {});
   }
 
@@ -168,16 +179,18 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
         builder: (title) => InkWell(
           onTap: () {
             final box = title.findRenderObject() as RenderBox;
-            showCatalogSwitcher(
-              context,
-              at: box.localToGlobal(Offset(0, box.size.height)),
-              catalogs: switching.catalogs,
-              storeOf: () => widget.store,
-              onSwitch: switching.onSwitch,
-              onChanged: () {
-                switching.onChanged?.call();
-                if (mounted) setState(() {});
-              },
+            unawaited(
+              showCatalogSwitcher(
+                context,
+                at: box.localToGlobal(Offset(0, box.size.height)),
+                catalogs: switching.catalogs,
+                storeOf: () => widget.store,
+                onSwitch: switching.onSwitch,
+                onChanged: () {
+                  switching.onChanged?.call();
+                  if (mounted) setState(() {});
+                },
+              ),
             );
           },
           child: Row(
@@ -279,7 +292,7 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             label: context.t.map,
             onPressed: () async {
               await Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => MapScreen(store: widget.store),
                 ),
               );
@@ -293,7 +306,7 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             label: context.t.sync,
             onPressed: () async {
               await Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => SyncScreen(store: widget.store),
                 ),
               );
@@ -339,7 +352,7 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
               icon: Icons.emoji_events_outlined,
               label: context.t.achievementsTitle,
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => AchievementsScreen(
                     manager: manager,
                     stores: [widget.store],
@@ -352,7 +365,7 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             icon: Icons.toys_outlined,
             label: context.t.playToys,
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
+              MaterialPageRoute<void>(
                 builder: (_) => PlayScreen(store: widget.store),
               ),
             ),
@@ -366,7 +379,7 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             icon: Icons.info_outline,
             label: context.t.aboutAndFeedback,
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
+              MaterialPageRoute<void>(
                 builder: (_) => AboutScreen(store: widget.store),
               ),
             ),

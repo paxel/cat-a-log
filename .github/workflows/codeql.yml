@@ -69,6 +69,7 @@ jobs:
         if: matrix.language == 'java-kotlin'
         with:
           channel: stable
+          flutter-version: 3.47.9
           cache: true
       - name: Flutter packages and the Gradle project's local.properties
         if: matrix.language == 'java-kotlin'

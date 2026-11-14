@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
@@ -144,9 +146,9 @@ class _FieldsScreenState extends State<FieldsScreen> {
               ),
               trailing: PopupMenuButton<String>(
                 onSelected: (v) {
-                  if (v == 'rename') _renameField(def);
-                  if (v == 'options') _editOptions(def);
-                  if (v == 'merge') _mergeField(def);
+                  if (v == 'rename') unawaited(_renameField(def));
+                  if (v == 'options') unawaited(_editOptions(def));
+                  if (v == 'merge') unawaited(_mergeField(def));
                   if (v == 'private') {
                     setState(
                       () => widget.store.setPrivate(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -61,25 +63,29 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
     if (widget.tileProvider != null) {
       _tiles = widget.tileProvider;
     } else {
-      getApplicationSupportDirectory().then((dir) {
-        if (mounted) {
-          setState(
-            () => _tiles = DiskCachingTileProvider(
-              Directory('${dir.path}/tiles'),
-            ),
-          );
-        }
-      });
+      unawaited(
+        getApplicationSupportDirectory().then((dir) {
+          if (mounted) {
+            setState(
+              () => _tiles = DiskCachingTileProvider(
+                Directory('${dir.path}/tiles'),
+              ),
+            );
+          }
+        }),
+      );
     }
     // No pin to return to: jump to the device position once it arrives,
     // unless the user already moved the map themselves.
     if (_picked == null) {
-      locateDevice().then((outcome) {
-        final p = outcome.pos;
-        if (p != null && mounted && !_touched && _picked == null) {
-          _controller.move(LatLng(p.$1, p.$2), 15);
-        }
-      });
+      unawaited(
+        locateDevice().then((outcome) {
+          final p = outcome.pos;
+          if (p != null && mounted && !_touched && _picked == null) {
+            _controller.move(LatLng(p.$1, p.$2), 15);
+          }
+        }),
+      );
     }
   }
 

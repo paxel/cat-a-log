@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -159,12 +161,12 @@ class _AgendaScreenState extends State<AgendaScreen> {
 
   void _added() {
     _changed();
-    refreshChoreReminders(store, body: _reminderBody);
+    unawaited(refreshChoreReminders(store, body: _reminderBody));
   }
 
   Future<void> _openEntity(String id) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => id.startsWith('cat:')
             ? CatDetailScreen(store: store, catId: id)
             : ClowderDetailScreen(store: store, clowderId: id),
@@ -336,7 +338,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
   void _choreChanged() {
     afterChoreTick(context, store, manager: widget.manager ?? catalogManager);
     setState(() {});
-    refreshChoreReminders(store, body: _reminderBody);
+    unawaited(refreshChoreReminders(store, body: _reminderBody));
   }
 
   String _reminderBody(Chore c) =>

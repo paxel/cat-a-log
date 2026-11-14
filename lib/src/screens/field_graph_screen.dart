@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -386,7 +388,7 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
               RadioGroup<GraphRange>(
                 groupValue: _range,
                 onChanged: (range) {
-                  if (range != null) _pick(range);
+                  if (range != null) unawaited(_pick(range));
                 },
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -32,7 +34,7 @@ void main() {
       addTearDown(() => dir.deleteSync(recursive: true));
       final desk = await Process.start(binary, ['${dir.path}/desk']);
       addTearDown(() {
-        desk.stdin.close();
+        unawaited(desk.stdin.close());
         desk.kill();
       });
       final lines = desk.stdout

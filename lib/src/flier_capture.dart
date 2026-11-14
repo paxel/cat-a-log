@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:typed_data';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -1444,7 +1446,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _confirmAbort();
+        if (!didPop) unawaited(_confirmAbort());
       },
       child: Scaffold(
         appBar: pageBar(context, title: Text(steps[step].title)),
