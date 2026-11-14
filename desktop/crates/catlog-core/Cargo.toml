@@ -10,7 +10,7 @@ repository.workspace = true
 name = "catlog_core"
 
 [dependencies]
-rusqlite = { version = "0.38", features = ["bundled"] }
+rusqlite = { version = "0.42", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }
 # Documents keep their keys in the order the phones write them.
 serde_json = { version = "1.0", features = ["preserve_order"] }

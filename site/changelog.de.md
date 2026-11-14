@@ -7,6 +7,9 @@ Die deutschen Änderungsnotizen zu cat(a)log, Abschnitt für Abschnitt wie `CHAN
 ### Neu
 - Jede Datei eines Releases trägt eine signierte Herkunftsangabe: `gh attestation verify <Datei> --repo paxel/cat-a-log` zeigt, dass der Release-Workflow dieses Repositorys sie aus dem getaggten Commit gebaut hat ([cat-1022](https://github.com/paxel/cat-a-log/issues/195)).
 
+### Sicherheit
+- Das SQLite des Schreibtischs ist 3.54 oder neuer und gibt keinen veralteten Speicher mehr zurück, wenn eine Datenbank neben einem Write-Ahead-Log mit anderer Seitengröße geöffnet wird ([cat-1023](https://github.com/paxel/cat-a-log/issues/196)).
+
 ## [2.5.0] - 2026-10-22
 
 ### Neu

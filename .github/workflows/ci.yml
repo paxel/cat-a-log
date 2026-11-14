@@ -76,6 +76,19 @@ jobs:
       - name: No known vulnerability (unmaintained notices reported only)
         run: python3 tool/osv_gate.py osv-results.json
 
+  # The desktop's dependencies (cat-1023): RustSec advisories, unsound
+  # and yanked crates, licences outside desktop/deny.toml's list and
+  # unknown sources fail every push.
+  cargo-deny:
+    name: cargo-deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+        with:
+          manifest-path: desktop/Cargo.toml
+          command: check advisories licenses sources
+
   desktop:
     name: Desktop (Rust)
     runs-on: ubuntu-latest
