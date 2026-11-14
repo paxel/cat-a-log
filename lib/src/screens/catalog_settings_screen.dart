@@ -102,7 +102,8 @@ class _CatalogSettingsScreenState extends State<CatalogSettingsScreen> {
       context,
       context.t.rename,
       initial: catalog.name,
-      taken: (n) => n.toLowerCase() != catalog.name.toLowerCase() &&
+      taken: (n) =>
+          n.toLowerCase() != catalog.name.toLowerCase() &&
           widget.catalogs.nameTaken(n),
     );
     if (name == null || !mounted) return;
@@ -191,7 +192,7 @@ class _CatalogSettingsScreenState extends State<CatalogSettingsScreen> {
     final t = context.t;
     final others = [
       for (final c in widget.catalogs.catalogs())
-        if (c.id != widget.catalog.id) c
+        if (c.id != widget.catalog.id) c,
     ];
     if (others.isEmpty) return;
     // One other catalog needs no choosing; `single` on a longer list
@@ -238,8 +239,7 @@ class _CatalogSettingsScreenState extends State<CatalogSettingsScreen> {
 
   Future<void> _chooseTitle() async {
     final t = context.t;
-    final earned =
-        earnedTitles(t, [_store], DateUtils.dateOnly(clockNow()));
+    final earned = earnedTitles(t, [_store], DateUtils.dateOnly(clockNow()));
     final picked = await showDialog<String>(
       context: context,
       builder: (context) => SimpleDialog(
@@ -266,11 +266,17 @@ class _CatalogSettingsScreenState extends State<CatalogSettingsScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     final catalog = _catalog;
-    if (_closed) return Scaffold(appBar: pageBar(context, title: Text(catalog.name)));
+    if (_closed) {
+      return Scaffold(appBar: pageBar(context, title: Text(catalog.name)));
+    }
     final usage = _store.storageUsage();
     final danger = Theme.of(context).colorScheme.error;
     return Scaffold(
-      appBar: pageBar(context, title: Text(catalog.name), help: PageHelp('catalogSettings', store: _store)),
+      appBar: pageBar(
+        context,
+        title: Text(catalog.name),
+        help: PageHelp('catalogSettings', store: _store),
+      ),
       body: ListView(
         children: [
           ListTile(
@@ -319,7 +325,8 @@ class _CatalogSettingsScreenState extends State<CatalogSettingsScreen> {
             leading: const Icon(Icons.workspace_premium_outlined),
             title: Text(t.yourTitle),
             subtitle: Text(
-                titleText(t, _store, _store.deviceId) ?? t.titleNone),
+              titleText(t, _store, _store.deviceId) ?? t.titleNone,
+            ),
             onTap: _chooseTitle,
           ),
           ListTile(
@@ -385,7 +392,8 @@ class _DeleteCatalogDialog extends StatelessWidget {
         ),
         FilledButton(
           style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
           onPressed: () => Navigator.of(context).pop(true),
           child: Text(t.delete),
         ),

@@ -5,7 +5,9 @@ import 'l10n.dart';
 import 'name_proposals.dart';
 import 'pet_mode.dart';
 import 'widgets/date_entry.dart';
+
 import 'package:catalog_core/catalog_core.dart';
+
 import 'field_labels.dart';
 
 class NameAndDate {
@@ -20,8 +22,12 @@ class NameAndDate {
 /// Name plus an "as of" date — so a clowder that has existed for ten
 /// years, or a cat that moved in long ago, carries its real date from
 /// the start instead of today's.
-Future<NameAndDate?> askNameAndDate(BuildContext context, String title,
-    {Future<String?> Function()? propose, String? species}) {
+Future<NameAndDate?> askNameAndDate(
+  BuildContext context,
+  String title, {
+  Future<String?> Function()? propose,
+  String? species,
+}) {
   return showDialog<NameAndDate>(
     context: context,
     builder: (context) =>
@@ -33,20 +39,30 @@ Future<NameAndDate?> askNameAndDate(BuildContext context, String title,
 /// pet mode — the species, offered from the one picked last on this
 /// device and remembered for the next time (#94). Returns the new id,
 /// or null when the keeper backed out.
-Future<String?> createAnimal(BuildContext context, CatalogStore store,
-    {required String title, String? clowderId}) async {
+Future<String?> createAnimal(
+  BuildContext context,
+  CatalogStore store, {
+  required String title,
+  String? clowderId,
+}) async {
   final locale = Localizations.localeOf(context);
   final result = await askNameAndDate(
     context,
     title,
     propose: () => proposeCatName(store, locale),
-    species: petMode.value ? (store.localSetting(lastSpeciesKey) ?? 'cat') : null,
+    species: petMode.value
+        ? (store.localSetting(lastSpeciesKey) ?? 'cat')
+        : null,
   );
   if (result == null) return null;
   final species = result.species ?? 'cat';
   if (result.species != null) store.setLocalSetting(lastSpeciesKey, species);
-  return store.createCat(result.name,
-      clowderId: clowderId, date: result.date, species: species);
+  return store.createCat(
+    result.name,
+    clowderId: clowderId,
+    date: result.date,
+    species: species,
+  );
 }
 
 class _NameDateDialog extends StatefulWidget {
@@ -67,17 +83,18 @@ class _NameDateDialog extends StatefulWidget {
 class _NameDateDialogState extends State<_NameDateDialog> {
   final _name = TextEditingController();
   late final _ownSpecies = TextEditingController(
-      text: widget.species != null && !speciesPresets.contains(widget.species)
-          ? widget.species
-          : '');
+    text: widget.species != null && !speciesPresets.contains(widget.species)
+        ? widget.species
+        : '',
+  );
   DateTime _asOf = clockNow();
 
   /// A preset, or '' for "own" (typed below).
   late String? _species = widget.species == null
       ? null
       : speciesPresets.contains(widget.species)
-          ? widget.species
-          : '';
+      ? widget.species
+      : '';
 
   /// The species to store: the preset, or what was typed for "own".
   String? get _chosenSpecies {
@@ -100,8 +117,7 @@ class _NameDateDialogState extends State<_NameDateDialog> {
     if (name == null || !mounted) return;
     _name.text = name;
     // Selected, so typing replaces the proposal without extra taps.
-    _name.selection =
-        TextSelection(baseOffset: 0, extentOffset: name.length);
+    _name.selection = TextSelection(baseOffset: 0, extentOffset: name.length);
   }
 
   @override
@@ -123,62 +139,70 @@ class _NameDateDialogState extends State<_NameDateDialog> {
     final sameDay = DateUtils.isSameDay(_asOf, clockNow());
     return AlertDialog(
       title: Text(widget.title),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(
-          controller: _name,
-          autofocus: true,
-          decoration: InputDecoration(
-            labelText: context.t.name,
-            suffixIcon: widget.propose == null
-                ? null
-                : IconButton(
-                    icon: const Icon(Icons.casino_outlined),
-                    tooltip: context.t.proposeAnotherName,
-                    onPressed: _reroll,
-                  ),
-          ),
-          onSubmitted: (_) => _submit(),
-        ),
-        if (widget.species != null) ...[
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            initialValue: _species,
-            decoration: InputDecoration(labelText: context.t.starterSpecies),
-            items: [
-              for (final s in speciesPresets)
-                DropdownMenuItem(
-                    value: s, child: Text(speciesDisplay(context.t, s))),
-              DropdownMenuItem(value: '', child: Text(context.t.ownValue)),
-            ],
-            onChanged: (v) => setState(() => _species = v),
-          ),
-          if (_species == '')
-            TextField(
-              controller: _ownSpecies,
-              decoration: InputDecoration(labelText: context.t.ownValue),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _name,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: context.t.name,
+              suffixIcon: widget.propose == null
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.casino_outlined),
+                      tooltip: context.t.proposeAnotherName,
+                      onPressed: _reroll,
+                    ),
             ),
+            onSubmitted: (_) => _submit(),
+          ),
+          if (widget.species != null) ...[
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              initialValue: _species,
+              decoration: InputDecoration(labelText: context.t.starterSpecies),
+              items: [
+                for (final s in speciesPresets)
+                  DropdownMenuItem(
+                    value: s,
+                    child: Text(speciesDisplay(context.t, s)),
+                  ),
+                DropdownMenuItem(value: '', child: Text(context.t.ownValue)),
+              ],
+              onChanged: (v) => setState(() => _species = v),
+            ),
+            if (_species == '')
+              TextField(
+                controller: _ownSpecies,
+                decoration: InputDecoration(labelText: context.t.ownValue),
+              ),
+          ],
+          const SizedBox(height: 8),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.event),
+            title: Text(
+              sameDay
+                  ? context.t.asOfToday
+                  : context.t.asOfDate(
+                      DateFormat.yMd(Localizations.localeOf(context).toString())
+                          .format(_asOf),
+                    ),
+            ),
+            trailing: const Icon(Icons.edit_calendar_outlined),
+            onTap: () async {
+              final picked = await pickDay(
+                context,
+                initial: _asOf,
+                lastDate: clockNow().add(const Duration(days: 1)),
+              );
+              if (!mounted) return;
+              if (picked != null) setState(() => _asOf = picked);
+            },
+          ),
         ],
-        const SizedBox(height: 8),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.event),
-          title: Text(sameDay
-              ? context.t.asOfToday
-              : context.t.asOfDate(DateFormat.yMd(
-                      Localizations.localeOf(context).toString())
-                  .format(_asOf))),
-          trailing: const Icon(Icons.edit_calendar_outlined),
-          onTap: () async {
-            final picked = await pickDay(
-              context,
-              initial: _asOf,
-              lastDate: clockNow().add(const Duration(days: 1)),
-            );
-            if (!mounted) return;
-            if (picked != null) setState(() => _asOf = picked);
-          },
-        ),
-      ]),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),

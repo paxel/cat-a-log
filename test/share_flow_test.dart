@@ -28,46 +28,59 @@ void main() {
 
   tearDown(() => owner.close());
 
-  testWidgets('the share screen offers filled fields and an inline QR',
-      (tester) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: SharePubliclyScreen(store: owner, catId: cat),
-    ));
+  testWidgets('the share screen offers filled fields and an inline QR', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SharePubliclyScreen(store: owner, catId: cat),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Gender'), findsOneWidget);
     expect(find.text('Remarks'), findsOneWidget);
     expect(find.text('Inline QR (text only, no photos)'), findsOneWidget);
   });
 
-  testWidgets('scan, preview, confirm — only then the cat lands',
-      (tester) async {
-    final bytes = catShareBytes(owner,
-        catId: cat,
-        fields: {Keys.userField('gender')},
-        includePhotos: false);
+  testWidgets('scan, preview, confirm — only then the cat lands', (
+    tester,
+  ) async {
+    final bytes = catShareBytes(
+      owner,
+      catId: cat,
+      fields: {Keys.userField('gender')},
+      includePhotos: false,
+    );
     final code = encodeShareData(bytes);
     final finder = CatalogStore.inMemory();
     addTearDown(finder.close);
     finder.author = 'finder';
 
     late BuildContext context;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: ScaffoldMessenger(
-        child: Builder(builder: (c) {
-          context = c;
-          return const Scaffold(body: SizedBox());
-        }),
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ScaffoldMessenger(
+          child: Builder(
+            builder: (c) {
+              context = c;
+              return const Scaffold(body: SizedBox());
+            },
+          ),
+        ),
       ),
-    ));
+    );
 
     await tester.runAsync(() async {
-      final future = scanShareCode(context, finder,
-          scan: (_) async => code,
-          fetch: (_) async => Uint8List(0));
+      final future = scanShareCode(
+        context,
+        finder,
+        scan: (_) async => code,
+        fetch: (_) async => Uint8List(0),
+      );
       await Future<void>.delayed(const Duration(milliseconds: 200));
       await tester.pumpAndSettle();
       // Preview shows the cat and its owner clowder; nothing imported yet.
@@ -81,29 +94,36 @@ void main() {
 
     final imported = finder.cats().single;
     expect(imported.name, 'Minka');
-    expect(finder.current(imported.id, Keys.userField('gender')),
-        'female');
+    expect(finder.current(imported.id, Keys.userField('gender')), 'female');
     // The un-whitelisted remarks never arrived.
     expect(finder.current(imported.id, Keys.userField('remarks')), isNull);
   });
 
-  testWidgets('garbage codes explain themselves and import nothing',
-      (tester) async {
+  testWidgets('garbage codes explain themselves and import nothing', (
+    tester,
+  ) async {
     final finder = CatalogStore.inMemory();
     addTearDown(finder.close);
     finder.author = 'finder';
     late BuildContext context;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(builder: (c) {
-        context = c;
-        return const Scaffold(body: SizedBox());
-      }),
-    ));
-    await scanShareCode(context, finder,
-        scan: (_) async => 'https://random.example/whatever',
-        fetch: (_) async => Uint8List(0));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (c) {
+            context = c;
+            return const Scaffold(body: SizedBox());
+          },
+        ),
+      ),
+    );
+    await scanShareCode(
+      context,
+      finder,
+      scan: (_) async => 'https://random.example/whatever',
+      fetch: (_) async => Uint8List(0),
+    );
     await tester.pump();
     expect(notesSaid(), ['That code is not a cat(a)log share.']);
     expect(finder.cats(), isEmpty);

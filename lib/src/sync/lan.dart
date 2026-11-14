@@ -5,7 +5,9 @@ import 'dart:typed_data' show BytesBuilder;
 import 'package:catalog_core/catalog_core.dart';
 
 import 'package:flutter/foundation.dart';
+
 import 'dart:async';
+
 import 'tls.dart';
 
 /// Outcome of one sync session, for the summary line.
@@ -24,10 +26,15 @@ class SyncResult {
   /// Refused rows and the keys met (1.2.0) — met in person, so verified.
   final ImportReport report;
 
-  SyncResult(this.entriesSent, this.entriesReceived, this.blobsSent,
-      this.blobsReceived,
-      {this.applied = const [], this.moment, ImportReport? report})
-      : report = report ?? ImportReport();
+  SyncResult(
+    this.entriesSent,
+    this.entriesReceived,
+    this.blobsSent,
+    this.blobsReceived, {
+    this.applied = const [],
+    this.moment,
+    ImportReport? report,
+  }) : report = report ?? ImportReport();
 }
 
 const _pinHeader = 'x-catlog-pin';
@@ -72,14 +79,14 @@ class LanSyncHost {
   /// says otherwise; the page passes none, a phone with the code and
   /// the PIN is let in.
   final Future<JoinDecision> Function(String author, String device)?
-      onJoinRequest;
+  onJoinRequest;
 
   /// Called after a joiner completed a session; receives what actually
   /// landed, so the host can show the import summary too.
   /// A joiner has synced: what arrived here, the moment before it, and
   /// what the signatures said.
   final void Function(List<Entry> applied, Moment? moment, ImportReport report)?
-      onSession;
+  onSession;
 
   /// Whether private values go out, read at every session: the page's
   /// switch, the same one the joiner side uses. Null falls back to the
@@ -98,11 +105,14 @@ class LanSyncHost {
   /// the pair code (#92).
   final TlsIdentity identity;
 
-  LanSyncHost(this.store, this.pin,
-      {required this.identity,
-      this.onJoinRequest,
-      this.onSession,
-      this.includePrivate});
+  LanSyncHost(
+    this.store,
+    this.pin, {
+    required this.identity,
+    this.onJoinRequest,
+    this.onSession,
+    this.includePrivate,
+  });
 
   Uint8List get fingerprint => identity.fingerprint;
 
@@ -119,7 +129,9 @@ class LanSyncHost {
     var address = bind;
     if (address == null) {
       for (final iface in await NetworkInterface.list(
-          type: InternetAddressType.IPv4, includeLoopback: false)) {
+        type: InternetAddressType.IPv4,
+        includeLoopback: false,
+      )) {
         if (iface.addresses.isNotEmpty) {
           address = iface.addresses.first;
           break;
@@ -193,12 +205,14 @@ class LanSyncHost {
             // From format 2 on, refusals carry their reason, so a
             // future mismatch names the fix instead of guessing.
             req.response.headers.contentType = ContentType.json;
-            req.response.write(jsonEncode({
-              'refusal': joinerFormat < syncFormat
-                  ? 'joiner-older'
-                  : 'joiner-newer',
-              'format': syncFormat,
-            }));
+            req.response.write(
+              jsonEncode({
+                'refusal': joinerFormat < syncFormat
+                    ? 'joiner-older'
+                    : 'joiner-newer',
+                'format': syncFormat,
+              }),
+            );
           }
           return;
         }
@@ -214,11 +228,12 @@ class LanSyncHost {
           return;
         }
         final private = includePrivate?.call() ?? decision.includePrivate;
-        final joinerVector = (body['vector'] as Map)
-            .map((k, v) => MapEntry(k as String, v as int));
+        final joinerVector = (body['vector'] as Map).map(
+          (k, v) => MapEntry(k as String, v as int),
+        );
         final incoming = [
           for (final e in body['entries'] as List)
-            Entry.fromJson((e as Map).cast<String, dynamic>())
+            Entry.fromJson((e as Map).cast<String, dynamic>()),
         ];
         // The joiner's own key, met over a session the pair code
         // authenticated, in the same room: verified (1.2.0). The keys
@@ -228,26 +243,34 @@ class LanSyncHost {
             : const <KeyRecord>[];
         final report = ImportReport();
         final before = store.currentSeq();
-        final applied = store.applyEntries(incoming,
-            senderVector: joinerVector,
-            keys: joinerKeys,
-            verifiedDevice: deviceId.isEmpty ? null : deviceId,
-            report: report);
-        final moment = momentFor(store,
-            before: before,
-            changed: applied.isNotEmpty,
-            cause: MomentCause.sync,
-            label: body['author'] as String?);
+        final applied = store.applyEntries(
+          incoming,
+          senderVector: joinerVector,
+          keys: joinerKeys,
+          verifiedDevice: deviceId.isEmpty ? null : deviceId,
+          report: report,
+        );
+        final moment = momentFor(
+          store,
+          before: before,
+          changed: applied.isNotEmpty,
+          cause: MomentCause.sync,
+          label: body['author'] as String?,
+        );
         req.response.headers.contentType = ContentType.json;
-        req.response.write(jsonEncode({
-          'entries': [
-            for (final e in store.entriesSince(joinerVector,
-                includePrivate: private))
-              e.toJson()
-          ],
-          'wantBlobs': store.missingBlobs(),
-          'keys': [for (final k in store.keyRecords()) k.toJson()],
-        }));
+        req.response.write(
+          jsonEncode({
+            'entries': [
+              for (final e in store.entriesSince(
+                joinerVector,
+                includePrivate: private,
+              ))
+                e.toJson(),
+            ],
+            'wantBlobs': store.missingBlobs(),
+            'keys': [for (final k in store.keyRecords()) k.toJson()],
+          }),
+        );
         onSession?.call(applied, moment, report);
       } else if (req.method == 'GET' && path.startsWith('/blob/')) {
         final bytes = store.imageBytes(path.substring('/blob/'.length));
@@ -300,8 +323,13 @@ Future<Uint8List?> _readBody(HttpRequest req, int limit) async {
 /// Joins a hosted session and runs a full two-way sync: entries both
 /// directions, then photos both directions.
 Future<SyncResult> lanSync(
-    CatalogStore store, String host, int port, String pin,
-    {required List<int> fingerprint, bool includePrivate = false}) async {
+  CatalogStore store,
+  String host,
+  int port,
+  String pin, {
+  required List<int> fingerprint,
+  bool includePrivate = false,
+}) async {
   // Generous timeout: on iOS the first-ever local connection blocks on
   // the Local Network permission prompt until the user answers it.
   // The host's self-signed certificate is accepted only when it is the
@@ -316,12 +344,18 @@ Future<SyncResult> lanSync(
     };
   try {
     var hostFormat = 1;
-    Future<dynamic> call(String method, String path,
-        {Object? body, void Function(HttpHeaders)? onHeaders}) async {
+    Future<dynamic> call(
+      String method,
+      String path, {
+      Object? body,
+      void Function(HttpHeaders)? onHeaders,
+    }) async {
       final HttpClientRequest req;
       try {
         req = await client.openUrl(
-            method, Uri.parse('https://$host:$port$path'));
+          method,
+          Uri.parse('https://$host:$port$path'),
+        );
       } on HandshakeException {
         // Either the certificate is not the one the code named, or the
         // other side speaks no TLS at all: a version before 1.1.0.
@@ -335,14 +369,12 @@ Future<SyncResult> lanSync(
         req.add(body);
       }
       final res = await req.close();
-      hostFormat =
-          int.tryParse(res.headers.value(_formatHeader) ?? '') ?? 1;
+      hostFormat = int.tryParse(res.headers.value(_formatHeader) ?? '') ?? 1;
       if (res.statusCode == HttpStatus.forbidden) {
         final body = await utf8.decoder.bind(res).join();
         // A refusal from format 2 on is JSON naming its reason.
         try {
-          final refusal =
-              (jsonDecode(body) as Map)['refusal'] as String?;
+          final refusal = (jsonDecode(body) as Map)['refusal'] as String?;
           if (refusal == 'joiner-older') {
             throw const SyncException('peer-newer');
           }
@@ -353,7 +385,8 @@ Future<SyncResult> lanSync(
           // Not JSON — a plain PIN or decline refusal.
         }
         throw SyncException(
-            body.contains('declined') ? 'declined' : 'Wrong PIN');
+          body.contains('declined') ? 'declined' : 'Wrong PIN',
+        );
       }
       onHeaders?.call(res.headers);
       if (res.statusCode == HttpStatus.notFound && path.startsWith('/blob/')) {
@@ -379,9 +412,11 @@ Future<SyncResult> lanSync(
     }
 
     String? hostDevice;
-    final hostVector = (await call('GET', '/vector',
-            onHeaders: (h) => hostDevice = h.value(_deviceHeader)) as Map)
-        .map((k, v) => MapEntry(k as String, v as int));
+    final hostVector = (await call(
+      'GET',
+      '/vector',
+      onHeaders: (h) => hostDevice = h.value(_deviceHeader),
+    ) as Map).map((k, v) => MapEntry(k as String, v as int));
     // An older host would strip the reminder flag off entries and
     // record plans as facts (#74) — refuse it before anything is sent,
     // unless this catalog has never used a reminder: then the payload
@@ -392,38 +427,48 @@ Future<SyncResult> lanSync(
       throw const SyncException('peer-older');
     }
     final myVector = store.versionVector();
-    final toSend =
-        store.entriesSince(hostVector, includePrivate: includePrivate);
+    final toSend = store.entriesSince(
+      hostVector,
+      includePrivate: includePrivate,
+    );
 
-    final response = await call('POST', '/sync', body: {
-      'format': syncFormat,
-      'vector': myVector,
-      'entries': [for (final e in toSend) e.toJson()],
-      'author': store.author ?? '?',
-      'deviceName': Platform.localHostname,
-      'deviceId': store.deviceId,
-      'keys': [for (final k in store.keyRecords()) k.toJson()],
-    }) as Map;
+    final response = await call(
+      'POST',
+      '/sync',
+      body: {
+        'format': syncFormat,
+        'vector': myVector,
+        'entries': [for (final e in toSend) e.toJson()],
+        'author': store.author ?? '?',
+        'deviceName': Platform.localHostname,
+        'deviceId': store.deviceId,
+        'keys': [for (final k in store.keyRecords()) k.toJson()],
+      },
+    ) as Map;
 
     final received = [
       for (final e in response['entries'] as List)
-        Entry.fromJson((e as Map).cast<String, dynamic>())
+        Entry.fromJson((e as Map).cast<String, dynamic>()),
     ];
     final hostKeys = response['keys'] is List
         ? parseKeys(jsonEncode(response['keys']))
         : const <KeyRecord>[];
     final report = ImportReport();
     final beforeApply = store.currentSeq();
-    final applied = store.applyEntries(received,
-        senderVector: hostVector,
-        keys: hostKeys,
-        verifiedDevice: hostDevice,
-        report: report);
-    final moment = momentFor(store,
-        before: beforeApply,
-        changed: applied.isNotEmpty,
-        cause: MomentCause.sync,
-        label: host);
+    final applied = store.applyEntries(
+      received,
+      senderVector: hostVector,
+      keys: hostKeys,
+      verifiedDevice: hostDevice,
+      report: report,
+    );
+    final moment = momentFor(
+      store,
+      before: beforeApply,
+      changed: applied.isNotEmpty,
+      cause: MomentCause.sync,
+      label: host,
+    );
 
     // The entries are in and recorded; whatever happens to the photos
     // now (host gone, a bad blob) the keeper gets the summary with its
@@ -447,8 +492,15 @@ Future<SyncResult> lanSync(
     } catch (_) {
       // Counted what landed; the rest waits for the next sync.
     }
-    return SyncResult(toSend.length, received.length, blobsOut, blobsIn,
-        applied: applied, moment: moment, report: report);
+    return SyncResult(
+      toSend.length,
+      received.length,
+      blobsOut,
+      blobsIn,
+      applied: applied,
+      moment: moment,
+      report: report,
+    );
   } finally {
     client.close(force: true);
   }

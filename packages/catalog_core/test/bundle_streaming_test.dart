@@ -23,11 +23,10 @@ void main() {
     root.deleteSync(recursive: true);
   });
 
-  Uint8List photo(int seed) => CatalogStore.compressImage(Uint8List.fromList(
-      img.encodeJpg(img.Image(width: 8 + seed, height: 8))));
+  Uint8List photo(int seed) => CatalogStore.compressImage(
+      Uint8List.fromList(img.encodeJpg(img.Image(width: 8 + seed, height: 8))));
 
-  test('photos are stored, entries deflated, and everything imports back',
-      () {
+  test('photos are stored, entries deflated, and everything imports back', () {
     final cat = store.createCat('Sissi');
     final hashes = [for (var i = 0; i < 3; i++) store.addImage(cat, photo(i))];
     final path = writeBundle(store, '${root.path}/b.catsync');
@@ -54,8 +53,8 @@ void main() {
     final home = store.createClowder('Home');
     final cat = store.createCat('Sissi', clowderId: home);
     final hash = store.addImage(cat, photo(5));
-    final path = writeArchive(store, '${root.path}/a.catsync',
-        entityIds: {home, cat});
+    final path =
+        writeArchive(store, '${root.path}/a.catsync', entityIds: {home, cat});
     final zip = ZipDecoder().decodeBytes(File(path).readAsBytesSync());
     expect(zip.files.map((f) => f.name), contains('blobs/$hash.jpg'));
     final other = CatalogStore.inMemory()..author = 'other';

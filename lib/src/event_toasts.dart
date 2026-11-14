@@ -29,7 +29,10 @@ void setToastEnabled(CatalogStore store, String kind, bool on) =>
 /// behind the other. Local changes never announce — the confetti
 /// covers local adoptions.
 void showEventToasts(
-    BuildContext context, CatalogStore store, List<Entry> applied) {
+  BuildContext context,
+  CatalogStore store,
+  List<Entry> applied,
+) {
   final t = context.t;
   final summary = reviewImport(store, applied);
   String name(String id) => store.current(id, Keys.name) ?? '?';
@@ -40,12 +43,12 @@ void showEventToasts(
 
   final births = [
     for (final id in summary.newCats)
-      if (store.current(id, 'f:mother') != null) id
+      if (store.current(id, 'f:mother') != null) id,
   ];
   final moves = <String>{
     for (final e in applied)
       if (e.field == Keys.clowder && e.value != null)
-        store.resolveEntity(e.entity)
+        store.resolveEntity(e.entity),
   }..removeAll({...summary.adopted, ...summary.newCats});
 
   final messages = <String>[
@@ -88,15 +91,17 @@ class _ToastSettingsScreenState extends State<ToastSettingsScreen> {
     };
     return Scaffold(
       appBar: pageBar(context, title: Text(t.toastSettingsTitle)),
-      body: ListView(children: [
-        for (final (kind, _) in toastKinds)
-          SwitchListTile(
-            title: Text(labels[kind]!),
-            value: toastEnabled(widget.store, kind),
-            onChanged: (v) =>
-                setState(() => setToastEnabled(widget.store, kind, v)),
-          ),
-      ]),
+      body: ListView(
+        children: [
+          for (final (kind, _) in toastKinds)
+            SwitchListTile(
+              title: Text(labels[kind]!),
+              value: toastEnabled(widget.store, kind),
+              onChanged: (v) =>
+                  setState(() => setToastEnabled(widget.store, kind, v)),
+            ),
+        ],
+      ),
     );
   }
 }

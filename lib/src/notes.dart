@@ -49,22 +49,22 @@ class Note {
   final VoidCallback? onOpenPage;
 
   Note.waiting(this.text, {required VoidCallback this.onTap, this.onGone})
-      : kind = NoteKind.waiting,
-        detail = null,
-        pageLabel = null,
-        onOpenPage = null;
+    : kind = NoteKind.waiting,
+      detail = null,
+      pageLabel = null,
+      onOpenPage = null;
 
   Note.done(this.text, {this.onTap})
-      : kind = NoteKind.done,
-        onGone = null,
-        detail = null,
-        pageLabel = null,
-        onOpenPage = null;
+    : kind = NoteKind.done,
+      onGone = null,
+      detail = null,
+      pageLabel = null,
+      onOpenPage = null;
 
   Note.failed(this.text, {this.detail, this.pageLabel, this.onOpenPage})
-      : kind = NoteKind.failed,
-        onTap = null,
-        onGone = null;
+    : kind = NoteKind.failed,
+      onTap = null,
+      onGone = null;
 }
 
 /// The notes on screen, oldest first; the first one is the visible one.
@@ -103,7 +103,10 @@ class NoteQueue extends ChangeNotifier {
 
   /// Swipe right: every note that is not a failure goes.
   void clearNews() {
-    final news = [for (final n in notes) if (n.kind != NoteKind.failed) n];
+    final news = [
+      for (final n in notes)
+        if (n.kind != NoteKind.failed) n,
+    ];
     if (news.isEmpty) return;
     notes.removeWhere(news.contains);
     for (final n in news) {
@@ -201,54 +204,54 @@ class NoteStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-        listenable: queue,
-        builder: (context, _) {
-          final note = queue.visible;
-          return Stack(
+    listenable: queue,
+    builder: (context, _) {
+      final note = queue.visible;
+      return Stack(
+        children: [
+          Column(
             children: [
-              Column(
-                children: [
-                  // The page moves down slowly enough to be noticed
-                  // before it moves under a thumb.
-                  AnimatedSize(
-                    duration: const Duration(milliseconds: 450),
-                    curve: Curves.easeIn,
-                    alignment: Alignment.topCenter,
-                    child: note == null
-                        ? const SizedBox(width: double.infinity)
-                        : _NoteLine(
-                            key: ObjectKey(note),
-                            note: note,
-                            more: queue.more,
-                            onShown: () => queue.shown(note),
-                            onLeft: queue.next,
-                            onRight: queue.clearNews,
-                            onTap: () => _open(context, note),
-                          ),
-                  ),
-                  Expanded(
-                    // The note took the status bar's height; the page
-                    // must not pad for it again.
-                    child: note == null
-                        ? child
-                        : MediaQuery.removePadding(
-                            context: context,
-                            removeTop: true,
-                            child: child,
-                          ),
-                  ),
-                ],
+              // The page moves down slowly enough to be noticed
+              // before it moves under a thumb.
+              AnimatedSize(
+                duration: const Duration(milliseconds: 450),
+                curve: Curves.easeIn,
+                alignment: Alignment.topCenter,
+                child: note == null
+                    ? const SizedBox(width: double.infinity)
+                    : _NoteLine(
+                        key: ObjectKey(note),
+                        note: note,
+                        more: queue.more,
+                        onShown: () => queue.shown(note),
+                        onLeft: queue.next,
+                        onRight: queue.clearNews,
+                        onTap: () => _open(context, note),
+                      ),
               ),
-              Positioned(
-                top: MediaQuery.paddingOf(context).top,
-                left: 0,
-                right: 0,
-                child: ActivityLine(busy: busy),
+              Expanded(
+                // The note took the status bar's height; the page
+                // must not pad for it again.
+                child: note == null
+                    ? child
+                    : MediaQuery.removePadding(
+                        context: context,
+                        removeTop: true,
+                        child: child,
+                      ),
               ),
             ],
-          );
-        },
+          ),
+          Positioned(
+            top: MediaQuery.paddingOf(context).top,
+            left: 0,
+            right: 0,
+            child: ActivityLine(busy: busy),
+          ),
+        ],
       );
+    },
+  );
 
   void _open(BuildContext context, Note note) {
     if (note.kind == NoteKind.failed) {
@@ -367,16 +370,16 @@ class ActivityLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
-        valueListenable: busy,
-        builder: (context, running, _) {
-          final icons = [
-            for (final MapEntry(:key, :value) in activityIcons.entries)
-              if (running.contains(key)) value,
-          ];
-          if (icons.isEmpty) return const SizedBox.shrink();
-          return _Pulse(icons: icons);
-        },
-      );
+    valueListenable: busy,
+    builder: (context, running, _) {
+      final icons = [
+        for (final MapEntry(:key, :value) in activityIcons.entries)
+          if (running.contains(key)) value,
+      ];
+      if (icons.isEmpty) return const SizedBox.shrink();
+      return _Pulse(icons: icons);
+    },
+  );
 }
 
 class _Pulse extends StatefulWidget {

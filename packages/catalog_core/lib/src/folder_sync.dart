@@ -314,8 +314,8 @@ Future<FolderSyncResult> folderSyncIn(CatalogStore store, SyncFolder folder,
   var blobsOut = 0;
   final blobDir = own('blobs');
   final blobNames = (await folder.list(blobDir)).toSet();
-  final blobsIn =
-      await fetchMissingBlobs(store, folder, catalog: catalog, blobNames: blobNames);
+  final blobsIn = await fetchMissingBlobs(store, folder,
+      catalog: catalog, blobNames: blobNames);
   final live = <String>{};
   for (final entity in [...store.cats(), ...store.clowders()]) {
     for (final hash in store.images(entity.id)) {

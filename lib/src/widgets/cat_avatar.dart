@@ -38,20 +38,35 @@ class MourningBandPainter extends CustomPainter {
 /// [child] with the mourning band over its lower right corner. The
 /// caller clips to the portrait's shape around it.
 Widget withMourningBand(Widget child) => Stack(
-      fit: StackFit.passthrough,
-      children: [
-        child,
-        const Positioned.fill(
-            child: CustomPaint(painter: MourningBandPainter())),
-      ],
-    );
+  fit: StackFit.passthrough,
+  children: [
+    child,
+    const Positioned.fill(child: CustomPaint(painter: MourningBandPainter())),
+  ],
+);
 
 /// Desaturation matrix for deceased cats' photos.
 const greyscale = ColorFilter.matrix(<double>[
-  0.2126, 0.7152, 0.0722, 0, 0,
-  0.2126, 0.7152, 0.0722, 0, 0,
-  0.2126, 0.7152, 0.0722, 0, 0,
-  0, 0, 0, 1, 0,
+  0.2126,
+  0.7152,
+  0.0722,
+  0,
+  0,
+  0.2126,
+  0.7152,
+  0.0722,
+  0,
+  0,
+  0.2126,
+  0.7152,
+  0.0722,
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
 ]);
 
 /// A Cat's Profile Image as a rounded thumbnail, or a placeholder icon.
@@ -61,8 +76,12 @@ class CatAvatar extends StatelessWidget {
   final String catId;
   final double size;
 
-  const CatAvatar(
-      {super.key, required this.store, required this.catId, this.size = 56});
+  const CatAvatar({
+    super.key,
+    required this.store,
+    required this.catId,
+    this.size = 56,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +98,8 @@ class CatAvatar extends StatelessWidget {
             image: ResizeImage(photo, width: (size * 3).round()),
             width: size,
             height: size,
-            fit: BoxFit.cover);
+            fit: BoxFit.cover,
+          );
     final dead = isDeceased(store, catId);
     // The band stays black over the faded picture: it lies outside the
     // fade.

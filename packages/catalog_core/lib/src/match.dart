@@ -36,8 +36,7 @@ class MatchCandidate {
 }
 
 /// Great-circle distance in meters.
-double haversineMeters(
-    double lat1, double lon1, double lat2, double lon2) {
+double haversineMeters(double lat1, double lon1, double lat2, double lon2) {
   const r = 6371000.0;
   final dLat = _rad(lat2 - lat1);
   final dLon = _rad(lon2 - lon1);
@@ -58,8 +57,7 @@ double _rad(double deg) => deg * pi / 180;
   return home == null ? null : store.positionOf(home);
 }
 
-String _pairKey(String a, String b) =>
-    a.compareTo(b) < 0 ? '$a|$b' : '$b|$a';
+String _pairKey(String a, String b) => a.compareTo(b) < 0 ? '$a|$b' : '$b|$a';
 
 /// All match candidates in the catalog, ID-exact first, then geo pairs
 /// sorted by distance. Never fuzzy: IDs match exactly after
@@ -99,8 +97,7 @@ List<MatchCandidate> matchCandidates(CatalogStore store) {
   final homes = <String, List<(double, double)>>{};
   final homeOf = <String, String?>{};
   final isStray = <String, bool>{
-    for (final cat in cats)
-      cat.id: store.current(cat.id, Keys.clowder) == null
+    for (final cat in cats) cat.id: store.current(cat.id, Keys.clowder) == null
   };
   for (final cat in cats) {
     final sightings = <(double, double)>[
@@ -149,8 +146,8 @@ List<MatchCandidate> matchCandidates(CatalogStore store) {
       }
       if (best != null) {
         seen.add(_pairKey(a, b));
-        geo.add(MatchCandidate(a, b, MatchReason.geoDate,
-            distanceMeters: best));
+        geo.add(
+            MatchCandidate(a, b, MatchReason.geoDate, distanceMeters: best));
       }
     }
   }

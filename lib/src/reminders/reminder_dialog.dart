@@ -34,8 +34,11 @@ bool plannable(FieldDef def) =>
 /// The one way to make a plan (#74, 1.0.1): who (unless the page
 /// already says), which field, when, and a type-aware value — plus the
 /// sentence that says what a plan is. Returns true when one was added.
-Future<bool> showAddReminder(BuildContext context, CatalogStore store,
-    {String? entityId}) async {
+Future<bool> showAddReminder(
+  BuildContext context,
+  CatalogStore store, {
+  String? entityId,
+}) async {
   final added = await showDialog<bool>(
     context: context,
     builder: (context) => _ReminderDialog(store: store, entityId: entityId),
@@ -79,7 +82,7 @@ class _ReminderDialogState extends State<_ReminderDialog> {
       ? const []
       : [
           for (final def in store.visibleFieldDefs(scope: _scope))
-            if (plannable(def)) def
+            if (plannable(def)) def,
         ];
 
   void _pickField(FieldDef? def) {
@@ -99,7 +102,13 @@ class _ReminderDialogState extends State<_ReminderDialog> {
       _entity != null && _def != null && (_value?.value ?? '').isNotEmpty;
 
   void _save() {
-    store.append(_entity!, _def!.key, _value!.value, date: _due, reminder: true);
+    store.append(
+      _entity!,
+      _def!.key,
+      _value!.value,
+      date: _due,
+      reminder: true,
+    );
     Navigator.of(context).pop(true);
   }
 
@@ -109,48 +118,60 @@ class _ReminderDialogState extends State<_ReminderDialog> {
     return AlertDialog(
       title: Text(t.addReminder),
       content: SingleChildScrollView(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(t.reminderDialogHint,
-              style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 12),
-          PlanEntityField(
-            store: store,
-            value: _entity,
-            onChanged: (v) {
-              setState(() => _entity = v);
-              _pickField(null);
-            },
-          ),
-          DropdownButtonFormField<String>(
-            initialValue: _def?.key,
-            decoration: InputDecoration(labelText: t.reminderField),
-            items: [
-              for (final def in _defs)
-                DropdownMenuItem(
-                    value: def.key, child: Text(fieldDefName(t, def))),
-            ],
-            onChanged: (key) => _pickField(
-                key == null ? null : _defs.firstWhere((d) => d.key == key)),
-          ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.alarm),
-            title: Text(t.dueDateLabel),
-            subtitle: Text(DateFormat.yMd(
-                    Localizations.localeOf(context).toString())
-                .format(_due)),
-            trailing: const Icon(Icons.edit_calendar_outlined),
-            onTap: _pickDue,
-          ),
-          if (_value != null) ...[
-            const SizedBox(height: 8),
-            ListenableBuilder(
-              listenable: _value!,
-              builder: (context, _) => FieldValueInput(
-                  controller: _value!, store: store, excludeId: _entity),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              t.reminderDialogHint,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
+            const SizedBox(height: 12),
+            PlanEntityField(
+              store: store,
+              value: _entity,
+              onChanged: (v) {
+                setState(() => _entity = v);
+                _pickField(null);
+              },
+            ),
+            DropdownButtonFormField<String>(
+              initialValue: _def?.key,
+              decoration: InputDecoration(labelText: t.reminderField),
+              items: [
+                for (final def in _defs)
+                  DropdownMenuItem(
+                    value: def.key,
+                    child: Text(fieldDefName(t, def)),
+                  ),
+              ],
+              onChanged: (key) => _pickField(
+                key == null ? null : _defs.firstWhere((d) => d.key == key),
+              ),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.alarm),
+              title: Text(t.dueDateLabel),
+              subtitle: Text(
+                DateFormat.yMd(Localizations.localeOf(context).toString())
+                    .format(_due),
+              ),
+              trailing: const Icon(Icons.edit_calendar_outlined),
+              onTap: _pickDue,
+            ),
+            if (_value != null) ...[
+              const SizedBox(height: 8),
+              ListenableBuilder(
+                listenable: _value!,
+                builder: (context, _) => FieldValueInput(
+                  controller: _value!,
+                  store: store,
+                  excludeId: _entity,
+                ),
+              ),
+            ],
           ],
-        ]),
+        ),
       ),
       actions: [
         TextButton(

@@ -16,12 +16,14 @@ import '../pdf_fonts.dart';
 import '../plus_code.dart';
 import '../share.dart';
 import '../spotlight.dart';
+
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
+
 import '../exclusive.dart';
 import '../widgets/foldable_chips.dart';
 
@@ -60,7 +62,8 @@ class _CardScreenState extends State<CardScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-        (_) => runSpotlights(context, store, 'card'));
+      (_) => runSpotlights(context, store, 'card'),
+    );
     final saved = store.localSetting('cardFields');
     if (saved != null) {
       _selected = saved.split('\n').where((k) => k.isNotEmpty).toSet();
@@ -92,7 +95,7 @@ class _CardScreenState extends State<CardScreen> {
         t.clowderLabel,
         clowderId == null
             ? t.stray
-            : store.current(clowderId, Keys.name) ?? t.unnamed
+            : store.current(clowderId, Keys.name) ?? t.unnamed,
       ));
     }
     for (final def in store.visibleFieldDefs(scope: FieldScope.cat)) {
@@ -131,51 +134,56 @@ class _CardScreenState extends State<CardScreen> {
   /// scannable geo QR plus the printable Plus Code, because "on the
   /// map" means nothing on paper.
   List<(FieldDef, double, double)> _cardPositions() => [
-        for (final def in store.visibleFieldDefs(scope: FieldScope.cat))
-          if (def.type == FieldType.location &&
-              _selected.contains(def.key))
-            if (CatalogStore.parsePosition(store.current(id, def.key))
-                case final pos?)
-              (def, pos.$1, pos.$2)
-      ];
+    for (final def in store.visibleFieldDefs(scope: FieldScope.cat))
+      if (def.type == FieldType.location && _selected.contains(def.key))
+        if (CatalogStore.parsePosition(store.current(id, def.key))
+            case final pos?)
+          (def, pos.$1, pos.$2),
+  ];
 
   /// Selected, filled ID Fields that render scannable (QR/barcode, #28).
   List<(FieldDef, String)> _scannableIds() => [
-        for (final def in store.visibleFieldDefs(scope: FieldScope.cat))
-          if (def.type == FieldType.id &&
-              def.idDisplay != IdDisplay.plain &&
-              _selected.contains(def.key) &&
-              store.current(id, def.key) != null)
-            (def, store.current(id, def.key)!)
-      ];
+    for (final def in store.visibleFieldDefs(scope: FieldScope.cat))
+      if (def.type == FieldType.id &&
+          def.idDisplay != IdDisplay.plain &&
+          _selected.contains(def.key) &&
+          store.current(id, def.key) != null)
+        (def, store.current(id, def.key)!),
+  ];
 
   Widget _scannable(FieldDef def, String value) => Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: Column(children: [
-          if (def.idDisplay == IdDisplay.qr) ...[
-            // A registry ID's code carries the search link, so a phone
-            // camera lands on the registry as it does with the
-            // registry's own poster (#82); the caption stays the number.
-            QrImageView(data: cardQrPayload(def, value), size: 110),
-            // The QR alone shows nothing readable — one caption line.
-            Text('${fieldDefName(context.t, def)}: $value',
-                style: Theme.of(context).textTheme.bodySmall),
-          ] else if (printsAsCode128(value))
-            // Code128 prints the number under the bars itself.
-            BarcodeWidget(
-              barcode: Barcode.code128(),
-              data: value,
-              width: 220,
-              height: 64,
-            )
-          else
-            // Scanners write whatever they read into an ID field, and
-            // Code128 cannot carry every character. The value still
-            // belongs on the card — as text rather than as a crash.
-            Text('${fieldDefName(context.t, def)}: $value',
-                style: Theme.of(context).textTheme.bodySmall),
-        ]),
-      );
+    padding: const EdgeInsets.only(top: 12),
+    child: Column(
+      children: [
+        if (def.idDisplay == IdDisplay.qr) ...[
+          // A registry ID's code carries the search link, so a phone
+          // camera lands on the registry as it does with the
+          // registry's own poster (#82); the caption stays the number.
+          QrImageView(data: cardQrPayload(def, value), size: 110),
+          // The QR alone shows nothing readable — one caption line.
+          Text(
+            '${fieldDefName(context.t, def)}: $value',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ] else if (printsAsCode128(value))
+          // Code128 prints the number under the bars itself.
+          BarcodeWidget(
+            barcode: Barcode.code128(),
+            data: value,
+            width: 220,
+            height: 64,
+          )
+        else
+          // Scanners write whatever they read into an ID field, and
+          // Code128 cannot carry every character. The value still
+          // belongs on the card — as text rather than as a crash.
+          Text(
+            '${fieldDefName(context.t, def)}: $value',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+      ],
+    ),
+  );
 
   /// Chips for everything that could be on the card: photo, clowder,
   /// and each filled field of this cat.
@@ -185,8 +193,7 @@ class _CardScreenState extends State<CardScreen> {
       if (store.profileImage(id) != null) (_photoKey, t.labelPhoto),
       (Keys.clowder, t.clowderLabel),
       for (final def in store.visibleFieldDefs(scope: FieldScope.cat))
-        if (store.current(id, def.key) != null)
-          (def.key, fieldDefName(t, def)),
+        if (store.current(id, def.key) != null) (def.key, fieldDefName(t, def)),
     ];
     return Spotlight(
       id: 'card-chips',
@@ -202,8 +209,8 @@ class _CardScreenState extends State<CardScreen> {
   }
 
   Future<Uint8List> _cardAsPng() async {
-    final boundary = _cardKey.currentContext!.findRenderObject()!
-        as RenderRepaintBoundary;
+    final boundary =
+        _cardKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
     final image = await boundary.toImage(pixelRatio: 3);
     try {
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -225,12 +232,16 @@ class _CardScreenState extends State<CardScreen> {
   Future<pw.Document> _buildPdf() async {
     final t = context.t;
     final name = store.current(id, Keys.name) ?? '(unnamed)';
-    final hash =
-        _selected.contains(_photoKey) ? store.profileImage(id) : null;
+    final hash = _selected.contains(_photoKey) ? store.profileImage(id) : null;
     final photo = hash == null ? null : store.imageBytes(hash);
     final facts = _facts();
-    final fonts = await pdfFontsFor(Localizations.localeOf(context).languageCode);
-    final doc = pw.Document(title: '$name — cat(a)log card', theme: fonts.theme);
+    final fonts = await pdfFontsFor(
+      Localizations.localeOf(context).languageCode,
+    );
+    final doc = pw.Document(
+      title: '$name — cat(a)log card',
+      theme: fonts.theme,
+    );
     doc.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a5,
@@ -250,71 +261,94 @@ class _CardScreenState extends State<CardScreen> {
                 ),
               ),
             pw.SizedBox(height: 16),
-            pw.Text(name,
-                style: pw.TextStyle(
-                    fontSize: 28, fontWeight: pw.FontWeight.bold)),
+            pw.Text(
+              name,
+              style: pw.TextStyle(fontSize: 28, fontWeight: pw.FontWeight.bold),
+            ),
             pw.SizedBox(height: 12),
             for (final (label, value) in facts)
               pw.Padding(
                 padding: const pw.EdgeInsets.only(bottom: 4),
-                child: pw.Row(children: [
-                  pw.SizedBox(
-                    width: 140,
-                    child: pw.Text(label,
+                child: pw.Row(
+                  children: [
+                    pw.SizedBox(
+                      width: 140,
+                      child: pw.Text(
+                        label,
                         style: const pw.TextStyle(
-                            fontSize: 12, color: PdfColors.grey700)),
-                  ),
-                  pw.Expanded(
-                      child: pw.Text(value,
-                          style: const pw.TextStyle(fontSize: 12))),
-                ]),
+                          fontSize: 12,
+                          color: PdfColors.grey700,
+                        ),
+                      ),
+                    ),
+                    pw.Expanded(
+                      child: pw.Text(
+                        value,
+                        style: const pw.TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             for (final (def, lat, lon) in _cardPositions())
               pw.Padding(
                 padding: const pw.EdgeInsets.only(top: 10),
-                child: pw.Column(children: [
-                  pw.BarcodeWidget(
-                    barcode: pw.Barcode.qrCode(),
-                    data: 'geo:$lat,$lon',
-                    width: 80,
-                    height: 80,
-                  ),
-                  pw.Text(
+                child: pw.Column(
+                  children: [
+                    pw.BarcodeWidget(
+                      barcode: pw.Barcode.qrCode(),
+                      data: 'geo:$lat,$lon',
+                      width: 80,
+                      height: 80,
+                    ),
+                    pw.Text(
                       '${fieldDefName(t, def)}: '
                       '${encodePlusCode(lat, lon)}',
                       style: const pw.TextStyle(
-                          fontSize: 9, color: PdfColors.grey700)),
-                ]),
+                        fontSize: 9,
+                        color: PdfColors.grey700,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             for (final (def, value) in _scannableIds())
               pw.Padding(
                 padding: const pw.EdgeInsets.only(top: 10),
-                child: pw.Column(children: [
-                  if (def.idDisplay == IdDisplay.qr ||
-                      printsAsCode128(value))
-                    pw.BarcodeWidget(
-                      barcode: def.idDisplay == IdDisplay.qr
-                          ? pw.Barcode.qrCode()
-                          : pw.Barcode.code128(),
-                      data: def.idDisplay == IdDisplay.qr
-                          ? cardQrPayload(def, value)
-                          : value,
-                      width: def.idDisplay == IdDisplay.qr ? 80 : 180,
-                      height: def.idDisplay == IdDisplay.qr ? 80 : 44,
-                    )
-                  else
-                    pw.Text('${fieldDefName(t, def)}: $value',
-                        style: const pw.TextStyle(fontSize: 9)),
-                  if (def.idDisplay == IdDisplay.qr)
-                    pw.Text('${fieldDefName(t, def)}: $value',
+                child: pw.Column(
+                  children: [
+                    if (def.idDisplay == IdDisplay.qr || printsAsCode128(value))
+                      pw.BarcodeWidget(
+                        barcode: def.idDisplay == IdDisplay.qr
+                            ? pw.Barcode.qrCode()
+                            : pw.Barcode.code128(),
+                        data: def.idDisplay == IdDisplay.qr
+                            ? cardQrPayload(def, value)
+                            : value,
+                        width: def.idDisplay == IdDisplay.qr ? 80 : 180,
+                        height: def.idDisplay == IdDisplay.qr ? 80 : 44,
+                      )
+                    else
+                      pw.Text(
+                        '${fieldDefName(t, def)}: $value',
+                        style: const pw.TextStyle(fontSize: 9),
+                      ),
+                    if (def.idDisplay == IdDisplay.qr)
+                      pw.Text(
+                        '${fieldDefName(t, def)}: $value',
                         style: const pw.TextStyle(
-                            fontSize: 9, color: PdfColors.grey700)),
-                ]),
+                          fontSize: 9,
+                          color: PdfColors.grey700,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             pw.Spacer(),
-            pw.Text('cat(a)log',
-                style: const pw.TextStyle(
-                    fontSize: 9, color: PdfColors.grey500)),
+            pw.Text(
+              'cat(a)log',
+              style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey500),
+            ),
           ],
         ),
       ),
@@ -323,19 +357,21 @@ class _CardScreenState extends State<CardScreen> {
   }
 
   Future<void> _printCard() => runExclusive('print', () async {
-        final doc = await _buildPdf();
-        await Printing.layoutPdf(onLayout: (_) => doc.save());
-      }, context: context);
+    final doc = await _buildPdf();
+    await Printing.layoutPdf(onLayout: (_) => doc.save());
+  }, context: context);
 
   Future<void> _sharePdf() => runExclusive('share', () async {
-        await _sharePdfNow();
-      }, context: context);
+    await _sharePdfNow();
+  }, context: context);
 
   Future<void> _sharePdfNow() async {
     final doc = await _buildPdf();
     final name = store.current(id, Keys.name) ?? 'cat';
     await Printing.sharePdf(
-        bytes: await doc.save(), filename: '$name-card.pdf');
+      bytes: await doc.save(),
+      filename: '$name-card.pdf',
+    );
   }
 
   /// The card's portrait wears the mourning band, as every portrait
@@ -346,8 +382,7 @@ class _CardScreenState extends State<CardScreen> {
   @override
   Widget build(BuildContext context) {
     final name = store.current(id, Keys.name) ?? '(unnamed)';
-    final hash =
-        _selected.contains(_photoKey) ? store.profileImage(id) : null;
+    final hash = _selected.contains(_photoKey) ? store.profileImage(id) : null;
     final photo = hash == null ? null : imageProviderFor(store, hash);
     final facts = _facts();
     return Scaffold(
@@ -357,96 +392,111 @@ class _CardScreenState extends State<CardScreen> {
         help: PageHelp('card', store: store),
         actions: [
           PageAction(
-              icon: Icons.ios_share,
-              label: context.t.shareAsImage,
-              onPressed: _shareImage),
+            icon: Icons.ios_share,
+            label: context.t.shareAsImage,
+            onPressed: _shareImage,
+          ),
           PageAction(
-              icon: Icons.picture_as_pdf,
-              label: context.t.shareAsPdf,
-              onPressed: _sharePdf),
+            icon: Icons.picture_as_pdf,
+            label: context.t.shareAsPdf,
+            onPressed: _sharePdf,
+          ),
           PageAction(
-              icon: Icons.print, label: context.t.print, onPressed: _printCard),
+            icon: Icons.print,
+            label: context.t.print,
+            onPressed: _printCard,
+          ),
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(children: [
-          const SizedBox(height: 8),
-          _contentPicker(),
-          Padding(
-          padding: const EdgeInsets.all(16),
-          child: RepaintBoundary(
-            key: _cardKey,
-            child: Container(
-              width: 360,
+        child: Column(
+          children: [
+            const SizedBox(height: 8),
+            _contentPicker(),
+            Padding(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                    color: Theme.of(context).colorScheme.outlineVariant),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (photo != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: _withBandIfDeceased(Image(
-                          // Sharp enough for the 3x export, a fraction
-                          // of a full decode.
-                          image: ResizeImage(photo, width: 1000),
-                          width: 328,
-                          height: 246,
-                          fit: BoxFit.cover)),
+              child: RepaintBoundary(
+                key: _cardKey,
+                child: Container(
+                  width: 360,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
                     ),
-                  const SizedBox(height: 12),
-                  Text(name,
-                      style: Theme.of(context).textTheme.headlineMedium),
-                  const SizedBox(height: 8),
-                  for (final (label, value) in facts)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: 140,
-                            child: Text(label,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (photo != null)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: _withBandIfDeceased(
+                            Image(
+                              // Sharp enough for the 3x export, a fraction
+                              // of a full decode.
+                              image: ResizeImage(photo, width: 1000),
+                              width: 328,
+                              height: 246,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          Expanded(child: Text(value)),
-                        ],
+                        ),
+                      const SizedBox(height: 12),
+                      Text(
+                        name,
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                    ),
-                  for (final (def, value) in _scannableIds())
-                    Center(child: _scannable(def, value)),
-                  for (final (def, lat, lon) in _cardPositions())
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: Column(children: [
-                          QrImageView(
-                              data: 'geo:$lat,$lon',
-                              size: 110,
-                              backgroundColor: Colors.white),
-                          Text(
-                              '${fieldDefName(context.t, def)}: '
-                              '${encodePlusCode(lat, lon)}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall),
-                        ]),
-                      ),
-                    ),
-                ],
+                      const SizedBox(height: 8),
+                      for (final (label, value) in facts)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 140,
+                                child: Text(
+                                  label,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ),
+                              Expanded(child: Text(value)),
+                            ],
+                          ),
+                        ),
+                      for (final (def, value) in _scannableIds())
+                        Center(child: _scannable(def, value)),
+                      for (final (def, lat, lon) in _cardPositions())
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Column(
+                              children: [
+                                QrImageView(
+                                  data: 'geo:$lat,$lon',
+                                  size: 110,
+                                  backgroundColor: Colors.white,
+                                ),
+                                Text(
+                                  '${fieldDefName(context.t, def)}: '
+                                  '${encodePlusCode(lat, lon)}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }

@@ -20,31 +20,37 @@ void main() {
   tearDown(() => store.close());
 
   Future<void> pump(WidgetTester tester, Widget home) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: home,
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: home,
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('the strays card leads the clowder grid and opens the list',
-      (tester) async {
+  testWidgets('the strays card leads the clowder grid and opens the list', (
+    tester,
+  ) async {
     store.createClowder('Home');
     store.createCat('Foundling');
     await pump(tester, ClowderListScreen(store: store));
     expect(find.text('Strays (1)'), findsOneWidget);
     // The pseudo card sits above the real clowder.
-    expect(tester.getTopLeft(find.text('Strays (1)')).dy,
-        lessThanOrEqualTo(tester.getTopLeft(find.text('Home')).dy));
+    expect(
+      tester.getTopLeft(find.text('Strays (1)')).dy,
+      lessThanOrEqualTo(tester.getTopLeft(find.text('Home')).dy),
+    );
     await tester.tap(find.text('Strays (1)'));
     await tester.pumpAndSettle();
     expect(find.byType(StraysScreen), findsOneWidget);
     expect(find.text('Foundling'), findsOneWidget);
   });
 
-  testWidgets('the stray list shows gender and color and sorts by them',
-      (tester) async {
+  testWidgets('the stray list shows gender and color and sorts by them', (
+    tester,
+  ) async {
     final a = store.createCat('Anton');
     store.append(a, Keys.userField('gender'), 'male');
     store.append(a, Keys.userField('color'), 'black');
@@ -56,15 +62,19 @@ void main() {
     expect(find.text('male · black'), findsOneWidget);
     expect(find.text('female · white'), findsOneWidget);
     // Name sort: Anton first.
-    expect(tester.getTopLeft(find.text('Anton')).dy,
-        lessThan(tester.getTopLeft(find.text('Zora')).dy));
+    expect(
+      tester.getTopLeft(find.text('Anton')).dy,
+      lessThan(tester.getTopLeft(find.text('Zora')).dy),
+    );
     // Gender sort: female first.
     await tester.tap(find.byTooltip('Sort'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Gender'));
     await tester.pumpAndSettle();
-    expect(tester.getTopLeft(find.text('Zora')).dy,
-        lessThan(tester.getTopLeft(find.text('Anton')).dy));
+    expect(
+      tester.getTopLeft(find.text('Zora')).dy,
+      lessThan(tester.getTopLeft(find.text('Anton')).dy),
+    );
   });
 
   testWidgets('a starred home moves to the front, after strays', (
@@ -78,14 +88,21 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
     await pump(tester, ClowderListScreen(store: store));
-    expect(tester.getTopLeft(find.text('Alpha')).dy,
-        lessThan(tester.getTopLeft(find.text('Zulu')).dy));
+    expect(
+      tester.getTopLeft(find.text('Alpha')).dy,
+      lessThan(tester.getTopLeft(find.text('Zulu')).dy),
+    );
     await tester.ensureVisible(find.text('Zulu'));
-    await tester.tap(find.byTooltip('Mark as favourite').at(1), warnIfMissed: true);
+    await tester.tap(
+      find.byTooltip('Mark as favourite').at(1),
+      warnIfMissed: true,
+    );
     await tester.pumpAndSettle();
     expect(store.localSetting('fav:$zulu'), 'yes');
-    expect(tester.getTopLeft(find.text('Zulu')).dy,
-        lessThanOrEqualTo(tester.getTopLeft(find.text('Alpha')).dy));
+    expect(
+      tester.getTopLeft(find.text('Zulu')).dy,
+      lessThanOrEqualTo(tester.getTopLeft(find.text('Alpha')).dy),
+    );
     expect(find.byTooltip('Remove from favourites'), findsOneWidget);
   });
 }

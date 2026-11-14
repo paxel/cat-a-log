@@ -36,19 +36,28 @@ Future<Uint8List> fetchShare(String url) async {
 /// Finder side of #40: scan a share QR, download or unpack it, preview
 /// the cat, and import only after an explicit confirmation. Nothing
 /// enters the catalog silently, and a malformed code explains itself.
-Future<void> scanShareCode(BuildContext context, CatalogStore store,
-        {Future<String?> Function(BuildContext)? scan,
-        Future<Uint8List> Function(String url)? fetch}) =>
-    runExclusive('scan', () => _scanShareCode(context, store, scan: scan, fetch: fetch),
-        context: context);
+Future<void> scanShareCode(
+  BuildContext context,
+  CatalogStore store, {
+  Future<String?> Function(BuildContext)? scan,
+  Future<Uint8List> Function(String url)? fetch,
+}) => runExclusive(
+  'scan',
+  () => _scanShareCode(context, store, scan: scan, fetch: fetch),
+  context: context,
+);
 
-Future<void> _scanShareCode(BuildContext context, CatalogStore store,
-    {Future<String?> Function(BuildContext)? scan,
-    Future<Uint8List> Function(String url)? fetch}) async {
-  final raw = await (scan ??
-      (BuildContext c) => Navigator.of(c)
-          .push<String>(MaterialPageRoute(builder: (_) => const ScanScreen())))(
-      context);
+Future<void> _scanShareCode(
+  BuildContext context,
+  CatalogStore store, {
+  Future<String?> Function(BuildContext)? scan,
+  Future<Uint8List> Function(String url)? fetch,
+}) async {
+  final raw =
+      await (scan ??
+          (BuildContext c) => Navigator.of(c).push<String>(
+            MaterialPageRoute(builder: (_) => const ScanScreen()),
+          ))(context);
   if (raw == null || raw.isEmpty) return;
   if (!context.mounted) return;
   final decoded = decodeShareQr(raw);
@@ -79,8 +88,7 @@ Future<void> _scanShareCode(BuildContext context, CatalogStore store,
     final cat = preview.cats().firstOrNull;
     if (cat == null) {
       if (context.mounted) {
-
-    noteFailed(context.t.notAShareCode);
+        noteFailed(context.t.notAShareCode);
       }
       return;
     }
@@ -98,27 +106,34 @@ Future<void> _scanShareCode(BuildContext context, CatalogStore store,
     context: context,
     builder: (context) => AlertDialog(
       title: Text(context.t.importShareTitle),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        if (photo != null)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.memory(photo,
-                height: 140, cacheHeight: 420, fit: BoxFit.cover),
-          ),
-        const SizedBox(height: 8),
-        Text(catName, style: Theme.of(context).textTheme.titleMedium),
-        if (clowderName != null) Text(clowderName),
-        if (decoded.url != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              context.t.shareSource(decoded.url!),
-              style: Theme.of(context).textTheme.bodySmall,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (photo != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.memory(
+                photo,
+                height: 140,
+                cacheHeight: 420,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-      ]),
+          const SizedBox(height: 8),
+          Text(catName, style: Theme.of(context).textTheme.titleMedium),
+          if (clowderName != null) Text(clowderName),
+          if (decoded.url != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                context.t.shareSource(decoded.url!),
+                style: Theme.of(context).textTheme.bodySmall,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ],
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -136,11 +151,20 @@ Future<void> _scanShareCode(BuildContext context, CatalogStore store,
   // any other import.
   final before = store.currentSeq();
   final result = importBundleBytes(store, bytes);
-  final point = momentFor(store,
-      before: before,
-      changed: result.applied.isNotEmpty,
-      cause: MomentCause.import,
-      label: name);
-  NoteQueue.instance.add(arrivalNote(context, store, result.applied,
-      undo: point, report: result.report));
+  final point = momentFor(
+    store,
+    before: before,
+    changed: result.applied.isNotEmpty,
+    cause: MomentCause.import,
+    label: name,
+  );
+  NoteQueue.instance.add(
+    arrivalNote(
+      context,
+      store,
+      result.applied,
+      undo: point,
+      report: result.report,
+    ),
+  );
 }

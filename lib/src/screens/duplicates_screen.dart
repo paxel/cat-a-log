@@ -22,8 +22,7 @@ class DuplicatesScreen extends StatefulWidget {
 class _DuplicatesScreenState extends State<DuplicatesScreen> {
   CatalogStore get store => widget.store;
 
-  String _name(String id) =>
-      store.current(id, Keys.name) ?? context.t.unnamed;
+  String _name(String id) => store.current(id, Keys.name) ?? context.t.unnamed;
 
   String _reason(BuildContext context, DuplicateCandidate c) {
     final t = context.t;
@@ -54,28 +53,36 @@ class _DuplicatesScreenState extends State<DuplicatesScreen> {
     final t = context.t;
     final candidates = duplicateCandidates(store);
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.findDuplicates), help: PageHelp('duplicates', store: store)),
+      appBar: pageBar(
+        context,
+        title: Text(t.findDuplicates),
+        help: PageHelp('duplicates', store: store),
+      ),
       body: candidates.isEmpty
           ? Center(child: Text(t.noDuplicates))
-          : ListView(children: [
-              for (final c in candidates)
-                ListTile(
-                  leading: c.cats
-                      ? SizedBox(
-                          width: 64,
-                          child: Row(children: [
-                            CatAvatar(store: store, catId: c.a, size: 30),
-                            const SizedBox(width: 4),
-                            CatAvatar(store: store, catId: c.b, size: 30),
-                          ]),
-                        )
-                      : const Icon(Icons.home_outlined),
-                  title: Text('${_name(c.a)} · ${_name(c.b)}'),
-                  subtitle: Text(_reason(context, c)),
-                  trailing: const Icon(Icons.merge_type),
-                  onTap: () => _confirm(c),
-                ),
-            ]),
+          : ListView(
+              children: [
+                for (final c in candidates)
+                  ListTile(
+                    leading: c.cats
+                        ? SizedBox(
+                            width: 64,
+                            child: Row(
+                              children: [
+                                CatAvatar(store: store, catId: c.a, size: 30),
+                                const SizedBox(width: 4),
+                                CatAvatar(store: store, catId: c.b, size: 30),
+                              ],
+                            ),
+                          )
+                        : const Icon(Icons.home_outlined),
+                    title: Text('${_name(c.a)} · ${_name(c.b)}'),
+                    subtitle: Text(_reason(context, c)),
+                    trailing: const Icon(Icons.merge_type),
+                    onTap: () => _confirm(c),
+                  ),
+              ],
+            ),
     );
   }
 }

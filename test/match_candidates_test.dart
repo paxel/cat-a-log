@@ -8,8 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   setUpAll(useSystemSqlite);
 
-  testWidgets('an ID pair lists, merging keeps the chosen survivor',
-      (tester) async {
+  testWidgets('an ID pair lists, merging keeps the chosen survivor', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'test';
@@ -18,11 +19,13 @@ void main() {
     store.append(missing, Keys.userField('chipid'), '276 0981 0234 5678');
     store.append(sighted, Keys.userField('chipid'), '276098102345678');
 
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: MatchCandidatesScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MatchCandidatesScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Minka · Fundkatze'), findsOneWidget);

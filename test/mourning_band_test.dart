@@ -8,21 +8,27 @@ void main() {
   setUpAll(useSystemSqlite);
 
   Finder band() => find.byWidgetPredicate(
-      (w) => w is CustomPaint && w.painter is MourningBandPainter);
+    (w) => w is CustomPaint && w.painter is MourningBandPainter,
+  );
 
-  testWidgets('a deceased cat wears the band, a living one does not',
-      (tester) async {
+  testWidgets('a deceased cat wears the band, a living one does not', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory()..author = 'anna';
     addTearDown(store.close);
     final alive = store.createCat('Miezi');
     final gone = store.createCat('Oma');
     store.append(gone, Keys.userField('deceased'), '2026-01-01');
-    await tester.pumpWidget(MaterialApp(
-      home: Row(children: [
-        CatAvatar(store: store, catId: alive),
-        CatAvatar(store: store, catId: gone),
-      ]),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Row(
+          children: [
+            CatAvatar(store: store, catId: alive),
+            CatAvatar(store: store, catId: gone),
+          ],
+        ),
+      ),
+    );
     await tester.pump();
     expect(band(), findsOneWidget);
     // On the placeholder too: no photo, still the band.
@@ -30,7 +36,9 @@ void main() {
   });
 
   test('the band never repaints: it is the same on every frame', () {
-    expect(const MourningBandPainter().shouldRepaint(const MourningBandPainter()),
-        isFalse);
+    expect(
+      const MourningBandPainter().shouldRepaint(const MourningBandPainter()),
+      isFalse,
+    );
   });
 }

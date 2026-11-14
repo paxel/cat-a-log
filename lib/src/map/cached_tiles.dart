@@ -34,7 +34,8 @@ class DiskCachingTileProvider extends TileProvider {
   ImageProvider getImage(TileCoordinates coordinates, TileLayer options) {
     final url = getTileUrl(coordinates, options);
     final file = File(
-        '${cacheDir.path}/${coordinates.z}_${coordinates.x}_${coordinates.y}.png');
+      '${cacheDir.path}/${coordinates.z}_${coordinates.x}_${coordinates.y}.png',
+    );
     // Cache hits load synchronously as MemoryImage — tiles are tiny,
     // and this is the one image pipeline that renders reliably both on
     // devices and under the widget-test clock (screenshot generator).
@@ -90,7 +91,9 @@ class _CachedTileImage extends ImageProvider<_CachedTileImage> {
 
   @override
   ImageStreamCompleter loadImage(
-      _CachedTileImage key, ImageDecoderCallback decode) {
+    _CachedTileImage key,
+    ImageDecoderCallback decode,
+  ) {
     final future = _load(decode);
     final completer = OneFrameImageStreamCompleter(future);
     // A pan drops the tile before its download lands; without a handle
@@ -115,7 +118,9 @@ class _CachedTileImage extends ImageProvider<_CachedTileImage> {
         final res = await req.close();
         if (res.statusCode != 200) {
           throw NetworkImageLoadException(
-              statusCode: res.statusCode, uri: Uri.parse(url));
+            statusCode: res.statusCode,
+            uri: Uri.parse(url),
+          );
         }
         final builder = BytesBuilder();
         await for (final chunk in res) {
@@ -123,8 +128,9 @@ class _CachedTileImage extends ImageProvider<_CachedTileImage> {
           // A tile is tens of KB; anything bigger is not a tile.
           if (builder.length > maxTileBytes) {
             throw NetworkImageLoadException(
-                statusCode: HttpStatus.requestEntityTooLarge,
-                uri: Uri.parse(url));
+              statusCode: HttpStatus.requestEntityTooLarge,
+              uri: Uri.parse(url),
+            );
           }
         }
         bytes = builder.takeBytes();

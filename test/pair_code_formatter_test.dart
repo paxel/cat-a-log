@@ -7,25 +7,40 @@ import 'package:flutter_test/flutter_test.dart';
 /// valid-looking old code and blame the peer.
 void main() {
   test('the code field keeps a whole 1.1.0 code while typing', () {
-    final code = encodePairCode('192.168.1.23', 4040, '123456',
-        fingerprint: List<int>.generate(fullFingerprintBytes, (i) => i),
-        typed: true);
+    final code = encodePairCode(
+      '192.168.1.23',
+      4040,
+      '123456',
+      fingerprint: List<int>.generate(fullFingerprintBytes, (i) => i),
+      typed: true,
+    );
     final formatted = PairCodeFormatter()
-        .formatEditUpdate(TextEditingValue.empty,
-            TextEditingValue(text: code))
+        .formatEditUpdate(TextEditingValue.empty, TextEditingValue(text: code))
         .text;
     final info = decodePairCode(formatted);
     expect(info, isNotNull);
-    expect(info!.fingerprint, hasLength(typedFingerprintBytes),
-        reason: 'a truncated code would decode as one from before TLS');
-    // The whole QR payload can be pasted too.
-    final full = encodePairCode('192.168.1.23', 4040, '123456',
-        fingerprint: List<int>.generate(fullFingerprintBytes, (i) => i));
     expect(
-        decodePairCode(PairCodeFormatter()
+      info!.fingerprint,
+      hasLength(typedFingerprintBytes),
+      reason: 'a truncated code would decode as one from before TLS',
+    );
+    // The whole QR payload can be pasted too.
+    final full = encodePairCode(
+      '192.168.1.23',
+      4040,
+      '123456',
+      fingerprint: List<int>.generate(fullFingerprintBytes, (i) => i),
+    );
+    expect(
+      decodePairCode(
+        PairCodeFormatter()
             .formatEditUpdate(
-                TextEditingValue.empty, TextEditingValue(text: full))
-            .text),
-        isNotNull);
+              TextEditingValue.empty,
+              TextEditingValue(text: full),
+            )
+            .text,
+      ),
+      isNotNull,
+    );
   });
 }

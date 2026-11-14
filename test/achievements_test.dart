@@ -114,10 +114,7 @@ void main() {
       DateTime(2026, 10, 20),
     );
     // September filled up too: another full month climbs with it.
-    expect(
-      climbed.firstWhere((s) => s.id == '${masterPrefix}feed').tier,
-      2,
-    );
+    expect(climbed.firstWhere((s) => s.id == '${masterPrefix}feed').tier, 2);
     final row = feedRow();
     expect(row.tier, 2);
     expect(row.first, DateTime(2026, 9, 6).toUtc());
@@ -126,8 +123,11 @@ void main() {
 
   test('a dismissed achievement hides until its ladder climbs past', () {
     dailyDone('Feed', DateTime(2026, 8, 20), DateTime(2026, 9, 5));
-    recordLadders(manager, ladders(gatherStats([store], DateTime(2026, 9, 6))),
-        DateTime(2026, 9, 6));
+    recordLadders(
+      manager,
+      ladders(gatherStats([store], DateTime(2026, 9, 6))),
+      DateTime(2026, 9, 6),
+    );
     Achievement feedRow() =>
         manager.achievements().firstWhere((a) => a.id == '${masterPrefix}feed');
     expect(feedRow().shows(1), isTrue);
@@ -180,9 +180,7 @@ void main() {
     expect(find.text('A full month'), findsNothing);
   });
 
-  testWidgets('earned titles and coats list by rank and month', (
-    tester,
-  ) async {
+  testWidgets('earned titles and coats list by rank and month', (tester) async {
     final today = DateUtils.dateOnly(DateTime.now());
     // Sixty ticks: Butler (50) on the Feed ladder; a full month behind.
     dailyDone('Feed', DateTime(2026, 7, 1), DateTime(2026, 8, 31));

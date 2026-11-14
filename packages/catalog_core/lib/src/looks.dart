@@ -151,15 +151,9 @@ const _anyFeatures = LooksGroup('features', single: false, values: [
 ]);
 
 /// A tortoise's shell and skin, in the colours there are words for.
-const _shellColours = LooksGroup('colours', single: false, values: [
-  'black',
-  'brown',
-  'tan',
-  'yellow',
-  'orange',
-  'green',
-  'grey'
-]);
+const _shellColours = LooksGroup('colours',
+    single: false,
+    values: ['black', 'brown', 'tan', 'yellow', 'orange', 'green', 'grey']);
 
 /// Species with fur, a tail and ears worth describing.
 const _furred = {

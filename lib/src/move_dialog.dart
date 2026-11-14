@@ -13,8 +13,12 @@ class MoveDialog extends StatefulWidget {
   final List<EntityView> clowders;
   final String? current;
   final DateTime? asOf;
-  const MoveDialog(
-      {super.key, required this.clowders, required this.current, this.asOf});
+  const MoveDialog({
+    super.key,
+    required this.clowders,
+    required this.current,
+    this.asOf,
+  });
 
   @override
   State<MoveDialog> createState() => _MoveDialogState();
@@ -71,9 +75,8 @@ class _MoveDialogState extends State<MoveDialog> {
             sameDay
                 ? t.asOfToday
                 : t.asOfDate(
-                    DateFormat.yMd(
-                      Localizations.localeOf(context).toString(),
-                    ).format(_asOf),
+                    DateFormat.yMd(Localizations.localeOf(context).toString())
+                        .format(_asOf),
                   ),
           ),
           trailing: const Icon(Icons.edit_calendar_outlined),

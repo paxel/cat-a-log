@@ -12,8 +12,7 @@ void main() {
 
   test('ordinary names survive intact', () {
     expect(shareFileName('Minka'), 'Minka-share.catsync');
-    expect(shareFileName('Kathrins Zweiter'),
-        'Kathrins Zweiter-share.catsync');
+    expect(shareFileName('Kathrins Zweiter'), 'Kathrins Zweiter-share.catsync');
     expect(shareFileName('Мурка'), 'Мурка-share.catsync');
   });
 

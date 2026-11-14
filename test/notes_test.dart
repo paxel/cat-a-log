@@ -80,8 +80,9 @@ void main() {
         ),
       );
 
-  testWidgets('a finished job leaves on its own, once the strip showed it',
-      (tester) async {
+  testWidgets('a finished job leaves on its own, once the strip showed it', (
+    tester,
+  ) async {
     await pump(tester);
     notes.add(failed('f'));
     notes.add(done('d'));
@@ -96,8 +97,9 @@ void main() {
     expect(notes.visible, isNull);
   });
 
-  testWidgets('the strip pushes the page down and marks what waits',
-      (tester) async {
+  testWidgets('the strip pushes the page down and marks what waits', (
+    tester,
+  ) async {
     await pump(tester);
     final before = tester.getTopLeft(find.text('page'));
     notes.add(done('Backup done'));
@@ -116,8 +118,9 @@ void main() {
     expect(tester.getTopLeft(find.text('page')), before);
   });
 
-  testWidgets('a swipe right clears the news and the failure stays',
-      (tester) async {
+  testWidgets('a swipe right clears the news and the failure stays', (
+    tester,
+  ) async {
     await pump(tester);
     notes.add(done('News'));
     notes.add(failed('Backup failed'));
@@ -134,8 +137,9 @@ void main() {
     expect(find.text('Backup failed'), findsNothing);
   });
 
-  testWidgets('a failure opens its dialog with the full text and Report',
-      (tester) async {
+  testWidgets('a failure opens its dialog with the full text and Report', (
+    tester,
+  ) async {
     await pump(tester);
     notes.add(failed('Backup failed', detail: 'disk full'));
     await tester.pumpAndSettle();
@@ -147,17 +151,21 @@ void main() {
     expect(notes.visible, isNull);
   });
 
-  testWidgets('the activity line shows an icon per running job',
-      (tester) async {
+  testWidgets('the activity line shows an icon per running job', (
+    tester,
+  ) async {
     await pump(tester, busy: {'folderSync', 'backup', 'imagePicker'});
     expect(find.byIcon(activityIcons['folderSync']!), findsOneWidget);
     expect(find.byIcon(activityIcons['backup']!), findsOneWidget);
     expect(find.byType(ActivityLine), findsOneWidget);
     // Two shown, the picker has no place on the line.
-    expect(find.descendant(
-      of: find.byType(ActivityLine),
-      matching: find.byType(Icon),
-    ), findsNWidgets(2));
+    expect(
+      find.descendant(
+        of: find.byType(ActivityLine),
+        matching: find.byType(Icon),
+      ),
+      findsNWidgets(2),
+    );
     // Something not tested: the pulse repeats, so no pumpAndSettle here.
     await tester.pump(const Duration(seconds: 1));
   });

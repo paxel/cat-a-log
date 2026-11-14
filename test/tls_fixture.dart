@@ -17,24 +17,36 @@ Future<LanSyncHost> testHost(
   String pin, {
   Future<JoinDecision> Function(String author, String device)? onJoinRequest,
   void Function(List<Entry> applied, Moment? moment, ImportReport report)?
-      onSession,
+  onSession,
   bool Function()? includePrivate,
 }) async {
-  final host = LanSyncHost(store, pin,
-      identity: testIdentity(),
-      onJoinRequest: onJoinRequest,
-      onSession: onSession,
-      includePrivate: includePrivate);
+  final host = LanSyncHost(
+    store,
+    pin,
+    identity: testIdentity(),
+    onJoinRequest: onJoinRequest,
+    onSession: onSession,
+    includePrivate: includePrivate,
+  );
   await host.start(bind: InternetAddress.loopbackIPv4);
   addTearDown(host.stop);
   return host;
 }
 
 /// A joiner's sync with [host] over loopback, pinned to its certificate.
-Future<SyncResult> syncWith(CatalogStore store, LanSyncHost host,
-        {String pin = '123456', bool includePrivate = false}) =>
-    lanSync(store, '127.0.0.1', host.port, pin,
-        fingerprint: host.fingerprint, includePrivate: includePrivate);
+Future<SyncResult> syncWith(
+  CatalogStore store,
+  LanSyncHost host, {
+  String pin = '123456',
+  bool includePrivate = false,
+}) => lanSync(
+  store,
+  '127.0.0.1',
+  host.port,
+  pin,
+  fingerprint: host.fingerprint,
+  includePrivate: includePrivate,
+);
 
 /// A raw client that accepts the test certificate — for requests built
 /// by hand, closed when the test ends.

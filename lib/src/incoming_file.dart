@@ -22,35 +22,54 @@ Future<void> _queue = Future.value();
 /// With [catalogs] and [switchTo], a .catsync first asks which catalog
 /// it goes into — or creates one (#90); without them it lands in the
 /// open catalog as before.
-void initIncomingFiles(GlobalKey<NavigatorState> navigator,
-    CatalogStore Function() store, List<String> args,
-    {CatalogManager? catalogs, void Function(CatalogInfo)? switchTo}) {
+void initIncomingFiles(
+  GlobalKey<NavigatorState> navigator,
+  CatalogStore Function() store,
+  List<String> args, {
+  CatalogManager? catalogs,
+  void Function(CatalogInfo)? switchTo,
+}) {
   // One file at a time: a second file while the first still asks for
   // its catalog waits its turn instead of stacking a second dialog.
   // Files the platform copied for us are ours to delete once read; a
   // desktop launch argument is the keeper's own file and stays.
-  void import(String path, {bool deleteAfter = true}) =>
-      _queue = _queue.then((_) => importIncomingFile(navigator, store, path,
-          catalogs: catalogs, switchTo: switchTo, deleteAfter: deleteAfter));
+  void import(String path, {bool deleteAfter = true}) => _queue = _queue.then(
+    (_) => importIncomingFile(
+      navigator,
+      store,
+      path,
+      catalogs: catalogs,
+      switchTo: switchTo,
+      deleteAfter: deleteAfter,
+    ),
+  );
   _channel.setMethodCallHandler((call) async {
     if (call.method == 'open') {
       import(call.arguments as String);
     }
     if (call.method == 'sharedImages') {
-      handleSharedImages(navigator, store(),
-          (call.arguments as List).cast<String>());
+      handleSharedImages(
+        navigator,
+        store(),
+        (call.arguments as List).cast<String>(),
+      );
     }
   });
   if (Platform.isAndroid || Platform.isIOS) {
-    _channel.invokeMethod<String>('pending').then((path) {
-      if (path != null) import(path);
-    }).catchError((_) => null);
-    _channel.invokeMethod<List<Object?>>('pendingImages').then((paths) {
-      if (paths != null && paths.isNotEmpty) {
-        handleSharedImages(
-            navigator, store(), paths.cast<String>());
-      }
-    }).catchError((_) => null);
+    _channel
+        .invokeMethod<String>('pending')
+        .then((path) {
+          if (path != null) import(path);
+        })
+        .catchError((_) => null);
+    _channel
+        .invokeMethod<List<Object?>>('pendingImages')
+        .then((paths) {
+          if (paths != null && paths.isNotEmpty) {
+            handleSharedImages(navigator, store(), paths.cast<String>());
+          }
+        })
+        .catchError((_) => null);
   }
   // Desktop: the associated file arrives as a launch argument.
   for (final arg in args) {
@@ -63,14 +82,22 @@ void initIncomingFiles(GlobalKey<NavigatorState> navigator,
 /// Imports one delivered file (after asking for its catalog when
 /// [catalogs] is given) and, with [deleteAfter], removes the copy the
 /// platform made for us — whatever the outcome.
-Future<void> importIncomingFile(GlobalKey<NavigatorState> navigator,
-    CatalogStore Function() storeOf, String path,
-    {CatalogManager? catalogs,
-    void Function(CatalogInfo)? switchTo,
-    bool deleteAfter = false}) async {
+Future<void> importIncomingFile(
+  GlobalKey<NavigatorState> navigator,
+  CatalogStore Function() storeOf,
+  String path, {
+  CatalogManager? catalogs,
+  void Function(CatalogInfo)? switchTo,
+  bool deleteAfter = false,
+}) async {
   try {
-    await _import(navigator, storeOf, path,
-        catalogs: catalogs, switchTo: switchTo);
+    await _import(
+      navigator,
+      storeOf,
+      path,
+      catalogs: catalogs,
+      switchTo: switchTo,
+    );
   } finally {
     if (deleteAfter) {
       try {
@@ -80,9 +107,13 @@ Future<void> importIncomingFile(GlobalKey<NavigatorState> navigator,
   }
 }
 
-Future<void> _import(GlobalKey<NavigatorState> navigator,
-    CatalogStore Function() storeOf, String path,
-    {CatalogManager? catalogs, void Function(CatalogInfo)? switchTo}) async {
+Future<void> _import(
+  GlobalKey<NavigatorState> navigator,
+  CatalogStore Function() storeOf,
+  String path, {
+  CatalogManager? catalogs,
+  void Function(CatalogInfo)? switchTo,
+}) async {
   // The first frame may not be up yet on a cold start — poll instead of
   // one fixed delay, or a slow start silently swallows the file.
   BuildContext? context;
@@ -127,8 +158,12 @@ Future<void> _import(GlobalKey<NavigatorState> navigator,
     if (result.applied.isEmpty && result.blobsIn == 0) {
       noteDone(context.t.nothingNewInBundle);
     } else {
-      await showImportSummary(context, store, result.applied,
-          undo: imported.moment);
+      await showImportSummary(
+        context,
+        store,
+        result.applied,
+        undo: imported.moment,
+      );
     }
   } catch (e) {
     if (context.mounted) noteFailed(context.t.notACatlogFile, detail: '$e');

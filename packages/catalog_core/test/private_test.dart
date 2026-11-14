@@ -108,8 +108,7 @@ void main() {
       a.append(cat, 'f:color', 'black');
       a.setPrivate(cat, true);
       a.setPrivate(cat, false);
-      final colorRows =
-          a.timeline(cat).where((e) => e.field == 'f:color');
+      final colorRows = a.timeline(cat).where((e) => e.field == 'f:color');
       expect(colorRows.length, 1);
     });
   });
@@ -130,9 +129,7 @@ void main() {
 
       final c = CatalogStore.inMemory()..author = 'cleo';
       importBundle(
-          c,
-          writeBundle(a, '${dir.path}/all.catsync',
-              includePrivate: true));
+          c, writeBundle(a, '${dir.path}/all.catsync', includePrivate: true));
       expect(c.cats().length, 2);
       expect(c.isPrivate(cat), isTrue);
       expect(c.images(cat).length, 1);

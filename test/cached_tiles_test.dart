@@ -9,8 +9,9 @@ import 'package:image/image.dart' as img;
 /// A tile dropped mid-pan (#100): the listener leaves before the
 /// download lands; the arriving image must not hit a disposed stream.
 void main() {
-  testWidgets('a tile abandoned mid-pan does not crash when it arrives',
-      (tester) async {
+  testWidgets('a tile abandoned mid-pan does not crash when it arrives', (
+    tester,
+  ) async {
     // flutter_test mocks HttpClient with a 400-for-everything stub;
     // this test runs a real localhost server instead.
     final overrides = HttpOverrides.current;
@@ -31,14 +32,17 @@ void main() {
       });
       final provider = DiskCachingTileProvider(dir);
       final image = provider.getImage(
-          const TileCoordinates(1, 2, 3),
-          TileLayer(
-              urlTemplate: 'http://127.0.0.1:${server.port}/{z}/{x}/{y}.png'));
+        const TileCoordinates(1, 2, 3),
+        TileLayer(
+          urlTemplate: 'http://127.0.0.1:${server.port}/{z}/{x}/{y}.png',
+        ),
+      );
       // Straight to loadImage: in the app the image cache lets go of a
       // tile under pan pressure, and the stream stands alone like this.
       final completer = (image as dynamic).loadImage(
-              image, PaintingBinding.instance.instantiateImageCodecWithSize)
-          as ImageStreamCompleter;
+        image,
+        PaintingBinding.instance.instantiateImageCodecWithSize,
+      ) as ImageStreamCompleter;
       final listener = ImageStreamListener((_, _) {});
       completer.addListener(listener);
       // The map scrolled on: the tile widget is gone.
@@ -47,8 +51,9 @@ void main() {
     });
     expect(tester.takeException(), isNull);
   });
-  testWidgets('a failed tile download does not escape as an uncaught error',
-      (tester) async {
+  testWidgets('a failed tile download does not escape as an uncaught error', (
+    tester,
+  ) async {
     final overrides = HttpOverrides.current;
     HttpOverrides.global = null;
     addTearDown(() => HttpOverrides.global = overrides);
@@ -65,15 +70,19 @@ void main() {
       });
       final provider = DiskCachingTileProvider(dir);
       final image = provider.getImage(
-          const TileCoordinates(1, 2, 3),
-          TileLayer(
-              urlTemplate: 'http://127.0.0.1:${server.port}/{z}/{x}/{y}.png'));
+        const TileCoordinates(1, 2, 3),
+        TileLayer(
+          urlTemplate: 'http://127.0.0.1:${server.port}/{z}/{x}/{y}.png',
+        ),
+      );
       final completer = (image as dynamic).loadImage(
-              image, PaintingBinding.instance.instantiateImageCodecWithSize)
-          as ImageStreamCompleter;
+        image,
+        PaintingBinding.instance.instantiateImageCodecWithSize,
+      ) as ImageStreamCompleter;
       // The tile widget handles its own error; nothing else may see it.
-      completer.addListener(ImageStreamListener((_, _) {},
-          onError: (error, _) => failure = error));
+      completer.addListener(
+        ImageStreamListener((_, _) {}, onError: (error, _) => failure = error),
+      );
       await Future<void>.delayed(const Duration(milliseconds: 800));
     });
     expect(failure, isNotNull);

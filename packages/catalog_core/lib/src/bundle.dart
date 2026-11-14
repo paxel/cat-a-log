@@ -57,8 +57,7 @@ class BundleResult {
 /// identifies a cat or a clowder always travels.
 String writeBundle(CatalogStore store, String path,
     {bool includePrivate = false}) {
-  final entries =
-      store.entriesSince(const {}, includePrivate: includePrivate);
+  final entries = store.entriesSince(const {}, includePrivate: includePrivate);
   final jsonl = entries.map((e) => jsonEncode(e.toJson())).join('\n');
   final seen = <String>{};
   final hashes = <String>[];
@@ -110,9 +109,8 @@ void writeZipStreaming(String path, List<int> jsonlBytes,
     for (final hash in hashes) {
       final bytes = bytesOf(hash);
       if (bytes == null) continue;
-      encoder.addArchiveFile(
-          ArchiveFile('blobs/$hash.jpg', bytes.length, bytes)
-            ..compress = false);
+      encoder.addArchiveFile(ArchiveFile('blobs/$hash.jpg', bytes.length, bytes)
+        ..compress = false);
     }
   } finally {
     encoder.closeSync();
@@ -217,23 +215,22 @@ BundleResult _importArchive(CatalogStore store, Archive archive) {
       throw const FormatException('Bundle too large');
     }
     if (file.name == 'format') {
-      final declared = int.tryParse(
-          utf8.decode(file.content as List<int>).trim());
+      final declared =
+          int.tryParse(utf8.decode(file.content as List<int>).trim());
       if (declared != null && declared > bundleFormat) {
         throw UnsupportedBundleFormat(declared);
       }
     } else if (file.name == keysFile) {
       keys = parseKeys(utf8.decode(file.content as List<int>));
-    } else if (file.name == 'entries2.jsonl' ||
-        file.name == 'entries.jsonl') {
+    } else if (file.name == 'entries2.jsonl' || file.name == 'entries.jsonl') {
       for (final line in utf8.decode(file.content as List<int>).split('\n')) {
         if (line.trim().isEmpty) continue;
         entries.add(
             Entry.fromJson((jsonDecode(line) as Map).cast<String, dynamic>()));
       }
     } else if (file.name.startsWith('blobs/') && file.name.endsWith('.jpg')) {
-      final hash = file.name.substring('blobs/'.length,
-          file.name.length - '.jpg'.length);
+      final hash = file.name
+          .substring('blobs/'.length, file.name.length - '.jpg'.length);
       blobFiles[hash] = file;
     }
   }

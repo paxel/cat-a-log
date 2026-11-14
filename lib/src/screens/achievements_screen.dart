@@ -36,9 +36,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     final picked = await showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(at.dx, at.dy, at.dx, at.dy),
-      items: [
-        PopupMenuItem(value: 'delete', child: Text(context.t.delete)),
-      ],
+      items: [PopupMenuItem(value: 'delete', child: Text(context.t.delete))],
     );
     if (picked != 'delete' || !mounted) return;
     manager.dismissAchievement(s.id);
@@ -46,11 +44,11 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   }
 
   Widget _row(LadderState s, Widget tile) => WithCatEar(
-        child: GestureDetector(
-          onLongPressStart: (d) => _menu(s, d.globalPosition),
-          child: tile,
-        ),
-      );
+    child: GestureDetector(
+      onLongPressStart: (d) => _menu(s, d.globalPosition),
+      child: tile,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +74,11 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     final coats = unlockedCoats(months);
     final nothing = stretches.isEmpty && titled.isEmpty && coats.isEmpty;
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.achievementsTitle), help: PageHelp('achievements')),
+      appBar: pageBar(
+        context,
+        title: Text(t.achievementsTitle),
+        help: PageHelp('achievements'),
+      ),
       body: ListView(
         children: [
           if (nothing)
@@ -88,8 +90,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             _row(
               s,
               ListTile(
-                leading:
-                    Icon(Icons.emoji_events, color: Colors.amber.shade700),
+                leading: Icon(Icons.emoji_events, color: Colors.amber.shade700),
                 title: Text(switch (s.id) {
                   fullMonthId => t.achievementMonth,
                   fullYearId => t.achievementYear,

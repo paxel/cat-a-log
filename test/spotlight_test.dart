@@ -9,34 +9,58 @@ void main() {
   final items = spotlightManifest['cat']!;
 
   test('nothing seen: everything due, manifest order', () {
-    expect(dueSpotlights('', items).map((i) => i.id),
-        ['cat-edit', 'cat-menu', 'cat-reminder', 'cat-chores', 'cat-report', 'cat-poster']);
+    expect(dueSpotlights('', items).map((i) => i.id), [
+      'cat-edit',
+      'cat-menu',
+      'cat-reminder',
+      'cat-chores',
+      'cat-report',
+      'cat-poster',
+    ]);
   });
 
   test('partially seen: only the new item is due', () {
-    expect(dueSpotlights('cat-menu', items).map((i) => i.id),
-        ['cat-edit', 'cat-reminder', 'cat-chores', 'cat-report', 'cat-poster']);
+    expect(dueSpotlights('cat-menu', items).map((i) => i.id), [
+      'cat-edit',
+      'cat-reminder',
+      'cat-chores',
+      'cat-report',
+      'cat-poster',
+    ]);
   });
 
   test('all seen: nothing due', () {
     expect(
-        dueSpotlights('cat-edit,cat-menu,cat-reminder,cat-chores,cat-report,cat-poster', items),
-        isEmpty);
+      dueSpotlights(
+        'cat-edit,cat-menu,cat-reminder,cat-chores,cat-report,cat-poster',
+        items,
+      ),
+      isEmpty,
+    );
   });
 
   test('the 1.3.0 tips are in the manifest', () {
     final ids = [
       for (final list in spotlightManifest.values)
-        for (final item in list) item.id
+        for (final item in list) item.id,
     ];
-    expect(ids, containsAll(['cat-chores', 'looks-chips', 'history-hold',
-        'settings-backups', 'cat-poster', 'cat-report']));
+    expect(
+      ids,
+      containsAll([
+        'cat-chores',
+        'looks-chips',
+        'history-hold',
+        'settings-backups',
+        'cat-poster',
+        'cat-report',
+      ]),
+    );
   });
 
   test('every manifest item id has a unique anchor id', () {
     final ids = [
       for (final list in spotlightManifest.values)
-        for (final item in list) item.id
+        for (final item in list) item.id,
     ];
     expect(ids.toSet().length, ids.length);
   });
@@ -59,8 +83,7 @@ void main() {
       expect(p.width, phone.width - 2 * tipMargin);
     });
 
-    test('on a tablet the tip is capped and sits under what it points at',
-        () {
+    test('on a tablet the tip is capped and sits under what it points at', () {
       const target = Rect.fromLTWH(600, 8, 48, 48);
       final p = tipPlacement(target, tablet);
       expect(p.width, tipMaxWidth);
@@ -74,8 +97,7 @@ void main() {
       ]) {
         final p = tipPlacement(target, tablet);
         expect(p.left, greaterThanOrEqualTo(tipMargin));
-        expect(p.left + p.width,
-            lessThanOrEqualTo(tablet.width - tipMargin));
+        expect(p.left + p.width, lessThanOrEqualTo(tablet.width - tipMargin));
       }
     });
 
@@ -84,8 +106,7 @@ void main() {
       final top = tipPlacement(const Rect.fromLTWH(8, 8, 48, 48), phone);
       expect(top.top, isNotNull);
       expect(top.bottom, isNull);
-      final bottom =
-          tipPlacement(const Rect.fromLTWH(8, 700, 48, 48), phone);
+      final bottom = tipPlacement(const Rect.fromLTWH(8, 700, 48, 48), phone);
       expect(bottom.top, isNull);
       expect(bottom.bottom, isNotNull);
     });
@@ -104,12 +125,17 @@ void main() {
     addTearDown(tester.view.reset);
     const target = Rect.fromLTWH(940, 8, 48, 48);
 
-    await tester.pumpWidget(const MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: SpotlightTip(
-          target: target, text: 'Tap here to sync', isLast: true),
-    ));
+    await tester.pumpWidget(
+      const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SpotlightTip(
+          target: target,
+          text: 'Tap here to sync',
+          isLast: true,
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.arrow_upward), findsNothing);
@@ -117,8 +143,11 @@ void main() {
     final card = tester.getRect(find.byType(Card).first);
     expect(card.width, lessThanOrEqualTo(tipMaxWidth));
     expect(card.right, lessThanOrEqualTo(1024 - tipMargin));
-    expect(card.center.dx, greaterThan(600),
-        reason: 'the tip belongs beside the highlight, not at the far edge');
+    expect(
+      card.center.dx,
+      greaterThan(600),
+      reason: 'the tip belongs beside the highlight, not at the far edge',
+    );
     expect(card.top, greaterThan(target.bottom));
   });
 }

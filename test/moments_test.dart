@@ -17,8 +17,7 @@ void main() {
   setUp(() {
     dir = Directory.systemTemp.createTempSync('catlog-moments');
     Directory('${dir.path}/mine').createSync();
-    store = CatalogStore.open('${dir.path}/mine/catlog.db')
-      ..author = 'Patrick';
+    store = CatalogStore.open('${dir.path}/mine/catlog.db')..author = 'Patrick';
   });
 
   tearDown(() {
@@ -29,19 +28,21 @@ void main() {
   test('nothing applied records nothing', () {
     final before = store.currentSeq();
     expect(
-        momentFor(store,
-            before: before, changed: false, cause: MomentCause.sync),
-        isNull);
+      momentFor(store, before: before, changed: false, cause: MomentCause.sync),
+      isNull,
+    );
     expect(store.moments(), isEmpty);
   });
 
   test('a moment names what was about to happen', () {
     final before = store.currentSeq();
-    final point = momentFor(store,
-        before: before,
-        changed: true,
-        cause: MomentCause.sync,
-        label: 'Kathrin');
+    final point = momentFor(
+      store,
+      before: before,
+      changed: true,
+      cause: MomentCause.sync,
+      label: 'Kathrin',
+    );
     expect(point!.cause, MomentCause.sync);
     expect(point.label, 'Kathrin');
   });
@@ -51,14 +52,18 @@ void main() {
     final two = store.createCat('Mieze');
 
     late BuildContext ctx;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(builder: (context) {
-        ctx = context;
-        return const Scaffold(body: SizedBox.shrink());
-      }),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            ctx = context;
+            return const Scaffold(body: SizedBox.shrink());
+          },
+        ),
+      ),
+    );
 
     final merged = confirmPairMerge(
       context: ctx,
@@ -80,8 +85,10 @@ void main() {
     expect(point.cause, MomentCause.merge);
 
     revertTo(store, point, keepAt: '${dir.path}/undo.catsync');
-    expect(store.cats().map((c) => c.name),
-        unorderedEquals(['Miezi', 'Mieze']));
+    expect(
+      store.cats().map((c) => c.name),
+      unorderedEquals(['Miezi', 'Mieze']),
+    );
   });
 
   test('archiving and deleting can be undone', () {
@@ -89,8 +96,12 @@ void main() {
     store.append(cat, Keys.userField('deceased'), '2020-01-01');
     final before = store.currentSeq();
     deleteArchived(store, {cat});
-    final point = momentFor(store,
-        before: before, changed: true, cause: MomentCause.archive)!;
+    final point = momentFor(
+      store,
+      before: before,
+      changed: true,
+      cause: MomentCause.archive,
+    )!;
     expect(store.cats(), isEmpty);
 
     revertTo(store, point, keepAt: '${dir.path}/undo.catsync');

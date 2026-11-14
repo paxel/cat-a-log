@@ -257,7 +257,9 @@ class _FieldHistoryScreenState extends State<FieldHistoryScreen> {
             onPressed: _flip,
           ),
           PageAction(
-            icon: _showVoided ? Icons.visibility_off_outlined : Icons.visibility,
+            icon: _showVoided
+                ? Icons.visibility_off_outlined
+                : Icons.visibility,
             label: _showVoided ? t.hideRemovedValues : t.showRemovedValues,
             onPressed: _flipVoided,
           ),

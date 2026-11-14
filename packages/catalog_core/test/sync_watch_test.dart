@@ -121,7 +121,8 @@ void main() {
   test('manifests come per catalog subfolder too', () async {
     a.createCat('Miezi');
     await folderSyncIn(a, folder, catalog: 'farm');
-    final manifests = await foreignManifests(folder, b.deviceId, catalog: 'farm');
+    final manifests =
+        await foreignManifests(folder, b.deviceId, catalog: 'farm');
     expect(manifests.keys.single, 'farm/${a.deviceId}');
     final unseen =
         await unseenChanges(b, folder, const [], devices: manifests.keys);

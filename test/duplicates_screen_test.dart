@@ -8,8 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   setUpAll(useSystemSqlite);
 
-  testWidgets('same-name cats surface and merge to the chosen survivor',
-      (tester) async {
+  testWidgets('same-name cats surface and merge to the chosen survivor', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'test';
@@ -17,11 +18,13 @@ void main() {
     store.createCat('miezi');
     store.createClowder('Home');
 
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: DuplicatesScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: DuplicatesScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Miezi · miezi'), findsOneWidget);
@@ -38,7 +41,6 @@ void main() {
 
     expect(store.cats(), hasLength(1));
     expect(store.cats().single.id, keeper);
-    expect(find.text('No possible duplicates right now.'),
-        findsOneWidget);
+    expect(find.text('No possible duplicates right now.'), findsOneWidget);
   });
 }

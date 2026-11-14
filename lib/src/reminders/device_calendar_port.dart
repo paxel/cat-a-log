@@ -4,6 +4,7 @@ import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'calendar_port.dart';
+
 import 'package:catalog_core/catalog_core.dart';
 
 /// Whether this platform has a device calendar to mirror into.
@@ -54,21 +55,27 @@ class DeviceCalendarPort implements CalendarPort {
     final calendars = await _plugin.retrieveCalendars();
     if (calendars.hasErrors) {
       throw CalendarPortException(
-          calendars.errors.map((e) => e.errorMessage).join('; '));
+        calendars.errors.map((e) => e.errorMessage).join('; '),
+      );
     }
     return [
       for (final c in calendars.data ?? const <Calendar>[])
         if (c.id != null)
           CalendarChoice(
-              id: c.id!,
-              name: c.name ?? c.id!,
-              account: c.accountName,
-              writable: c.isReadOnly != true),
+            id: c.id!,
+            name: c.name ?? c.id!,
+            account: c.accountName,
+            writable: c.isReadOnly != true,
+          ),
     ];
   }
 
-  Event _event(String calendarId, EventSpec spec,
-      {String? eventId, bool withAlert = false}) {
+  Event _event(
+    String calendarId,
+    EventSpec spec, {
+    String? eventId,
+    bool withAlert = false,
+  }) {
     return Event(
       calendarId,
       eventId: eventId,
@@ -87,16 +94,21 @@ class DeviceCalendarPort implements CalendarPort {
 
   @override
   Future<String?> createEvent(String calendarId, EventSpec spec) async {
-    final result = await _plugin
-        .createOrUpdateEvent(_event(calendarId, spec, withAlert: true));
+    final result = await _plugin.createOrUpdateEvent(
+      _event(calendarId, spec, withAlert: true),
+    );
     return result?.data;
   }
 
   @override
   Future<bool> updateEvent(
-      String calendarId, String eventId, EventSpec spec) async {
-    final result = await _plugin
-        .createOrUpdateEvent(_event(calendarId, spec, eventId: eventId));
+    String calendarId,
+    String eventId,
+    EventSpec spec,
+  ) async {
+    final result = await _plugin.createOrUpdateEvent(
+      _event(calendarId, spec, eventId: eventId),
+    );
     return result?.data != null;
   }
 
@@ -108,18 +120,21 @@ class DeviceCalendarPort implements CalendarPort {
   @override
   Future<List<String>> markedEventIds(String calendarId) async {
     final result = await _plugin.retrieveEvents(
-        calendarId,
-        RetrieveEventsParams(
-            startDate: clockNow().subtract(const Duration(days: 3650)),
-            endDate: clockNow().add(const Duration(days: 36500))));
+      calendarId,
+      RetrieveEventsParams(
+        startDate: clockNow().subtract(const Duration(days: 3650)),
+        endDate: clockNow().add(const Duration(days: 36500)),
+      ),
+    );
     if (result.isSuccess != true) {
       throw CalendarPortException(
-          result.errors.map((e) => e.errorMessage).join('; '));
+        result.errors.map((e) => e.errorMessage).join('; '),
+      );
     }
     return [
       for (final e in result.data ?? const <Event>[])
         if (e.eventId != null && (e.description ?? '').contains(eventMarker))
-          e.eventId!
+          e.eventId!,
     ];
   }
 }

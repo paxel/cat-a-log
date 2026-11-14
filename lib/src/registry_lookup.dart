@@ -9,7 +9,10 @@ import 'notes.dart';
 /// never talks to the service itself — this hands the link to the
 /// system, nothing more.
 Future<void> openLookup(
-    BuildContext context, FieldDef def, String value) async {
+  BuildContext context,
+  FieldDef def,
+  String value,
+) async {
   final t = context.t;
   final url = lookupUrl(def, value);
   if (url == null) return;
@@ -17,8 +20,7 @@ Future<void> openLookup(
   var opened = false;
   if (uri != null) {
     try {
-      opened =
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {
       opened = false;
     }

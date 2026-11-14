@@ -22,12 +22,14 @@ void main() {
   });
 
   void share(CatalogStore from, CatalogStore to) => to.applyEntries(
-      from.entriesSince(to.versionVector()),
-      senderVector: from.versionVector());
+    from.entriesSince(to.versionVector()),
+    senderVector: from.versionVector(),
+  );
 
   List<Entry> receive(CatalogStore from, CatalogStore to) => to.applyEntries(
-      from.entriesSince(to.versionVector()),
-      senderVector: from.versionVector());
+    from.entriesSince(to.versionVector()),
+    senderVector: from.versionVector(),
+  );
 
   test('new cats and homes are new; known ones list their changes', () {
     final cat = a.createCat('Miezi');
@@ -85,8 +87,7 @@ void main() {
     expect(review.meta.map((m) => m.kind), contains(MetaKind.photos));
   });
 
-  test('a partner\'s deletion is listed; a hidden cat is not announced',
-      () {
+  test('a partner\'s deletion is listed; a hidden cat is not announced', () {
     final gone = a.createCat('Gone');
     final hidden = a.createCat('Shy');
     a.setHidden(hidden, true);
@@ -98,8 +99,11 @@ void main() {
     expect(review.deleted.map((d) => d.id), [gone]);
     expect(review.deleted.single.entries, isNotEmpty);
     expect(review.updated, isEmpty, reason: 'hidden stays unmentioned');
-    expect(a.current(hidden, 'f:color'), 'grey',
-        reason: 'the data still arrives');
+    expect(
+      a.current(hidden, 'f:color'),
+      'grey',
+      reason: 'the data still arrives',
+    );
   });
 
   test('an empty catalog arrives as nothing at all', () {

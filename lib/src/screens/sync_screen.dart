@@ -20,7 +20,11 @@ class SyncScreen extends StatelessWidget {
     final t = context.t;
     final backupError = store.localSetting(backupErrorKey);
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.sync), help: PageHelp('sync', store: store)),
+      appBar: pageBar(
+        context,
+        title: Text(t.sync),
+        help: PageHelp('sync', store: store),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -28,40 +32,43 @@ class SyncScreen extends StatelessWidget {
           if (backupError != null && backupError.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: Text(t.lastBackupFailed(backupError),
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.error)),
+              child: Text(
+                t.lastBackupFailed(backupError),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
             ),
           // What all three ways share: the catalog open right now.
           if (store.localSetting(catalogNameKey) case final name?)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: Text(t.sharedCatalogIs(name),
-                  style: Theme.of(context).textTheme.titleMedium),
+              child: Text(
+                t.sharedCatalogIs(name),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
           _ChooserCard(
             icon: Icons.qr_code,
             title: t.syncChooserInPerson,
             subtitle: t.syncChooserInPersonSub,
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => InPersonScreen(store: store),
-            )),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => InPersonScreen(store: store)),
+            ),
           ),
           _ChooserCard(
             icon: Icons.folder_shared_outlined,
             title: t.syncChooserRemote,
             subtitle: t.syncChooserRemoteSub,
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => RemoteScreen(store: store),
-            )),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => RemoteScreen(store: store)),
+            ),
           ),
           _ChooserCard(
             icon: Icons.send_outlined,
             title: t.syncChooserMessenger,
             subtitle: t.syncChooserMessengerSub,
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => MessengerScreen(store: store),
-            )),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => MessengerScreen(store: store)),
+            ),
           ),
         ],
       ),
@@ -75,11 +82,12 @@ class _ChooserCard extends StatelessWidget {
   final String subtitle;
   final VoidCallback onTap;
 
-  const _ChooserCard(
-      {required this.icon,
-      required this.title,
-      required this.subtitle,
-      required this.onTap});
+  const _ChooserCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -90,24 +98,30 @@ class _ChooserCard extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Row(children: [
-            Icon(icon, size: 40,
-                color: Theme.of(context).colorScheme.primary),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 4),
-                  Text(subtitle,
-                      style: Theme.of(context).textTheme.bodySmall),
-                ],
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 40,
+                color: Theme.of(context).colorScheme.primary,
               ),
-            ),
-            const Icon(Icons.chevron_right),
-          ]),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
         ),
       ),
     );

@@ -15,20 +15,25 @@ void main() {
   tearDown(() => unitSystem.value = UnitSystem.metric);
 
   const weight = FieldDef(
-      id: 'fielddef:weight',
-      slug: 'weight',
-      name: 'Weight',
-      type: FieldType.unitValue,
-      scope: FieldScope.cat,
-      dimension: Dimension.weight);
+    id: 'fielddef:weight',
+    slug: 'weight',
+    name: 'Weight',
+    type: FieldType.unitValue,
+    scope: FieldScope.cat,
+    dimension: Dimension.weight,
+  );
 
   test('the region picks the side unless the keeper did', () {
     expect(unitSystemFor(null, const Locale('en', 'US')), UnitSystem.imperial);
     expect(unitSystemFor(null, const Locale('de', 'DE')), UnitSystem.metric);
-    expect(unitSystemFor('metric', const Locale('en', 'US')),
-        UnitSystem.metric);
-    expect(unitSystemFor('imperial', const Locale('de', 'DE')),
-        UnitSystem.imperial);
+    expect(
+      unitSystemFor('metric', const Locale('en', 'US')),
+      UnitSystem.metric,
+    );
+    expect(
+      unitSystemFor('imperial', const Locale('de', 'DE')),
+      UnitSystem.imperial,
+    );
   });
 
   test('display follows the device side and the locale', () {
@@ -40,14 +45,20 @@ void main() {
 
   Future<BuildContext> pump(WidgetTester tester) async {
     late BuildContext context;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: Builder(builder: (c) {
-        context = c;
-        return const SizedBox();
-      })),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (c) {
+              context = c;
+              return const SizedBox();
+            },
+          ),
+        ),
+      ),
+    );
     return context;
   }
 

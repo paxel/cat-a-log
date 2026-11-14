@@ -496,9 +496,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
   PartialDate? _missingDate(String text) {
     final date = parseFlierDate(text);
     if (date == null) return null;
-    return date.earliest.isAfter(DateUtils.dateOnly(clockNow()))
-        ? null
-        : date;
+    return date.earliest.isAfter(DateUtils.dateOnly(clockNow())) ? null : date;
   }
 
   /// A hit for a number printed in the text: the registry named by the
@@ -1412,7 +1410,10 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
     final photo = _photo;
     if (photo == null) {
       return Scaffold(
-        appBar: pageBar(context, title: Text(_newCat ? t.captureFlier : t.addFlier)),
+        appBar: pageBar(
+          context,
+          title: Text(_newCat ? t.captureFlier : t.addFlier),
+        ),
         body: Center(
           child: _choosing && !_picking
               // The two ways in, as buttons on the page: no sheet first.

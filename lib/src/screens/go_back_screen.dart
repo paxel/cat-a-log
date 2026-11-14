@@ -41,12 +41,14 @@ class _GoBackScreenState extends State<GoBackScreen> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(context.t.cancel)),
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(context.t.cancel),
+            ),
             FilledButton(
-                onPressed: () =>
-                    Navigator.of(context).pop(controller.text.trim()),
-                child: Text(context.t.save)),
+              onPressed: () =>
+                  Navigator.of(context).pop(controller.text.trim()),
+              child: Text(context.t.save),
+            ),
           ],
         );
       },
@@ -57,8 +59,12 @@ class _GoBackScreenState extends State<GoBackScreen> {
   }
 
   Future<void> _goBack(Moment point) async {
-    final done = await confirmGoBack(context, widget.store, point,
-        saveTo: widget.saveTo);
+    final done = await confirmGoBack(
+      context,
+      widget.store,
+      point,
+      saveTo: widget.saveTo,
+    );
     if (done && mounted) setState(() {});
   }
 
@@ -68,36 +74,43 @@ class _GoBackScreenState extends State<GoBackScreen> {
     final all = momentsOf(widget.store);
     final shown = _showAll ? all : all.take(recentMoments).toList();
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.goBackTitle), help: PageHelp('goBack', store: widget.store)),
-      body: ListView(children: [
-        for (final (index, point) in shown.indexed) ...[
-          // A month header where the month changes: a long history has
-          // to stay readable without hunting through dates.
-          if (index == 0 ||
-              !_sameMonth(shown[index - 1].at, point.at))
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-              child: Text(_month(context, point.at),
-                  style: Theme.of(context).textTheme.titleSmall),
+      appBar: pageBar(
+        context,
+        title: Text(t.goBackTitle),
+        help: PageHelp('goBack', store: widget.store),
+      ),
+      body: ListView(
+        children: [
+          for (final (index, point) in shown.indexed) ...[
+            // A month header where the month changes: a long history has
+            // to stay readable without hunting through dates.
+            if (index == 0 || !_sameMonth(shown[index - 1].at, point.at))
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                child: Text(
+                  _month(context, point.at),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+            ListTile(
+              leading: Icon(_icon(point.cause)),
+              title: Text(momentTitle(t, point)),
+              subtitle: Text(momentDetail(context, point)),
+              trailing: TextButton(
+                onPressed: () => _goBack(point),
+                child: Text(t.goBackToHere),
+              ),
             ),
-          ListTile(
-            leading: Icon(_icon(point.cause)),
-            title: Text(momentTitle(t, point)),
-            subtitle: Text(momentDetail(context, point)),
-            trailing: TextButton(
-              onPressed: () => _goBack(point),
-              child: Text(t.goBackToHere),
+          ],
+          if (!_showAll && all.length > shown.length)
+            Center(
+              child: TextButton(
+                onPressed: () => setState(() => _showAll = true),
+                child: Text(t.showOlderMoments),
+              ),
             ),
-          ),
         ],
-        if (!_showAll && all.length > shown.length)
-          Center(
-            child: TextButton(
-              onPressed: () => setState(() => _showAll = true),
-              child: Text(t.showOlderMoments),
-            ),
-          ),
-      ]),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _mark,
         tooltip: t.nameThisMoment,
@@ -116,24 +129,23 @@ String _month(BuildContext context, DateTime at) =>
         .format(at.toLocal());
 
 IconData _icon(String cause) => switch (cause) {
-      MomentCause.import => Icons.download,
-      MomentCause.sync => Icons.sync,
-      MomentCause.merge => Icons.merge,
-      MomentCause.hardDelete => Icons.delete_forever_outlined,
-      MomentCause.archive => Icons.inventory_2_outlined,
-      _ => Icons.bookmark_outline,
-    };
+  MomentCause.import => Icons.download,
+  MomentCause.sync => Icons.sync,
+  MomentCause.merge => Icons.merge,
+  MomentCause.hardDelete => Icons.delete_forever_outlined,
+  MomentCause.archive => Icons.inventory_2_outlined,
+  _ => Icons.bookmark_outline,
+};
 
 /// A moment as a sentence: what was about to happen.
-String momentTitle(AppLocalizations t, Moment point) =>
-    switch (point.cause) {
-      MomentCause.import => t.momentImport,
-      MomentCause.sync => t.momentSync,
-      MomentCause.merge => t.momentMerge,
-      MomentCause.hardDelete => t.momentHardDelete,
-      MomentCause.archive => t.momentArchive,
-      _ => point.label ?? t.momentManual,
-    };
+String momentTitle(AppLocalizations t, Moment point) => switch (point.cause) {
+  MomentCause.import => t.momentImport,
+  MomentCause.sync => t.momentSync,
+  MomentCause.merge => t.momentMerge,
+  MomentCause.hardDelete => t.momentHardDelete,
+  MomentCause.archive => t.momentArchive,
+  _ => point.label ?? t.momentManual,
+};
 
 /// What it was about, and when — the label unless it is already the
 /// title, then just the date.

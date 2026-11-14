@@ -33,8 +33,12 @@ class PositionPickerScreen extends StatefulWidget {
   /// Test override; defaults to Nominatim.
   final GeocodeSearch? geocode;
 
-  const PositionPickerScreen(
-      {super.key, this.initial, this.tileProvider, this.geocode});
+  const PositionPickerScreen({
+    super.key,
+    this.initial,
+    this.tileProvider,
+    this.geocode,
+  });
 
   @override
   State<PositionPickerScreen> createState() => _PositionPickerScreenState();
@@ -59,8 +63,11 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
     } else {
       getApplicationSupportDirectory().then((dir) {
         if (mounted) {
-          setState(() =>
-              _tiles = DiskCachingTileProvider(Directory('${dir.path}/tiles')));
+          setState(
+            () => _tiles = DiskCachingTileProvider(
+              Directory('${dir.path}/tiles'),
+            ),
+          );
         }
       });
     }
@@ -91,7 +98,9 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
     if (position == null) {
       if (mounted) {
         await explainLocationFailure(
-            context, outcome.failure ?? LocationFailure.noFix);
+          context,
+          outcome.failure ?? LocationFailure.noFix,
+        );
       }
       return;
     }
@@ -137,8 +146,7 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
   void _pop() {
     _lastRegion = _controller.camera.center;
     _lastZoom = _controller.camera.zoom;
-    Navigator.of(context)
-        .pop('${_picked!.latitude},${_picked!.longitude}');
+    Navigator.of(context).pop('${_picked!.latitude},${_picked!.longitude}');
   }
 
   @override
@@ -178,10 +186,10 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
                     ? const Padding(
                         padding: EdgeInsets.all(12),
                         child: SizedBox(
-                            width: 18,
-                            height: 18,
-                            child:
-                                CircularProgressIndicator(strokeWidth: 2)),
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       )
                     : null,
               ),
@@ -194,60 +202,74 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
         icon: const Icon(Icons.my_location),
         label: Text(context.t.useMyLocation),
       ),
-      body: Stack(children: [
-        FlutterMap(
-          mapController: _controller,
-          options: MapOptions(
-            initialCenter: _picked ?? _lastRegion ?? const LatLng(51.0, 10.0),
-            initialZoom:
-                _picked != null ? 14 : (_lastRegion != null ? _lastZoom : 6),
-            onTap: (_, point) => setState(() => _picked = point),
-            onPositionChanged: (_, byGesture) {
-              if (byGesture) _touched = true;
-            },
-            interactionOptions: const InteractionOptions(
-              flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: _controller,
+            options: MapOptions(
+              initialCenter: _picked ?? _lastRegion ?? const LatLng(51.0, 10.0),
+              initialZoom: _picked != null
+                  ? 14
+                  : (_lastRegion != null ? _lastZoom : 6),
+              onTap: (_, point) => setState(() => _picked = point),
+              onPositionChanged: (_, byGesture) {
+                if (byGesture) _touched = true;
+              },
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              ),
             ),
-          ),
-          children: [
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'io.github.paxel.catlog',
-              tileProvider: _tiles,
-            ),
-            if (_picked != null)
-              MarkerLayer(markers: [
-                Marker(
-                  point: _picked!,
-                  width: 44,
-                  height: 44,
-                  alignment: Alignment.topCenter,
-                  child: const Icon(Icons.location_pin,
-                      size: 44, color: Colors.deepOrange),
-                ),
-              ]),
-            const SimpleAttributionWidget(
-              source: Text('OpenStreetMap contributors'),
-            ),
-          ],
-        ),
-        if (_hits != null)
-          Material(
-            elevation: 4,
-            child: _hits!.isEmpty
-                ? ListTile(title: Text(context.t.noPlacesFound))
-                : ListView(shrinkWrap: true, children: [
-                    for (final hit in _hits!)
-                      ListTile(
-                        dense: true,
-                        leading: const Icon(Icons.place_outlined),
-                        title: Text(hit.name,
-                            maxLines: 2, overflow: TextOverflow.ellipsis),
-                        onTap: () => _jumpTo(hit),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'io.github.paxel.catlog',
+                tileProvider: _tiles,
+              ),
+              if (_picked != null)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: _picked!,
+                      width: 44,
+                      height: 44,
+                      alignment: Alignment.topCenter,
+                      child: const Icon(
+                        Icons.location_pin,
+                        size: 44,
+                        color: Colors.deepOrange,
                       ),
-                  ]),
+                    ),
+                  ],
+                ),
+              const SimpleAttributionWidget(
+                source: Text('OpenStreetMap contributors'),
+              ),
+            ],
           ),
-      ]),
+          if (_hits != null)
+            Material(
+              elevation: 4,
+              child: _hits!.isEmpty
+                  ? ListTile(title: Text(context.t.noPlacesFound))
+                  : ListView(
+                      shrinkWrap: true,
+                      children: [
+                        for (final hit in _hits!)
+                          ListTile(
+                            dense: true,
+                            leading: const Icon(Icons.place_outlined),
+                            title: Text(
+                              hit.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onTap: () => _jumpTo(hit),
+                          ),
+                      ],
+                    ),
+            ),
+        ],
+      ),
     );
   }
 }

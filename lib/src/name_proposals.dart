@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
+
 import 'pet_mode.dart';
 
 /// The dice behind a proposed name; the frame generators seed it so a
@@ -37,12 +38,10 @@ Future<String?> proposeCatName(CatalogStore store, Locale locale) async {
           ...await _load('assets/names/global.txt'),
           ...await _load('assets/names/${locale.languageCode}.txt'),
         ];
-  final used = {
-    for (final c in store.cats()) c.name.toLowerCase().trim(),
-  };
+  final used = {for (final c in store.cats()) c.name.toLowerCase().trim()};
   final free = [
     for (final n in pool)
-      if (!used.contains(n.toLowerCase())) n
+      if (!used.contains(n.toLowerCase())) n,
   ];
   if (free.isEmpty) return null;
   return free[proposalDice.nextInt(free.length)];

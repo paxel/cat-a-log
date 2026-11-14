@@ -55,7 +55,8 @@ class _AddFanState extends State<AddFan> with SingleTickerProviderStateMixin {
     final overlay = Overlay.of(context);
     final box = _button.currentContext!.findRenderObject() as RenderBox;
     final overlayBox = overlay.context.findRenderObject() as RenderBox;
-    final rect = box.localToGlobal(Offset.zero, ancestor: overlayBox) & box.size;
+    final rect =
+        box.localToGlobal(Offset.zero, ancestor: overlayBox) & box.size;
     _motion.duration = _duration;
     _entry = OverlayEntry(
       builder: (_) => _Fan(
@@ -189,7 +190,11 @@ class _FanRow extends StatelessWidget {
   final Animation<double> motion;
   final VoidCallback onTap;
 
-  const _FanRow({required this.item, required this.motion, required this.onTap});
+  const _FanRow({
+    required this.item,
+    required this.motion,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +215,10 @@ class _FanRow extends StatelessWidget {
                 customBorder: const StadiumBorder(),
                 onTap: onTap,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   child: Text(item.label),
                 ),
               ),

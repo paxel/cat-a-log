@@ -84,11 +84,8 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> pump(
-    WidgetTester tester,
-    List<Entry> applied, {
-    Moment? undo,
-  }) => pumpWith(tester, applied, undo: undo);
+  Future<void> pump(WidgetTester tester, List<Entry> applied, {Moment? undo}) =>
+      pumpWith(tester, applied, undo: undo);
 
   testWidgets('new and updated are sections; a tap shows before and after', (
     tester,
@@ -120,13 +117,15 @@ void main() {
   ) async {
     final cat = a.createCat('Miezi');
     final today = DateUtils.dateOnly(DateTime.now());
-    final feed = a.createChore(Chore(
-      id: '',
-      entity: cat,
-      title: 'Feed',
-      schedule: const ChoreSchedule.daily(),
-      start: today.subtract(const Duration(days: 5)),
-    ));
+    final feed = a.createChore(
+      Chore(
+        id: '',
+        entity: cat,
+        title: 'Feed',
+        schedule: const ChoreSchedule.daily(),
+        start: today.subtract(const Duration(days: 5)),
+      ),
+    );
     b.applyEntries(a.entriesSince(const {}), senderVector: a.versionVector());
     for (var i = 1; i <= 3; i++) {
       final day = today.subtract(Duration(days: i));
@@ -177,9 +176,7 @@ void main() {
     await pumpWith(tester, applied, report: report);
     expect(find.text('Refused'), findsOneWidget);
     expect(
-      find.text(
-        '1 entry refused: not signed with the key known for bob',
-      ),
+      find.text('1 entry refused: not signed with the key known for bob'),
       findsOneWidget,
     );
     expect(find.textContaining('calls itself anna'), findsOneWidget);
@@ -259,24 +256,32 @@ void main() {
     expect(find.text('Deleted'), findsOneWidget);
     expect(find.text('Gone'), findsOneWidget);
     final goneRow = find.ancestor(
-        of: find.text('Gone'), matching: find.byType(ListTile));
-    await tester.tap(find.descendant(
-        of: goneRow, matching: find.text('Keep mine')));
+      of: find.text('Gone'),
+      matching: find.byType(ListTile),
+    );
+    await tester.tap(
+      find.descendant(of: goneRow, matching: find.text('Keep mine')),
+    );
     await tester.pumpAndSettle();
     expect(a.cats().map((c) => c.name), containsAll(['Gone', 'Miezi']));
     expect(find.text('Deleted'), findsNothing);
 
     final mieziRow = find.ancestor(
-        of: find.text('Miezi'), matching: find.byType(ListTile));
-    await tester.tap(find.descendant(
-        of: mieziRow, matching: find.text('Keep mine')));
+      of: find.text('Miezi'),
+      matching: find.byType(ListTile),
+    );
+    await tester.tap(
+      find.descendant(of: mieziRow, matching: find.text('Keep mine')),
+    );
     await tester.pumpAndSettle();
     expect(a.current(cat, 'f:color'), 'white');
     expect(find.text('Updated'), findsNothing);
 
     // Nothing comes back on the next exchange.
-    final again = a.applyEntries(b.entriesSince(a.versionVector()),
-        senderVector: b.versionVector());
+    final again = a.applyEntries(
+      b.entriesSince(a.versionVector()),
+      senderVector: b.versionVector(),
+    );
     expect(again, isEmpty);
   });
 

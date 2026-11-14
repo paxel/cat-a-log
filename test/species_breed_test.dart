@@ -21,12 +21,13 @@ void main() {
     expect(species.type, FieldType.choice);
     expect(species.options, contains('dog'));
     expect(store.current(store.createCat('Miezi'), 'f:species'), 'cat');
-    expect(store.current(store.createCat('Rex', species: 'dog'), 'f:species'),
-        'dog');
+    expect(
+      store.current(store.createCat('Rex', species: 'dog'), 'f:species'),
+      'dog',
+    );
   });
 
-  test('a species value displays translated; the word cat elsewhere as is',
-      () {
+  test('a species value displays translated; the word cat elsewhere as is', () {
     final store = CatalogStore.inMemory()..author = 'test';
     addTearDown(store.close);
     final species = store.fieldDefs().firstWhere((d) => d.slug == 'species');
@@ -48,28 +49,37 @@ void main() {
     store.addFieldOption(breed.id, 'dog', 'Whippet');
     store.addFieldOption(breed.id, 'dog', 'Whippet');
     breed = store.fieldDefs().firstWhere((d) => d.slug == 'breed');
-    expect(breedOptions(breed, 'dog').where((o) => o == 'Whippet'),
-        hasLength(1));
+    expect(
+      breedOptions(breed, 'dog').where((o) => o == 'Whippet'),
+      hasLength(1),
+    );
     expect(breedOptions(breed, 'cat'), isNot(contains('Whippet')));
     expect(breed.options, isNot(contains('Whippet')));
   });
 
   Future<BuildContext> pump(WidgetTester tester, Widget home) async {
     late BuildContext context;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: Builder(builder: (c) {
-        context = c;
-        return home;
-      })),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (c) {
+              context = c;
+              return home;
+            },
+          ),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     return context;
   }
 
-  testWidgets('in pet mode the new-animal dialog asks for the species',
-      (tester) async {
+  testWidgets('in pet mode the new-animal dialog asks for the species', (
+    tester,
+  ) async {
     final context = await pump(tester, const SizedBox());
     NameAndDate? result;
     askNameAndDate(context, 'New', species: 'rabbit').then((r) => result = r);
@@ -82,8 +92,7 @@ void main() {
     expect(result?.name, 'Hoppel');
   });
 
-  testWidgets('without a species the dialog stays as it was',
-      (tester) async {
+  testWidgets('without a species the dialog stays as it was', (tester) async {
     final context = await pump(tester, const SizedBox());
     NameAndDate? result;
     askNameAndDate(context, 'New').then((r) => result = r);
@@ -95,8 +104,9 @@ void main() {
     expect(result?.species, isNull);
   });
 
-  testWidgets('a new animal starts from the species picked last',
-      (tester) async {
+  testWidgets('a new animal starts from the species picked last', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory()..author = 'test';
     addTearDown(store.close);
     setPetMode(store, true);
@@ -117,8 +127,9 @@ void main() {
     expect(store.localSetting(lastSpeciesKey), 'dog');
   });
 
-  testWidgets('in cat mode a new animal is a cat and nothing is asked',
-      (tester) async {
+  testWidgets('in cat mode a new animal is a cat and nothing is asked', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory()..author = 'test';
     addTearDown(store.close);
     final context = await pump(tester, const SizedBox());

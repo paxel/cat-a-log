@@ -23,8 +23,10 @@ class BrokenCalendar implements CalendarPort {
 
   @override
   Future<bool> updateEvent(
-          String calendarId, String eventId, EventSpec spec) async =>
-      false;
+    String calendarId,
+    String eventId,
+    EventSpec spec,
+  ) async => false;
 
   @override
   Future<void> deleteEvent(String calendarId, String eventId) async {}
@@ -36,21 +38,28 @@ class BrokenCalendar implements CalendarPort {
 void main() {
   setUpAll(useSystemSqlite);
 
-  testWidgets('a calendar error turns the mirror off with its message',
-      (tester) async {
+  testWidgets('a calendar error turns the mirror off with its message', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory()..author = 'test';
     addTearDown(store.close);
     store.setLocalSetting(calendarMirrorEnabledKey, 'on');
     store.setLocalSetting(calendarMirrorCalendarKey, 'cal-1');
     late BuildContext context;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: Builder(builder: (c) {
-        context = c;
-        return const SizedBox();
-      })),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (c) {
+              context = c;
+              return const SizedBox();
+            },
+          ),
+        ),
+      ),
+    );
     mirrorAfterChange(context, store, port: BrokenCalendar());
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);

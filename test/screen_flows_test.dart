@@ -27,8 +27,7 @@ void main() {
   setUp(() {
     dir = Directory.systemTemp.createTempSync('catlog-flows');
     Directory('${dir.path}/mine').createSync();
-    store = CatalogStore.open('${dir.path}/mine/catlog.db')
-      ..author = 'Patrick';
+    store = CatalogStore.open('${dir.path}/mine/catlog.db')..author = 'Patrick';
     clowder = store.createClowder('Hinterhof');
     cat = store.createCat('Miezi');
     store.moveCat(cat, clowder);
@@ -40,16 +39,21 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
-  Future<void> pump(WidgetTester tester, Widget screen,
-      {Size size = const Size(500, 1600)}) async {
+  Future<void> pump(
+    WidgetTester tester,
+    Widget screen, {
+    Size size = const Size(500, 1600),
+  }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: screen,
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: screen,
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -61,8 +65,7 @@ void main() {
 
   group('a clowder', () {
     testWidgets('a value turns private in its editor', (tester) async {
-      await pump(tester,
-          ClowderDetailScreen(store: store, clowderId: clowder));
+      await pump(tester, ClowderDetailScreen(store: store, clowderId: clowder));
       await tester.tap(find.byIcon(Icons.edit));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Address'));
@@ -76,25 +79,21 @@ void main() {
     });
 
     testWidgets('can be hidden from the lists', (tester) async {
-      await pump(tester,
-          ClowderDetailScreen(store: store, clowderId: clowder));
+      await pump(tester, ClowderDetailScreen(store: store, clowderId: clowder));
       await menu(tester, 'Hide on this device');
       expect(store.isHidden(clowder), isTrue);
     });
 
     testWidgets('edit mode shows the empty fields too', (tester) async {
-      await pump(tester,
-          ClowderDetailScreen(store: store, clowderId: clowder));
+      await pump(tester, ClowderDetailScreen(store: store, clowderId: clowder));
       expect(find.text('Address'), findsNothing);
       await tester.tap(find.byIcon(Icons.edit));
       await tester.pumpAndSettle();
       expect(find.text('Address'), findsOneWidget);
     });
 
-    testWidgets('deleting it says what happens to its cats',
-        (tester) async {
-      await pump(tester,
-          ClowderDetailScreen(store: store, clowderId: clowder));
+    testWidgets('deleting it says what happens to its cats', (tester) async {
+      await pump(tester, ClowderDetailScreen(store: store, clowderId: clowder));
       await menu(tester, 'Delete clowder');
       expect(find.textContaining('become strays'), findsOneWidget);
       await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
@@ -104,8 +103,7 @@ void main() {
   });
 
   group('a cat', () {
-    testWidgets('shows only what is filled in, until you edit',
-        (tester) async {
+    testWidgets('shows only what is filled in, until you edit', (tester) async {
       await pump(tester, CatDetailScreen(store: store, catId: cat));
       expect(find.text('black'), findsOneWidget);
       expect(find.text('Breed'), findsNothing);
@@ -114,8 +112,7 @@ void main() {
       expect(find.text('Breed'), findsOneWidget);
     });
 
-    testWidgets('a private value shows its lock in read mode',
-        (tester) async {
+    testWidgets('a private value shows its lock in read mode', (tester) async {
       await pump(tester, CatDetailScreen(store: store, catId: cat));
       await tester.tap(find.byIcon(Icons.edit));
       await tester.pumpAndSettle();
@@ -144,8 +141,9 @@ void main() {
       expect(find.byType(ListTile), findsWidgets);
     });
 
-    testWidgets('a tapped move is corrected in the move dialog',
-        (tester) async {
+    testWidgets('a tapped move is corrected in the move dialog', (
+      tester,
+    ) async {
       final yard = store.createClowder('Garten');
       await pump(tester, TimelineScreen(store: store, entityId: cat));
       await tester.tap(find.text('Moved to Hinterhof'));
@@ -161,8 +159,7 @@ void main() {
       expect(store.fieldHistory(cat, Keys.clowder), hasLength(1));
     });
 
-    testWidgets('a move is re-dated without changing where to',
-        (tester) async {
+    testWidgets('a move is re-dated without changing where to', (tester) async {
       final moved = store.fieldHistory(cat, Keys.clowder).single;
       store.correctEntry(moved.seq, clowder, date: DateTime(2025, 10, 3, 9));
       await pump(tester, TimelineScreen(store: store, entityId: cat));
@@ -172,12 +169,15 @@ void main() {
       // Picking the same home again keeps everything as it was.
       await tester.tap(find.text('Hinterhof').last);
       await tester.pumpAndSettle();
-      expect(store.fieldHistory(cat, Keys.clowder).single.date.toLocal(),
-          DateTime(2025, 10, 3, 9));
+      expect(
+        store.fieldHistory(cat, Keys.clowder).single.date.toLocal(),
+        DateTime(2025, 10, 3, 9),
+      );
     });
 
-    testWidgets('an arrival in a home\'s history corrects the cat\'s move',
-        (tester) async {
+    testWidgets('an arrival in a home\'s history corrects the cat\'s move', (
+      tester,
+    ) async {
       await pump(tester, TimelineScreen(store: store, entityId: clowder));
       await tester.tap(find.text('Miezi arrived'));
       await tester.pumpAndSettle();
@@ -188,30 +188,34 @@ void main() {
       expect(store.fieldHistory(cat, Keys.clowder), hasLength(1));
     });
 
-    testWidgets('an appointment row opens the appointment dialog',
-        (tester) async {
-      store.createAppointment(Appointment(
-        id: '',
-        entity: cat,
-        date: DateTime(2099, 9, 3),
-        title: 'Vet',
-      ));
+    testWidgets('an appointment row opens the appointment dialog', (
+      tester,
+    ) async {
+      store.createAppointment(
+        Appointment(
+          id: '',
+          entity: cat,
+          date: DateTime(2099, 9, 3),
+          title: 'Vet',
+        ),
+      );
       await pump(tester, TimelineScreen(store: store, entityId: cat));
       await tester.tap(find.textContaining('Appointment'));
       await tester.pumpAndSettle();
       expect(find.widgetWithText(TextField, 'Vet'), findsOneWidget);
     });
 
-    testWidgets('a chore row opens its editor, a tick its log',
-        (tester) async {
+    testWidgets('a chore row opens its editor, a tick its log', (tester) async {
       final today = DateUtils.dateOnly(DateTime.now());
-      final feed = store.createChore(Chore(
-        id: '',
-        entity: cat,
-        title: 'Feed',
-        schedule: const ChoreSchedule.daily(),
-        start: today,
-      ));
+      final feed = store.createChore(
+        Chore(
+          id: '',
+          entity: cat,
+          title: 'Feed',
+          schedule: const ChoreSchedule.daily(),
+          start: today,
+        ),
+      );
       store.tickChore(feed, today, doneOn: today);
       await pump(tester, TimelineScreen(store: store, entityId: cat));
       await tester.tap(find.textContaining('Feed done'));
@@ -248,8 +252,7 @@ void main() {
   });
 
   group('fields', () {
-    testWidgets('a field can be renamed and keeps its values',
-        (tester) async {
+    testWidgets('a field can be renamed and keeps its values', (tester) async {
       await pump(tester, FieldsScreen(store: store));
       await tester.tap(find.text('Color'));
       await tester.pumpAndSettle();
@@ -277,12 +280,14 @@ void main() {
 
     testWidgets('search finds a cat by name', (tester) async {
       await pump(
-          tester,
-          CatListScreen(
-              store: store,
-              title: 'Cats',
-              source: (s) => s.visibleCats(),
-              autofocusFilter: true));
+        tester,
+        CatListScreen(
+          store: store,
+          title: 'Cats',
+          source: (s) => s.visibleCats(),
+          autofocusFilter: true,
+        ),
+      );
       await tester.enterText(find.byType(TextField), 'Mie');
       await tester.pumpAndSettle();
       expect(find.text('Miezi'), findsOneWidget);

@@ -36,8 +36,7 @@ class _FieldsScreenState extends State<FieldsScreen> {
             child: Text(context.t.cancel),
           ),
           FilledButton(
-            onPressed: () =>
-                Navigator.of(context).pop(controller.text.trim()),
+            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
             child: Text(context.t.save),
           ),
         ],
@@ -50,8 +49,7 @@ class _FieldsScreenState extends State<FieldsScreen> {
   }
 
   Future<void> _editOptions(FieldDef def) async {
-    final controller =
-        TextEditingController(text: def.options.join('\n'));
+    final controller = TextEditingController(text: def.options.join('\n'));
     final text = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -60,8 +58,7 @@ class _FieldsScreenState extends State<FieldsScreen> {
           controller: controller,
           autofocus: true,
           maxLines: 8,
-          decoration:
-              InputDecoration(labelText: context.t.optionsOnePerLine),
+          decoration: InputDecoration(labelText: context.t.optionsOnePerLine),
         ),
         actions: [
           TextButton(
@@ -114,62 +111,86 @@ class _FieldsScreenState extends State<FieldsScreen> {
   Widget build(BuildContext context) {
     final defs = widget.store.fieldDefs();
     String scopeName(FieldScope s) => switch (s) {
-          FieldScope.cat => context.t.forCats,
-          FieldScope.clowder => context.t.forClowders,
-          FieldScope.both => context.t.forBoth,
-        };
+      FieldScope.cat => context.t.forCats,
+      FieldScope.clowder => context.t.forClowders,
+      FieldScope.both => context.t.forBoth,
+    };
     return Scaffold(
-      appBar: pageBar(context, title: Text(context.t.fields), help: PageHelp('fields', store: widget.store)),
+      appBar: pageBar(
+        context,
+        title: Text(context.t.fields),
+        help: PageHelp('fields', store: widget.store),
+      ),
       body: ListView(
         // The last row scrolls clear of the floating button.
         padding: const EdgeInsets.only(bottom: 88),
         children: [
           for (final def in defs)
             ListTile(
-              leading: Icon(widget.store.isHidden(def.id)
-                  ? Icons.visibility_off_outlined
-                  : widget.store.isPrivate(def.id)
-                      ? Icons.lock
-                      : Icons.label_outline),
+              leading: Icon(
+                widget.store.isHidden(def.id)
+                    ? Icons.visibility_off_outlined
+                    : widget.store.isPrivate(def.id)
+                    ? Icons.lock
+                    : Icons.label_outline,
+              ),
               title: Text(fieldDefName(context.t, def)),
-              subtitle: Text([
-                def.type.name,
-                scopeName(def.scope),
-                if (def.options.isNotEmpty) def.options.join(', '),
-              ].join(' · ')),
+              subtitle: Text(
+                [
+                  def.type.name,
+                  scopeName(def.scope),
+                  if (def.options.isNotEmpty) def.options.join(', '),
+                ].join(' · '),
+              ),
               trailing: PopupMenuButton<String>(
                 onSelected: (v) {
                   if (v == 'rename') _renameField(def);
                   if (v == 'options') _editOptions(def);
                   if (v == 'merge') _mergeField(def);
                   if (v == 'private') {
-                    setState(() => widget.store.setPrivate(
-                        def.id, !widget.store.isPrivate(def.id)));
+                    setState(
+                      () => widget.store.setPrivate(
+                        def.id,
+                        !widget.store.isPrivate(def.id),
+                      ),
+                    );
                   }
                   if (v == 'hide') {
-                    setState(() => widget.store.setHidden(
-                        def.id, !widget.store.isHidden(def.id)));
+                    setState(
+                      () => widget.store.setHidden(
+                        def.id,
+                        !widget.store.isHidden(def.id),
+                      ),
+                    );
                   }
                 },
                 itemBuilder: (context) => [
-                  PopupMenuItem(
-                      value: 'rename', child: Text(context.t.rename)),
+                  PopupMenuItem(value: 'rename', child: Text(context.t.rename)),
                   if (def.type == FieldType.choice)
                     PopupMenuItem(
-                        value: 'options',
-                        child: Text(context.t.editOptions)),
+                      value: 'options',
+                      child: Text(context.t.editOptions),
+                    ),
                   PopupMenuItem(
-                      value: 'private',
-                      child: Text(widget.store.isPrivate(def.id)
+                    value: 'private',
+                    child: Text(
+                      widget.store.isPrivate(def.id)
                           ? context.t.unmarkPrivate
-                          : context.t.markPrivate)),
+                          : context.t.markPrivate,
+                    ),
+                  ),
                   PopupMenuItem(
-                      value: 'hide',
-                      child: Text(widget.store.isHidden(def.id)
+                    value: 'hide',
+                    child: Text(
+                      widget.store.isHidden(def.id)
                           ? context.t.unhideLabel
-                          : context.t.hideLabel)),
+                          : context.t.hideLabel,
+                    ),
+                  ),
                   PopupMenuItem(
-                      value: 'merge', child: Text(context.t.mergeInto)),
+                    value: 'merge',
+                    child: Text(context.t.mergeInto),
+                  ),
                 ],
               ),
               onTap: () => _renameField(def),

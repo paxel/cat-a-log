@@ -122,35 +122,36 @@ void main() {
     expect(find.textContaining('2026-01-05 · anna'), findsOneWidget);
   });
 
-  testWidgets('a hold on a dot opens its menu there: history, correct, remove', (
-    tester,
-  ) async {
-    store.defineField('Vet', FieldType.location);
-    final vet = store.fieldDefs().firstWhere((d) => d.name == 'Vet');
-    final cat = store.createCat('Miezi');
-    store.append(cat, vet.key, '52.52,13.40', date: DateTime.utc(2026, 1, 5));
-    store.append(cat, vet.key, '52.53,13.41', date: DateTime.utc(2026, 3, 9));
+  testWidgets(
+    'a hold on a dot opens its menu there: history, correct, remove',
+    (tester) async {
+      store.defineField('Vet', FieldType.location);
+      final vet = store.fieldDefs().firstWhere((d) => d.name == 'Vet');
+      final cat = store.createCat('Miezi');
+      store.append(cat, vet.key, '52.52,13.40', date: DateTime.utc(2026, 1, 5));
+      store.append(cat, vet.key, '52.53,13.41', date: DateTime.utc(2026, 3, 9));
 
-    await pump(tester, trailOf: (cat, vet.key));
-    await tester.longPress(find.byTooltip('2026-03-09'));
-    await tester.pumpAndSettle();
-    expect(find.text('2026-03-09 · anna'), findsOneWidget);
-    expect(find.text('History'), findsOneWidget);
-    expect(find.text('Correct this value'), findsOneWidget);
-    expect(find.byType(BottomSheet), findsNothing);
+      await pump(tester, trailOf: (cat, vet.key));
+      await tester.longPress(find.byTooltip('2026-03-09'));
+      await tester.pumpAndSettle();
+      expect(find.text('2026-03-09 · anna'), findsOneWidget);
+      expect(find.text('History'), findsOneWidget);
+      expect(find.text('Correct this value'), findsOneWidget);
+      expect(find.byType(BottomSheet), findsNothing);
 
-    await tester.tap(find.text('Remove this value'));
-    await tester.pumpAndSettle();
-    expect(dots(tester), 1);
-    expect(store.fieldHistory(cat, vet.key).length, 1);
+      await tester.tap(find.text('Remove this value'));
+      await tester.pumpAndSettle();
+      expect(dots(tester), 1);
+      expect(store.fieldHistory(cat, vet.key).length, 1);
 
-    // The history page is a hold away too.
-    await tester.longPress(find.byTooltip('2026-01-05'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('History'));
-    await tester.pumpAndSettle();
-    expect(find.text('Vet — Miezi'), findsOneWidget);
-  });
+      // The history page is a hold away too.
+      await tester.longPress(find.byTooltip('2026-01-05'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('History'));
+      await tester.pumpAndSettle();
+      expect(find.text('Vet — Miezi'), findsOneWidget);
+    },
+  );
 
   testWidgets('the built-in position offers no correction, only history', (
     tester,

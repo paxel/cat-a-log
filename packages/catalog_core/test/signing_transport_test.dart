@@ -56,7 +56,8 @@ void main() {
     expect(b.current(cat, 'name'), 'Minka');
   });
 
-  test('the shared folder publishes keys and learns the others\' first', () async {
+  test('the shared folder publishes keys and learns the others\' first',
+      () async {
     final cat = a.createCat('Miezi');
     b.createCat('Wanderer');
     await folderSync(a, dir.path);

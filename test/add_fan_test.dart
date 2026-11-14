@@ -6,28 +6,29 @@ import 'package:flutter_test/flutter_test.dart';
 /// reads minus while open, a pick runs and folds, the veil folds.
 void main() {
   Widget page(List<String> picked) => MaterialApp(
-        home: Scaffold(
-          body: const SizedBox.expand(),
-          floatingActionButton: AddFan(
-            tooltip: 'Add',
-            items: [
-              FanItem(
-                icon: Icons.add,
-                label: 'New stray',
-                onTap: () async => picked.add('new'),
-              ),
-              FanItem(
-                icon: Icons.photo_camera,
-                label: 'Take photo',
-                onTap: () async => picked.add('camera'),
-              ),
-            ],
+    home: Scaffold(
+      body: const SizedBox.expand(),
+      floatingActionButton: AddFan(
+        tooltip: 'Add',
+        items: [
+          FanItem(
+            icon: Icons.add,
+            label: 'New stray',
+            onTap: () async => picked.add('new'),
           ),
-        ),
-      );
+          FanItem(
+            icon: Icons.photo_camera,
+            label: 'Take photo',
+            onTap: () async => picked.add('camera'),
+          ),
+        ],
+      ),
+    ),
+  );
 
-  testWidgets('the ways line up under the plus in a pane of its own',
-      (tester) async {
+  testWidgets('the ways line up under the plus in a pane of its own', (
+    tester,
+  ) async {
     // The right-hand pane of the wide layout: its own Navigator, its own
     // Overlay, and a window far wider than it.
     tester.view.physicalSize = const Size(1600, 1000);

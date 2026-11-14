@@ -47,9 +47,7 @@ final Map<String, List<SpotlightItem>> spotlightManifest = {
     SpotlightItem('map-search', (t) => t.spotMapSearch),
     SpotlightItem('map-layers', (t) => t.spotMapLayers),
   ],
-  'card': [
-    SpotlightItem('card-chips', (t) => t.spotCardChips),
-  ],
+  'card': [SpotlightItem('card-chips', (t) => t.spotCardChips)],
   'cat': [
     SpotlightItem('cat-edit', (t) => t.spotCatEdit),
     SpotlightItem('cat-menu', (t) => t.spotCatMenu),
@@ -58,15 +56,9 @@ final Map<String, List<SpotlightItem>> spotlightManifest = {
     SpotlightItem('cat-report', (t) => t.spotTimelineReport),
     SpotlightItem('cat-poster', (t) => t.spotCardPoster),
   ],
-  'looks': [
-    SpotlightItem('looks-chips', (t) => t.spotLooks),
-  ],
-  'history': [
-    SpotlightItem('history-hold', (t) => t.spotHistoryHold),
-  ],
-  'settings': [
-    SpotlightItem('settings-backups', (t) => t.spotBackups),
-  ],
+  'looks': [SpotlightItem('looks-chips', (t) => t.spotLooks)],
+  'history': [SpotlightItem('history-hold', (t) => t.spotHistoryHold)],
+  'settings': [SpotlightItem('settings-backups', (t) => t.spotBackups)],
 
   'strays': [
     SpotlightItem('strays-flier', (t) => t.spotStraysFlier),
@@ -80,7 +72,7 @@ List<SpotlightItem> dueSpotlights(String seenCsv, List<SpotlightItem> items) {
   final seen = seenCsv.split(',').toSet();
   return [
     for (final item in items)
-      if (!seen.contains(item.id)) item
+      if (!seen.contains(item.id)) item,
   ];
 }
 
@@ -122,10 +114,7 @@ class _SpotlightState extends State<Spotlight> {
 /// name page; Settings brings them back.
 void markAllSpotlightsSeen(CatalogStore store) {
   for (final MapEntry(key: screen, value: items) in spotlightManifest.entries) {
-    store.setLocalSetting(
-      'spot2:$screen',
-      items.map((i) => i.id).join(','),
-    );
+    store.setLocalSetting('spot2:$screen', items.map((i) => i.id).join(','));
   }
 }
 
@@ -154,14 +143,17 @@ String _seen(CatalogStore store, String screenId) {
 
 /// Call after the screen's first frame; shows due items sequentially.
 Future<void> runSpotlights(
-    BuildContext context, CatalogStore store, String screenId) async {
+  BuildContext context,
+  CatalogStore store,
+  String screenId,
+) async {
   // Widget tests must never wade through tour overlays.
   if (Platform.environment.containsKey('FLUTTER_TEST')) return;
   final items = spotlightManifest[screenId];
   if (items == null) return;
   final due = [
     for (final item in dueSpotlights(_seen(store, screenId), items))
-      if (_anchors.containsKey(item.id)) item
+      if (_anchors.containsKey(item.id)) item,
   ];
   if (due.isEmpty) return;
 
@@ -169,8 +161,7 @@ Future<void> runSpotlights(
   // the highlight on the wrong spot. Wait for the route to settle.
   final route = ModalRoute.of(context);
   final animation = route?.animation;
-  if (animation != null &&
-      animation.status == AnimationStatus.forward) {
+  if (animation != null && animation.status == AnimationStatus.forward) {
     final settled = Completer<void>();
     void listener(AnimationStatus status) {
       if (status == AnimationStatus.completed && !settled.isCompleted) {
@@ -179,15 +170,14 @@ Future<void> runSpotlights(
     }
 
     animation.addStatusListener(listener);
-    await settled.future
-        .timeout(const Duration(seconds: 2), onTimeout: () {});
+    await settled.future.timeout(const Duration(seconds: 2), onTimeout: () {});
     animation.removeStatusListener(listener);
   }
   await WidgetsBinding.instance.endOfFrame;
   if (!context.mounted) return;
 
   final shown = <String>{
-    ..._seen(store, screenId).split(',').where((s) => s.isNotEmpty)
+    ..._seen(store, screenId).split(',').where((s) => s.isNotEmpty),
   };
   for (final item in due) {
     if (!context.mounted) return;
@@ -251,20 +241,21 @@ const tipGap = 16.0;
 /// the target, capped in width, kept inside the screen, and above or
 /// below the target so it never covers it.
 ({double left, double width, double? top, double? bottom}) tipPlacement(
-    Rect target, Size screen) {
+  Rect target,
+  Size screen,
+) {
   final width = math.min(tipMaxWidth, screen.width - 2 * tipMargin);
   final rightmost = math.max(tipMargin, screen.width - tipMargin - width);
-  final left =
-      (target.center.dx - width / 2).clamp(tipMargin, rightmost).toDouble();
+  final left = (target.center.dx - width / 2)
+      .clamp(tipMargin, rightmost)
+      .toDouble();
   final below = target.bottom < screen.height / 2;
   // A target at or past the edge would push the card off the screen;
   // the card stays inside, buttons included, whatever the target does.
   return (
     left: left,
     width: width,
-    top: below
-        ? math.max(tipMargin, target.bottom + tipGap)
-        : null,
+    top: below ? math.max(tipMargin, target.bottom + tipGap) : null,
     bottom: below
         ? null
         : math.max(tipMargin, screen.height - target.top + tipGap),
@@ -278,63 +269,64 @@ class SpotlightTip extends StatelessWidget {
   final String text;
   final bool isLast;
 
-  const SpotlightTip(
-      {super.key,
-      required this.target,
-      required this.text,
-      required this.isLast});
+  const SpotlightTip({
+    super.key,
+    required this.target,
+    required this.text,
+    required this.isLast,
+  });
 
   @override
   Widget build(BuildContext context) {
     final place = tipPlacement(target, MediaQuery.sizeOf(context));
-    return Stack(children: [
-      Positioned.fill(
-        child: CustomPaint(
-            painter: _DimPainter(target)),
-      ),
-      Positioned(
-        left: place.left,
-        width: place.width,
-        top: place.top,
-        bottom: place.bottom,
-        child: Material(
-          color: Colors.transparent,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(text),
-                      const SizedBox(height: 8),
-                      Row(
+    return Stack(
+      children: [
+        Positioned.fill(child: CustomPaint(painter: _DimPainter(target))),
+        Positioned(
+          left: place.left,
+          width: place.width,
+          top: place.top,
+          bottom: place.bottom,
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(text),
+                        const SizedBox(height: 8),
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             TextButton(
-                              onPressed: () =>
-                                  Navigator.of(context).pop(false),
+                              onPressed: () => Navigator.of(context).pop(false),
                               child: Text(context.t.introSkip),
                             ),
                             FilledButton(
-                              onPressed: () =>
-                                  Navigator.of(context).pop(true),
-                              child: Text(isLast
-                                  ? context.t.spotDone
-                                  : context.t.introNext),
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: Text(
+                                isLast
+                                    ? context.t.spotDone
+                                    : context.t.introNext,
+                              ),
                             ),
-                          ]),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -347,11 +339,9 @@ class _DimPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final path = Path()
       ..addRect(Offset.zero & size)
-      ..addRRect(
-          RRect.fromRectAndRadius(target, const Radius.circular(12)))
+      ..addRRect(RRect.fromRectAndRadius(target, const Radius.circular(12)))
       ..fillType = PathFillType.evenOdd;
-    canvas.drawPath(
-        path, Paint()..color = Colors.black.withValues(alpha: 0.6));
+    canvas.drawPath(path, Paint()..color = Colors.black.withValues(alpha: 0.6));
   }
 
   @override

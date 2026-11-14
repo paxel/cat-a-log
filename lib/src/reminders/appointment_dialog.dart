@@ -41,11 +41,7 @@ class _AppointmentDialog extends StatefulWidget {
   final String? entityId;
   final Appointment? existing;
 
-  const _AppointmentDialog({
-    required this.store,
-    this.entityId,
-    this.existing,
-  });
+  const _AppointmentDialog({required this.store, this.entityId, this.existing});
 
   @override
   State<_AppointmentDialog> createState() => _AppointmentDialogState();
@@ -82,7 +78,8 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
 
   /// Whose it is: the For field's value, preset from the page or the
   /// entity being edited, else the one looked at last.
-  late String _entity = widget.entityId ??
+  late String _entity =
+      widget.entityId ??
       widget.existing?.entity ??
       defaultPlanEntity(store) ??
       '';

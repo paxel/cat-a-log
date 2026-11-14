@@ -5,7 +5,9 @@ import 'dart:io';
 /// (`createTempSync` makes it 0700 — the shared /tmp on Linux is
 /// world-readable) and is gone when [body] returns, success or not.
 Future<T> withPrivateFile<T>(
-    String name, Future<T> Function(String path) body) async {
+  String name,
+  Future<T> Function(String path) body,
+) async {
   final dir = Directory.systemTemp.createTempSync('catlog-');
   try {
     return await body('${dir.path}/$name');

@@ -16,7 +16,9 @@ void main() {
   test('an all-day appointment is UTC midnight of its day', () {
     final written = calendarMoment(DateTime(2026, 8, 29), allDay: true);
     expect(written.isUtc, isTrue);
-    expect((written.year, written.month, written.day, written.hour),
-        (2026, 8, 29, 0));
+    expect(
+      (written.year, written.month, written.day, written.hour),
+      (2026, 8, 29, 0),
+    );
   });
 }

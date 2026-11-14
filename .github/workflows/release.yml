@@ -8,7 +8,7 @@
 #                    the Rust desktop's tests, tag = pubspec = Cargo versions,
 #                    no known vulnerability in a lockfile, a CHANGELOG section
 #                    for the version, no open high or critical code-scanning
-#                    alert)
+#                    alert, Dart format)
 #   build-android  — signed per-ABI + universal APKs
 #   build-linux    — Rust desktop: tar.gz, .deb and AppImage per arch
 #   build-windows  — Rust desktop: zip with catlog.exe
@@ -140,6 +140,10 @@ jobs:
             ./
       - name: No known vulnerability (unmaintained notices reported only)
         run: python3 tool/osv_gate.py osv-results.json
+      # The app, the Dart core and the tools, formatted as `dart format`
+      # writes them (cat-1008).
+      - name: Dart format
+        run: dart format --output=none --set-exit-if-changed .
       - name: Core — analyze and test
         working-directory: packages/catalog_core
         run: |

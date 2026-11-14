@@ -58,12 +58,13 @@ class CatalogImage extends ImageProvider<CatalogImage> {
 
   @override
   ImageStreamCompleter loadImage(
-          CatalogImage key, ImageDecoderCallback decode) =>
-      MultiFrameImageStreamCompleter(
-        codec: _decode(decode),
-        scale: 1.0,
-        debugLabel: 'CatalogImage($hash)',
-      );
+    CatalogImage key,
+    ImageDecoderCallback decode,
+  ) => MultiFrameImageStreamCompleter(
+    codec: _decode(decode),
+    scale: 1.0,
+    debugLabel: 'CatalogImage($hash)',
+  );
 
   Future<ui.Codec> _decode(ImageDecoderCallback decode) async {
     final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
@@ -71,8 +72,7 @@ class CatalogImage extends ImageProvider<CatalogImage> {
   }
 
   @override
-  bool operator ==(Object other) =>
-      other is CatalogImage && other.hash == hash;
+  bool operator ==(Object other) => other is CatalogImage && other.hash == hash;
 
   @override
   int get hashCode => hash.hashCode;

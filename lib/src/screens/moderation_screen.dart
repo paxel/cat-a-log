@@ -23,7 +23,8 @@ class _ModerationScreenState extends State<ModerationScreen> {
   CatalogStore get store => widget.store;
 
   Future<void> _hardDelete(
-      ({String author, String device, int count}) row) async {
+    ({String author, String device, int count}) row,
+  ) async {
     final t = context.t;
     var alsoBan = true;
     final confirmed = await showDialog<bool>(
@@ -31,20 +32,22 @@ class _ModerationScreenState extends State<ModerationScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           title: Text(t.hardDeleteAction),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            // The row is one name under one key. A name is free text —
-            // anyone can wear it — so the deletion and the ban stick to
-            // the key's device, and the dialog says which one goes.
-            Text(t.hardDeleteWarningKey(row.author, _code(row.device))),
-            const SizedBox(height: 12),
-            CheckboxListTile(
-              value: alsoBan,
-              onChanged: (v) =>
-                  setDialogState(() => alsoBan = v ?? true),
-              title: Text(t.alsoBan),
-              contentPadding: EdgeInsets.zero,
-            ),
-          ]),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // The row is one name under one key. A name is free text —
+              // anyone can wear it — so the deletion and the ban stick to
+              // the key's device, and the dialog says which one goes.
+              Text(t.hardDeleteWarningKey(row.author, _code(row.device))),
+              const SizedBox(height: 12),
+              CheckboxListTile(
+                value: alsoBan,
+                onChanged: (v) => setDialogState(() => alsoBan = v ?? true),
+                title: Text(t.alsoBan),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -52,7 +55,8 @@ class _ModerationScreenState extends State<ModerationScreen> {
             ),
             FilledButton(
               style: FilledButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(t.delete),
             ),
@@ -65,8 +69,7 @@ class _ModerationScreenState extends State<ModerationScreen> {
     // entries instead of adding any (ADR-0006), so there would be
     // nothing above the mark to put back. The ban list is what keeps
     // the material from coming home.
-    final removedBlobs =
-        store.hardDeleteAuthor(row.author, device: row.device);
+    final removedBlobs = store.hardDeleteAuthor(row.author, device: row.device);
     if (alsoBan) {
       store.ban(device: row.device);
       // The entries are gone, so the bans list could not name the device
@@ -101,74 +104,83 @@ class _ModerationScreenState extends State<ModerationScreen> {
     final rows = store.authorsOverview();
     final bans = store.bans();
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.moderationTitle), help: PageHelp('moderation', store: widget.store)),
-      body: ListView(children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(t.authorsSection,
-              style: Theme.of(context).textTheme.titleMedium),
-        ),
-        for (final row in rows)
-          ListTile(
-            leading: Icon(store.pinnedKey(row.device)?.trust ==
-                        KeyTrust.verified ||
-                    row.device == store.deviceId
-                ? Icons.verified_user_outlined
-                : Icons.person_outline),
-            title: Text(personLabel(t, store, row.author, row.device)),
-            subtitle: Text(
-                '${row.count} · ${t.keyLine(_code(row.device))} · ${_trust(row.device)}'),
-            trailing: row.author == store.author
-                ? null
-                : IconButton(
-                    icon: const Icon(Icons.delete_forever_outlined),
-                    tooltip: t.hardDeleteAction,
-                    onPressed: () => _hardDelete(row),
-                  ),
-          ),
-        if (bans.isNotEmpty) ...[
-          const Divider(),
+      appBar: pageBar(
+        context,
+        title: Text(t.moderationTitle),
+        help: PageHelp('moderation', store: widget.store),
+      ),
+      body: ListView(
+        children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Text(t.bansSection,
-                style: Theme.of(context).textTheme.titleMedium),
+            child: Text(
+              t.authorsSection,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
-          for (final (kind, value) in bans)
+          for (final row in rows)
             ListTile(
-              leading: Icon(switch (kind) {
-                'author' => Icons.person_off_outlined,
-                'device' => Icons.phonelink_erase_outlined,
-                _ => Icons.image_not_supported_outlined,
-              }),
-              // A banned device wears the names it wrote under, so the
-              // list reads as people, not hex.
-              title: Text(
-                switch (kind) {
-                  'blob' => '${value.substring(0, 12)}…',
-                  'device' => {
-                      ?store.localSetting('bannedAs:$value'),
-                      for (final r in rows)
-                        if (r.device == value) r.author,
-                      value.substring(0, 8),
-                    }.join(' · '),
-                  _ => value,
-                },
-                overflow: TextOverflow.ellipsis,
+              leading: Icon(
+                store.pinnedKey(row.device)?.trust == KeyTrust.verified ||
+                        row.device == store.deviceId
+                    ? Icons.verified_user_outlined
+                    : Icons.person_outline,
               ),
-              trailing: TextButton(
-                onPressed: () {
-                  store.unban(
-                    author: kind == 'author' ? value : null,
-                    device: kind == 'device' ? value : null,
-                    blobHash: kind == 'blob' ? value : null,
-                  );
-                  setState(() {});
-                },
-                child: Text(t.unbanAction),
+              title: Text(personLabel(t, store, row.author, row.device)),
+              subtitle: Text(
+                '${row.count} · ${t.keyLine(_code(row.device))} · ${_trust(row.device)}',
+              ),
+              trailing: row.author == store.author
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.delete_forever_outlined),
+                      tooltip: t.hardDeleteAction,
+                      onPressed: () => _hardDelete(row),
+                    ),
+            ),
+          if (bans.isNotEmpty) ...[
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                t.bansSection,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
+            for (final (kind, value) in bans)
+              ListTile(
+                leading: Icon(switch (kind) {
+                  'author' => Icons.person_off_outlined,
+                  'device' => Icons.phonelink_erase_outlined,
+                  _ => Icons.image_not_supported_outlined,
+                }),
+                // A banned device wears the names it wrote under, so the
+                // list reads as people, not hex.
+                title: Text(switch (kind) {
+                  'blob' => '${value.substring(0, 12)}…',
+                  'device' => {
+                    ?store.localSetting('bannedAs:$value'),
+                    for (final r in rows)
+                      if (r.device == value) r.author,
+                    value.substring(0, 8),
+                  }.join(' · '),
+                  _ => value,
+                }, overflow: TextOverflow.ellipsis),
+                trailing: TextButton(
+                  onPressed: () {
+                    store.unban(
+                      author: kind == 'author' ? value : null,
+                      device: kind == 'device' ? value : null,
+                      blobHash: kind == 'blob' ? value : null,
+                    );
+                    setState(() {});
+                  },
+                  child: Text(t.unbanAction),
+                ),
+              ),
+          ],
         ],
-      ]),
+      ),
     );
   }
 }

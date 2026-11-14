@@ -24,8 +24,7 @@ class RemoteScreen extends StatefulWidget {
 }
 
 class _RemoteScreenState extends State<RemoteScreen> {
-  late bool _includePrivate =
-      widget.store.localSetting(syncPrivateKey) == '1';
+  late bool _includePrivate = widget.store.localSetting(syncPrivateKey) == '1';
 
   /// What the folder row shows: a path as it is, a granted tree by
   /// its folder name.
@@ -98,26 +97,40 @@ class _RemoteScreenState extends State<RemoteScreen> {
     try {
       final before = widget.store.currentSeq();
       final result = await folderSyncIn(
-          widget.store,
-          SafSyncFolder.isTree(folder)
-              ? SafSyncFolder(folder)
-              : LocalSyncFolder(folder),
-          includePrivate: _includePrivate,
-          catalog: _catalogDir);
-      final point = momentFor(widget.store,
-          before: before,
-          changed: result.applied.isNotEmpty,
-          cause: MomentCause.sync,
-          label: folder);
+        widget.store,
+        SafSyncFolder.isTree(folder)
+            ? SafSyncFolder(folder)
+            : LocalSyncFolder(folder),
+        includePrivate: _includePrivate,
+        catalog: _catalogDir,
+      );
+      final point = momentFor(
+        widget.store,
+        before: before,
+        changed: result.applied.isNotEmpty,
+        cause: MomentCause.sync,
+        label: folder,
+      );
       await recordSyncBaselines(widget.store);
       if (!mounted) return;
       if (needsAttention(result.report)) {
-        await showImportSummary(context, widget.store, result.applied,
-            undo: point, report: result.report);
+        await showImportSummary(
+          context,
+          widget.store,
+          result.applied,
+          undo: point,
+          report: result.report,
+        );
       } else {
-        NoteQueue.instance.add(arrivalNote(context, widget.store,
+        NoteQueue.instance.add(
+          arrivalNote(
+            context,
+            widget.store,
             result.applied,
-            undo: point, report: result.report));
+            undo: point,
+            report: result.report,
+          ),
+        );
       }
     } on FileSystemException catch (e) {
       noteFailed(t.folderUnreachable, detail: '$e');
@@ -130,7 +143,11 @@ class _RemoteScreenState extends State<RemoteScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.syncChooserRemote), help: PageHelp('remote', store: widget.store)),
+      appBar: pageBar(
+        context,
+        title: Text(t.syncChooserRemote),
+        help: PageHelp('remote', store: widget.store),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -143,29 +160,31 @@ class _RemoteScreenState extends State<RemoteScreen> {
               setState(() => _includePrivate = v);
             },
             secondary: Icon(
-                _includePrivate ? Icons.lock_open : Icons.lock_outline),
+              _includePrivate ? Icons.lock_open : Icons.lock_outline,
+            ),
             title: Text(t.includePrivate),
             contentPadding: EdgeInsets.zero,
           ),
           const Divider(height: 24),
-          Row(children: [
-            Expanded(
-              child: Text(
-                _folderLabel ??
-                    widget.store.localSetting('syncFolder') ??
-                    t.noFolderChosenYet,
-                overflow: TextOverflow.ellipsis,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  _folderLabel ??
+                      widget.store.localSetting('syncFolder') ??
+                      t.noFolderChosenYet,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: _choose,
-              child: Text(t.choose),
-            ),
-          ]),
+              TextButton(onPressed: _choose, child: Text(t.choose)),
+            ],
+          ),
           // One folder for all catalogs: each keeps its own subfolder.
           if (widget.store.localSetting('syncFolder') != null)
-            Text(t.folderCatalogHint(_catalogDir),
-                style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              t.folderCatalogHint(_catalogDir),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           if (widget.store.localSetting('syncFolder') == null &&
               _lastFolder != null)
             TextButton(
@@ -178,8 +197,9 @@ class _RemoteScreenState extends State<RemoteScreen> {
             // wait. Auto mode under it: the merge runs on its own.
             SwitchListTile(
               value: syncWatchOn(widget.store),
-              onChanged: (v) => setState(() =>
-                  widget.store.setLocalSetting(syncWatchKey, v ? '1' : '0')),
+              onChanged: (v) => setState(
+                () => widget.store.setLocalSetting(syncWatchKey, v ? '1' : '0'),
+              ),
               secondary: const Icon(Icons.notifications_outlined),
               title: Text(t.syncWatchSwitch),
               contentPadding: EdgeInsets.zero,
@@ -187,8 +207,10 @@ class _RemoteScreenState extends State<RemoteScreen> {
             if (syncWatchOn(widget.store))
               SwitchListTile(
                 value: syncAutoOn(widget.store),
-                onChanged: (v) => setState(() =>
-                    widget.store.setLocalSetting(syncAutoKey, v ? '1' : '0')),
+                onChanged: (v) => setState(
+                  () =>
+                      widget.store.setLocalSetting(syncAutoKey, v ? '1' : '0'),
+                ),
                 secondary: const Icon(Icons.merge_type),
                 title: Text(t.syncAutoSwitch),
                 contentPadding: EdgeInsets.zero,

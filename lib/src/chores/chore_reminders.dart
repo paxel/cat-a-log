@@ -22,8 +22,13 @@ abstract class ReminderPort {
   /// Asks for the right to notify; false when refused.
   Future<bool> ensurePermission();
 
-  Future<void> schedule(int id, DateTime at, String title, String body,
-      {required bool catSound});
+  Future<void> schedule(
+    int id,
+    DateTime at,
+    String title,
+    String body, {
+    required bool catSound,
+  });
 
   Future<void> cancelAll();
 
@@ -113,19 +118,19 @@ const _catChannelId = 'chores-mrrr';
 
 /// What a reminder looks and sounds like on each platform.
 NotificationDetails _details(bool catSound) => NotificationDetails(
-      android: AndroidNotificationDetails(
-        catSound ? _catChannelId : _channelId,
-        'Chores',
-        importance: Importance.high,
-        priority: Priority.high,
-        sound: catSound
-            ? const RawResourceAndroidNotificationSound(reminderSoundName)
-            : null,
-      ),
-      iOS: DarwinNotificationDetails(
-        sound: catSound ? '$reminderSoundName.wav' : null,
-      ),
-    );
+  android: AndroidNotificationDetails(
+    catSound ? _catChannelId : _channelId,
+    'Chores',
+    importance: Importance.high,
+    priority: Priority.high,
+    sound: catSound
+        ? const RawResourceAndroidNotificationSound(reminderSoundName)
+        : null,
+  ),
+  iOS: DarwinNotificationDetails(
+    sound: catSound ? '$reminderSoundName.wav' : null,
+  ),
+);
 
 /// The phone's own notifications, through the local notifications
 /// plugin. One instance for the app.
@@ -213,8 +218,13 @@ class LocalNotificationPort implements ReminderPort {
   }
 
   @override
-  Future<void> schedule(int id, DateTime at, String title, String body,
-      {required bool catSound}) async {
+  Future<void> schedule(
+    int id,
+    DateTime at,
+    String title,
+    String body, {
+    required bool catSound,
+  }) async {
     if (!Platform.isAndroid && !Platform.isIOS) return;
     try {
       await _init();
@@ -234,8 +244,11 @@ class LocalNotificationPort implements ReminderPort {
   }
 
   @override
-  Future<void> showNow(String title, String body,
-      {required bool catSound}) async {
+  Future<void> showNow(
+    String title,
+    String body, {
+    required bool catSound,
+  }) async {
     if (!Platform.isAndroid && !Platform.isIOS) return;
     try {
       await _init();

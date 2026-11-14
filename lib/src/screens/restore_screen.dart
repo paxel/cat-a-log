@@ -170,8 +170,8 @@ class _RestoreScreenState extends State<RestoreScreen> {
                     sets.isNotEmpty
                         ? t.restoreIntro
                         : widget._picker != null
-                            ? t.restoreAndroidHint
-                            : t.restoreNone,
+                        ? t.restoreAndroidHint
+                        : t.restoreNone,
                   ),
                 ),
                 if (widget._picker != null)

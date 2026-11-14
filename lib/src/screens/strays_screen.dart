@@ -44,11 +44,8 @@ class StraysScreen extends StatelessWidget {
     refresh();
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => CatDetailScreen(
-          store: store,
-          catId: catId,
-          startEditing: true,
-        ),
+        builder: (_) =>
+            CatDetailScreen(store: store, catId: catId, startEditing: true),
       ),
     );
     refresh();
@@ -182,14 +179,12 @@ class StraysScreen extends StatelessWidget {
             FanItem(
               icon: Icons.assignment_outlined,
               label: context.t.flierFromCamera,
-              onTap: () =>
-                  _captureFlier(context, refresh, cameraIfThereIsOne),
+              onTap: () => _captureFlier(context, refresh, cameraIfThereIsOne),
             ),
             FanItem(
               icon: Icons.assignment_outlined,
               label: context.t.flierFromGallery,
-              onTap: () =>
-                  _captureFlier(context, refresh, ImageSource.gallery),
+              onTap: () => _captureFlier(context, refresh, ImageSource.gallery),
             ),
           ],
         ),

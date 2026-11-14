@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'notes_helper.dart';
+
 import 'package:image/image.dart' as img;
 
 /// One flow at a time (#91): a second Stray Cam press during a slow

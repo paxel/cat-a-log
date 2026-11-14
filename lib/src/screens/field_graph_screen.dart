@@ -291,8 +291,7 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
       : '';
 
   String _number(double v) {
-    final text =
-        formatNumber(Localizations.localeOf(context).toString(), v, 2);
+    final text = formatNumber(Localizations.localeOf(context).toString(), v, 2);
     final unit = _unit();
     return unit.isEmpty ? text : '$text $unit';
   }
@@ -398,7 +397,8 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
                         title: Text(_rangeLabel(t, range)),
                         value: range,
                         // The chosen custom range can be picked anew.
-                        secondary: range == GraphRange.custom &&
+                        secondary:
+                            range == GraphRange.custom &&
                                 _range == GraphRange.custom
                             ? IconButton(
                                 icon: const Icon(Icons.edit_calendar_outlined),

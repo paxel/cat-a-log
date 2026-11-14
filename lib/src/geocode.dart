@@ -43,12 +43,14 @@ Future<List<GeoHit>> nominatimSearch(String query) async {
     return [
       for (final hit in jsonDecode(body) as List)
         GeoHit(
-          formatAddress((hit as Map)['address'],
-              fallback: hit['display_name'] as String),
+          formatAddress(
+            (hit as Map)['address'],
+            fallback: hit['display_name'] as String,
+          ),
           double.parse(hit['lat'] as String),
           double.parse(hit['lon'] as String),
           bounds: _bounds(hit['boundingbox']),
-        )
+        ),
     ];
   } finally {
     client.close(force: true);
@@ -60,8 +62,20 @@ Future<List<GeoHit>> nominatimSearch(String query) async {
 /// Everywhere else the street comes first and the postcode before the
 /// town ("Grimmaische Straße 12, 04109 Leipzig").
 const _numberFirst = {
-  'us', 'ca', 'gb', 'ie', 'fr', 'au', 'nz', 'za', 'in', 'sg', 'hk', 'my',
-  'ph', 'lu',
+  'us',
+  'ca',
+  'gb',
+  'ie',
+  'fr',
+  'au',
+  'nz',
+  'za',
+  'in',
+  'sg',
+  'hk',
+  'my',
+  'ph',
+  'lu',
 };
 
 /// A street address from Nominatim's `address` parts, in the order the
@@ -82,16 +96,23 @@ String formatAddress(Object? address, {required String fallback}) {
   final street = part(['road', 'pedestrian', 'footway', 'path', 'square']);
   if (street == null) return fallback;
   final number = part(['house_number']);
-  final place =
-      part(['city', 'town', 'village', 'municipality', 'hamlet', 'suburb']);
+  final place = part([
+    'city',
+    'town',
+    'village',
+    'municipality',
+    'hamlet',
+    'suburb',
+  ]);
   final postcode = part(['postcode']);
-  final numberFirst =
-      _numberFirst.contains(part(['country_code'])?.toLowerCase());
+  final numberFirst = _numberFirst.contains(
+    part(['country_code'])?.toLowerCase(),
+  );
   final streetLine = number == null
       ? street
       : numberFirst
-          ? '$number $street'
-          : '$street $number';
+      ? '$number $street'
+      : '$street $number';
   final placeLine = [
     if (numberFirst) ...[?place, ?postcode] else ...[?postcode, ?place],
   ].join(' ');

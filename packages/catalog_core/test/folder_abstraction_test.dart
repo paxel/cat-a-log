@@ -102,9 +102,10 @@ void main() {
     berlin.createCat('Wanderer');
     await folderSyncIn(leipzig, folder, catalog: 'leipzig');
     await folderSyncIn(berlin, folder, catalog: 'berlin');
-    expect(folder.dirs['leipzig']!.keys,
-        contains(manifestName(leipzig.deviceId)));
-    expect(folder.dirs['berlin']!.keys, contains(manifestName(berlin.deviceId)));
+    expect(
+        folder.dirs['leipzig']!.keys, contains(manifestName(leipzig.deviceId)));
+    expect(
+        folder.dirs['berlin']!.keys, contains(manifestName(berlin.deviceId)));
     expect(folder.dirs['leipzig/keys'], isNotNull);
     // Bob joins Leipzig only and sees Miezi, never Wanderer.
     final bob = CatalogStore.inMemory()..author = 'bob';

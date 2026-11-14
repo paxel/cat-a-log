@@ -29,16 +29,20 @@ void main() {
 
   tearDown(() => store.close());
 
-  Future<void> pump(WidgetTester tester,
-      {Size size = const Size(1200, 900)}) async {
+  Future<void> pump(
+    WidgetTester tester, {
+    Size size = const Size(1200, 900),
+  }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: HomeShell(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: HomeShell(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -77,8 +81,7 @@ void main() {
     expect(inPane(tester, find.byType(SyncScreen)), isFalse);
   });
 
-  testWidgets('opening a Cat from the pane stays in the pane',
-      (tester) async {
+  testWidgets('opening a Cat from the pane stays in the pane', (tester) async {
     final cat = store.createCat('Miezi');
     store.moveCat(cat, clowder);
     await pump(tester);
@@ -95,11 +98,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(ClowderDetailScreen), findsOneWidget);
     store.append(clowder, Keys.deleted, 'true');
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: HomeShell(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: HomeShell(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.byType(ClowderDetailScreen), findsNothing);
   });
@@ -111,16 +116,17 @@ void main() {
     expect(inPane(tester, find.byType(StraysScreen)), isFalse);
   });
 
-  testWidgets('the home title names the catalog you are in',
-      (tester) async {
+  testWidgets('the home title names the catalog you are in', (tester) async {
     tester.view.physicalSize = const Size(1200, 900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: HomeShell(store: store, catalogName: 'Berlin'),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: HomeShell(store: store, catalogName: 'Berlin'),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.widgetWithText(AppBar, 'Berlin'), findsOneWidget);
   });
@@ -131,15 +137,13 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('takes the whole window, with no second pane',
-        (tester) async {
+    testWidgets('takes the whole window, with no second pane', (tester) async {
       // A value in the default Status column, so the table has one.
       store.append(clowder, Keys.userField('status'), 'forever-home');
       await pump(tester);
       await toTable(tester);
       expect(find.byType(VerticalDivider), findsNothing);
-      expect(tester.getSize(find.byType(DataTable)).width,
-          greaterThan(400));
+      expect(tester.getSize(find.byType(DataTable)).width, greaterThan(400));
     });
 
     testWidgets('a row opens the Clowder over the table', (tester) async {
@@ -155,8 +159,9 @@ void main() {
       expect(find.byType(VerticalDivider), findsOneWidget);
     });
 
-    testWidgets('switching to the table and back restores the pane',
-        (tester) async {
+    testWidgets('switching to the table and back restores the pane', (
+      tester,
+    ) async {
       await pump(tester);
       await tester.tap(find.text('Berlin'));
       await tester.pumpAndSettle();
@@ -173,7 +178,9 @@ void main() {
       'wide the window is', (tester) async {
     await pump(tester, size: const Size(1400, 900));
     final title = find.descendant(
-        of: find.byType(AppBar), matching: find.text('Clowders'));
+      of: find.byType(AppBar),
+      matching: find.text('Clowders'),
+    );
     expect(title, findsOneWidget);
     // The pane is 400px wide whatever the window does; a one-line bar
     // there would crush the title the switcher lives in.
@@ -181,12 +188,15 @@ void main() {
         .descendant(of: find.byType(AppBar), matching: find.byType(IconButton))
         .evaluate()
         .map((e) => tester.getRect(find.byWidget(e.widget)).bottom);
-    expect(tester.getRect(title).top,
-        greaterThanOrEqualTo(buttons.reduce((a, b) => a > b ? a : b)));
+    expect(
+      tester.getRect(title).top,
+      greaterThanOrEqualTo(buttons.reduce((a, b) => a > b ? a : b)),
+    );
   });
 
-  testWidgets('a Strays pane does not survive a catalog switch',
-      (tester) async {
+  testWidgets('a Strays pane does not survive a catalog switch', (
+    tester,
+  ) async {
     // The pane's page holds the store it was opened with; the catalog
     // being left is closed a frame later. Strays, Search, Fields and
     // Duplicates have no clowder, so nothing else vacates them.
@@ -200,26 +210,31 @@ void main() {
     tester.view.physicalSize = const Size(1200, 900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: StatefulBuilder(builder: (context, setState) {
-        return HomeShell(
-          store: open,
-          switching: CatalogSwitching(
-            catalogs: catalogs,
-            onSwitch: (to, {bool unwind = true}) {
-              final previous = open;
-              catalogs.active = to;
-              setState(() => open = catalogs.openStore(to));
-              WidgetsBinding.instance
-                  .addPostFrameCallback((_) => previous.close());
-            },
-            onChanged: () => setState(() {}),
-          ),
-        );
-      }),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatefulBuilder(
+          builder: (context, setState) {
+            return HomeShell(
+              store: open,
+              switching: CatalogSwitching(
+                catalogs: catalogs,
+                onSwitch: (to, {bool unwind = true}) {
+                  final previous = open;
+                  catalogs.active = to;
+                  setState(() => open = catalogs.openStore(to));
+                  WidgetsBinding.instance.addPostFrameCallback(
+                    (_) => previous.close(),
+                  );
+                },
+                onChanged: () => setState(() {}),
+              ),
+            );
+          },
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Strays (0)'));
@@ -232,7 +247,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.byType(StraysScreen), findsNothing,
-        reason: 'that page belongs to the catalog we left');
+    expect(
+      find.byType(StraysScreen),
+      findsNothing,
+      reason: 'that page belongs to the catalog we left',
+    );
   });
 }

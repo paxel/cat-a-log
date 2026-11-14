@@ -34,8 +34,8 @@ String? lookupUrl(FieldDef def, String value) {
 }
 
 /// [template] with the placeholder replaced by the encoded [value].
-String buildLookupUrl(String template, String value) => template
-    .replaceAll(lookupPlaceholder, Uri.encodeComponent(value.trim()));
+String buildLookupUrl(String template, String value) =>
+    template.replaceAll(lookupPlaceholder, Uri.encodeComponent(value.trim()));
 
 /// The identifier [url] carries for [template], or null when the link
 /// belongs to another service. Extra query parameters are ignored on
@@ -120,8 +120,9 @@ String? learnLookupTemplate(String url, String value) {
       host: scanned.host,
       port: scanned.hasPort ? scanned.port : null,
       pathSegments: segments,
-    ).toString().replaceAll(
-        Uri.encodeComponent(lookupPlaceholder), lookupPlaceholder);
+    )
+        .toString()
+        .replaceAll(Uri.encodeComponent(lookupPlaceholder), lookupPlaceholder);
   }
   return null;
 }
@@ -147,9 +148,8 @@ List<({String where, String value})> idCandidatesIn(String url) {
 /// mid-sentence, often without a scheme.
 List<String> urlsIn(String text) {
   final result = <String>[];
-  final pattern = RegExp(
-      r'(?:https?://|www\.)[^\s<>"' r"'" r']+',
-      caseSensitive: false);
+  final pattern =
+      RegExp(r'(?:https?://|www\.)[^\s<>"' r"'" r']+', caseSensitive: false);
   for (final m in pattern.allMatches(text)) {
     var url = m.group(0)!;
     // Trailing sentence punctuation is not part of the link.

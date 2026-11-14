@@ -78,7 +78,8 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
 
   /// Whose the chore is: the For field, preset from the page or the
   /// chore edited, else the entity looked at last.
-  late String _entity = widget.entityId ?? existing?.entity ?? defaultPlanEntity(store) ?? '';
+  late String _entity =
+      widget.entityId ?? existing?.entity ?? defaultPlanEntity(store) ?? '';
 
   late final TextEditingController _title = TextEditingController(
     text: _source?.title ?? '',
@@ -115,8 +116,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
   late DateTime? _due = _source?.due;
   late ({int hour, int minute})? _time = _source?.time;
   late bool _remind = _source?.remind ?? false;
-  late ({int hour, int minute})? _remindAt =
-      _source?.remindAt ?? _source?.time;
+  late ({int hour, int minute})? _remindAt = _source?.remindAt ?? _source?.time;
 
   static final _monday = DateTime(2026, 9, 7);
 
@@ -336,7 +336,9 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
         title: Text(existing == null ? t.newChore : t.choreEdit),
         actions: [
           PageAction.labelled(
-              label: t.save, onPressed: _canSave ? _save : null),
+            label: t.save,
+            onPressed: _canSave ? _save : null,
+          ),
         ],
       ),
       body: ListView(

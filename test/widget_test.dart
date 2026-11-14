@@ -41,8 +41,9 @@ void main() {
     expect(find.text('Miezi'), findsOneWidget);
   });
 
-  testWidgets('first launch asks for author, then shows clowder list',
-      (tester) async {
+  testWidgets('first launch asks for author, then shows clowder list', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
 
@@ -89,8 +90,9 @@ void main() {
     expect(find.text('Foster Home South'), findsOneWidget);
   });
 
-  testWidgets('new cat dialog proposes a name; dice rerolls; no reuse',
-      (tester) async {
+  testWidgets('new cat dialog proposes a name; dice rerolls; no reuse', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'axel';
@@ -109,15 +111,16 @@ void main() {
     final proposed = field.controller!.text;
     expect(proposed, isNotEmpty);
     expect(
-        store.cats().map((c) => c.name.toLowerCase()),
-        isNot(contains(proposed.toLowerCase())));
+      store.cats().map((c) => c.name.toLowerCase()),
+      isNot(contains(proposed.toLowerCase())),
+    );
 
     await tester.tap(find.byTooltip('Propose another name'));
     await tester.pumpAndSettle();
     expect(
-        tester.widget<TextField>(find.byType(TextField).first)
-            .controller!.text,
-        isNotEmpty);
+      tester.widget<TextField>(find.byType(TextField).first).controller!.text,
+      isNotEmpty,
+    );
 
     await tester.tap(find.text('Create'));
     await tester.pumpAndSettle();
@@ -155,8 +158,9 @@ void main() {
     expect(store.fieldHistory(cat.id, Keys.name).length, 2);
   });
 
-  testWidgets('setting a choice field and seeing it on the timeline',
-      (tester) async {
+  testWidgets('setting a choice field and seeing it on the timeline', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'axel';
@@ -186,8 +190,9 @@ void main() {
     expect(find.textContaining('axel'), findsWidgets);
   });
 
-  testWidgets('moving a cat out makes it a stray on the home screen',
-      (tester) async {
+  testWidgets('moving a cat out makes it a stray on the home screen', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'axel';
@@ -222,8 +227,9 @@ void main() {
     expect(find.text('Strays (1)'), findsOneWidget);
   });
 
-  testWidgets('a stray can be created directly from the strays screen',
-      (tester) async {
+  testWidgets('a stray can be created directly from the strays screen', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'axel';
@@ -253,11 +259,13 @@ void main() {
 
     // Fields belong to the catalog: the page is reached from the
     // catalog's settings, which the catalogs tests cover.
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: FieldsScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: FieldsScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Color'));
     await tester.pumpAndSettle();
@@ -267,23 +275,28 @@ void main() {
 
     expect(find.text('Colour'), findsOneWidget);
     expect(
-        store.fieldDefs().firstWhere((d) => d.slug == 'color').name, 'Colour');
+      store.fieldDefs().firstWhere((d) => d.slug == 'color').name,
+      'Colour',
+    );
   });
 
-  testWidgets('German locale shows translated UI and starter fields',
-      (tester) async {
+  testWidgets('German locale shows translated UI and starter fields', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'axel';
     final home = store.createClowder('Zuhause');
     store.createCat('Miezi', clowderId: home);
 
-    await tester.pumpWidget(MaterialApp(
-      locale: const Locale('de'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: ClowderListScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('de'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ClowderListScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Kolonien'), findsWidgets); // German plural title
@@ -299,25 +312,29 @@ void main() {
     expect(find.text('Kastriert'), findsOneWidget);
   });
 
-  testWidgets('Arabic locale renders right-to-left with translated UI',
-      (tester) async {
+  testWidgets('Arabic locale renders right-to-left with translated UI', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'axel';
     store.createClowder('البيت');
 
-    await tester.pumpWidget(MaterialApp(
-      locale: const Locale('ar'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: ClowderListScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ar'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ClowderListScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('المجموعات'), findsOneWidget); // app bar title
     expect(
-        Directionality.of(tester.element(find.text('المجموعات'))),
-        TextDirection.rtl);
+      Directionality.of(tester.element(find.text('المجموعات'))),
+      TextDirection.rtl,
+    );
   });
 
   testWidgets('merging two cats via the dialog', (tester) async {
@@ -344,8 +361,9 @@ void main() {
     expect(store.current(survivor, Keys.name), 'Miezi');
   });
 
-  testWidgets('conflicting field shows a badge and can be resolved',
-      (tester) async {
+  testWidgets('conflicting field shows a badge and can be resolved', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     final other = CatalogStore.inMemory();
     addTearDown(store.close);
@@ -384,8 +402,9 @@ void main() {
     expect(find.byIcon(Icons.warning_amber), findsNothing);
   });
 
-  testWidgets('clowder timeline shows cat arrivals and departures',
-      (tester) async {
+  testWidgets('clowder timeline shows cat arrivals and departures', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'axel';
@@ -420,12 +439,15 @@ void main() {
     await tester.tap(find.byTooltip('Timeline'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.descendant(
-      of: find.ancestor(
+    await tester.tap(
+      find.descendant(
+        of: find.ancestor(
           of: find.textContaining('Name: Mizzi'),
-          matching: find.byType(ListTile)),
-      matching: find.byTooltip('Remove this value'),
-    ));
+          matching: find.byType(ListTile),
+        ),
+        matching: find.byTooltip('Remove this value'),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(store.current(cat, Keys.name), 'Miezi');
@@ -433,8 +455,7 @@ void main() {
     expect(store.fieldHistory(cat, Keys.name, includeVoided: true).length, 2);
   });
 
-  testWidgets('card screen renders with and without a photo',
-      (tester) async {
+  testWidgets('card screen renders with and without a photo', (tester) async {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     store.author = 'axel';

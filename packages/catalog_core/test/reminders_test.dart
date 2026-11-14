@@ -128,7 +128,8 @@ void main() {
     expect(migrated.activeReminders(), hasLength(1));
   });
 
-  test('merge keeps the survivor plan a fact re-assertion would retire', () async {
+  test('merge keeps the survivor plan a fact re-assertion would retire',
+      () async {
     final keep = a.createCat('Keep');
     final lose = a.createCat('Lose');
     // Both hold differing facts on the field, so the merge re-asserts
@@ -172,7 +173,8 @@ void main() {
     expect(b.activeReminders().single.value, 'refresh');
   });
 
-  test('a plan does not flag a bogus conflict against an arriving fact', () async {
+  test('a plan does not flag a bogus conflict against an arriving fact',
+      () async {
     final cat = a.createCat('Miezi');
     b.applyEntries(a.entriesSince(const {}), senderVector: a.versionVector());
     final vector = a.versionVector();
@@ -266,8 +268,8 @@ void main() {
     await folderSync(a, dir.path);
     // Nobody else in the folder: the stale file has no reader to wait for.
     expect(File('${root.path}/${a.deviceId}.jsonl').existsSync(), isFalse);
-    expect(File('${root.path}/${manifestName(a.deviceId)}').existsSync(),
-        isTrue);
+    expect(
+        File('${root.path}/${manifestName(a.deviceId)}').existsSync(), isTrue);
     await folderSync(b, dir.path);
     expect(b.activeReminders(), hasLength(1));
     expect(b.current(cat, 'f:vaccine'), isNull);

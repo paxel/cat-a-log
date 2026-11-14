@@ -20,11 +20,13 @@ import 'widgets/cat_avatar.dart';
 /// stray, or a new cat in a home — and the photos join through the
 /// ordinary compression path; a video (a path ending in `.video`) goes
 /// through the frame picker first.
-Future<void> handleSharedImages(GlobalKey<NavigatorState> navigator,
-    CatalogStore store, List<String> paths,
-    {Future<String?> Function(BuildContext, CatalogStore)? chooseTarget,
-    Future<List<Uint8List>?> Function(BuildContext, String)?
-        extractFrames}) async {
+Future<void> handleSharedImages(
+  GlobalKey<NavigatorState> navigator,
+  CatalogStore store,
+  List<String> paths, {
+  Future<String?> Function(BuildContext, CatalogStore)? chooseTarget,
+  Future<List<Uint8List>?> Function(BuildContext, String)? extractFrames,
+}) async {
   // The first frame may not be up yet on a cold start — poll like the
   // .catsync import does.
   BuildContext? context;
@@ -35,8 +37,7 @@ Future<void> handleSharedImages(GlobalKey<NavigatorState> navigator,
   if (context == null || !context.mounted) return;
 
   if (paths.isEmpty) return;
-  final catId =
-      await (chooseTarget ?? chooseIncomingTarget)(context, store);
+  final catId = await (chooseTarget ?? chooseIncomingTarget)(context, store);
   if (catId == null || !context.mounted) return;
 
   var added = 0;
@@ -46,11 +47,14 @@ Future<void> handleSharedImages(GlobalKey<NavigatorState> navigator,
     try {
       if (path.endsWith('.video')) {
         if (!context.mounted) return;
-        final frames =
-            await (extractFrames ?? framesFromVideoFile)(context, path);
+        final frames = await (extractFrames ?? framesFromVideoFile)(
+          context,
+          path,
+        );
         if (frames != null) {
-          added += await addFrames(
-              store, catId, [for (final f in frames) (bytes: f, crop: null)]);
+          added += await addFrames(store, catId, [
+            for (final f in frames) (bytes: f, crop: null),
+          ]);
         }
         continue;
       }
@@ -69,15 +73,21 @@ Future<void> handleSharedImages(GlobalKey<NavigatorState> navigator,
   final name = store.current(catId, Keys.name) ?? context.t.unnamed;
   noteDone(context.t.photosAddedTo('$added', name));
   // Fire and forget — the handler must not block until the page pops.
-  unawaited(navigator.currentState?.push(MaterialPageRoute(
-    builder: (_) => CatDetailScreen(store: store, catId: catId),
-  )));
+  unawaited(
+    navigator.currentState?.push(
+      MaterialPageRoute(
+        builder: (_) => CatDetailScreen(store: store, catId: catId),
+      ),
+    ),
+  );
 }
 
 /// The target chooser, a page: every cat with its face, a new stray,
 /// a new cat in any of the homes, or a new home typed right there.
 Future<String?> chooseIncomingTarget(
-    BuildContext context, CatalogStore store) async {
+  BuildContext context,
+  CatalogStore store,
+) async {
   final picked = await Navigator.of(context).push<_Target>(
     MaterialPageRoute(builder: (_) => _TargetScreen(store: store)),
   );
@@ -137,40 +147,42 @@ class _TargetScreenState extends State<_TargetScreen> {
       ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return Scaffold(
       appBar: pageBar(context, title: Text(t.addPhotosTo)),
-      body: ListView(children: [
-        ListTile(
-          leading: const Icon(Icons.add),
-          title: Text(t.newStray),
-          onTap: () => _pick(const _Target()),
-        ),
-        for (final cat in cats)
+      body: ListView(
+        children: [
           ListTile(
-            leading: CatAvatar(store: store, catId: cat.id, size: 40),
-            title: Text(cat.name),
-            onTap: () => _pick(_Target(catId: cat.id)),
+            leading: const Icon(Icons.add),
+            title: Text(t.newStray),
+            onTap: () => _pick(const _Target()),
           ),
-        for (final home in homes)
+          for (final cat in cats)
+            ListTile(
+              leading: CatAvatar(store: store, catId: cat.id, size: 40),
+              title: Text(cat.name),
+              onTap: () => _pick(_Target(catId: cat.id)),
+            ),
+          for (final home in homes)
+            ListTile(
+              leading: const Icon(Icons.home_outlined),
+              title: Text(home.name),
+              subtitle: Text(t.newCatHere),
+              onTap: () => _pick(_Target(homeId: home.id)),
+            ),
+          // A new home, typed right here: no dialog behind a row.
           ListTile(
-            leading: const Icon(Icons.home_outlined),
-            title: Text(home.name),
-            subtitle: Text(t.newCatHere),
-            onTap: () => _pick(_Target(homeId: home.id)),
+            leading: const Icon(Icons.add_home_outlined),
+            title: TextField(
+              controller: _newHome,
+              decoration: InputDecoration(labelText: t.newClowder),
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _newHomeSubmit(),
+            ),
+            trailing: TextButton(
+              onPressed: _newHome.text.trim().isEmpty ? null : _newHomeSubmit,
+              child: Text(t.save),
+            ),
           ),
-        // A new home, typed right here: no dialog behind a row.
-        ListTile(
-          leading: const Icon(Icons.add_home_outlined),
-          title: TextField(
-            controller: _newHome,
-            decoration: InputDecoration(labelText: t.newClowder),
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) => _newHomeSubmit(),
-          ),
-          trailing: TextButton(
-            onPressed: _newHome.text.trim().isEmpty ? null : _newHomeSubmit,
-            child: Text(t.save),
-          ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }

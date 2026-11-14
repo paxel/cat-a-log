@@ -26,8 +26,7 @@ void main() {
 
   test('a stray sighted inside the flier circle is a geo candidate', () {
     final missing = store.createCat('Minka');
-    store.recordPosition(missing, 48.1000, 11.5000,
-        kind: PositionKind.flier);
+    store.recordPosition(missing, 48.1000, 11.5000, kind: PositionKind.flier);
     final near = store.createCat('Nearby');
     // ~330 m north of the flier.
     store.recordPosition(near, 48.1030, 11.5000);
@@ -51,11 +50,9 @@ void main() {
     expect(matchCandidates(store), isEmpty);
     // A missing cat's flier circle also ignores clowder residents.
     final missing = store.createCat('Minka');
-    store.recordPosition(missing, 48.1000, 11.5000,
-        kind: PositionKind.flier);
+    store.recordPosition(missing, 48.1000, 11.5000, kind: PositionKind.flier);
     expect(
-        matchCandidates(store).where((m) => {m.a, m.b}.contains(a)),
-        isEmpty);
+        matchCandidates(store).where((m) => {m.a, m.b}.contains(a)), isEmpty);
   });
 
   test('the home a stray ran from works like a flier circle', () {

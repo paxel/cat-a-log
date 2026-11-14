@@ -20,57 +20,79 @@ typedef SaveFile = Future<String> Function(String path, String name);
 
 /// Asks before undoing an import, then does it.
 Future<bool> confirmUndoImport(
-        BuildContext context, CatalogStore store, Moment point,
-        {SaveFile? saveTo}) =>
-    _confirmGoBack(context, store, point,
-        saveTo: saveTo,
-        title: (t) => t.undoThisImport,
-        body: (t, count) => t.undoImportBody(count),
-        confirm: (t) => t.undoThisImport);
+  BuildContext context,
+  CatalogStore store,
+  Moment point, {
+  SaveFile? saveTo,
+}) => _confirmGoBack(
+  context,
+  store,
+  point,
+  saveTo: saveTo,
+  title: (t) => t.undoThisImport,
+  body: (t, count) => t.undoImportBody(count),
+  confirm: (t) => t.undoThisImport,
+);
 
 /// Asks before returning the catalog to an earlier moment, then does it.
 Future<bool> confirmGoBack(
-        BuildContext context, CatalogStore store, Moment point,
-        {SaveFile? saveTo}) =>
-    _confirmGoBack(context, store, point,
-        saveTo: saveTo,
-        title: (t) => t.goBackTitle,
-        body: (t, count) => t.goBackBody(count),
-        confirm: (t) => t.goBackToHere);
+  BuildContext context,
+  CatalogStore store,
+  Moment point, {
+  SaveFile? saveTo,
+}) => _confirmGoBack(
+  context,
+  store,
+  point,
+  saveTo: saveTo,
+  title: (t) => t.goBackTitle,
+  body: (t, count) => t.goBackBody(count),
+  confirm: (t) => t.goBackToHere,
+);
 
 Future<bool> _confirmGoBack(
-    BuildContext context, CatalogStore store, Moment point,
-    {required String Function(AppLocalizations t) title,
-    required String Function(AppLocalizations t, int count) body,
-    required String Function(AppLocalizations t) confirm,
-    SaveFile? saveTo}) async {
+  BuildContext context,
+  CatalogStore store,
+  Moment point, {
+  required String Function(AppLocalizations t) title,
+  required String Function(AppLocalizations t, int count) body,
+  required String Function(AppLocalizations t) confirm,
+  SaveFile? saveTo,
+}) async {
   final t = context.t;
   final removed = store.entriesAfter(point.seq).length;
   // Names, not just a number: being "told exactly what going back will
   // remove" means the cats and clowders it touches.
   final names = [
     for (final id in changedSince(store, point))
-      store.current(id, Keys.name) ?? t.unnamed
+      store.current(id, Keys.name) ?? t.unnamed,
   ]..sort();
   final yes = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(title(t)),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text(body(t, removed)),
-        if (names.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          Text(names.join(', '),
-              style: Theme.of(context).textTheme.bodySmall),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(body(t, removed)),
+          if (names.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              names.join(', '),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
         ],
-      ]),
+      ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(t.cancel)),
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(t.cancel),
+        ),
         FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(confirm(t))),
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(confirm(t)),
+        ),
       ],
     ),
   );
@@ -83,7 +105,10 @@ Future<bool> _confirmGoBack(
     final name = undoFileName(point.at);
     final seqBefore = store.currentSeq();
     writeGoBackFile(store, point, '${tmp.path}/$name');
-    final where = await (saveTo ?? saveBesideBackups)('${tmp.path}/$name', name);
+    final where = await (saveTo ?? saveBesideBackups)(
+      '${tmp.path}/$name',
+      name,
+    );
     // Anything that arrived while the file was being saved (a sync in
     // the background) is not in it — removing it would lose it.
     if (store.currentSeq() != seqBefore) {

@@ -97,7 +97,11 @@ void main() {
     expect(copies.single.time, (hour: 8, minute: 30));
     expect(copies.single.start, dayOf(DateTime.now()), reason: 'starts today');
     expect(copies.single.paused, isFalse);
-    expect(store.choresOf(miezi), hasLength(1), reason: 'the original as it was');
+    expect(
+      store.choresOf(miezi),
+      hasLength(1),
+      reason: 'the original as it was',
+    );
     // Back in the original's editor, ready for the next kitten.
     expect(find.text('Edit chore'), findsOneWidget);
     expect(find.text('Duplicate'), findsOneWidget);

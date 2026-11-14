@@ -36,16 +36,17 @@ void main() {
   });
 
   Future<void> pumpCat(WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: CatDetailScreen(store: store, catId: cat),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatDetailScreen(store: store, catId: cat),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('with one catalog there is nowhere to move to',
-      (tester) async {
+  testWidgets('with one catalog there is nowhere to move to', (tester) async {
     await pumpCat(tester);
     expect(find.byTooltip('Move to another catalog'), findsNothing);
   });
@@ -80,11 +81,13 @@ void main() {
     final clowder = store.createClowder('Hinterhof');
     store.moveCat(cat, clowder);
 
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: ClowderDetailScreen(store: store, clowderId: clowder),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ClowderDetailScreen(store: store, clowderId: clowder),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Move to another catalog'));
     await tester.pumpAndSettle();
@@ -103,11 +106,13 @@ void main() {
     store.createCat('Mausi');
     store.createCat('Struppi');
 
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: StraysScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StraysScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.drive_file_move_outline));
     await tester.pumpAndSettle();
@@ -115,32 +120,39 @@ void main() {
     await tester.tap(find.widgetWithText(CheckboxListTile, 'Miezi'));
     await tester.tap(find.widgetWithText(CheckboxListTile, 'Struppi'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Move to another catalog'));
+    await tester.tap(
+      find.widgetWithText(FilledButton, 'Move to another catalog'),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Paris'));
     await tester.pumpAndSettle();
 
     final there = catalogs.openStore(paris);
-    expect(there.cats().map((c) => c.name),
-        unorderedEquals(['Miezi', 'Struppi']));
+    expect(
+      there.cats().map((c) => c.name),
+      unorderedEquals(['Miezi', 'Struppi']),
+    );
     there.close();
     expect(store.cats().map((c) => c.name), ['Mausi']);
   });
 
-  testWidgets('a new catalog asks nothing; its settings page moves things in',
-      (tester) async {
+  testWidgets('a new catalog asks nothing; its settings page moves things in', (
+    tester,
+  ) async {
     final clowder = store.createClowder('Hinterhof');
     store.moveCat(cat, clowder);
 
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: CatalogsScreen(
-        catalogs: catalogs,
-        storeOf: () => store,
-        onSwitch: (_, {bool unwind = true}) {},
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatalogsScreen(
+          catalogs: catalogs,
+          storeOf: () => store,
+          onSwitch: (_, {bool unwind = true}) {},
+        ),
       ),
-    ));
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
@@ -156,13 +168,17 @@ void main() {
     // at once.
     // The bar's title line pushes the row below a 600dp window (#171).
     await tester.scrollUntilVisible(
-        find.text('Move in from another catalog…'), 200,
-        scrollable: find.byType(Scrollable).first);
+      find.text('Move in from another catalog…'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.text('Move in from another catalog…'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(CheckboxListTile, 'Hinterhof'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Move to another catalog'));
+    await tester.tap(
+      find.widgetWithText(FilledButton, 'Move to another catalog'),
+    );
     await tester.pumpAndSettle();
 
     expect(store.clowders(), isEmpty);
@@ -178,21 +194,25 @@ void main() {
     catalogs.create('Paris');
     catalogs.create('Rom');
     final paris = catalogs.catalogs().firstWhere((c) => c.name == 'Paris');
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: CatalogSettingsScreen(
-        catalogs: catalogs,
-        catalog: paris,
-        activeStore: () => store,
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatalogSettingsScreen(
+          catalogs: catalogs,
+          catalog: paris,
+          activeStore: () => store,
+        ),
       ),
-    ));
+    );
     await tester.pumpAndSettle();
     // Two other catalogs: a menu, not a crash that swallows itself.
     // The bar's title line pushes the row below a 600dp window (#171).
     await tester.scrollUntilVisible(
-        find.text('Move in from another catalog…'), 200,
-        scrollable: find.byType(Scrollable).first);
+      find.text('Move in from another catalog…'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.text('Move in from another catalog…'));
     await tester.pumpAndSettle();
     expect(find.text('Rom'), findsWidgets);

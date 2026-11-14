@@ -164,7 +164,9 @@ class _ChoreHistoryScreenState extends State<ChoreHistoryScreen> {
             },
           ),
           PageAction(
-            icon: _showVoided ? Icons.visibility_off_outlined : Icons.visibility,
+            icon: _showVoided
+                ? Icons.visibility_off_outlined
+                : Icons.visibility,
             label: _showVoided ? t.hideRemovedValues : t.showRemovedValues,
             onPressed: () {
               store.setLocalSetting(
@@ -199,33 +201,33 @@ class _ChoreHistoryScreenState extends State<ChoreHistoryScreen> {
                       },
                     )
                   : _voidedTick(r) == null
-                      ? null
-                      : IconButton(
-                          icon: const Icon(Icons.restore),
-                          tooltip: t.restoreThisValue,
-                          onPressed: () {
-                            store.restoreEntry(_voidedTick(r)!.seq);
-                            setState(() {});
-                          },
-                        ),
-                leading: Icon(
-                  switch (r.state) {
-                    ChoreDay.done => Icons.check_circle,
-                    ChoreDay.missed => Icons.cancel_outlined,
-                    _ => Icons.radio_button_unchecked,
-                  },
-                  color: switch (r.state) {
-                    ChoreDay.done => Colors.green,
-                    ChoreDay.missed => theme.colorScheme.error,
-                    _ => null,
-                  },
-                ),
-                title: Text(DateFormat.yMEd(locale).format(r.due)),
-                subtitle: Text(switch (_voidedText(t, locale, r)) {
-                  final gone? => '${_line(t, locale, r)}\n$gone',
-                  null => _line(t, locale, r),
-                }),
-                isThreeLine: _voidedText(t, locale, r) != null,
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.restore),
+                      tooltip: t.restoreThisValue,
+                      onPressed: () {
+                        store.restoreEntry(_voidedTick(r)!.seq);
+                        setState(() {});
+                      },
+                    ),
+              leading: Icon(
+                switch (r.state) {
+                  ChoreDay.done => Icons.check_circle,
+                  ChoreDay.missed => Icons.cancel_outlined,
+                  _ => Icons.radio_button_unchecked,
+                },
+                color: switch (r.state) {
+                  ChoreDay.done => Colors.green,
+                  ChoreDay.missed => theme.colorScheme.error,
+                  _ => null,
+                },
+              ),
+              title: Text(DateFormat.yMEd(locale).format(r.due)),
+              subtitle: Text(switch (_voidedText(t, locale, r)) {
+                final gone? => '${_line(t, locale, r)}\n$gone',
+                null => _line(t, locale, r),
+              }),
+              isThreeLine: _voidedText(t, locale, r) != null,
             ),
         ],
       ),

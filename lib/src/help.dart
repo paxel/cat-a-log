@@ -54,9 +54,11 @@ Future<void> showHelp(
   String screenId,
 ) async {
   if (!helpTexts.containsKey(screenId)) return;
-  await Navigator.of(context).push(MaterialPageRoute(
-    builder: (_) => HelpScreen(store: store, screenId: screenId),
-  ));
+  await Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => HelpScreen(store: store, screenId: screenId),
+    ),
+  );
 }
 
 /// A page, not a sheet: what this screen is for, and the way to see

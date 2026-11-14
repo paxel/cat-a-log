@@ -6,8 +6,7 @@ import 'package:test/test.dart';
 void main() {
   setUpAll(useSystemSqlite);
 
-  const tasso =
-      'https://www.tasso.net/Tierregister/Suchmeldungen?snr={value}';
+  const tasso = 'https://www.tasso.net/Tierregister/Suchmeldungen?snr={value}';
   // Exactly what a poster's link looks like — extra parameters included.
   const scanned = 'https://www.tasso.net/Tierregister/Suchmeldungen'
       '?lang=de-DE&snr=S3101849&lp=0';
@@ -25,19 +24,18 @@ void main() {
   });
 
   test('another service is not mistaken for a known one', () {
-    expect(recognizeLookupUrl('https://www.findefix.com/suche?nr=P0815'),
-        isNull);
-    expect(idFromLookupUrl(tasso, 'https://www.tasso.net/Kontakt?snr=1'),
-        isNull);
+    expect(
+        recognizeLookupUrl('https://www.findefix.com/suche?nr=P0815'), isNull);
+    expect(
+        idFromLookupUrl(tasso, 'https://www.tasso.net/Kontakt?snr=1'), isNull);
   });
 
   test('an unknown service is learned from the link and the number', () {
-    final learned =
-        learnLookupTemplate('https://pets.example/search?id=AB-12&lang=en',
-            'ab12');
+    final learned = learnLookupTemplate(
+        'https://pets.example/search?id=AB-12&lang=en', 'ab12');
     expect(learned, 'https://pets.example/search?id={value}');
-    expect(idFromLookupUrl(learned!, 'https://pets.example/search?id=XY9'),
-        'XY9');
+    expect(
+        idFromLookupUrl(learned!, 'https://pets.example/search?id=XY9'), 'XY9');
   });
 
   test('a number sitting in the path is learned too', () {
@@ -64,8 +62,7 @@ void main() {
     store.author = 'test';
     store.defineField('Tasso', FieldType.id,
         scope: FieldScope.cat, lookupUrl: tasso);
-    final def =
-        store.fieldDefs().firstWhere((d) => d.slug == 'tasso');
+    final def = store.fieldDefs().firstWhere((d) => d.slug == 'tasso');
     expect(def.lookupUrl, tasso);
     expect(lookupUrl(def, 'S3101849'),
         'https://www.tasso.net/Tierregister/Suchmeldungen?snr=S3101849');
@@ -86,14 +83,12 @@ void main() {
     store.append(cat, Keys.userField('tasso'), 'S3101849');
 
     final bytes = catShareBytes(store,
-        catId: cat, fields: {Keys.userField('tasso')},
-        includePhotos: false);
+        catId: cat, fields: {Keys.userField('tasso')}, includePhotos: false);
     final other = CatalogStore.inMemory();
     addTearDown(other.close);
     other.author = 'other';
     importBundleBytes(other, bytes);
-    final def =
-        other.fieldDefs().firstWhere((d) => d.slug == 'tasso');
+    final def = other.fieldDefs().firstWhere((d) => d.slug == 'tasso');
     expect(def.lookupUrl, tasso);
   });
 

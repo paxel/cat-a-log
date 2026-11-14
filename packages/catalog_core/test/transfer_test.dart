@@ -8,9 +8,9 @@ import 'package:test/test.dart';
 Uint8List jpeg(int w, int h) =>
     Uint8List.fromList(img.encodeJpg(img.Image(width: w, height: h)));
 
-void sync(CatalogStore from, CatalogStore to) => to.applyEntries(
-    from.entriesSince(to.versionVector()),
-    senderVector: from.versionVector());
+void sync(CatalogStore from, CatalogStore to) =>
+    to.applyEntries(from.entriesSince(to.versionVector()),
+        senderVector: from.versionVector());
 
 /// Moving cats between catalogs: everything comes along, and the two
 /// catalogs can never quietly grow back together.
@@ -61,9 +61,8 @@ void main() {
         date: DateTime.utc(2024, 3, 1));
     transferEntities(berlin, paris, {cat});
 
-    final colour = paris
-        .entriesSince(const {})
-        .firstWhere((e) => e.field == Keys.userField('color'));
+    final colour = paris.entriesSince(const {}).firstWhere(
+        (e) => e.field == Keys.userField('color'));
     expect(colour.author, 'Kathrin');
     expect(colour.date, DateTime.utc(2024, 3, 1));
   });
@@ -78,8 +77,7 @@ void main() {
   test('the entries arrive under the destination device', () {
     final cat = berlin.createCat('Miezi');
     transferEntities(berlin, paris, {cat});
-    final devices =
-        paris.entriesSince(const {}).map((e) => e.device).toSet();
+    final devices = paris.entriesSince(const {}).map((e) => e.device).toSet();
     expect(devices, {paris.deviceId});
   });
 
@@ -93,7 +91,8 @@ void main() {
     expect(paris.versionVector().containsKey(berlin.deviceId), isFalse);
   });
 
-  test('a later sync with a shared partner delivers everything, nothing '
+  test(
+      'a later sync with a shared partner delivers everything, nothing '
       'silently skipped', () {
     final cat = berlin.createCat('Miezi');
     transferEntities(berlin, paris, {cat});
@@ -129,8 +128,8 @@ void main() {
     final two = berlin.createCat('Mausi');
     berlin.createCat('Struppi');
     transferEntities(berlin, paris, {one, two});
-    expect(paris.cats().map((c) => c.name),
-        unorderedEquals(['Miezi', 'Mausi']));
+    expect(
+        paris.cats().map((c) => c.name), unorderedEquals(['Miezi', 'Mausi']));
   });
 
   test('a cat whose clowder stayed behind arrives as a stray', () {
@@ -161,11 +160,9 @@ void main() {
   test('the destination keeps its own field definitions', () {
     // Both catalogs have the starter fields; Paris renamed one of them.
     paris.renameField(
-        paris.fieldDefs().firstWhere((d) => d.slug == 'color').id,
-        'Couleur');
+        paris.fieldDefs().firstWhere((d) => d.slug == 'color').id, 'Couleur');
     berlin.renameField(
-        berlin.fieldDefs().firstWhere((d) => d.slug == 'color').id,
-        'Farbe');
+        berlin.fieldDefs().firstWhere((d) => d.slug == 'color').id, 'Farbe');
     final cat = berlin.createCat('Miezi');
     berlin.append(cat, Keys.userField('color'), 'black');
 

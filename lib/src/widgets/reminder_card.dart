@@ -28,13 +28,14 @@ class ReminderCard extends StatelessWidget {
   /// Tap on the card; null on the entity's own page.
   final VoidCallback? onOpen;
 
-  const ReminderCard(
-      {super.key,
-      required this.store,
-      required this.reminder,
-      required this.onChanged,
-      this.showEntity = true,
-      this.onOpen});
+  const ReminderCard({
+    super.key,
+    required this.store,
+    required this.reminder,
+    required this.onChanged,
+    this.showEntity = true,
+    this.onOpen,
+  });
 
   static String relativeDue(BuildContext context, DateTime due) {
     final today = DateUtils.dateOnly(clockNow());
@@ -93,16 +94,17 @@ class ReminderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     final r = reminder;
-    final overdue =
-        DateUtils.dateOnly(r.due).isBefore(DateUtils.dateOnly(clockNow()));
+    final overdue = DateUtils.dateOnly(r.due)
+        .isBefore(DateUtils.dateOnly(clockNow()));
     final defs = {for (final def in store.fieldDefs()) def.key: def};
     final def = defs[r.field];
     final fieldName = def == null ? r.field : fieldDefName(t, def);
     final who = showEntity
         ? '${store.current(r.entity, Keys.name) ?? t.unnamed} · '
         : '';
-    final dateFormat =
-        DateFormat.yMd(Localizations.localeOf(context).toString());
+    final dateFormat = DateFormat.yMd(
+      Localizations.localeOf(context).toString(),
+    );
     final color = overdue ? Theme.of(context).colorScheme.error : null;
     if (r.doneBy case final fact?) {
       final faded = Theme.of(context).disabledColor;
@@ -116,12 +118,16 @@ class ReminderCard extends StatelessWidget {
           title: Text(
             '${t.doneLabel} · ${dateFormat.format(fact.date.toLocal())}',
             style: TextStyle(
-                color: faded, decoration: TextDecoration.lineThrough),
+              color: faded,
+              decoration: TextDecoration.lineThrough,
+            ),
           ),
-          subtitle: Text('$who$fieldName\n${r.value}',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: faded)),
+          subtitle: Text(
+            '$who$fieldName\n${r.value}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: faded),
+          ),
           isThreeLine: true,
           trailing: IconButton(
             icon: const Icon(Icons.delete_outline),
@@ -138,17 +144,17 @@ class ReminderCard extends StatelessWidget {
           onLongPress: () => _changeDate(context),
           leading: Tooltip(
             message: t.markDone,
-            child: Checkbox(
-              value: false,
-              onChanged: (_) => _markDone(context),
-            ),
+            child: Checkbox(value: false, onChanged: (_) => _markDone(context)),
           ),
           title: Text(
-              '${relativeDue(context, r.due)} · ${dateFormat.format(r.due)}',
-              style:
-                  TextStyle(color: color, fontWeight: FontWeight.bold)),
-          subtitle: Text('$who$fieldName\n${r.value}',
-              maxLines: 2, overflow: TextOverflow.ellipsis),
+            '${relativeDue(context, r.due)} · ${dateFormat.format(r.due)}',
+            style: TextStyle(color: color, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            '$who$fieldName\n${r.value}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
           isThreeLine: true,
           trailing: IconButton(
             icon: const Icon(Icons.delete_outline),
@@ -203,29 +209,31 @@ class _RepeatDialogState extends State<_RepeatDialog> {
     };
     return AlertDialog(
       title: Text(t.repeatTitle),
-      content: Row(children: [
-        SizedBox(
-          width: 64,
-          child: TextField(
-            controller: _count,
-            autofocus: true,
-            keyboardType: TextInputType.number,
-            onChanged: (_) => setState(() {}),
+      content: Row(
+        children: [
+          SizedBox(
+            width: 64,
+            child: TextField(
+              controller: _count,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              onChanged: (_) => setState(() {}),
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: DropdownButton<String>(
-            value: _unit,
-            isExpanded: true,
-            items: [
-              for (final MapEntry(:key, :value) in units.entries)
-                DropdownMenuItem(value: key, child: Text(value)),
-            ],
-            onChanged: (v) => setState(() => _unit = v ?? _unit),
+          const SizedBox(width: 12),
+          Expanded(
+            child: DropdownButton<String>(
+              value: _unit,
+              isExpanded: true,
+              items: [
+                for (final MapEntry(:key, :value) in units.entries)
+                  DropdownMenuItem(value: key, child: Text(value)),
+              ],
+              onChanged: (v) => setState(() => _unit = v ?? _unit),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),

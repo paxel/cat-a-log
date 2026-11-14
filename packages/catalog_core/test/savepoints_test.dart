@@ -8,9 +8,9 @@ import 'package:test/test.dart';
 Uint8List jpeg(int w, int h) =>
     Uint8List.fromList(img.encodeJpg(img.Image(width: w, height: h)));
 
-void sync(CatalogStore from, CatalogStore to) => to.applyEntries(
-    from.entriesSince(to.versionVector()),
-    senderVector: from.versionVector());
+void sync(CatalogStore from, CatalogStore to) =>
+    to.applyEntries(from.entriesSince(to.versionVector()),
+        senderVector: from.versionVector());
 
 /// Going back to an earlier moment: exact, and never destructive —
 /// what it removes is written out first.
@@ -23,8 +23,7 @@ void main() {
   setUp(() {
     dir = Directory.systemTemp.createTempSync('catlog-savepoints');
     Directory('${dir.path}/mine').createSync();
-    store = CatalogStore.open('${dir.path}/mine/catlog.db')
-      ..author = 'Patrick';
+    store = CatalogStore.open('${dir.path}/mine/catlog.db')..author = 'Patrick';
   });
 
   tearDown(() {
@@ -165,9 +164,8 @@ void main() {
     importBundle(store, path);
     importBundle(store, path);
 
-    final colour = store
-        .entriesSince(const {})
-        .where((e) => e.field == Keys.userField('color'));
+    final colour = store.entriesSince(const {}).where(
+        (e) => e.field == Keys.userField('color'));
     expect(colour, hasLength(1));
   });
 
@@ -203,7 +201,8 @@ void main() {
     expect(store.isPrivate(cat), isTrue);
   });
 
-  test('an undone import is not brought back by the shared folder '
+  test(
+      'an undone import is not brought back by the shared folder '
       'either', () async {
     final folder = Directory('${dir.path}/shared')..createSync();
     Directory('${dir.path}/theirs').createSync();

@@ -113,7 +113,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.settings), help: PageHelp('settings', store: widget.store)),
+      appBar: pageBar(
+        context,
+        title: Text(t.settings),
+        help: PageHelp('settings', store: widget.store),
+      ),
       body: ListView(
         children: [
           ListTile(

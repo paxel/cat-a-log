@@ -49,7 +49,12 @@ final DateTime demoToday = DateTime(2026, 10, 20);
 DateTime _writingAt = DateTime(2026, 10, 20, 9);
 
 DateTime ago(int days, {int hour = 10}) {
-  final at = DateTime(demoToday.year, demoToday.month, demoToday.day - days, hour);
+  final at = DateTime(
+    demoToday.year,
+    demoToday.month,
+    demoToday.day - days,
+    hour,
+  );
   if (days >= 0) _writingAt = at;
   return at;
 }
@@ -60,12 +65,13 @@ DateTime ahead(int days, {int hour = 10}) => ago(-days, hour: hour);
 /// two dice the pages roll: a new store's signing key, whose code the
 /// authors page shows, and the name a new cat is proposed.
 void pinClock() {
-  nowProvider = () => DateTime(demoToday.year, demoToday.month, demoToday.day, 9);
+  nowProvider = () =>
+      DateTime(demoToday.year, demoToday.month, demoToday.day, 9);
   CatalogStore.clock = () => _writingAt;
   var seed = 7;
   CatalogStore.newKey = () => SigningKey.fromSeed(
-        Uint8List.fromList(List<int>.generate(32, (i) => (i * 37 + seed++) & 0xff)),
-      );
+    Uint8List.fromList(List<int>.generate(32, (i) => (i * 37 + seed++) & 0xff)),
+  );
   proposalDice = Random(7);
 }
 
@@ -286,11 +292,7 @@ CatalogStore demoStore() {
   );
   store.moveCat(cleo, millers, date: ago(12));
 
-  final pumpkin = store.createCat(
-    'Pumpkin',
-    clowderId: millers,
-    date: ago(38),
-  );
+  final pumpkin = store.createCat('Pumpkin', clowderId: millers, date: ago(38));
   store.addImage(pumpkin, photo(9), date: ago(38));
   put(pumpkin, 'f:gender', 'male', date: ago(38), as: 'Marta');
   put(pumpkin, 'f:color', 'ginger & white', date: ago(38), as: 'Marta');
@@ -464,7 +466,6 @@ CatalogStore demoStore() {
   return store;
 }
 
-
 /// Shoots phone pages at the README size: 820 × 1660 at 2×, in [lang].
 /// [pump] puts a page up, [capture] writes what is on screen, so a flow
 /// can drive the page between frames.
@@ -549,5 +550,6 @@ class Shooter {
     tester.state<NavigatorState>(find.byType(Navigator).first).pop();
     await settle(rounds: 2);
   }
+
   Future<void> tapTooltip(String text) => tap(find.byTooltip(text).first);
 }

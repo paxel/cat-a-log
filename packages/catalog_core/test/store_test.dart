@@ -69,13 +69,13 @@ void main() {
       expect(store.current(id, Keys.name), 'New Name');
 
       final history = store.fieldHistory(id, Keys.name);
-      expect(history.map((e) => e.value), containsAll(['Old Name', 'New Name']));
+      expect(
+          history.map((e) => e.value), containsAll(['Old Name', 'New Name']));
       expect(history.first.value, 'New Name');
       expect(history.every((e) => e.author == 'axel'), isTrue);
     });
 
-    test('zero-microsecond timestamps sort correctly against precise ones',
-        () {
+    test('zero-microsecond timestamps sort correctly against precise ones', () {
       // Dart serializes whole-millisecond times with 3 fraction digits
       // and precise ones with 6; naive string ordering breaks there.
       final id = store.createClowder('Home');
@@ -191,8 +191,8 @@ void main() {
 
     test('profile image defaults to the first and stays stable', () {
       final cat = store.createCat('Miezi');
-      final first = store.addImage(
-          cat, CatalogStore.compressImage(makeJpeg(60, 60)));
+      final first =
+          store.addImage(cat, CatalogStore.compressImage(makeJpeg(60, 60)));
       store.addImage(cat, CatalogStore.compressImage(makeJpeg(70, 70)));
       expect(store.profileImage(cat), first);
     });
@@ -200,8 +200,8 @@ void main() {
     test('profile image can be chosen explicitly', () {
       final cat = store.createCat('Miezi');
       store.addImage(cat, CatalogStore.compressImage(makeJpeg(60, 60)));
-      final second = store.addImage(
-          cat, CatalogStore.compressImage(makeJpeg(70, 70)));
+      final second =
+          store.addImage(cat, CatalogStore.compressImage(makeJpeg(70, 70)));
       store.setProfileImage(cat, second);
       expect(store.profileImage(cat), second);
     });
@@ -323,8 +323,7 @@ void main() {
   });
 
   group('correct and remove', () {
-    test('removing a rename hides it, the previous name is current again',
-        () {
+    test('removing a rename hides it, the previous name is current again', () {
       final cat = store.createCat('Miezi');
       store.append(cat, Keys.name, 'Mizzi');
       final rename = store.fieldHistory(cat, Keys.name).first;
@@ -339,7 +338,10 @@ void main() {
       expect(all.last.voided, isFalse);
       expect(store.voidMarker(all.first)?.value, Keys.voidRemoved);
       expect(store.timeline(cat).any((e) => e.seq == rename.seq), isFalse);
-      expect(store.timeline(cat, includeVoided: true).any((e) => e.seq == rename.seq),
+      expect(
+          store
+              .timeline(cat, includeVoided: true)
+              .any((e) => e.seq == rename.seq),
           isTrue);
     });
 
@@ -373,8 +375,7 @@ void main() {
       expect(store.fieldHistory(cat, 'f:color').single.voided, isFalse);
     });
 
-    test('a correction keeps the date, hides the old value, links both',
-        () {
+    test('a correction keeps the date, hides the old value, links both', () {
       final cat = store.createCat('Miezi');
       final when = DateTime.utc(2025, 3, 4, 10, 30);
       store.append(cat, 'f:weight', '4100', date: when);
@@ -474,8 +475,8 @@ void main() {
 
     test('structural and photo entries cannot be corrected', () {
       final cat = store.createCat('Miezi');
-      final hash = store.addImage(
-          cat, CatalogStore.compressImage(makeJpeg(30, 30)));
+      final hash =
+          store.addImage(cat, CatalogStore.compressImage(makeJpeg(30, 30)));
       store.deleteImage(cat, hash);
       final marker = store.fieldHistory(cat, Keys.image(hash)).first;
       expect(() => store.removeEntry(marker.seq), throwsArgumentError);
@@ -502,8 +503,7 @@ void main() {
 
     test('mark bakes visible pixels into a copy', () {
       final source = CatalogStore.compressImage(makeJpeg(300, 300));
-      final marked =
-          CatalogStore.markImage(source, 0.5, 0.5, 0.25, 0.15);
+      final marked = CatalogStore.markImage(source, 0.5, 0.5, 0.25, 0.15);
       expect(marked, isNot(source));
       final decoded = img.decodeImage(marked)!;
       // A pixel on the ellipse's rightmost point is strongly orange.
@@ -522,8 +522,7 @@ void main() {
       expect(store.positionOf(cat), (52.52, 13.405));
       // Sightings accumulate as history.
       store.recordPosition(cat, 52.53, 13.41);
-      expect(
-          store.fieldHistory(cat, CatalogStore.positionKey).length, 2);
+      expect(store.fieldHistory(cat, CatalogStore.positionKey).length, 2);
     });
 
     test('malformed positions parse to null', () {
@@ -564,8 +563,8 @@ void main() {
   group('deletes', () {
     test('deleting a photo drops the bytes and hides it', () {
       final cat = store.createCat('Miezi');
-      final hash = store.addImage(
-          cat, CatalogStore.compressImage(makeJpeg(40, 40)));
+      final hash =
+          store.addImage(cat, CatalogStore.compressImage(makeJpeg(40, 40)));
       store.deleteImage(cat, hash);
       expect(store.images(cat), isEmpty);
       expect(store.imageBytes(hash), isNull);
@@ -589,8 +588,8 @@ void main() {
     test('deleting a cat hides it everywhere and drops its photos', () {
       final home = store.createClowder('Home');
       final cat = store.createCat('Mistake', clowderId: home);
-      final hash = store.addImage(
-          cat, CatalogStore.compressImage(makeJpeg(30, 30)));
+      final hash =
+          store.addImage(cat, CatalogStore.compressImage(makeJpeg(30, 30)));
 
       store.deleteCat(cat);
       expect(store.cats(), isEmpty);
@@ -625,10 +624,8 @@ void main() {
     });
 
     test('choice fields carry their options', () {
-      store.defineField('Mood', FieldType.choice,
-          options: ['calm', 'wild']);
-      final def =
-          store.fieldDefs().firstWhere((d) => d.slug == 'mood');
+      store.defineField('Mood', FieldType.choice, options: ['calm', 'wild']);
+      final def = store.fieldDefs().firstWhere((d) => d.slug == 'mood');
       expect(def.options, ['calm', 'wild']);
     });
 

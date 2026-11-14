@@ -57,8 +57,7 @@ void main() {
     expect((segment.readAsStringSync(), manifest.readAsStringSync()), before);
   });
 
-  test('a change appends to the segment; the manifest moves with it',
-      () async {
+  test('a change appends to the segment; the manifest moves with it', () async {
     a.createCat('Miezi');
     await folderSync(a, dir.path);
     final root = '${dir.path}/catlog-sync';
@@ -129,8 +128,7 @@ void main() {
     expect(b.cats().single.name, 'Miezi');
   });
 
-  test('a segment the manifest announces but the folder lacks waits',
-      () async {
+  test('a segment the manifest announces but the folder lacks waits', () async {
     final folder = MemorySyncFolder();
     a.createCat('Miezi');
     await folderSyncIn(a, folder);
@@ -155,16 +153,19 @@ void main() {
         a.entriesSince(const {}).map((e) => jsonEncode(e.toJson())).join('\n'));
     await folder.write('', '${a.deviceId}.jsonl2', legacy);
     await folder.ensure('keys');
-    await folder.write('', 'old-phone.jsonl', utf8.encode(jsonEncode({
-      'device': 'old-phone',
-      'dseq': 1,
-      'entity': 'cat:old',
-      'field': r'$type',
-      'value': 'cat',
-      'date': '2026-01-01T00:00:00.000000Z',
-      'author': 'carla',
-      'recorded': '2026-01-01T00:00:00.000000Z',
-    })));
+    await folder.write(
+        '',
+        'old-phone.jsonl',
+        utf8.encode(jsonEncode({
+          'device': 'old-phone',
+          'dseq': 1,
+          'entity': 'cat:old',
+          'field': r'$type',
+          'value': 'cat',
+          'date': '2026-01-01T00:00:00.000000Z',
+          'author': 'carla',
+          'recorded': '2026-01-01T00:00:00.000000Z',
+        })));
     // Written yesterday: a phone that still needs its update.
     final now = DateTime.utc(2026, 1, 2);
     final result = await folderSyncIn(a, folder, now: now);
@@ -173,9 +174,14 @@ void main() {
     expect(utf8.decode(folder.dirs['']!['${a.deviceId}.jsonl2']!),
         utf8.decode(legacy));
     // The old phone updates and writes a manifest: the frozen file goes.
-    await folder.write('', manifestName('old-phone'), utf8.encode(jsonEncode(
-        FolderManifest(generation: 0, private: false, vector: const {}, segments: const [])
-            .toJson())));
+    await folder.write(
+        '',
+        manifestName('old-phone'),
+        utf8.encode(jsonEncode(FolderManifest(
+            generation: 0,
+            private: false,
+            vector: const {},
+            segments: const []).toJson())));
     final later = await folderSyncIn(a, folder, now: now);
     expect(later.lagging, isEmpty);
     expect(folder.dirs['']!.keys, isNot(contains('${a.deviceId}.jsonl2')));
@@ -186,23 +192,25 @@ void main() {
     final folder = MemorySyncFolder();
     a.createCat('Miezi');
     await folder.ensure('keys');
-    await folder.write('', 'old-install.jsonl2', utf8.encode(jsonEncode({
-      'device': 'old-install',
-      'dseq': 1,
-      'entity': 'clowder:gone',
-      'field': r'$type',
-      'value': 'clowder',
-      'date': '2026-01-01T00:00:00.000000Z',
-      'author': 'carla',
-      'recorded': '2026-01-01T00:00:00.000000Z',
-      'reminder': false,
-    })));
+    await folder.write(
+        '',
+        'old-install.jsonl2',
+        utf8.encode(jsonEncode({
+          'device': 'old-install',
+          'dseq': 1,
+          'entity': 'clowder:gone',
+          'field': r'$type',
+          'value': 'clowder',
+          'date': '2026-01-01T00:00:00.000000Z',
+          'author': 'carla',
+          'recorded': '2026-01-01T00:00:00.000000Z',
+          'reminder': false,
+        })));
     await folder.write('keys', 'old-install.json', utf8.encode('[]'));
     folder.writtenAt['/old-install.jsonl2'] = DateTime.utc(2026, 1, 1);
     // A week on: what it knew is here, nobody is named, its files stay
     // where they are, and this device keeps no frozen file for it.
-    final result =
-        await folderSyncIn(a, folder, now: DateTime.utc(2026, 1, 9));
+    final result = await folderSyncIn(a, folder, now: DateTime.utc(2026, 1, 9));
     expect(result.lagging, isEmpty);
     expect(a.versionVector()['old-install'], 1);
     expect(folder.dirs['']!.keys, contains('old-install.jsonl2'));
@@ -212,8 +220,7 @@ void main() {
     // one: nobody named, nothing read by its old file.
     await folder.write('', 'fresh.jsonl2', utf8.encode(''));
     await folder.write('', manifestName('fresh'), utf8.encode('{'));
-    final again =
-        await folderSyncIn(a, folder, now: DateTime.utc(2026, 1, 9));
+    final again = await folderSyncIn(a, folder, now: DateTime.utc(2026, 1, 9));
     expect(again.lagging, isEmpty);
     expect(folder.dirs['']!.keys, contains('fresh.jsonl2'));
   });
@@ -223,22 +230,24 @@ void main() {
     final folder = MemorySyncFolder();
     a.createCat('Miezi');
     await folder.ensure('keys');
-    await folder.write('', 'quiet-phone.jsonl2', utf8.encode(jsonEncode({
-      'device': 'quiet-phone',
-      'dseq': 1,
-      'entity': 'clowder:home',
-      'field': r'$type',
-      'value': 'clowder',
-      'date': '2026-01-01T00:00:00.000000Z',
-      'author': 'carla',
-      'recorded': '2026-01-01T00:00:00.000000Z',
-      'reminder': false,
-    })));
+    await folder.write(
+        '',
+        'quiet-phone.jsonl2',
+        utf8.encode(jsonEncode({
+          'device': 'quiet-phone',
+          'dseq': 1,
+          'entity': 'clowder:home',
+          'field': r'$type',
+          'value': 'clowder',
+          'date': '2026-01-01T00:00:00.000000Z',
+          'author': 'carla',
+          'recorded': '2026-01-01T00:00:00.000000Z',
+          'reminder': false,
+        })));
     await folder.write('keys', 'quiet-phone.json', utf8.encode('[]'));
     // It synced this morning; it simply had nothing to record.
     folder.writtenAt['/quiet-phone.jsonl2'] = DateTime.utc(2026, 1, 9);
-    final result =
-        await folderSyncIn(a, folder, now: DateTime.utc(2026, 1, 9));
+    final result = await folderSyncIn(a, folder, now: DateTime.utc(2026, 1, 9));
     expect(result.lagging, contains('quiet-phone'),
         reason: 'it is here and still waits for the update');
   });
@@ -248,23 +257,24 @@ void main() {
     final folder = MemorySyncFolder();
     a.createCat('Miezi');
     await folder.ensure('keys');
-    await folder.write('', 'android.jsonl2', utf8.encode(jsonEncode({
-      'device': 'android',
-      'dseq': 1,
-      'entity': 'clowder:home',
-      'field': r'$type',
-      'value': 'clowder',
-      'date': '2026-01-01T00:00:00.000000Z',
-      'author': 'carla',
-      'recorded': '2026-01-01T00:00:00.000000Z',
-      'reminder': false,
-    })));
+    await folder.write(
+        '',
+        'android.jsonl2',
+        utf8.encode(jsonEncode({
+          'device': 'android',
+          'dseq': 1,
+          'entity': 'clowder:home',
+          'field': r'$type',
+          'value': 'clowder',
+          'date': '2026-01-01T00:00:00.000000Z',
+          'author': 'carla',
+          'recorded': '2026-01-01T00:00:00.000000Z',
+          'reminder': false,
+        })));
     await folder.write('keys', 'android.json', utf8.encode('[]'));
     // No write time — the document tree does not hand one out.
-    final result =
-        await folderSyncIn(a, folder, now: DateTime.utc(2026, 3, 1));
-    expect(result.lagging, contains('android'),
-        reason: 'unknown is not gone');
+    final result = await folderSyncIn(a, folder, now: DateTime.utc(2026, 3, 1));
+    expect(result.lagging, contains('android'), reason: 'unknown is not gone');
   });
 
   test('repeated sync is a no-op', () async {
@@ -293,7 +303,8 @@ void main() {
     expect(a.current(cat, Keys.name), b.current(catOnB, Keys.name));
   });
 
-  test('deleted photos vanish from the folder once markers propagate', () async {
+  test('deleted photos vanish from the folder once markers propagate',
+      () async {
     final cat = a.createCat('Miezi');
     final hash = a.addImage(cat, CatalogStore.compressImage(jpeg(40, 40)));
     await folderSync(a, dir.path);

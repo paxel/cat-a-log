@@ -20,7 +20,8 @@ void afterChoreTick(
       if (c.active && countsToday(c, store.choreTicks(c), today)) c,
   ];
   final allDone =
-      due.isNotEmpty && !due.any((c) => openToday(c, store.choreTicks(c), today));
+      due.isNotEmpty &&
+      !due.any((c) => openToday(c, store.choreTicks(c), today));
   Cheer? cheer;
   if (allDone && store.localSetting('choresCelebrated') != dayKey(today)) {
     store.setLocalSetting('choresCelebrated', dayKey(today));
@@ -93,9 +94,5 @@ void afterChoreTick(
     return d != 0 ? d : byTime(a.$1, b.$1);
   });
   paused.sort(byTime);
-  return (
-    due: ordered,
-    later: [for (final (c, _) in later) c],
-    paused: paused,
-  );
+  return (due: ordered, later: [for (final (c, _) in later) c], paused: paused);
 }

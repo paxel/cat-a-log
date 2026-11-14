@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'notes_helper.dart';
+
 import 'package:image/image.dart' as img;
 
 /// After a reinstall the backups of the install before come back as

@@ -54,7 +54,9 @@ String languageLabel(BuildContext context, CatalogStore store) {
 /// Language picker: system default plus every supported language, by
 /// native name. The choice is device-local and applies immediately.
 Future<void> showLanguageDialog(
-    BuildContext context, CatalogStore store) async {
+  BuildContext context,
+  CatalogStore store,
+) async {
   final current = store.localSetting('locale');
   final chosen = await showDialog<String>(
     context: context,
@@ -63,26 +65,30 @@ Future<void> showLanguageDialog(
       children: [
         SimpleDialogOption(
           onPressed: () => Navigator.of(context).pop('system'),
-          child: Row(children: [
-            if (current == null)
-              const Padding(
-                padding: EdgeInsets.only(right: 8),
-                child: Icon(Icons.check, size: 18),
-              ),
-            Expanded(child: Text(context.t.systemDefault)),
-          ]),
-        ),
-        for (final code in _endonyms.keys)
-          SimpleDialogOption(
-            onPressed: () => Navigator.of(context).pop(code),
-            child: Row(children: [
-              if (current == code)
+          child: Row(
+            children: [
+              if (current == null)
                 const Padding(
                   padding: EdgeInsets.only(right: 8),
                   child: Icon(Icons.check, size: 18),
                 ),
-              Expanded(child: Text(_endonyms[code]!)),
-            ]),
+              Expanded(child: Text(context.t.systemDefault)),
+            ],
+          ),
+        ),
+        for (final code in _endonyms.keys)
+          SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(code),
+            child: Row(
+              children: [
+                if (current == code)
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(Icons.check, size: 18),
+                  ),
+                Expanded(child: Text(_endonyms[code]!)),
+              ],
+            ),
           ),
       ],
     ),

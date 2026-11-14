@@ -44,22 +44,19 @@ void main() {
   }
 
   test('the whitelist decides what leaves the catalog', () {
-    final path = shareFile(
-        {Keys.userField('gender'), Keys.userField('address')});
+    final path =
+        shareFile({Keys.userField('gender'), Keys.userField('address')});
     importBundle(finder, path);
     final imported = finder.cats().single;
     expect(imported.name, 'Minka');
-    expect(finder.current(imported.id, Keys.userField('gender')),
-        'female');
+    expect(finder.current(imported.id, Keys.userField('gender')), 'female');
     // Not whitelisted — never left home.
     expect(finder.current(imported.id, Keys.userField('chipid')), isNull);
-    expect(
-        finder.current(imported.id, Keys.userField('remarks')), isNull);
+    expect(finder.current(imported.id, Keys.userField('remarks')), isNull);
     // The owner clowder travelled with its whitelisted address.
     final clowder = finder.clowders().single;
     expect(clowder.name, 'Familie Huber');
-    expect(finder.current(clowder.id, Keys.userField('address')),
-        'Main St 1');
+    expect(finder.current(clowder.id, Keys.userField('address')), 'Main St 1');
   });
 
   test('a partial import never poisons a later full sync', () {
@@ -68,8 +65,7 @@ void main() {
     // The share came from a fresh device id, so the finder's vector
     // knows nothing about the owner's real device...
     expect(
-        finder.versionVector().keys.any((d) => d.startsWith('share-')),
-        isTrue);
+        finder.versionVector().keys.any((d) => d.startsWith('share-')), isTrue);
     // ...and a later full sync still delivers everything withheld.
     finder.applyEntries(owner.entriesSince(finder.versionVector()),
         senderVector: owner.versionVector());
@@ -82,8 +78,7 @@ void main() {
     expect(finder.cats(), hasLength(1));
   });
 
-  test('dangling references import without crashing and stay dangling',
-      () {
+  test('dangling references import without crashing and stay dangling', () {
     // Whitelist the mother reference but not the mother herself.
     final mother = owner.createCat('Mutti');
     owner.append(cat, Keys.userField('mother'), mother);
@@ -102,9 +97,7 @@ void main() {
     final path = shareFile({Keys.userField('gender')});
     importBundle(finder, path);
     expect(finder.cats().single.name, 'Minka');
-    expect(
-        finder.current(
-            finder.cats().single.id, Keys.userField('gender')),
+    expect(finder.current(finder.cats().single.id, Keys.userField('gender')),
         isNull);
     // The clowder travels by name; its private values would not.
     expect(finder.clowders(), hasLength(1));
@@ -115,20 +108,15 @@ void main() {
     addTearDown(finder2.close);
     finder2.author = 'finder2';
     importBundle(finder2, shareFile({Keys.userField('gender')}));
-    expect(
-        finder2.current(
-            finder2.cats().single.id, Keys.userField('gender')),
+    expect(finder2.current(finder2.cats().single.id, Keys.userField('gender')),
         isNull);
   });
 
   test('QR payloads round-trip and reject garbage', () {
-    expect(decodeShareQr(encodeShareUrl('https://x.example/f.catsync'))!
-        .url,
+    expect(decodeShareQr(encodeShareUrl('https://x.example/f.catsync'))!.url,
         'https://x.example/f.catsync');
     final bytes = catShareBytes(owner,
-        catId: cat,
-        fields: {Keys.userField('gender')},
-        includePhotos: false);
+        catId: cat, fields: {Keys.userField('gender')}, includePhotos: false);
     expect(decodeShareQr(encodeShareData(bytes))!.data, bytes);
     expect(decodeShareQr('https://random.example'), isNull);
     expect(decodeShareQr('catlog-share:u:!!!'), isNull);
@@ -149,8 +137,8 @@ void main() {
     final bytes = catShareBytes(owner, catId: cat, fields: {ownerDef.key});
     importBundleBytes(finder, bytes);
 
-    expect(finder.fieldDefs().firstWhere((d) => d.slug == 'color').name,
-        'Farbe',
+    expect(
+        finder.fieldDefs().firstWhere((d) => d.slug == 'color').name, 'Farbe',
         reason: "somebody else's flier must not rename your field");
     expect(finder.current(cat, Keys.userField('color')), 'black');
   });

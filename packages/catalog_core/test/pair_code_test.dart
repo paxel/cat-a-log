@@ -7,7 +7,8 @@ void main() {
   final fp = List<int>.generate(32, (i) => (i * 7 + 3) & 0xff);
 
   test('a QR code round-trips the whole fingerprint', () {
-    final code = encodePairCode('192.168.1.20', 4242, '123456', fingerprint: fp);
+    final code =
+        encodePairCode('192.168.1.20', 4242, '123456', fingerprint: fp);
     final info = decodePairCode(code)!;
     expect(info.host, '192.168.1.20');
     expect(info.port, 4242);
@@ -43,7 +44,11 @@ void codeLengthTests() {
     expect(pairCodeLength(16, typedFingerprintBytes), 47);
     expect(pairCodeLength(16, fullFingerprintBytes), 85);
     final fp = List<int>.generate(fullFingerprintBytes, (i) => i);
-    expect(encodePairCode('192.168.1.2', 8080, '123456', fingerprint: fp, typed: true)
-        .replaceAll('_', '').length, pairCodeLength(4, typedFingerprintBytes));
+    expect(
+        encodePairCode('192.168.1.2', 8080, '123456',
+                fingerprint: fp, typed: true)
+            .replaceAll('_', '')
+            .length,
+        pairCodeLength(4, typedFingerprintBytes));
   });
 }

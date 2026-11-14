@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'l10n.dart';
 import 'layout.dart';
+
 import 'package:catalog_core/catalog_core.dart';
 
 /// What the frame picker needs of a player: the picture, the clock,
@@ -91,8 +92,7 @@ class _VideoFramesScreenState extends State<VideoFramesScreen> {
   ImageProvider _tile(int ms) =>
       _tiles[ms] ??= ResizeImage(MemoryImage(_kept[ms]!), width: 320);
 
-  Duration get _frame =>
-      Duration(microseconds: (1000000 / player.fps).round());
+  Duration get _frame => Duration(microseconds: (1000000 / player.fps).round());
 
   /// A step: the player pauses and moves; the picture follows.
   Future<void> _step(Duration by) async {
@@ -103,8 +103,7 @@ class _VideoFramesScreenState extends State<VideoFramesScreen> {
     await player.seekTo(at);
   }
 
-  Future<void> _togglePlay() =>
-      player.playing ? player.pause() : player.play();
+  Future<void> _togglePlay() => player.playing ? player.pause() : player.play();
 
   /// The slider seeks as the finger moves, a few times a frame at most;
   /// the finger's rest lands exactly.
@@ -167,132 +166,157 @@ class _VideoFramesScreenState extends State<VideoFramesScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     final total = player.duration.inMilliseconds.toDouble();
-    final shown = (_drag ?? player.position.inMilliseconds.toDouble())
-        .clamp(0.0, total);
+    final shown = (_drag ?? player.position.inMilliseconds.toDouble()).clamp(
+      0.0,
+      total,
+    );
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.pickFramesTitle), actions: [
-        PageAction(
-          icon: Icons.check,
-          label: t.save,
-          onPressed: _kept.isEmpty || _busy ? null : _keepAndClose,
-        ),
-      ]),
+      appBar: pageBar(
+        context,
+        title: Text(t.pickFramesTitle),
+        actions: [
+          PageAction(
+            icon: Icons.check,
+            label: t.save,
+            onPressed: _kept.isEmpty || _busy ? null : _keepAndClose,
+          ),
+        ],
+      ),
       body: _busy
           ? const Center(child: CircularProgressIndicator())
-          : Column(children: [
-              Expanded(child: Center(child: player.build(context))),
-              Slider(
-                value: shown,
-                max: total,
-                onChangeStart: (_) => player.pause(),
-                onChanged: (v) {
-                  setState(() => _drag = v);
-                  _scrub(v);
-                },
-                onChangeEnd: (v) {
-                  setState(() => _drag = null);
-                  _scrub(v, settle: true);
-                },
-              ),
-              Text(
-                '${_clock(Duration(milliseconds: shown.round()))} / '
-                '${_clock(player.duration)}',
-                key: const ValueKey('clock'),
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                _StepButton(
-                  icon: Icons.fast_rewind,
-                  tooltip: t.secondBack,
-                  onStep: () => _step(const Duration(seconds: -1)),
+          : Column(
+              children: [
+                Expanded(child: Center(child: player.build(context))),
+                Slider(
+                  value: shown,
+                  max: total,
+                  onChangeStart: (_) => player.pause(),
+                  onChanged: (v) {
+                    setState(() => _drag = v);
+                    _scrub(v);
+                  },
+                  onChangeEnd: (v) {
+                    setState(() => _drag = null);
+                    _scrub(v, settle: true);
+                  },
                 ),
-                _StepButton(
-                  icon: Icons.navigate_before,
-                  tooltip: t.frameBack,
-                  onStep: () => _step(-_frame),
+                Text(
+                  '${_clock(Duration(milliseconds: shown.round()))} / '
+                  '${_clock(player.duration)}',
+                  key: const ValueKey('clock'),
                 ),
-                IconButton.filled(
-                  iconSize: 36,
-                  icon: Icon(player.playing ? Icons.pause : Icons.play_arrow),
-                  tooltip: player.playing ? t.pause : t.play,
-                  onPressed: _togglePlay,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _StepButton(
+                      icon: Icons.fast_rewind,
+                      tooltip: t.secondBack,
+                      onStep: () => _step(const Duration(seconds: -1)),
+                    ),
+                    _StepButton(
+                      icon: Icons.navigate_before,
+                      tooltip: t.frameBack,
+                      onStep: () => _step(-_frame),
+                    ),
+                    IconButton.filled(
+                      iconSize: 36,
+                      icon: Icon(
+                        player.playing ? Icons.pause : Icons.play_arrow,
+                      ),
+                      tooltip: player.playing ? t.pause : t.play,
+                      onPressed: _togglePlay,
+                    ),
+                    _StepButton(
+                      icon: Icons.navigate_next,
+                      tooltip: t.frameForward,
+                      onStep: () => _step(_frame),
+                    ),
+                    _StepButton(
+                      icon: Icons.fast_forward,
+                      tooltip: t.secondForward,
+                      onStep: () => _step(const Duration(seconds: 1)),
+                    ),
+                  ],
                 ),
-                _StepButton(
-                  icon: Icons.navigate_next,
-                  tooltip: t.frameForward,
-                  onStep: () => _step(_frame),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _StepButton(
+                      icon: Icons.replay_10,
+                      tooltip: t.tenSecondsBack,
+                      onStep: () => _step(const Duration(seconds: -10)),
+                    ),
+                    const SizedBox(width: 8),
+                    FilledButton.icon(
+                      icon: const Icon(Icons.add_a_photo),
+                      label: Text(t.keepThisFrame),
+                      onPressed: _grabbing ? null : _keep,
+                    ),
+                    const SizedBox(width: 8),
+                    _StepButton(
+                      icon: Icons.forward_10,
+                      tooltip: t.tenSecondsForward,
+                      onStep: () => _step(const Duration(seconds: 10)),
+                    ),
+                  ],
                 ),
-                _StepButton(
-                  icon: Icons.fast_forward,
-                  tooltip: t.secondForward,
-                  onStep: () => _step(const Duration(seconds: 1)),
-                ),
-              ]),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                _StepButton(
-                  icon: Icons.replay_10,
-                  tooltip: t.tenSecondsBack,
-                  onStep: () => _step(const Duration(seconds: -10)),
-                ),
-                const SizedBox(width: 8),
-                FilledButton.icon(
-                  icon: const Icon(Icons.add_a_photo),
-                  label: Text(t.keepThisFrame),
-                  onPressed: _grabbing ? null : _keep,
-                ),
-                const SizedBox(width: 8),
-                _StepButton(
-                  icon: Icons.forward_10,
-                  tooltip: t.tenSecondsForward,
-                  onStep: () => _step(const Duration(seconds: 10)),
-                ),
-              ]),
-              const SizedBox(height: 8),
-              // The kept frames, oldest first; a tap lets one go.
-              SizedBox(
-                height: 96,
-                child: _kept.isEmpty
-                    ? Center(
-                        child: Text(t.keptFrames,
-                            style: Theme.of(context).textTheme.bodySmall))
-                    : ListView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        children: [
-                          for (final ms in _kept.keys.toList()..sort())
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: GestureDetector(
-                                onTap: () => setState(() => _kept.remove(ms)),
-                                child: Tooltip(
-                                  message: _clock(Duration(milliseconds: ms)),
-                                  child: Stack(children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      // A fixed frame: the tile has its
-                                      // place before the picture decodes.
-                                      child: Image(
-                                        image: _tile(ms),
-                                        width: 128,
-                                        height: 96,
-                                        fit: BoxFit.cover,
-                                        gaplessPlayback: true,
-                                      ),
+                const SizedBox(height: 8),
+                // The kept frames, oldest first; a tap lets one go.
+                SizedBox(
+                  height: 96,
+                  child: _kept.isEmpty
+                      ? Center(
+                          child: Text(
+                            t.keptFrames,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        )
+                      : ListView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          children: [
+                            for (final ms in _kept.keys.toList()..sort())
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: GestureDetector(
+                                  onTap: () => setState(() => _kept.remove(ms)),
+                                  child: Tooltip(
+                                    message: _clock(Duration(milliseconds: ms)),
+                                    child: Stack(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          // A fixed frame: the tile has its
+                                          // place before the picture decodes.
+                                          child: Image(
+                                            image: _tile(ms),
+                                            width: 128,
+                                            height: 96,
+                                            fit: BoxFit.cover,
+                                            gaplessPlayback: true,
+                                          ),
+                                        ),
+                                        const Positioned(
+                                          top: 4,
+                                          right: 4,
+                                          child: Icon(
+                                            Icons.check_circle,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    const Positioned(
-                                      top: 4,
-                                      right: 4,
-                                      child: Icon(Icons.check_circle,
-                                          color: Colors.white),
-                                    ),
-                                  ]),
+                                  ),
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-              ),
-              const SizedBox(height: 8),
-            ]),
+                          ],
+                        ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
     );
   }
 }
@@ -303,8 +327,11 @@ class _StepButton extends StatefulWidget {
   final String tooltip;
   final VoidCallback onStep;
 
-  const _StepButton(
-      {required this.icon, required this.tooltip, required this.onStep});
+  const _StepButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onStep,
+  });
 
   @override
   State<_StepButton> createState() => _StepButtonState();
@@ -330,7 +357,9 @@ class _StepButtonState extends State<_StepButton> {
       onLongPressStart: (_) {
         widget.onStep();
         _run = Timer.periodic(
-            const Duration(milliseconds: 150), (_) => widget.onStep());
+          const Duration(milliseconds: 150),
+          (_) => widget.onStep(),
+        );
       },
       onLongPressEnd: (_) => _stop(),
       onLongPressCancel: _stop,

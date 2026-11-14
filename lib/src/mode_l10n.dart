@@ -28,7 +28,8 @@ class ModeLocalizations implements AppLocalizations {
   String get aboutAndFeedback => base.aboutAndFeedback;
 
   @override
-  String get aboutTagline => pets ? base.aboutTaglineNeutral : base.aboutTagline;
+  String get aboutTagline =>
+      pets ? base.aboutTaglineNeutral : base.aboutTagline;
 
   @override
   String get aboutTaglineNeutral => base.aboutTaglineNeutral;
@@ -43,13 +44,15 @@ class ModeLocalizations implements AppLocalizations {
   String get achievementDecade => base.achievementDecade;
 
   @override
-  String achievementDone(int times, String date) => base.achievementDone(times, date);
+  String achievementDone(int times, String date) =>
+      base.achievementDone(times, date);
 
   @override
   String get achievementMonth => base.achievementMonth;
 
   @override
-  String achievementReached(int times, String date) => base.achievementReached(times, date);
+  String achievementReached(int times, String date) =>
+      base.achievementReached(times, date);
 
   @override
   String achievementUnlocked(String name) => base.achievementUnlocked(name);
@@ -160,7 +163,8 @@ class ModeLocalizations implements AppLocalizations {
   String get archiveAction => base.archiveAction;
 
   @override
-  String archiveCandidateLine(String date, String size) => base.archiveCandidateLine(date, size);
+  String archiveCandidateLine(String date, String size) =>
+      base.archiveCandidateLine(date, size);
 
   @override
   String archiveConfirmBody(String names) => base.archiveConfirmBody(names);
@@ -172,7 +176,8 @@ class ModeLocalizations implements AppLocalizations {
   String archiveDone(int count) => base.archiveDone(count);
 
   @override
-  String get archiveExplainer => pets ? base.archiveExplainerNeutral : base.archiveExplainer;
+  String get archiveExplainer =>
+      pets ? base.archiveExplainerNeutral : base.archiveExplainer;
 
   @override
   String get archiveExplainerNeutral => base.archiveExplainerNeutral;
@@ -442,7 +447,8 @@ class ModeLocalizations implements AppLocalizations {
   String get catListNeutral => base.catListNeutral;
 
   @override
-  String catalogDeleted(String name, String where) => base.catalogDeleted(name, where);
+  String catalogDeleted(String name, String where) =>
+      base.catalogDeleted(name, where);
 
   @override
   String catalogExportFailed(String error) => base.catalogExportFailed(error);
@@ -466,7 +472,8 @@ class ModeLocalizations implements AppLocalizations {
   String get cats => pets ? base.catsNeutral : base.cats;
 
   @override
-  String catsCount(int count) => pets ? base.catsCountNeutral(count) : base.catsCount(count);
+  String catsCount(int count) =>
+      pets ? base.catsCountNeutral(count) : base.catsCount(count);
 
   @override
   String catsCountNeutral(int count) => base.catsCountNeutral(count);
@@ -475,13 +482,15 @@ class ModeLocalizations implements AppLocalizations {
   String get catsNeutral => base.catsNeutral;
 
   @override
-  String get catsOnAppointment => pets ? base.catsOnAppointmentNeutral : base.catsOnAppointment;
+  String get catsOnAppointment =>
+      pets ? base.catsOnAppointmentNeutral : base.catsOnAppointment;
 
   @override
   String get catsOnAppointmentNeutral => base.catsOnAppointmentNeutral;
 
   @override
-  String get celebrationsSubtitle => pets ? base.celebrationsSubtitleNeutral : base.celebrationsSubtitle;
+  String get celebrationsSubtitle =>
+      pets ? base.celebrationsSubtitleNeutral : base.celebrationsSubtitle;
 
   @override
   String get celebrationsSubtitleNeutral => base.celebrationsSubtitleNeutral;
@@ -493,13 +502,15 @@ class ModeLocalizations implements AppLocalizations {
   String get changeDateLabel => base.changeDateLabel;
 
   @override
-  String changeSince(String delta, String date) => base.changeSince(delta, date);
+  String changeSince(String delta, String date) =>
+      base.changeSince(delta, date);
 
   @override
   String changesCount(int n) => base.changesCount(n);
 
   @override
-  String get chipScanHint => pets ? base.chipScanHintNeutral : base.chipScanHint;
+  String get chipScanHint =>
+      pets ? base.chipScanHintNeutral : base.chipScanHint;
 
   @override
   String get chipScanHintNeutral => base.chipScanHintNeutral;
@@ -604,10 +615,12 @@ class ModeLocalizations implements AppLocalizations {
   String get choreTickLabel => base.choreTickLabel;
 
   @override
-  String choreTicked(String title, int count, String days) => base.choreTicked(title, count, days);
+  String choreTicked(String title, int count, String days) =>
+      base.choreTicked(title, count, days);
 
   @override
-  String choreTickedShort(String title, int count) => base.choreTickedShort(title, count);
+  String choreTickedShort(String title, int count) =>
+      base.choreTickedShort(title, count);
 
   @override
   String get choreTitleLabel => base.choreTitleLabel;
@@ -616,7 +629,8 @@ class ModeLocalizations implements AppLocalizations {
   String get clearField => base.clearField;
 
   @override
-  String get clowderLabel => pets ? base.clowderLabelNeutral : base.clowderLabel;
+  String get clowderLabel =>
+      pets ? base.clowderLabelNeutral : base.clowderLabel;
 
   @override
   String get clowderLabelNeutral => base.clowderLabelNeutral;
@@ -778,16 +792,20 @@ class ModeLocalizations implements AppLocalizations {
   String get deleteAppointment => base.deleteAppointment;
 
   @override
-  String deleteAppointmentGroup(int count) => pets ? base.deleteAppointmentGroupNeutral(count) : base.deleteAppointmentGroup(count);
+  String deleteAppointmentGroup(int count) => pets
+      ? base.deleteAppointmentGroupNeutral(count)
+      : base.deleteAppointmentGroup(count);
 
   @override
-  String deleteAppointmentGroupNeutral(int count) => base.deleteAppointmentGroupNeutral(count);
+  String deleteAppointmentGroupNeutral(int count) =>
+      base.deleteAppointmentGroupNeutral(count);
 
   @override
   String get deleteCat => pets ? base.deleteCatNeutral : base.deleteCat;
 
   @override
-  String get deleteCatBody => pets ? base.deleteCatBodyNeutral : base.deleteCatBody;
+  String get deleteCatBody =>
+      pets ? base.deleteCatBodyNeutral : base.deleteCatBody;
 
   @override
   String get deleteCatBodyNeutral => base.deleteCatBodyNeutral;
@@ -799,25 +817,33 @@ class ModeLocalizations implements AppLocalizations {
   String get deleteCatalog => base.deleteCatalog;
 
   @override
-  String deleteCatalogBody(String name) => pets ? base.deleteCatalogBodyNeutral(name) : base.deleteCatalogBody(name);
+  String deleteCatalogBody(String name) =>
+      pets ? base.deleteCatalogBodyNeutral(name) : base.deleteCatalogBody(name);
 
   @override
-  String deleteCatalogBodyNeutral(String name) => base.deleteCatalogBodyNeutral(name);
+  String deleteCatalogBodyNeutral(String name) =>
+      base.deleteCatalogBodyNeutral(name);
 
   @override
-  String get deleteClowder => pets ? base.deleteClowderNeutral : base.deleteClowder;
+  String get deleteClowder =>
+      pets ? base.deleteClowderNeutral : base.deleteClowder;
 
   @override
-  String deleteClowderBody(int count) => pets ? base.deleteClowderBodyNeutral(count) : base.deleteClowderBody(count);
+  String deleteClowderBody(int count) => pets
+      ? base.deleteClowderBodyNeutral(count)
+      : base.deleteClowderBody(count);
 
   @override
-  String deleteClowderBodyNeutral(int count) => base.deleteClowderBodyNeutral(count);
+  String deleteClowderBodyNeutral(int count) =>
+      base.deleteClowderBodyNeutral(count);
 
   @override
-  String get deleteClowderEmptyBody => pets ? base.deleteClowderEmptyBodyNeutral : base.deleteClowderEmptyBody;
+  String get deleteClowderEmptyBody =>
+      pets ? base.deleteClowderEmptyBodyNeutral : base.deleteClowderEmptyBody;
 
   @override
-  String get deleteClowderEmptyBodyNeutral => base.deleteClowderEmptyBodyNeutral;
+  String get deleteClowderEmptyBodyNeutral =>
+      base.deleteClowderEmptyBodyNeutral;
 
   @override
   String get deleteClowderNeutral => base.deleteClowderNeutral;
@@ -877,13 +903,15 @@ class ModeLocalizations implements AppLocalizations {
   String doneOn(Object date) => base.doneOn(date);
 
   @override
-  String get dragOverTheCat => pets ? base.dragOverTheCatNeutral : base.dragOverTheCat;
+  String get dragOverTheCat =>
+      pets ? base.dragOverTheCatNeutral : base.dragOverTheCat;
 
   @override
   String get dragOverTheCatNeutral => base.dragOverTheCatNeutral;
 
   @override
-  String get dragToSelect => pets ? base.dragToSelectNeutral : base.dragToSelect;
+  String get dragToSelect =>
+      pets ? base.dragToSelectNeutral : base.dragToSelect;
 
   @override
   String get dragToSelectNeutral => base.dragToSelectNeutral;
@@ -913,10 +941,12 @@ class ModeLocalizations implements AppLocalizations {
   String get entryCorrection => base.entryCorrection;
 
   @override
-  String entryRemovedBy(Object who, Object when) => base.entryRemovedBy(who, when);
+  String entryRemovedBy(Object who, Object when) =>
+      base.entryRemovedBy(who, when);
 
   @override
-  String entryReplacedBy(Object value, Object who, Object when) => base.entryReplacedBy(value, who, when);
+  String entryReplacedBy(Object value, Object who, Object when) =>
+      base.entryReplacedBy(value, who, when);
 
   @override
   String get existingCat => pets ? base.existingCatNeutral : base.existingCat;
@@ -925,7 +955,8 @@ class ModeLocalizations implements AppLocalizations {
   String get existingCatNeutral => base.existingCatNeutral;
 
   @override
-  String get existingClowder => pets ? base.existingClowderNeutral : base.existingClowder;
+  String get existingClowder =>
+      pets ? base.existingClowderNeutral : base.existingClowder;
 
   @override
   String get existingClowderNeutral => base.existingClowderNeutral;
@@ -955,7 +986,8 @@ class ModeLocalizations implements AppLocalizations {
   String get favouriteRemove => base.favouriteRemove;
 
   @override
-  String fieldHistoryOf(String field, String name) => base.fieldHistoryOf(field, name);
+  String fieldHistoryOf(String field, String name) =>
+      base.fieldHistoryOf(field, name);
 
   @override
   String get fieldHistoryTooltip => base.fieldHistoryTooltip;
@@ -973,7 +1005,8 @@ class ModeLocalizations implements AppLocalizations {
   String get finishLabel => base.finishLabel;
 
   @override
-  String get finishUntickHint => pets ? base.finishUntickHintNeutral : base.finishUntickHint;
+  String get finishUntickHint =>
+      pets ? base.finishUntickHintNeutral : base.finishUntickHint;
 
   @override
   String get finishUntickHintNeutral => base.finishUntickHintNeutral;
@@ -1039,13 +1072,15 @@ class ModeLocalizations implements AppLocalizations {
   String get fromVideo => base.fromVideo;
 
   @override
-  String get genderFatherFemale => pets ? base.genderFatherFemaleNeutral : base.genderFatherFemale;
+  String get genderFatherFemale =>
+      pets ? base.genderFatherFemaleNeutral : base.genderFatherFemale;
 
   @override
   String get genderFatherFemaleNeutral => base.genderFatherFemaleNeutral;
 
   @override
-  String get genderMotherMale => pets ? base.genderMotherMaleNeutral : base.genderMotherMale;
+  String get genderMotherMale =>
+      pets ? base.genderMotherMaleNeutral : base.genderMotherMale;
 
   @override
   String get genderMotherMaleNeutral => base.genderMotherMaleNeutral;
@@ -1081,7 +1116,8 @@ class ModeLocalizations implements AppLocalizations {
   String get hardDeleteAction => base.hardDeleteAction;
 
   @override
-  String hardDeleteWarningKey(Object name, Object key) => base.hardDeleteWarningKey(name, key);
+  String hardDeleteWarningKey(Object name, Object key) =>
+      base.hardDeleteWarningKey(name, key);
 
   @override
   String get helpAchievements => base.helpAchievements;
@@ -1117,7 +1153,8 @@ class ModeLocalizations implements AppLocalizations {
   String get helpCatalogSettings => base.helpCatalogSettings;
 
   @override
-  String get helpCatalogs => pets ? base.helpCatalogsNeutral : base.helpCatalogs;
+  String get helpCatalogs =>
+      pets ? base.helpCatalogsNeutral : base.helpCatalogs;
 
   @override
   String get helpCatalogsNeutral => base.helpCatalogsNeutral;
@@ -1132,7 +1169,8 @@ class ModeLocalizations implements AppLocalizations {
   String get helpConflicts => base.helpConflicts;
 
   @override
-  String get helpDuplicates => pets ? base.helpDuplicatesNeutral : base.helpDuplicates;
+  String get helpDuplicates =>
+      pets ? base.helpDuplicatesNeutral : base.helpDuplicates;
 
   @override
   String get helpDuplicatesNeutral => base.helpDuplicatesNeutral;
@@ -1258,7 +1296,8 @@ class ModeLocalizations implements AppLocalizations {
   String get importLabel => base.importLabel;
 
   @override
-  String get importShareTitle => pets ? base.importShareTitleNeutral : base.importShareTitle;
+  String get importShareTitle =>
+      pets ? base.importShareTitleNeutral : base.importShareTitle;
 
   @override
   String get importShareTitleNeutral => base.importShareTitleNeutral;
@@ -1378,7 +1417,8 @@ class ModeLocalizations implements AppLocalizations {
   String get kindField => base.kindField;
 
   @override
-  String get kittensLabel => pets ? base.kittensLabelNeutral : base.kittensLabel;
+  String get kittensLabel =>
+      pets ? base.kittensLabelNeutral : base.kittensLabel;
 
   @override
   String get kittensLabelNeutral => base.kittensLabelNeutral;
@@ -1714,7 +1754,8 @@ class ModeLocalizations implements AppLocalizations {
   String get machineTranslated => base.machineTranslated;
 
   @override
-  String get malePregnant => pets ? base.malePregnantNeutral : base.malePregnant;
+  String get malePregnant =>
+      pets ? base.malePregnantNeutral : base.malePregnant;
 
   @override
   String get malePregnantNeutral => base.malePregnantNeutral;
@@ -1726,7 +1767,8 @@ class ModeLocalizations implements AppLocalizations {
   String get map => base.map;
 
   @override
-  String get mapSearchHint => pets ? base.mapSearchHintNeutral : base.mapSearchHint;
+  String get mapSearchHint =>
+      pets ? base.mapSearchHintNeutral : base.mapSearchHint;
 
   @override
   String get mapSearchHintNeutral => base.mapSearchHintNeutral;
@@ -1771,10 +1813,12 @@ class ModeLocalizations implements AppLocalizations {
   String metaFieldChanged(String name) => base.metaFieldChanged(name);
 
   @override
-  String metaMerged(String loser, String survivor) => base.metaMerged(loser, survivor);
+  String metaMerged(String loser, String survivor) =>
+      base.metaMerged(loser, survivor);
 
   @override
-  String metaNewKey(Object name, Object code, Object how) => base.metaNewKey(name, code, how);
+  String metaNewKey(Object name, Object code, Object how) =>
+      base.metaNewKey(name, code, how);
 
   @override
   String metaPhotos(int n) => base.metaPhotos(n);
@@ -1840,7 +1884,8 @@ class ModeLocalizations implements AppLocalizations {
   String movedTo(String name) => base.movedTo(name);
 
   @override
-  String movedToCatalog(int count, String name) => base.movedToCatalog(count, name);
+  String movedToCatalog(int count, String name) =>
+      base.movedToCatalog(count, name);
 
   @override
   String get name => base.name;
@@ -1882,7 +1927,8 @@ class ModeLocalizations implements AppLocalizations {
   String get newField => base.newField;
 
   @override
-  String newKeyCallsItself(Object code, Object name) => base.newKeyCallsItself(code, name);
+  String newKeyCallsItself(Object code, Object name) =>
+      base.newKeyCallsItself(code, name);
 
   @override
   String get newStray => base.newStray;
@@ -1897,13 +1943,15 @@ class ModeLocalizations implements AppLocalizations {
   String get noCatsHintNeutral => base.noCatsHintNeutral;
 
   @override
-  String get noClowderStrayOption => pets ? base.noClowderStrayOptionNeutral : base.noClowderStrayOption;
+  String get noClowderStrayOption =>
+      pets ? base.noClowderStrayOptionNeutral : base.noClowderStrayOption;
 
   @override
   String get noClowderStrayOptionNeutral => base.noClowderStrayOptionNeutral;
 
   @override
-  String get noClowdersYet => pets ? base.noClowdersYetNeutral : base.noClowdersYet;
+  String get noClowdersYet =>
+      pets ? base.noClowdersYetNeutral : base.noClowdersYet;
 
   @override
   String get noClowdersYetNeutral => base.noClowdersYetNeutral;
@@ -1927,7 +1975,8 @@ class ModeLocalizations implements AppLocalizations {
   String get noMatchCandidates => base.noMatchCandidates;
 
   @override
-  String get noMissingCats => pets ? base.noMissingCatsNeutral : base.noMissingCats;
+  String get noMissingCats =>
+      pets ? base.noMissingCatsNeutral : base.noMissingCats;
 
   @override
   String get noMissingCatsNeutral => base.noMissingCatsNeutral;
@@ -1963,7 +2012,8 @@ class ModeLocalizations implements AppLocalizations {
   String noteFolderLagging(String names) => base.noteFolderLagging(names);
 
   @override
-  String noteFolderUnreachable(String since) => base.noteFolderUnreachable(since);
+  String noteFolderUnreachable(String since) =>
+      base.noteFolderUnreachable(since);
 
   @override
   String noteSyncDone(String authors) => base.noteSyncDone(authors);
@@ -2023,10 +2073,13 @@ class ModeLocalizations implements AppLocalizations {
   String ownerOfCat(String name) => base.ownerOfCat(name);
 
   @override
-  String parentBornAfterKitten(String name, String date) => pets ? base.parentBornAfterKittenNeutral(name, date) : base.parentBornAfterKitten(name, date);
+  String parentBornAfterKitten(String name, String date) => pets
+      ? base.parentBornAfterKittenNeutral(name, date)
+      : base.parentBornAfterKitten(name, date);
 
   @override
-  String parentBornAfterKittenNeutral(String name, String date) => base.parentBornAfterKittenNeutral(name, date);
+  String parentBornAfterKittenNeutral(String name, String date) =>
+      base.parentBornAfterKittenNeutral(name, date);
 
   @override
   String get pause => base.pause;
@@ -2047,13 +2100,15 @@ class ModeLocalizations implements AppLocalizations {
   String get photos => base.photos;
 
   @override
-  String photosAddedTo(String count, String name) => base.photosAddedTo(count, name);
+  String photosAddedTo(String count, String name) =>
+      base.photosAddedTo(count, name);
 
   @override
   String get pickCalendar => base.pickCalendar;
 
   @override
-  String get pickCatsTitle => pets ? base.pickCatsTitleNeutral : base.pickCatsTitle;
+  String get pickCatsTitle =>
+      pets ? base.pickCatsTitleNeutral : base.pickCatsTitle;
 
   @override
   String get pickCatsTitleNeutral => base.pickCatsTitleNeutral;
@@ -2182,7 +2237,8 @@ class ModeLocalizations implements AppLocalizations {
   String get recordHere => base.recordHere;
 
   @override
-  String refusedEntries(int count, Object name) => base.refusedEntries(count, name);
+  String refusedEntries(int count, Object name) =>
+      base.refusedEntries(count, name);
 
   @override
   String get rejectAfterResolve => base.rejectAfterResolve;
@@ -2257,7 +2313,8 @@ class ModeLocalizations implements AppLocalizations {
   String get renameCatNeutral => base.renameCatNeutral;
 
   @override
-  String get renameClowder => pets ? base.renameClowderNeutral : base.renameClowder;
+  String get renameClowder =>
+      pets ? base.renameClowderNeutral : base.renameClowder;
 
   @override
   String get renameClowderNeutral => base.renameClowderNeutral;
@@ -2296,7 +2353,8 @@ class ModeLocalizations implements AppLocalizations {
   String restoreDone(int count) => base.restoreDone(count);
 
   @override
-  String restoreFileLine(int count, String date) => base.restoreFileLine(count, date);
+  String restoreFileLine(int count, String date) =>
+      base.restoreFileLine(count, date);
 
   @override
   String get restoreIntro => base.restoreIntro;
@@ -2338,7 +2396,8 @@ class ModeLocalizations implements AppLocalizations {
   String get scanShareLabel => base.scanShareLabel;
 
   @override
-  String get searchByNameHint => pets ? base.searchByNameHintNeutral : base.searchByNameHint;
+  String get searchByNameHint =>
+      pets ? base.searchByNameHintNeutral : base.searchByNameHint;
 
   @override
   String get searchByNameHintNeutral => base.searchByNameHintNeutral;
@@ -2350,7 +2409,8 @@ class ModeLocalizations implements AppLocalizations {
   String get searchCatsNeutral => base.searchCatsNeutral;
 
   @override
-  String get searchNoResults => pets ? base.searchNoResultsNeutral : base.searchNoResults;
+  String get searchNoResults =>
+      pets ? base.searchNoResultsNeutral : base.searchNoResults;
 
   @override
   String get searchNoResultsNeutral => base.searchNoResultsNeutral;
@@ -2368,7 +2428,8 @@ class ModeLocalizations implements AppLocalizations {
   String get seenHereNow => base.seenHereNow;
 
   @override
-  String get selectClowderHint => pets ? base.selectClowderHintNeutral : base.selectClowderHint;
+  String get selectClowderHint =>
+      pets ? base.selectClowderHintNeutral : base.selectClowderHint;
 
   @override
   String get selectClowderHintNeutral => base.selectClowderHintNeutral;
@@ -2482,16 +2543,19 @@ class ModeLocalizations implements AppLocalizations {
   String get sourceCode => base.sourceCode;
 
   @override
-  String get spotAddReminderCat => pets ? base.spotAddReminderCatNeutral : base.spotAddReminderCat;
+  String get spotAddReminderCat =>
+      pets ? base.spotAddReminderCatNeutral : base.spotAddReminderCat;
 
   @override
   String get spotAddReminderCatNeutral => base.spotAddReminderCatNeutral;
 
   @override
-  String get spotAddReminderClowder => pets ? base.spotAddReminderClowderNeutral : base.spotAddReminderClowder;
+  String get spotAddReminderClowder =>
+      pets ? base.spotAddReminderClowderNeutral : base.spotAddReminderClowder;
 
   @override
-  String get spotAddReminderClowderNeutral => base.spotAddReminderClowderNeutral;
+  String get spotAddReminderClowderNeutral =>
+      base.spotAddReminderClowderNeutral;
 
   @override
   String get spotAgendaAdd => base.spotAgendaAdd;
@@ -2509,7 +2573,8 @@ class ModeLocalizations implements AppLocalizations {
   String get spotCardChips => base.spotCardChips;
 
   @override
-  String get spotCardPoster => pets ? base.spotCardPosterNeutral : base.spotCardPoster;
+  String get spotCardPoster =>
+      pets ? base.spotCardPosterNeutral : base.spotCardPoster;
 
   @override
   String get spotCardPosterNeutral => base.spotCardPosterNeutral;
@@ -2548,7 +2613,8 @@ class ModeLocalizations implements AppLocalizations {
   String get spotHomeMenu => base.spotHomeMenu;
 
   @override
-  String get spotHomeStrays => pets ? base.spotHomeStraysNeutral : base.spotHomeStrays;
+  String get spotHomeStrays =>
+      pets ? base.spotHomeStraysNeutral : base.spotHomeStrays;
 
   @override
   String get spotHomeStraysNeutral => base.spotHomeStraysNeutral;
@@ -2560,13 +2626,15 @@ class ModeLocalizations implements AppLocalizations {
   String get spotLooks => base.spotLooks;
 
   @override
-  String get spotMapLayers => pets ? base.spotMapLayersNeutral : base.spotMapLayers;
+  String get spotMapLayers =>
+      pets ? base.spotMapLayersNeutral : base.spotMapLayers;
 
   @override
   String get spotMapLayersNeutral => base.spotMapLayersNeutral;
 
   @override
-  String get spotMapSearch => pets ? base.spotMapSearchNeutral : base.spotMapSearch;
+  String get spotMapSearch =>
+      pets ? base.spotMapSearchNeutral : base.spotMapSearch;
 
   @override
   String get spotMapSearchNeutral => base.spotMapSearchNeutral;
@@ -2581,13 +2649,15 @@ class ModeLocalizations implements AppLocalizations {
   String get spotReplayTitle => base.spotReplayTitle;
 
   @override
-  String get spotStraysFlier => pets ? base.spotStraysFlierNeutral : base.spotStraysFlier;
+  String get spotStraysFlier =>
+      pets ? base.spotStraysFlierNeutral : base.spotStraysFlier;
 
   @override
   String get spotStraysFlierNeutral => base.spotStraysFlierNeutral;
 
   @override
-  String get spotStraysScan => pets ? base.spotStraysScanNeutral : base.spotStraysScan;
+  String get spotStraysScan =>
+      pets ? base.spotStraysScanNeutral : base.spotStraysScan;
 
   @override
   String get spotStraysScanNeutral => base.spotStraysScanNeutral;
@@ -2689,7 +2759,8 @@ class ModeLocalizations implements AppLocalizations {
   String get stepFace => base.stepFace;
 
   @override
-  String get stepFaceHint => pets ? base.stepFaceHintNeutral : base.stepFaceHint;
+  String get stepFaceHint =>
+      pets ? base.stepFaceHintNeutral : base.stepFaceHint;
 
   @override
   String get stepFaceHintNeutral => base.stepFaceHintNeutral;
@@ -2701,7 +2772,8 @@ class ModeLocalizations implements AppLocalizations {
   String get stepOwner => base.stepOwner;
 
   @override
-  String get stepOwnerHint => pets ? base.stepOwnerHintNeutral : base.stepOwnerHint;
+  String get stepOwnerHint =>
+      pets ? base.stepOwnerHintNeutral : base.stepOwnerHint;
 
   @override
   String get stepOwnerHintNeutral => base.stepOwnerHintNeutral;
@@ -2710,7 +2782,8 @@ class ModeLocalizations implements AppLocalizations {
   String get stepRegistry => base.stepRegistry;
 
   @override
-  String get stepRegistryHint => pets ? base.stepRegistryHintNeutral : base.stepRegistryHint;
+  String get stepRegistryHint =>
+      pets ? base.stepRegistryHintNeutral : base.stepRegistryHint;
 
   @override
   String get stepRegistryHintNeutral => base.stepRegistryHintNeutral;
@@ -2725,7 +2798,8 @@ class ModeLocalizations implements AppLocalizations {
   String get stopShowingHidden => base.stopShowingHidden;
 
   @override
-  String storageLine(String db, String photos, int count) => base.storageLine(db, photos, count);
+  String storageLine(String db, String photos, int count) =>
+      base.storageLine(db, photos, count);
 
   @override
   String get stray => base.stray;
@@ -2737,7 +2811,8 @@ class ModeLocalizations implements AppLocalizations {
   String get strayCam => base.strayCam;
 
   @override
-  String get strayNoClowder => pets ? base.strayNoClowderNeutral : base.strayNoClowder;
+  String get strayNoClowder =>
+      pets ? base.strayNoClowderNeutral : base.strayNoClowder;
 
   @override
   String get strayNoClowderNeutral => base.strayNoClowderNeutral;
@@ -2788,7 +2863,8 @@ class ModeLocalizations implements AppLocalizations {
   String get syncAutoSwitch => base.syncAutoSwitch;
 
   @override
-  String syncChangesWaiting(String authors, String catalog) => base.syncChangesWaiting(authors, catalog);
+  String syncChangesWaiting(String authors, String catalog) =>
+      base.syncChangesWaiting(authors, catalog);
 
   @override
   String get syncChooserInPerson => base.syncChooserInPerson;
@@ -2893,13 +2969,15 @@ class ModeLocalizations implements AppLocalizations {
   String get titleNone => base.titleNone;
 
   @override
-  String titleWithChore(Object title, Object chore) => base.titleWithChore(title, chore);
+  String titleWithChore(Object title, Object chore) =>
+      base.titleWithChore(title, chore);
 
   @override
   String toastAdopted(Object cat, Object home) => base.toastAdopted(cat, home);
 
   @override
-  String toastBorn(Object cat) => pets ? base.toastBornNeutral(cat) : base.toastBorn(cat);
+  String toastBorn(Object cat) =>
+      pets ? base.toastBornNeutral(cat) : base.toastBorn(cat);
 
   @override
   String toastBornNeutral(Object cat) => base.toastBornNeutral(cat);
@@ -2950,7 +3028,8 @@ class ModeLocalizations implements AppLocalizations {
   String get toyLaserDotHint => base.toyLaserDotHint;
 
   @override
-  String toyLastGame(String catches, String minutes) => base.toyLastGame(catches, minutes);
+  String toyLastGame(String catches, String minutes) =>
+      base.toyLastGame(catches, minutes);
 
   @override
   String toyMinutes(int n) => base.toyMinutes(n);
@@ -2968,7 +3047,8 @@ class ModeLocalizations implements AppLocalizations {
   String trailOf(String name, int count) => base.trailOf(name, count);
 
   @override
-  String trailOfField(String name, String field, int count) => base.trailOfField(name, field, count);
+  String trailOfField(String name, String field, int count) =>
+      base.trailOfField(name, field, count);
 
   @override
   String trailOfPlace(String name, int count) => base.trailOfPlace(name, count);
@@ -3103,7 +3183,8 @@ class ModeLocalizations implements AppLocalizations {
   String get valueYes => base.valueYes;
 
   @override
-  String versionLabel(String version, String build) => base.versionLabel(version, build);
+  String versionLabel(String version, String build) =>
+      base.versionLabel(version, build);
 
   @override
   String get vetReportCurves => base.vetReportCurves;
@@ -3212,5 +3293,4 @@ class ModeLocalizations implements AppLocalizations {
 
   @override
   String get yourTitle => base.yourTitle;
-
 }

@@ -29,8 +29,12 @@ class TimelineScreen extends StatefulWidget {
   final String entityId;
   final String? field;
 
-  const TimelineScreen(
-      {super.key, required this.store, required this.entityId, this.field});
+  const TimelineScreen({
+    super.key,
+    required this.store,
+    required this.entityId,
+    this.field,
+  });
 
   @override
   State<TimelineScreen> createState() => _TimelineScreenState();
@@ -44,7 +48,6 @@ class _Row {
 }
 
 class _TimelineScreenState extends State<TimelineScreen> {
-
   CatalogStore get store => widget.store;
 
   String _clowderName(String? id) => id == null
@@ -67,28 +70,33 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   /// Friendly rendering for a Cat's own membership entry.
   _Row _membershipRow(Entry e) => _Row(
-        e,
-        e.value == null ? Icons.explore : Icons.drive_file_move_outline,
-        e.value == null
-            ? context.t.leftStray
-            : context.t.movedTo(_clowderName(e.value)),
-      );
+    e,
+    e.value == null ? Icons.explore : Icons.drive_file_move_outline,
+    e.value == null
+        ? context.t.leftStray
+        : context.t.movedTo(_clowderName(e.value)),
+  );
 
   List<_Row> _rows() {
     final t = context.t;
     final entries = widget.field == null
         ? store.timeline(widget.entityId, includeVoided: _showVoided)
-        : store.fieldHistory(widget.entityId, widget.field!,
-            includeVoided: _showVoided);
+        : store.fieldHistory(
+            widget.entityId,
+            widget.field!,
+            includeVoided: _showVoided,
+          );
     final rows = <_Row>[
-      for (final e in entries.where((e) =>
-          e.field != Keys.type &&
-          e.field != Keys.private &&
-          !e.field.startsWith(Keys.conflictPrefix) &&
-          !e.field.startsWith(Keys.voidPrefix) &&
-          (showHidden.value ||
-              !e.field.startsWith('f:') ||
-              !store.isHidden('fielddef:${e.field.substring(2)}'))))
+      for (final e in entries.where(
+        (e) =>
+            e.field != Keys.type &&
+            e.field != Keys.private &&
+            !e.field.startsWith(Keys.conflictPrefix) &&
+            !e.field.startsWith(Keys.voidPrefix) &&
+            (showHidden.value ||
+                !e.field.startsWith('f:') ||
+                !store.isHidden('fielddef:${e.field.substring(2)}')),
+      ))
         if (e.field == Keys.clowder)
           _membershipRow(e)
         else if (e.field == Keys.mergedInto)
@@ -97,28 +105,34 @@ class _TimelineScreenState extends State<TimelineScreen> {
           // A tick: which chore, and the day it counts for when that is
           // not the day it was ticked on.
           _Row(
-              e,
-              Icons.check_circle_outline,
-              due == dayKey(dayOf(e.date.toLocal()))
-                  ? fieldLabel(t, store, e.field)
-                  : '${fieldLabel(t, store, e.field)} · ${t.choreDoneFor(DateFormat.yMEd(_locale).format(DateTime.parse(due)))}')
+            e,
+            Icons.check_circle_outline,
+            due == dayKey(dayOf(e.date.toLocal()))
+                ? fieldLabel(t, store, e.field)
+                : '${fieldLabel(t, store, e.field)} · ${t.choreDoneFor(DateFormat.yMEd(_locale).format(DateTime.parse(due)))}',
+          )
         else
-          _Row(e, Icons.history,
-              '${fieldLabel(t, store, e.field)}: ${valueLabel(t, store, e.field, e.value)}'),
+          _Row(
+            e,
+            Icons.history,
+            '${fieldLabel(t, store, e.field)}: ${valueLabel(t, store, e.field, e.value)}',
+          ),
     ];
     // Clowder timeline: weave in cat arrivals/departures.
     if (widget.field == null && widget.entityId.startsWith('clowder:')) {
       for (final ev in store.clowderOccupancy(widget.entityId)) {
         final cat = store.current(ev.catId, Keys.name) ?? t.unnamed;
-        rows.add(_Row(
-          ev.entry,
-          ev.arrived ? Icons.login : Icons.logout,
-          ev.arrived
-              ? (ev.counterpart == null
-                  ? t.arrivedPlain(cat)
-                  : t.arrivedFrom(cat, _clowderName(ev.counterpart)))
-              : t.leftTo(cat, _clowderName(ev.counterpart)),
-        ));
+        rows.add(
+          _Row(
+            ev.entry,
+            ev.arrived ? Icons.login : Icons.logout,
+            ev.arrived
+                ? (ev.counterpart == null
+                      ? t.arrivedPlain(cat)
+                      : t.arrivedFrom(cat, _clowderName(ev.counterpart)))
+                : t.leftTo(cat, _clowderName(ev.counterpart)),
+          ),
+        );
       }
       rows.sort((a, b) {
         final byDate = b.entry.date.compareTo(a.entry.date);
@@ -153,8 +167,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
   /// other row.
   Appointment? _appointmentOf(Entry e) {
     if (!e.field.startsWith(Keys.appointmentPrefix)) return null;
-    return Appointment.fromJson(e.field.substring(Keys.appointmentPrefix.length),
-        e.entity, store.current(e.entity, e.field));
+    return Appointment.fromJson(
+      e.field.substring(Keys.appointmentPrefix.length),
+      e.entity,
+      store.current(e.entity, e.field),
+    );
   }
 
   /// The chore a row — the chore itself or one of its ticks — belongs
@@ -162,7 +179,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
   Chore? _choreOf(Entry e) {
     if (!e.field.startsWith(Keys.chorePrefix)) return null;
     final id = e.field.substring(Keys.chorePrefix.length).split('@').first;
-    return Chore.fromJson(id, e.entity, store.current(e.entity, Keys.chore(id)));
+    return Chore.fromJson(
+      id,
+      e.entity,
+      store.current(e.entity, Keys.chore(id)),
+    );
   }
 
   /// Whether a tap on [e] has an editor to open.
@@ -177,15 +198,22 @@ class _TimelineScreenState extends State<TimelineScreen> {
     // Appointments and chores have editors of their own: the row opens
     // them, a tick opens its chore's log of done days.
     if (_appointmentOf(e) case final appointment?) {
-      await showAppointmentDialog(context, store,
-          entityId: appointment.entity, existing: appointment);
+      await showAppointmentDialog(
+        context,
+        store,
+        entityId: appointment.entity,
+        existing: appointment,
+      );
       if (mounted) setState(() {});
       return;
     }
     if (_choreOf(e) case final chore?) {
       if (_tickDue(e) != null) {
-        await Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => ChoreHistoryScreen(store: store, chore: chore)));
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ChoreHistoryScreen(store: store, chore: chore),
+          ),
+        );
       } else {
         await showChoreDialog(context, store, existing: chore);
       }
@@ -248,30 +276,35 @@ class _TimelineScreenState extends State<TimelineScreen> {
   /// The map centered on the row's spot, with the field's trail on and
   /// this value's dot marked.
   Future<void> _showOnMap(Entry e, LatLng spot) async {
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => MapScreen(
-        store: store,
-        initialCenter: spot,
-        focus: (e.entity, spot),
-        trailOf: (e.entity, e.field),
-        dot: e.seq,
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MapScreen(
+          store: store,
+          initialCenter: spot,
+          focus: (e.entity, spot),
+          trailOf: (e.entity, e.field),
+          dot: e.seq,
+        ),
       ),
-    ));
+    );
     if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final name =
-        store.current(widget.entityId, Keys.name) ?? context.t.unnamed;
+    final name = store.current(widget.entityId, Keys.name) ?? context.t.unnamed;
     final rows = _rows();
     return Scaffold(
       appBar: pageBar(
         context,
-        title: Text(widget.field == null
-            ? context.t.timelineOf(name)
-            : context.t.fieldHistoryOf(
-                fieldLabel(context.t, store, widget.field!), name)),
+        title: Text(
+          widget.field == null
+              ? context.t.timelineOf(name)
+              : context.t.fieldHistoryOf(
+                  fieldLabel(context.t, store, widget.field!),
+                  name,
+                ),
+        ),
         help: PageHelp('timeline', store: store),
         actions: [
           PageAction(
@@ -283,7 +316,9 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 : context.t.showRemovedValues,
             onPressed: () {
               store.setLocalSetting(
-                  historyShowVoidedKey, _showVoided ? 'no' : 'yes');
+                historyShowVoidedKey,
+                _showVoided ? 'no' : 'yes',
+              );
               setState(() {});
             },
           ),
@@ -303,39 +338,46 @@ class _TimelineScreenState extends State<TimelineScreen> {
               row.title,
               style: e.voided
                   ? TextStyle(
-                      color: muted, decoration: TextDecoration.lineThrough)
+                      color: muted,
+                      decoration: TextDecoration.lineThrough,
+                    )
                   : null,
             ),
-            subtitle: Text(e.voided
-                ? '${_date(e.date)} · ${e.author}\n'
-                    '${voidedLine(context.t, store, e.field, e, _locale)}'
-                : '${_date(e.date)} · ${e.author}'),
+            subtitle: Text(
+              e.voided
+                  ? '${_date(e.date)} · ${e.author}\n'
+                        '${voidedLine(context.t, store, e.field, e, _locale)}'
+                  : '${_date(e.date)} · ${e.author}',
+            ),
             isThreeLine: e.voided,
             // A position leads to the map: the spot, the trail, this
             // dot. The bin removes, a removed row offers its way back.
-            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-              if (spot != null)
-                IconButton(
-                  icon: const Icon(Icons.map_outlined),
-                  tooltip: context.t.showOnMap,
-                  onPressed: () => _showOnMap(e, spot),
-                ),
-              if (correctable && e.voided)
-                IconButton(
-                  icon: const Icon(Icons.restore),
-                  tooltip: context.t.restoreThisValue,
-                  onPressed: () {
-                    store.restoreEntry(e.seq);
-                    setState(() {});
-                  },
-                )
-              else if (correctable)
-                IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  tooltip: context.t.removeThisValue,
-                  onPressed: () => _remove(e),
-                ),
-            ]),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (spot != null)
+                  IconButton(
+                    icon: const Icon(Icons.map_outlined),
+                    tooltip: context.t.showOnMap,
+                    onPressed: () => _showOnMap(e, spot),
+                  ),
+                if (correctable && e.voided)
+                  IconButton(
+                    icon: const Icon(Icons.restore),
+                    tooltip: context.t.restoreThisValue,
+                    onPressed: () {
+                      store.restoreEntry(e.seq);
+                      setState(() {});
+                    },
+                  )
+                else if (correctable)
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: context.t.removeThisValue,
+                    onPressed: () => _remove(e),
+                  ),
+              ],
+            ),
             onTap: correctable && !e.voided && _hasEditor(e)
                 ? () => _correct(e)
                 : null,

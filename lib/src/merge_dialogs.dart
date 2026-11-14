@@ -37,8 +37,7 @@ Future<bool> showMergeDialog({
   if (survivorId == null) return false;
   if (!context.mounted) return false;
 
-  final survivorName =
-      candidates.firstWhere((c) => c.id == survivorId).name;
+  final survivorName = candidates.firstWhere((c) => c.id == survivorId).name;
   final sure = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
@@ -60,8 +59,7 @@ Future<bool> showMergeDialog({
 
   final before = store.currentSeq();
   merge(loserId, survivorId);
-  momentFor(store,
-      before: before, changed: true, cause: MomentCause.merge);
+  momentFor(store, before: before, changed: true, cause: MomentCause.merge);
   return true;
 }
 
@@ -76,8 +74,7 @@ Future<bool> confirmPairMerge({
   required Widget Function(String id) lead,
   required void Function(String loserId, String survivorId) merge,
 }) async {
-  String name(String id) =>
-      store.current(id, Keys.name) ?? context.t.unnamed;
+  String name(String id) => store.current(id, Keys.name) ?? context.t.unnamed;
   final survivor = await showDialog<String>(
     context: context,
     builder: (context) => SimpleDialog(
@@ -86,11 +83,13 @@ Future<bool> confirmPairMerge({
         for (final id in [a, b])
           SimpleDialogOption(
             onPressed: () => Navigator.of(context).pop(id),
-            child: Row(children: [
-              lead(id),
-              const SizedBox(width: 8),
-              Expanded(child: Text(name(id))),
-            ]),
+            child: Row(
+              children: [
+                lead(id),
+                const SizedBox(width: 8),
+                Expanded(child: Text(name(id))),
+              ],
+            ),
           ),
       ],
     ),
@@ -117,7 +116,6 @@ Future<bool> confirmPairMerge({
   if (sure != true) return false;
   final before = store.currentSeq();
   merge(survivor == a ? b : a, survivor);
-  momentFor(store,
-      before: before, changed: true, cause: MomentCause.merge);
+  momentFor(store, before: before, changed: true, cause: MomentCause.merge);
   return true;
 }

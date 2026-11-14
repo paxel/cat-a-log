@@ -116,7 +116,11 @@ class _BackupsScreenState extends State<BackupsScreen> {
       _ => (null, t.backupsDesktopFiles),
     };
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.backupsTitle), help: PageHelp('backups', store: widget.store)),
+      appBar: pageBar(
+        context,
+        title: Text(t.backupsTitle),
+        help: PageHelp('backups', store: widget.store),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

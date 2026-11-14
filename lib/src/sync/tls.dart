@@ -37,7 +37,10 @@ Uint8List fingerprintOf(String certPem) {
 
 /// The device's identity, made on first hosting (a few seconds, off the
 /// UI isolate) and kept in the shared settings for every catalog.
-Future<TlsIdentity> tlsIdentity(CatalogStore store, {int keySize = 2048}) async {
+Future<TlsIdentity> tlsIdentity(
+  CatalogStore store, {
+  int keySize = 2048,
+}) async {
   final cert = store.localSetting(tlsCertKey);
   final key = store.localSetting(tlsKeyKey);
   if (cert != null && key != null) {
@@ -57,7 +60,10 @@ TlsIdentity generateIdentity({int keySize = 2048}) {
   final private = pair.privateKey as RSAPrivateKey;
   final public = pair.publicKey as RSAPublicKey;
   final csr = X509Utils.generateRsaCsrPem(
-      {'CN': 'catlog', 'O': 'cat(a)log'}, private, public);
+    {'CN': 'catlog', 'O': 'cat(a)log'},
+    private,
+    public,
+  );
   final cert = X509Utils.generateSelfSignedCertificate(private, csr, 3650);
   final keyPem = CryptoUtils.encodeRSAPrivateKeyToPem(private);
   return TlsIdentity(cert, keyPem, fingerprintOf(cert));

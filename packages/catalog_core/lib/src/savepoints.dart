@@ -71,8 +71,7 @@ List<String> changedSince(CatalogStore store, Moment point) {
 /// in the part of the log that no longer exists.
 ///
 /// If the file cannot be written, nothing is removed.
-String revertTo(CatalogStore store, Moment point,
-    {required String keepAt}) {
+String revertTo(CatalogStore store, Moment point, {required String keepAt}) {
   writeGoBackFile(store, point, keepAt);
   applyGoBack(store, point);
   return keepAt;

@@ -78,7 +78,10 @@ void main() {
       fieldLabel(t, store, Keys.choreTick(meds.id, '2026-09-11')),
       'Meds done',
     );
-    expect(fieldLabel(t, store, Keys.choreTick('gone', '2026-09-11')), 'Chore done');
+    expect(
+      fieldLabel(t, store, Keys.choreTick('gone', '2026-09-11')),
+      'Chore done',
+    );
     expect(
       valueLabel(t, store, Keys.choreTick(meds.id, '2026-09-11'), '2026-09-11'),
       'done on 9/11/2026',

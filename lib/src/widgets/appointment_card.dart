@@ -166,7 +166,9 @@ class AppointmentCard extends StatelessWidget {
           title: Text(
             '${t.doneLabel} · $when',
             style: TextStyle(
-                color: faded, decoration: TextDecoration.lineThrough),
+              color: faded,
+              decoration: TextDecoration.lineThrough,
+            ),
           ),
           subtitle: Text(
             '${showEntity ? '${_nameOf(context, a.entity)} · ' : ''}'

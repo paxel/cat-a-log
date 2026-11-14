@@ -27,8 +27,7 @@ Uint8List catShareBytes(CatalogStore store,
   // Privacy is per value: the loops below skip every private one, so a
   // cat with private values shares fine — those values stay home.
   final clowderId = store.current(cat, Keys.clowder);
-  final clowder =
-      clowderId == null ? null : store.resolveEntity(clowderId);
+  final clowder = clowderId == null ? null : store.resolveEntity(clowderId);
 
   final device = 'share-${_randomId()}';
   var dseq = 0;
@@ -121,8 +120,7 @@ Uint8List catShareBytes(CatalogStore store,
   emitCurrent(cat, Keys.name);
   if (clowder != null) emitAs(cat, Keys.clowder, clowder);
   for (final key in fields) {
-    if (store.current(cat, key) != null &&
-        !store.isFieldPrivate(cat, key)) {
+    if (store.current(cat, key) != null && !store.isFieldPrivate(cat, key)) {
       emitCurrent(cat, key);
     }
   }
@@ -152,8 +150,7 @@ Uint8List catShareBytes(CatalogStore store,
   final archive = Archive();
   final jsonl = out.map((e) => jsonEncode(e.toJson())).join('\n');
   final jsonlBytes = utf8.encode(jsonl);
-  archive
-      .addFile(ArchiveFile('entries.jsonl', jsonlBytes.length, jsonlBytes));
+  archive.addFile(ArchiveFile('entries.jsonl', jsonlBytes.length, jsonlBytes));
   for (final hash in images) {
     final bytes = store.imageBytes(hash);
     if (bytes != null) {
@@ -196,8 +193,8 @@ class ShareQr {
 ShareQr? decodeShareQr(String raw) {
   try {
     if (raw.startsWith(_urlMarker)) {
-      final url = utf8
-          .decode(base64Url.decode(raw.substring(_urlMarker.length)));
+      final url =
+          utf8.decode(base64Url.decode(raw.substring(_urlMarker.length)));
       final uri = Uri.tryParse(url);
       if (uri == null || !(uri.isScheme('http') || uri.isScheme('https'))) {
         return null;

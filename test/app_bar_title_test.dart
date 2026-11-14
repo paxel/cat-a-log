@@ -30,11 +30,13 @@ void main() {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: screen,
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: screen,
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -42,15 +44,18 @@ void main() {
   bool titleIsOnItsOwnLine(WidgetTester tester, Finder title) {
     // The app bar's own buttons: cards below carry buttons of their own.
     final inBar = find.descendant(
-        of: find.byType(AppBar), matching: find.byType(IconButton));
+      of: find.byType(AppBar),
+      matching: find.byType(IconButton),
+    );
     final buttons = tester.widgetList(inBar).isEmpty
         ? <Rect>[]
         : inBar
-            .evaluate()
-            .map((e) => tester.getRect(find.byWidget(e.widget)))
-            .toList();
-    final lowestButton =
-        buttons.map((r) => r.bottom).fold<double>(0, (a, b) => a > b ? a : b);
+              .evaluate()
+              .map((e) => tester.getRect(find.byWidget(e.widget)))
+              .toList();
+    final lowestButton = buttons
+        .map((r) => r.bottom)
+        .fold<double>(0, (a, b) => a > b ? a : b);
     return tester.getRect(title).top >= lowestButton;
   }
 
@@ -58,11 +63,10 @@ void main() {
     ('the cat page', () => CatDetailScreen(store: store, catId: cat)),
     (
       'the clowder page',
-      () => ClowderDetailScreen(store: store, clowderId: clowder)
+      () => ClowderDetailScreen(store: store, clowderId: clowder),
     ),
   ]) {
-    testWidgets('$name shows a long name in full on a phone',
-        (tester) async {
+    testWidgets('$name shows a long name in full on a phone', (tester) async {
       await pump(tester, build(), const Size(360, 800));
       final title = find.text(longName).first;
       expect(title, findsOneWidget);
@@ -72,16 +76,18 @@ void main() {
       expect(rect.right, lessThanOrEqualTo(360));
     });
 
-    testWidgets('$name keeps the title in the button row on a tablet',
-        (tester) async {
+    testWidgets('$name keeps the title in the button row on a tablet', (
+      tester,
+    ) async {
       await pump(tester, build(), const Size(1024, 768));
       final title = find.text(longName).first;
       expect(titleIsOnItsOwnLine(tester, title), isFalse);
     });
   }
 
-  testWidgets('home shows its title below the buttons on a phone',
-      (tester) async {
+  testWidgets('home shows its title below the buttons on a phone', (
+    tester,
+  ) async {
     await pump(tester, ClowderListScreen(store: store), const Size(360, 800));
     final title = find.text('Clowders').first;
     expect(titleIsOnItsOwnLine(tester, title), isTrue);
@@ -90,15 +96,17 @@ void main() {
   testWidgets('no action button moves when the title does', (tester) async {
     await pump(tester, ClowderListScreen(store: store), const Size(360, 800));
     final icons = find
-        .descendant(
-            of: find.byType(AppBar), matching: find.byType(IconButton))
+        .descendant(of: find.byType(AppBar), matching: find.byType(IconButton))
         .evaluate()
         .length;
     expect(icons, greaterThan(3));
-    for (final e in find
-        .descendant(
-            of: find.byType(AppBar), matching: find.byType(IconButton))
-        .evaluate()) {
+    for (final e
+        in find
+            .descendant(
+              of: find.byType(AppBar),
+              matching: find.byType(IconButton),
+            )
+            .evaluate()) {
       expect(tester.getRect(find.byWidget(e.widget)).top, lessThan(56));
     }
   });

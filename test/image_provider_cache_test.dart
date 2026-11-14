@@ -17,10 +17,16 @@ void main() {
     final cat = store.createCat('Sissi');
     final hashes = <String>[];
     for (var i = 0; i < 70; i++) {
-      hashes.add(store.addImage(
+      hashes.add(
+        store.addImage(
           cat,
-          CatalogStore.compressImage(Uint8List.fromList(
-              img.encodeJpg(img.Image(width: 8 + i, height: 8))))));
+          CatalogStore.compressImage(
+            Uint8List.fromList(
+              img.encodeJpg(img.Image(width: 8 + i, height: 8)),
+            ),
+          ),
+        ),
+      );
     }
     final first = imageProviderFor(store, hashes.first)!;
     for (final h in hashes.skip(1)) {
@@ -31,10 +37,12 @@ void main() {
     expect(again, equals(first));
     expect(again.hashCode, first.hashCode);
 
-    await tester.pumpWidget(MaterialApp(
-        home: Image(image: ResizeImage(again, width: 32))));
+    await tester.pumpWidget(
+      MaterialApp(home: Image(image: ResizeImage(again, width: 32))),
+    );
     await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 300)));
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
+    );
     await tester.pump();
     expect(tester.takeException(), isNull);
   });
@@ -44,9 +52,11 @@ void main() {
     addTearDown(store.close);
     final cat = store.createCat('Sissi');
     final hash = store.addImage(
-        cat,
-        CatalogStore.compressImage(Uint8List.fromList(
-            img.encodeJpg(img.Image(width: 8, height: 8)))));
+      cat,
+      CatalogStore.compressImage(
+        Uint8List.fromList(img.encodeJpg(img.Image(width: 8, height: 8))),
+      ),
+    );
     final first = imageProviderFor(store, hash)!;
     clearImageProviders();
     final again = imageProviderFor(store, hash)!;

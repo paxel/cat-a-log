@@ -68,7 +68,12 @@ Future<Uint8List?> _preview(Uint8List pdf) async {
   try {
     final file = File('${dir.path}/doc.pdf')..writeAsBytesSync(pdf);
     await Process.run('pdftoppm', [
-      '-png', '-r', '150', '-singlefile', file.path, '${dir.path}/doc',
+      '-png',
+      '-r',
+      '150',
+      '-singlefile',
+      file.path,
+      '${dir.path}/doc',
     ]);
     final png = File('${dir.path}/doc.png');
     return png.existsSync() ? png.readAsBytesSync() : null;
@@ -92,11 +97,15 @@ void main() {
       final t = s.t;
       final store = demoStore();
       addTearDown(store.close);
-      String cat(String name) => store.cats().firstWhere((c) => c.name == name).id;
+      String cat(String name) =>
+          store.cats().firstWhere((c) => c.name == name).id;
       final miezi = cat('Herr Sonnenschein');
       final luna = cat('Luna');
       final pumpkin = cat('Pumpkin');
-      final home = store.clowders().firstWhere((c) => c.name == 'Foster Home South').id;
+      final home = store
+          .clowders()
+          .firstWhere((c) => c.name == 'Foster Home South')
+          .id;
       final weight = store.fieldDefs().firstWhere((d) => d.slug == 'weight');
       final root = Directory.systemTemp.createTempSync('catlog-frames');
       addTearDown(() => root.deleteSync(recursive: true));
@@ -110,43 +119,94 @@ void main() {
       store.setLocalSetting('fav:$home', 'yes');
       store.setLocalSetting(graphSmoothKey, 'yes');
       store.setLocalSetting(graphTrendKey, 'yes');
-      store.setLocalSetting(catalogNameKey, lang == 'de' ? 'Pflegestellen' : 'Foster homes');
+      store.setLocalSetting(
+        catalogNameKey,
+        lang == 'de' ? 'Pflegestellen' : 'Foster homes',
+      );
       // A second Findus, so the duplicates page has something to show,
       // and a value two people changed at once for the conflicts page.
       final findus2 = store.createCat('Findus', date: ago(5));
-      store.append(findus2, 'f:color', 'ginger & white', date: ago(5), as: 'Marta');
+      store.append(
+        findus2,
+        'f:color',
+        'ginger & white',
+        date: ago(5),
+        as: 'Marta',
+      );
       store.recordPosition(findus2, 52.5170, 13.4040, date: ago(5));
       final other = CatalogStore.inMemory()..author = 'Marta';
       addTearDown(other.close);
-      other.applyEntries(store.entriesSince(const {}), senderVector: store.versionVector());
-      store.append(miezi, 'f:remarks', 'Eats only in the morning now', date: ago(1));
-      other.append(miezi, 'f:remarks', 'Needs the diet food', date: ago(1, hour: 11));
-      store.applyEntries(other.entriesSince(store.versionVector()), senderVector: other.versionVector());
+      other.applyEntries(
+        store.entriesSince(const {}),
+        senderVector: store.versionVector(),
+      );
+      store.append(
+        miezi,
+        'f:remarks',
+        'Eats only in the morning now',
+        date: ago(1),
+      );
+      other.append(
+        miezi,
+        'f:remarks',
+        'Needs the diet food',
+        date: ago(1, hour: 11),
+      );
+      store.applyEntries(
+        other.entriesSince(store.versionVector()),
+        senderVector: other.versionVector(),
+      );
       // A moment to go back to.
-      store.addMoment(cause: MomentCause.sync, label: 'Marta', seq: store.currentSeq() - 3);
+      store.addMoment(
+        cause: MomentCause.sync,
+        label: 'Marta',
+        seq: store.currentSeq() - 3,
+      );
       final notes = NoteQueue();
-      final watcher = SyncWatcher(store, folderOf: (_) => MemorySyncFolder(), notes: notes)
-        ..announce(const UnseenChanges(3, {'Marta'}));
+      final watcher = SyncWatcher(
+        store,
+        folderOf: (_) => MemorySyncFolder(),
+        notes: notes,
+      )..announce(const UnseenChanges(3, {'Marta'}));
       addTearDown(watcher.dispose);
-      final tiles = DiskCachingTileProvider(Directory('test/screenshots/tiles'));
+      final tiles = DiskCachingTileProvider(
+        Directory('test/screenshots/tiles'),
+      );
 
       // ---- the pages, one frame each, named like the site's pages
       final pages = <String, Widget Function()>{
         'home': () => ClowderListScreen(store: store),
-        'notes': () => NoteStrip(queue: notes, busy: ValueNotifier(const {}), child: ClowderListScreen(store: store)),
+        'notes': () => NoteStrip(
+          queue: notes,
+          busy: ValueNotifier(const {}),
+          child: ClowderListScreen(store: store),
+        ),
         'clowder': () => ClowderDetailScreen(store: store, clowderId: home),
         'cat': () => CatDetailScreen(store: store, catId: miezi),
-        'cat-edit': () => CatDetailScreen(store: store, catId: miezi, startEditing: true),
+        'cat-edit': () =>
+            CatDetailScreen(store: store, catId: miezi, startEditing: true),
         'strays': () => StraysScreen(store: store),
         'map': () => MapScreen(store: store, tileProvider: tiles),
         'timeline': () => TimelineScreen(store: store, entityId: miezi),
-        'history': () => FieldHistoryScreen(store: store, entityId: miezi, def: weight),
-        'graph': () => FieldGraphScreen(store: store, entityId: miezi, def: weight),
-        'photos': () => PhotoViewerScreen(store: store, hashes: store.images(miezi), initialIndex: 0, name: 'Herr Sonnenschein'),
+        'history': () =>
+            FieldHistoryScreen(store: store, entityId: miezi, def: weight),
+        'graph': () =>
+            FieldGraphScreen(store: store, entityId: miezi, def: weight),
+        'photos': () => PhotoViewerScreen(
+          store: store,
+          hashes: store.images(miezi),
+          initialIndex: 0,
+          name: 'Herr Sonnenschein',
+        ),
         'agenda': () => AgendaScreen(store: store, manager: manager),
         'card': () => CardScreen(store: store, catId: miezi),
-        'poster': () => MissingPosterScreen(store: store, catId: pumpkin, preview: _preview),
-        'report': () => VetReportScreen(store: store, catId: miezi, preview: _preview),
+        'poster': () => MissingPosterScreen(
+          store: store,
+          catId: pumpkin,
+          preview: _preview,
+        ),
+        'report': () =>
+            VetReportScreen(store: store, catId: miezi, preview: _preview),
         'sync': () => SyncScreen(store: store),
         'shared-folder': () => RemoteScreen(store: store),
         'bundles': () => MessengerScreen(store: store),
@@ -157,15 +217,23 @@ void main() {
         'archive': () => ArchiveScreen(store: store),
         'authors': () => ModerationScreen(store: store),
         'fields': () => FieldsScreen(store: store),
-        'achievements': () => AchievementsScreen(manager: manager, stores: [store]),
+        'achievements': () =>
+            AchievementsScreen(manager: manager, stores: [store]),
         'settings': () => SettingsScreen(store: store),
         'play': () => PlayScreen(store: store),
       };
       final coats = {
-        'home': FurPattern.tabby, 'clowder': FurPattern.cheetah, 'cat': FurPattern.rosettes,
-        'card': FurPattern.paws, 'timeline': FurPattern.tiger, 'map': FurPattern.tabby,
-        'graph': FurPattern.cheetah, 'agenda': FurPattern.zebra, 'poster': FurPattern.paws,
-        'report': FurPattern.rosettes, 'strays': FurPattern.zebra,
+        'home': FurPattern.tabby,
+        'clowder': FurPattern.cheetah,
+        'cat': FurPattern.rosettes,
+        'card': FurPattern.paws,
+        'timeline': FurPattern.tiger,
+        'map': FurPattern.tabby,
+        'graph': FurPattern.cheetah,
+        'agenda': FurPattern.zebra,
+        'poster': FurPattern.paws,
+        'report': FurPattern.rosettes,
+        'strays': FurPattern.zebra,
       };
       for (final entry in pages.entries) {
         await s.pump(entry.value(), fur: coats[entry.key] ?? FurPattern.tabby);
@@ -182,7 +250,10 @@ void main() {
       await s.capture('add-home-and-cat/01');
       await s.tap(find.byType(FloatingActionButton));
       await s.capture('add-home-and-cat/02');
-      await tester.enterText(find.byType(TextField).first, lang == 'de' ? 'Gartenschuppen' : 'Garden Shed');
+      await tester.enterText(
+        find.byType(TextField).first,
+        lang == 'de' ? 'Gartenschuppen' : 'Garden Shed',
+      );
       await s.settle(rounds: 1);
       await s.tapText(t.create);
       await s.capture('add-home-and-cat/03');
@@ -196,21 +267,33 @@ void main() {
       await s.capture('add-home-and-cat/06');
 
       // Weigh a cat and read the graph.
-      await s.pump(CatDetailScreen(store: store, catId: miezi), fur: FurPattern.rosettes);
+      await s.pump(
+        CatDetailScreen(store: store, catId: miezi),
+        fur: FurPattern.rosettes,
+      );
       await s.capture('weigh-a-cat/01');
       await s.tapTooltip(t.editLabel);
       await s.capture('weigh-a-cat/02');
-      await tester.dragUntilVisible(find.text(fieldDefName(t, weight)),
-          find.byType(ListView).first, const Offset(0, -300));
+      await tester.dragUntilVisible(
+        find.text(fieldDefName(t, weight)),
+        find.byType(ListView).first,
+        const Offset(0, -300),
+      );
       await s.settle(rounds: 1);
       await s.tapText(fieldDefName(t, weight));
       await s.capture('weigh-a-cat/03');
       await s.tapText(t.cancel);
-      await s.pump(FieldGraphScreen(store: store, entityId: miezi, def: weight), fur: FurPattern.cheetah);
+      await s.pump(
+        FieldGraphScreen(store: store, entityId: miezi, def: weight),
+        fur: FurPattern.cheetah,
+      );
       await s.capture('weigh-a-cat/04');
 
       // Add a chore and tick it.
-      await s.pump(AgendaScreen(store: store, manager: manager), fur: FurPattern.zebra);
+      await s.pump(
+        AgendaScreen(store: store, manager: manager),
+        fur: FurPattern.zebra,
+      );
       await s.capture('add-a-chore/01');
       await s.tapTooltip(t.addAppointment);
       await s.capture('add-a-chore/02');
@@ -221,23 +304,38 @@ void main() {
       await s.capture('add-a-chore/04');
 
       // Plan a vet visit.
-      await s.pump(AgendaScreen(store: store, manager: manager), fur: FurPattern.zebra);
+      await s.pump(
+        AgendaScreen(store: store, manager: manager),
+        fur: FurPattern.zebra,
+      );
       await s.tapTooltip(t.addAppointment);
       await s.tapText(t.appointmentLabel);
       await s.capture('plan-a-vet-visit/01');
       await s.back();
-      await s.pump(VetReportScreen(store: store, catId: miezi, preview: _preview), fur: FurPattern.rosettes);
+      await s.pump(
+        VetReportScreen(store: store, catId: miezi, preview: _preview),
+        fur: FurPattern.rosettes,
+      );
       await s.capture('plan-a-vet-visit/02');
 
       // Share the card, print the poster.
-      await s.pump(CardScreen(store: store, catId: miezi), fur: FurPattern.paws);
+      await s.pump(
+        CardScreen(store: store, catId: miezi),
+        fur: FurPattern.paws,
+      );
       await s.capture('share-the-card/01');
-      await s.pump(MissingPosterScreen(store: store, catId: pumpkin, preview: _preview), fur: FurPattern.paws);
+      await s.pump(
+        MissingPosterScreen(store: store, catId: pumpkin, preview: _preview),
+        fur: FurPattern.paws,
+      );
       await s.capture('print-the-poster/01');
 
       // Capture a flier: the wizard, step by step.
-      final templates = FlierTemplateSet.fromJson(File('assets/fliers/templates.json').readAsStringSync());
-      final flierPhoto = File('test/screenshots/demo/cat3.jpg').readAsBytesSync();
+      final templates = FlierTemplateSet.fromJson(
+        File('assets/fliers/templates.json').readAsStringSync(),
+      );
+      final flierPhoto = File('test/screenshots/demo/cat3.jpg')
+          .readAsBytesSync();
       final lines = hugoLines();
       await s.pump(
         FlierCaptureScreen(
@@ -245,8 +343,11 @@ void main() {
           pickPhoto: (_) async => flierPhoto,
           locate: () async => (pos: (52.52, 13.405), failure: null),
           scan: (_) async => null,
-          ocr: (_) async => FlierText(lines.map((l) => l.text).join('\n'), lines),
-          codes: (_) async => const FlierCodes(['https://www.tasso.net/Tierregister/Suchmeldungen?lang=de-DE&snr=S3101849&lp=0']),
+          ocr: (_) async =>
+              FlierText(lines.map((l) => l.text).join('\n'), lines),
+          codes: (_) async => const FlierCodes([
+            'https://www.tasso.net/Tierregister/Suchmeldungen?lang=de-DE&snr=S3101849&lp=0',
+          ]),
           geocode: (q) async => [GeoHit('Berlin, Mitte', 52.52, 13.405)],
           templates: () async => templates,
         ),
@@ -257,6 +358,7 @@ void main() {
         await tester.drag(find.byType(ListView).first, const Offset(0, 4000));
         await s.tapText(t.introNext);
       }
+
       await next();
       await s.capture('capture-a-flier/02');
       await next();
@@ -281,11 +383,17 @@ void main() {
       await s.pump(ConflictsScreen(store: store), fur: FurPattern.tiger);
       await s.capture('decide-a-conflict/01');
       await s.tapText('Needs the diet food');
-      await s.pump(TimelineScreen(store: store, entityId: miezi), fur: FurPattern.tiger);
+      await s.pump(
+        TimelineScreen(store: store, entityId: miezi),
+        fur: FurPattern.tiger,
+      );
       await s.capture('decide-a-conflict/02');
 
       // Merge two cats.
-      await s.pump(CatDetailScreen(store: store, catId: findus2), fur: FurPattern.rosettes);
+      await s.pump(
+        CatDetailScreen(store: store, catId: findus2),
+        fur: FurPattern.rosettes,
+      );
       await s.capture('merge-two-cats/01');
       // Merge sits in the menu on a phone: the bar is full before it.
       await s.tap(find.byIcon(Icons.more_vert));
@@ -304,7 +412,10 @@ void main() {
       await s.capture('go-back/02');
 
       // Luna's eye drops: the chore page of one cat, for the chores page.
-      await s.pump(CatDetailScreen(store: store, catId: luna), fur: FurPattern.rosettes);
+      await s.pump(
+        CatDetailScreen(store: store, catId: luna),
+        fur: FurPattern.rosettes,
+      );
       await s.capture('chores');
     }, skip: true);
   }

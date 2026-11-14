@@ -20,10 +20,7 @@ class CatEarBadge extends StatelessWidget {
       child: CustomPaint(
         size: Size.square(size),
         painter: _EarPainter(
-          color: Theme.of(context)
-              .colorScheme
-              .primary
-              .withValues(alpha: 0.6),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
           // The triangle hugs the outer corner of whichever side it
           // sits on.
           flip: atStart ^ rtl,
@@ -41,10 +38,12 @@ class WithCatEar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      child,
-      const PositionedDirectional(top: 0, end: 0, child: CatEarBadge()),
-    ]);
+    return Stack(
+      children: [
+        child,
+        const PositionedDirectional(top: 0, end: 0, child: CatEarBadge()),
+      ],
+    );
   }
 }
 
@@ -74,6 +73,5 @@ class _EarPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_EarPainter old) =>
-      old.color != color || old.flip != flip;
+  bool shouldRepaint(_EarPainter old) => old.color != color || old.flip != flip;
 }

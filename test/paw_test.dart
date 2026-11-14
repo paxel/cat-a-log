@@ -7,8 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 /// the root overlay, so a paw asked for inside a dialog outlives the
 /// dialog closing over it.
 void main() {
-  testWidgets('a tap that succeeds gets a paw under the thumb, briefly',
-      (tester) async {
+  testWidgets('a tap that succeeds gets a paw under the thumb, briefly', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       TouchTracker(
         child: MaterialApp(

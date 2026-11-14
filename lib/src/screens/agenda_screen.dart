@@ -111,8 +111,12 @@ class AgendaScreen extends StatefulWidget {
   /// Where achievements are kept; the app's manager when null.
   final CatalogManager? manager;
 
-  const AgendaScreen(
-      {super.key, required this.store, this.calendarPort, this.manager});
+  const AgendaScreen({
+    super.key,
+    required this.store,
+    this.calendarPort,
+    this.manager,
+  });
 
   @override
   State<AgendaScreen> createState() => _AgendaScreenState();
@@ -283,35 +287,47 @@ class _AgendaScreenState extends State<AgendaScreen> {
   /// The chores due today and the ones due in the coming week, from the
   /// active chores of every cat and home.
   ({List<Chore> today, List<(Chore, DateTime)> upcoming, List<Chore> paused})
-      _chores(DateTime today) {
+  _chores(DateTime today) {
     final all = store.allChores();
-    final active = [for (final c in all) if (c.active) c];
+    final active = [
+      for (final c in all)
+        if (c.active) c,
+    ];
     // Paused chores stay in sight, greyed, so one tap on Pause never
     // hides a chore from the agenda for good.
-    final paused = [for (final c in all) if (c.paused && !c.ended) c]
-      ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    final paused = [
+      for (final c in all)
+        if (c.paused && !c.ended) c,
+    ]..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
     // By time of day; chores without a time first, they fit any hour.
     int byTime(Chore a, Chore b) {
       final ta = a.time == null ? -1 : a.time!.hour * 60 + a.time!.minute;
       final tb = b.time == null ? -1 : b.time!.hour * 60 + b.time!.minute;
       final t = ta.compareTo(tb);
-      return t != 0 ? t : a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      return t != 0
+          ? t
+          : a.title.toLowerCase().compareTo(b.title.toLowerCase());
     }
 
     // One-time chores stand here from the day they are made until the
     // day after they are done; due ones on top, waiting ones below.
-    final due = todayOrder([
-      for (final c in active)
-        if (showsToday(c, store.choreTicks(c), today)) c
-    ], store.choreTicks, today);
-    final soon = <(Chore, DateTime)>[
-      for (final c in active)
-        for (final day in upcoming(c, store.choreTicks(c), today).take(1))
-          (c, day)
-    ]..sort((a, b) {
-        final d = a.$2.compareTo(b.$2);
-        return d != 0 ? d : byTime(a.$1, b.$1);
-      });
+    final due = todayOrder(
+      [
+        for (final c in active)
+          if (showsToday(c, store.choreTicks(c), today)) c,
+      ],
+      store.choreTicks,
+      today,
+    );
+    final soon =
+        <(Chore, DateTime)>[
+          for (final c in active)
+            for (final day in upcoming(c, store.choreTicks(c), today).take(1))
+              (c, day),
+        ]..sort((a, b) {
+          final d = a.$2.compareTo(b.$2);
+          return d != 0 ? d : byTime(a.$1, b.$1);
+        });
     return (today: due, upcoming: soon, paused: paused);
   }
 
@@ -327,9 +343,9 @@ class _AgendaScreenState extends State<AgendaScreen> {
       store.current(c.entity, Keys.name) ?? context.t.unnamed;
 
   Widget _header(String text) => Padding(
-        padding: const EdgeInsets.fromLTRB(8, 12, 8, 4),
-        child: Text(text, style: Theme.of(context).textTheme.titleSmall),
-      );
+    padding: const EdgeInsets.fromLTRB(8, 12, 8, 4),
+    child: Text(text, style: Theme.of(context).textTheme.titleSmall),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -339,9 +355,10 @@ class _AgendaScreenState extends State<AgendaScreen> {
     final chores = _chores(today);
     final asked = [
       for (final c in chores.today)
-        if (countsToday(c, store.choreTicks(c), today)) c
+        if (countsToday(c, store.choreTicks(c), today)) c,
     ];
-    final allDone = asked.isNotEmpty &&
+    final allDone =
+        asked.isNotEmpty &&
         !asked.any((c) => openToday(c, store.choreTicks(c), today));
     return Scaffold(
       appBar: pageBar(

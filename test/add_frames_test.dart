@@ -48,7 +48,9 @@ void main() {
       (bytes: frame(10).bytes, crop: (x: 0.5, y: 0, w: 0.5, h: 0.5)),
     ]);
 
-    final stored = img.decodeImage(store.imageBytes(store.images(cat).single)!)!;
+    final stored = img.decodeImage(
+      store.imageBytes(store.images(cat).single)!,
+    )!;
     expect((stored.width, stored.height), (20, 20));
   });
 

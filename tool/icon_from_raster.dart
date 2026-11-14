@@ -21,7 +21,9 @@ import 'package:image/image.dart' as img;
 
 void main(List<String> args) {
   if (args.isEmpty) {
-    stderr.writeln('usage: icon_from_raster.dart <source> [--scale S] [--preview DIR]');
+    stderr.writeln(
+      'usage: icon_from_raster.dart <source> [--scale S] [--preview DIR]',
+    );
     exit(2);
   }
   var scale = 0.8;
@@ -44,41 +46,80 @@ void main(List<String> args) {
   // The background the launcher fills around the artwork: the corner
   // of the picture, which is its own plain ground.
   final corner = square.getPixel(4, 4);
-  final bg = img.ColorRgb8(corner.r.toInt(), corner.g.toInt(), corner.b.toInt());
-  final hex = '#${corner.r.toInt().toRadixString(16).padLeft(2, '0')}'
-      '${corner.g.toInt().toRadixString(16).padLeft(2, '0')}'
-      '${corner.b.toInt().toRadixString(16).padLeft(2, '0')}'.toUpperCase();
+  final bg = img.ColorRgb8(
+    corner.r.toInt(),
+    corner.g.toInt(),
+    corner.b.toInt(),
+  );
+  final hex =
+      '#${corner.r.toInt().toRadixString(16).padLeft(2, '0')}'
+              '${corner.g.toInt().toRadixString(16).padLeft(2, '0')}'
+              '${corner.b.toInt().toRadixString(16).padLeft(2, '0')}'
+          .toUpperCase();
 
-  final full = img.copyResize(square, width: 1024, height: 1024,
-      interpolation: img.Interpolation.cubic);
+  final full = img.copyResize(
+    square,
+    width: 1024,
+    height: 1024,
+    interpolation: img.Interpolation.cubic,
+  );
   final opaque = full.convert(numChannels: 3);
   File('assets/icon/icon.png').writeAsBytesSync(img.encodePng(opaque));
-  File('assets/icon/icon_256.png').writeAsBytesSync(img.encodePng(
-      img.copyResize(opaque, width: 256, height: 256,
-          interpolation: img.Interpolation.cubic)));
+  File('assets/icon/icon_256.png').writeAsBytesSync(
+    img.encodePng(
+      img.copyResize(
+        opaque,
+        width: 256,
+        height: 256,
+        interpolation: img.Interpolation.cubic,
+      ),
+    ),
+  );
 
   // The adaptive foreground: the artwork scaled down on its own ground,
   // so the heads sit inside the circle the launcher cuts (the middle
   // two thirds of the canvas).
   final inner = (1024 * scale).round();
-  final art = img.copyResize(square, width: inner, height: inner,
-      interpolation: img.Interpolation.cubic);
+  final art = img.copyResize(
+    square,
+    width: inner,
+    height: inner,
+    interpolation: img.Interpolation.cubic,
+  );
   final fg = img.Image(width: 1024, height: 1024, numChannels: 4);
-  img.fill(fg, color: img.ColorRgba8(bg.r.toInt(), bg.g.toInt(), bg.b.toInt(), 255));
-  img.compositeImage(fg, art,
-      dstX: (1024 - inner) ~/ 2, dstY: (1024 - inner) ~/ 2 + (1024 * shift).round());
+  img.fill(
+    fg,
+    color: img.ColorRgba8(bg.r.toInt(), bg.g.toInt(), bg.b.toInt(), 255),
+  );
+  img.compositeImage(
+    fg,
+    art,
+    dstX: (1024 - inner) ~/ 2,
+    dstY: (1024 - inner) ~/ 2 + (1024 * shift).round(),
+  );
   File('assets/icon/icon_fg.png').writeAsBytesSync(img.encodePng(fg));
 
   // The Play Console's own uploads: the 512 px icon, and the feature
   // graphic with the artwork centred on the picture's ground.
   Directory('assets/icon/store').createSync(recursive: true);
-  File('assets/icon/store/play-icon-512.png').writeAsBytesSync(img.encodePng(
-      img.copyResize(opaque, width: 512, height: 512,
-          interpolation: img.Interpolation.cubic)));
+  File('assets/icon/store/play-icon-512.png').writeAsBytesSync(
+    img.encodePng(
+      img.copyResize(
+        opaque,
+        width: 512,
+        height: 512,
+        interpolation: img.Interpolation.cubic,
+      ),
+    ),
+  );
   final feature = img.Image(width: 1024, height: 500, numChannels: 3);
   img.fill(feature, color: bg);
-  final featureArt = img.copyResize(square, width: 460, height: 460,
-      interpolation: img.Interpolation.cubic);
+  final featureArt = img.copyResize(
+    square,
+    width: 460,
+    height: 460,
+    interpolation: img.Interpolation.cubic,
+  );
   img.compositeImage(feature, featureArt, dstX: (1024 - 460) ~/ 2, dstY: 20);
   File('assets/icon/store/play-feature-1024x500.png')
       .writeAsBytesSync(img.encodePng(feature));
@@ -88,21 +129,30 @@ void main(List<String> args) {
     for (final size in [48, 192]) {
       // What the launcher shows: the middle 72/108 of the canvas, in a circle.
       final cut = img.copyCrop(fg, x: 171, y: 171, width: 682, height: 682);
-      final scaled = img.copyResize(cut, width: size, height: size,
-          interpolation: img.Interpolation.cubic);
+      final scaled = img.copyResize(
+        cut,
+        width: size,
+        height: size,
+        interpolation: img.Interpolation.cubic,
+      );
       final out = img.Image(width: size, height: size, numChannels: 4);
       final r = size / 2;
       for (var y = 0; y < size; y++) {
         for (var x = 0; x < size; x++) {
           final dx = x + 0.5 - r, dy = y + 0.5 - r;
-          if (dx * dx + dy * dy <= r * r) out.setPixel(x, y, scaled.getPixel(x, y));
+          if (dx * dx + dy * dy <= r * r) {
+            out.setPixel(x, y, scaled.getPixel(x, y));
+          }
         }
       }
       File('$preview/circle_$size.png').writeAsBytesSync(img.encodePng(out));
     }
-    File('$preview/icon_256.png').writeAsBytesSync(img.encodePng(
-        img.copyResize(opaque, width: 256, height: 256)));
+    File('$preview/icon_256.png').writeAsBytesSync(
+      img.encodePng(img.copyResize(opaque, width: 256, height: 256)),
+    );
   }
-  stdout.writeln('background $hex, scale $scale, shift $shift, '
-      'source ${source.width}x${source.height} cropped to $side');
+  stdout.writeln(
+    'background $hex, scale $scale, shift $shift, '
+    'source ${source.width}x${source.height} cropped to $side',
+  );
 }

@@ -45,8 +45,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
   /// checkbox tap — the scan walks the whole log.
   List<ArchiveCandidate>? _cache;
 
-  List<ArchiveCandidate> _candidates() => _cache ??= archiveCandidates(store,
-      inactiveFor: Duration(days: 365 * _years));
+  List<ArchiveCandidate> _candidates() => _cache ??= archiveCandidates(
+    store,
+    inactiveFor: Duration(days: 365 * _years),
+  );
 
   Future<void> _archive() async {
     if (_selected.isEmpty || _working) return;
@@ -54,7 +56,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     final candidates = _candidates();
     final names = [
       for (final c in candidates)
-        if (_selected.contains(c.id)) c.name
+        if (_selected.contains(c.id)) c.name,
     ];
     final sure = await showDialog<bool>(
       context: context,
@@ -63,11 +65,13 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
         content: Text(t.archiveConfirmBody(names.join(', '))),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(t.cancel)),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(t.cancel),
+          ),
           FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(t.archiveAction)),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(t.archiveAction),
+          ),
         ],
       ),
     );
@@ -93,8 +97,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
         final result = await withPrivateFile(name, (tmp) async {
           writeArchive(store, tmp, entityIds: {..._selected});
           if (!mounted) return null;
-          return shareFiles(
-              context, [XFile(tmp, mimeType: 'application/zip')]);
+          return shareFiles(context, [XFile(tmp, mimeType: 'application/zip')]);
         });
         // The temp file is not a safe place: unless the share really
         // went somewhere, nothing may be deleted.
@@ -117,8 +120,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     if (!store.isOpen) return;
     final before = store.currentSeq();
     deleteArchived(store, {..._selected});
-    momentFor(store,
-        before: before, changed: true, cause: MomentCause.archive);
+    momentFor(store, before: before, changed: true, cause: MomentCause.archive);
     if (!mounted) return;
     setState(() {
       _selected.clear();
@@ -134,78 +136,99 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     final usage = store.storageUsage();
     final candidates = _candidates();
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.archiveTitle), help: PageHelp('archive', store: store)),
-      body: ListView(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text(t.archiveExplainer,
-              style: Theme.of(context).textTheme.bodySmall),
-        ),
-        ListTile(
-          leading: const Icon(Icons.storage_outlined),
-          title: Text(t.storageLine(formatBytes(usage.dbBytes),
-              formatBytes(usage.photoBytes), usage.photoCount)),
-        ),
-        // One choice of three: radio lines, not pills (ui-laws).
-        RadioGroup<int>(
-          groupValue: _years,
-          onChanged: (years) {
-            if (years == null) return;
-            setState(() {
-              _years = years;
-              _selected.clear();
-              _cache = null;
-            });
-          },
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            for (final years in [1, 2, 5])
-              RadioListTile<int>(
-                title: Text(t.quietForYears(years)),
-                value: years,
-              ),
-          ]),
-        ),
-        const Divider(),
-        if (candidates.isEmpty)
+      appBar: pageBar(
+        context,
+        title: Text(t.archiveTitle),
+        help: PageHelp('archive', store: store),
+      ),
+      body: ListView(
+        children: [
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(t.nothingToArchive),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(
+              t.archiveExplainer,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ),
-        for (final c in candidates)
-          CheckboxListTile(
-            value: _selected.contains(c.id),
-            onChanged: (on) => setState(() {
-              if (on == true) {
-                _selected.add(c.id);
-              } else {
-                _selected.remove(c.id);
-              }
-            }),
-            secondary:
-                Icon(c.isCat ? Icons.pets : Icons.home_outlined),
-            title: Text(c.name),
-            subtitle: Text(t.archiveCandidateLine(
-                DateFormat.yMd(Localizations.localeOf(context).toString())
-                    .format(c.lastChange),
-                formatBytes(c.photoBytes))),
+          ListTile(
+            leading: const Icon(Icons.storage_outlined),
+            title: Text(
+              t.storageLine(
+                formatBytes(usage.dbBytes),
+                formatBytes(usage.photoBytes),
+                usage.photoCount,
+              ),
+            ),
           ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: FilledButton.icon(
-            icon: _working
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white))
-                : const Icon(Icons.inventory_2_outlined),
-            label: Text(t.archiveSelected(_selected.length)),
-            onPressed: _selected.isEmpty || _working ? null : _archive,
+          // One choice of three: radio lines, not pills (ui-laws).
+          RadioGroup<int>(
+            groupValue: _years,
+            onChanged: (years) {
+              if (years == null) return;
+              setState(() {
+                _years = years;
+                _selected.clear();
+                _cache = null;
+              });
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final years in [1, 2, 5])
+                  RadioListTile<int>(
+                    title: Text(t.quietForYears(years)),
+                    value: years,
+                  ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 24),
-      ]),
+          const Divider(),
+          if (candidates.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(t.nothingToArchive),
+            ),
+          for (final c in candidates)
+            CheckboxListTile(
+              value: _selected.contains(c.id),
+              onChanged: (on) => setState(() {
+                if (on == true) {
+                  _selected.add(c.id);
+                } else {
+                  _selected.remove(c.id);
+                }
+              }),
+              secondary: Icon(c.isCat ? Icons.pets : Icons.home_outlined),
+              title: Text(c.name),
+              subtitle: Text(
+                t.archiveCandidateLine(
+                  DateFormat.yMd(Localizations.localeOf(context).toString())
+                      .format(c.lastChange),
+                  formatBytes(c.photoBytes),
+                ),
+              ),
+            ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilledButton.icon(
+              icon: _working
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.inventory_2_outlined),
+              label: Text(t.archiveSelected(_selected.length)),
+              onPressed: _selected.isEmpty || _working ? null : _archive,
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
     );
   }
 }

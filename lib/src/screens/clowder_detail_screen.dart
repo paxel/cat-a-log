@@ -107,7 +107,8 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
   /// The found place, offered instead of silently written (#101): take
   /// the position, and on request the found wording as the address.
   Future<({bool replaceAddress, bool addPosition})?> _offerFoundAddress(
-      String name) {
+    String name,
+  ) {
     var replaceAddress = false;
     var addPosition = true;
     return showDialog(
@@ -115,35 +116,41 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           title: Text(context.t.addressFoundTitle),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            Align(alignment: AlignmentDirectional.centerStart,
-                child: Text(name)),
-            const SizedBox(height: 8),
-            CheckboxListTile(
-              value: addPosition,
-              contentPadding: EdgeInsets.zero,
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text(context.t.addPositionOption),
-              onChanged: (v) =>
-                  setDialogState(() => addPosition = v ?? false),
-            ),
-            CheckboxListTile(
-              value: replaceAddress,
-              contentPadding: EdgeInsets.zero,
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text(context.t.replaceAddressOption),
-              onChanged: (v) =>
-                  setDialogState(() => replaceAddress = v ?? false),
-            ),
-          ]),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(name),
+              ),
+              const SizedBox(height: 8),
+              CheckboxListTile(
+                value: addPosition,
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                title: Text(context.t.addPositionOption),
+                onChanged: (v) =>
+                    setDialogState(() => addPosition = v ?? false),
+              ),
+              CheckboxListTile(
+                value: replaceAddress,
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                title: Text(context.t.replaceAddressOption),
+                onChanged: (v) =>
+                    setDialogState(() => replaceAddress = v ?? false),
+              ),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(context.t.cancel),
             ),
             FilledButton(
-              onPressed: () => Navigator.of(context).pop(
-                  (replaceAddress: replaceAddress, addPosition: addPosition)),
+              onPressed: () => Navigator.of(
+                context,
+              ).pop((replaceAddress: replaceAddress, addPosition: addPosition)),
               child: Text(context.t.ok),
             ),
           ],
@@ -188,17 +195,18 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
   }
 
   Future<void> _addCat() async {
-    final catId =
-        await createAnimal(context, store, title: context.t.newCat, clowderId: id);
+    final catId = await createAnimal(
+      context,
+      store,
+      title: context.t.newCat,
+      clowderId: id,
+    );
     if (catId == null || !mounted) return;
     setState(() {});
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => CatDetailScreen(
-          store: store,
-          catId: catId,
-          startEditing: true,
-        ),
+        builder: (_) =>
+            CatDetailScreen(store: store, catId: catId, startEditing: true),
       ),
     );
     if (!mounted) return;
@@ -293,8 +301,10 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
     afterChoreTick(context, store, manager: catalogManager);
     setState(() {});
     mirrorAfterChange(context, store);
-    refreshChoreReminders(store,
-        body: (c) => store.current(c.entity, Keys.name) ?? context.t.unnamed);
+    refreshChoreReminders(
+      store,
+      body: (c) => store.current(c.entity, Keys.name) ?? context.t.unnamed,
+    );
   }
 
   /// The clowder's live plans, as the agenda shows them.
@@ -313,7 +323,10 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
         if (store.resolveEntity(a.entity) == mine) a,
     ];
     final chores = partitionChores(
-        store, store.choresOf(id), DateUtils.dateOnly(clockNow()));
+      store,
+      store.choresOf(id),
+      DateUtils.dateOnly(clockNow()),
+    );
     final laterCount = chores.later.length + chores.paused.length;
     if (plans.isEmpty &&
         appointments.isEmpty &&
@@ -354,22 +367,22 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
           children: [
             for (final c in chores.later)
               ChoreRow(
-              store: store,
-              chore: c,
-              due: nextDue(c, store.choreTicks(c), today) ?? today,
-              today: today,
-              showEntity: false,
-              onChanged: _plansChanged,
-            ),
+                store: store,
+                chore: c,
+                due: nextDue(c, store.choreTicks(c), today) ?? today,
+                today: today,
+                showEntity: false,
+                onChanged: _plansChanged,
+              ),
             for (final c in chores.paused)
               ChoreRow(
-              store: store,
-              chore: c,
-              due: today,
-              today: today,
-              showEntity: false,
-              onChanged: _plansChanged,
-            ),
+                store: store,
+                chore: c,
+                due: today,
+                today: today,
+                showEntity: false,
+                onChanged: _plansChanged,
+              ),
           ],
         ),
       // A vet run shows its other cats as chips; delete here takes only
@@ -432,10 +445,12 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
         // Reverts happen on the timeline — the page must show them.
         if (mounted) setState(() {});
       },
-      onValueHistory: (def) => Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) =>
-            FieldHistoryScreen(store: store, entityId: id, def: def),
-      )),
+      onValueHistory: (def) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) =>
+              FieldHistoryScreen(store: store, entityId: id, def: def),
+        ),
+      ),
       onShowMap: _showOnMap,
       onLocate: _locateAddress,
       locateNote: _locateNote,
@@ -467,29 +482,34 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
         ),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(children: [
-          Expanded(
-            child: Text(
-              '${context.t.cats} (${cats.length})',
-              style: Theme.of(context).textTheme.titleMedium,
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                '${context.t.cats} (${cats.length})',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
-          ),
-          // The members as a sortable list or table (#87); the faces
-          // stay here.
-          TextButton.icon(
-            icon: const Icon(Icons.view_list),
-            label: Text(context.t.catList),
-            onPressed: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => CatListScreen(
-                    store: store,
-                    title: name,
-                    source: (s) => s.visibleCats(clowderId: id)),
-              ));
-              if (mounted) setState(() {});
-            },
-          ),
-        ]),
+            // The members as a sortable list or table (#87); the faces
+            // stay here.
+            TextButton.icon(
+              icon: const Icon(Icons.view_list),
+              label: Text(context.t.catList),
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => CatListScreen(
+                      store: store,
+                      title: name,
+                      source: (s) => s.visibleCats(clowderId: id),
+                    ),
+                  ),
+                );
+                if (mounted) setState(() {});
+              },
+            ),
+          ],
+        ),
       ),
       _catGrid(cats),
     ];
@@ -614,11 +634,7 @@ class _ClowderDetailScreenState extends State<ClowderDetailScreen> {
           child: AddFan(
             tooltip: context.t.addCat,
             items: [
-              FanItem(
-                icon: Icons.add,
-                label: context.t.addCat,
-                onTap: _addCat,
-              ),
+              FanItem(icon: Icons.add, label: context.t.addCat, onTap: _addCat),
               FanItem(
                 icon: Icons.event,
                 label: context.t.appointmentLabel,

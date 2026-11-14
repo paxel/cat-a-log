@@ -61,8 +61,7 @@ void main() {
     expect(soundFor(store, Cheer.ladder), isA<NoSound>());
   });
 
-  test('a device that had the celebrations off before keeps its silence',
-      () {
+  test('a device that had the celebrations off before keeps its silence', () {
     final store = CatalogStore.inMemory();
     addTearDown(store.close);
     // 2.0.0: one switch, and it silenced every cheer.
