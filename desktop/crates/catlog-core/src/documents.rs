@@ -12,7 +12,10 @@ pub const REPORT_COLOURS: [u32; 8] = [
 ];
 
 pub fn report_colour(index: usize) -> u32 {
-    REPORT_COLOURS[index % REPORT_COLOURS.len()]
+    REPORT_COLOURS
+        .get(index % REPORT_COLOURS.len())
+        .copied()
+        .unwrap_or(0)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -500,8 +503,7 @@ pub fn vet_report_pdf(c: &ReportContent, fonts: &FontSet) -> Vec<u8> {
         A4.1 - REPORT_MARGIN
     };
     let mut y = new_page(&mut pages);
-    if let Some(summary) = &c.summary {
-        let page = pages.last_mut().expect("page");
+    if let (Some(summary), Some(page)) = (&c.summary, pages.last_mut()) {
         let mut x = REPORT_MARGIN;
         if let Some(img) = photo {
             let h = 120.0;
@@ -541,8 +543,7 @@ pub fn vet_report_pdf(c: &ReportContent, fonts: &FontSet) -> Vec<u8> {
         y = new_page(&mut pages);
     }
     // Timeline.
-    {
-        let page = pages.last_mut().expect("page");
+    if let Some(page) = pages.last_mut() {
         let title = if c.summary.is_some() {
             c.timeline_title.clone()
         } else {
@@ -603,7 +604,9 @@ pub fn vet_report_pdf(c: &ReportContent, fonts: &FontSet) -> Vec<u8> {
         if y - height < REPORT_MARGIN + 20.0 {
             y = new_page(&mut pages);
         }
-        let page = pages.last_mut().expect("page");
+        let Some(page) = pages.last_mut() else {
+            continue;
+        };
         y -= 12.0;
         page.text(
             &regular,
@@ -637,7 +640,9 @@ pub fn vet_report_pdf(c: &ReportContent, fonts: &FontSet) -> Vec<u8> {
     }
     for curve in &c.curves {
         let top = new_page(&mut pages);
-        let page = pages.last_mut().expect("page");
+        let Some(page) = pages.last_mut() else {
+            continue;
+        };
         page.text(
             &bold,
             16.0,

@@ -89,7 +89,7 @@ pub fn encode_pair_code(
         } else {
             fp.len()
         };
-        bytes.extend_from_slice(&fp[..take.min(fp.len())]);
+        bytes.extend(fp.iter().take(take));
     }
     let raw = to_base32(&bytes);
     raw.as_bytes()
@@ -136,27 +136,35 @@ pub fn decode_pair_code(input: &str) -> Option<PairInfo> {
         return None;
     }
     let host = if address_length == 4 {
-        Ipv4Addr::new(bytes[0], bytes[1], bytes[2], bytes[3]).to_string()
+        Ipv4Addr::from(*bytes.first_chunk::<4>()?).to_string()
     } else {
-        let mut o = [0u8; 16];
-        o.copy_from_slice(&bytes[..16]);
-        std::net::Ipv6Addr::from(o).to_string()
+        std::net::Ipv6Addr::from(*bytes.first_chunk::<16>()?).to_string()
     };
-    let port = u16::from_be_bytes([bytes[address_length], bytes[address_length + 1]]);
-    let pin = (u32::from(bytes[address_length + 2]) << 16)
-        | (u32::from(bytes[address_length + 3]) << 8)
-        | u32::from(bytes[address_length + 4]);
+    let rest = bytes.get(address_length..)?;
+    let [p0, p1, n0, n1, n2] = *rest.first_chunk::<5>()?;
+    let port = u16::from_be_bytes([p0, p1]);
+    let pin = (u32::from(n0) << 16) | (u32::from(n1) << 8) | u32::from(n2);
     if port == 0 || pin > 999_999 {
         return None;
     }
-    let fingerprint =
-        (fp_length > 0).then(|| bytes[address_length + 5..address_length + 5 + fp_length].to_vec());
+    let fingerprint = if fp_length > 0 {
+        Some(rest.get(5..5 + fp_length)?.to_vec())
+    } else {
+        None
+    };
     Some(PairInfo {
         host,
         port,
         pin: format!("{pin:06}"),
         fingerprint,
     })
+}
+
+/// The base32 symbol of the low five bits of `value`.
+fn symbol(value: u32) -> char {
+    ALPHABET
+        .get((value & 31) as usize)
+        .map_or('0', |&b| char::from(b))
 }
 
 fn to_base32(bytes: &[u8]) -> String {
@@ -167,13 +175,13 @@ fn to_base32(bytes: &[u8]) -> String {
         buffer = (buffer << 8) | u32::from(byte);
         bits += 8;
         while bits >= 5 {
-            out.push(ALPHABET[((buffer >> (bits - 5)) & 31) as usize] as char);
+            out.push(symbol(buffer >> (bits - 5)));
             bits -= 5;
         }
         buffer &= (1 << bits) - 1;
     }
     if bits > 0 {
-        out.push(ALPHABET[((buffer << (5 - bits)) & 31) as usize] as char);
+        out.push(symbol(buffer << (5 - bits)));
     }
     out
 }
@@ -678,9 +686,9 @@ fn read_chunked<R: BufRead>(reader: &mut R, limit: usize) -> std::io::Result<Opt
         if body.len() + size > limit {
             return Ok(None);
         }
-        let start = body.len();
-        body.resize(start + size, 0);
-        reader.read_exact(&mut body[start..])?;
+        let mut chunk = vec![0; size];
+        reader.read_exact(&mut chunk)?;
+        body.extend_from_slice(&chunk);
         let mut crlf = [0u8; 2];
         reader.read_exact(&mut crlf)?;
     }

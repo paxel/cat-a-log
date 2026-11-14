@@ -27,6 +27,17 @@ pub struct MapPin {
     pub seq: Option<i64>,
 }
 
+/// What `front` answers for a spot without pins, which `group_pins`
+/// never makes.
+static NO_PIN: MapPin = MapPin {
+    kind: PinKind::Home,
+    id: String::new(),
+    name: String::new(),
+    lat: 0.0,
+    lon: 0.0,
+    seq: None,
+};
+
 /// Things within this distance of each other count as one spot.
 pub const SPOT_METERS: f64 = 20.0;
 
@@ -41,7 +52,7 @@ pub struct PinSpot {
 
 impl PinSpot {
     pub fn front(&self) -> &MapPin {
-        &self.pins[0]
+        self.pins.first().unwrap_or(&NO_PIN)
     }
 
     pub fn lat(&self) -> f64 {
@@ -73,8 +84,9 @@ pub fn group_pins(pins: Vec<MapPin>, meters: f64) -> Vec<PinSpot> {
     let mut spots: Vec<Vec<MapPin>> = Vec::new();
     for pin in pins {
         let near = spots.iter_mut().find(|spot| {
-            let anchor = &spot[0];
-            haversine_meters(anchor.lat, anchor.lon, pin.lat, pin.lon) <= meters
+            spot.first().is_some_and(|anchor| {
+                haversine_meters(anchor.lat, anchor.lon, pin.lat, pin.lon) <= meters
+            })
         });
         match near {
             Some(spot) => spot.push(pin),

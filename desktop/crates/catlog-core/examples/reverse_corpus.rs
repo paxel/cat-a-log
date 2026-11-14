@@ -5,6 +5,9 @@
 //! cd ../packages/catalog_core && CATLOG_REVERSE_DIR=../../desktop/target/reverse dart test test/reverse_corpus_test.dart
 //! ```
 
+// A developer tool, never shipped: it may unwrap, expect, panic and index.
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::indexing_slicing)]
+
 fn main() {
     let Some(dir) = std::env::args().nth(1) else {
         eprintln!("usage: reverse_corpus <output dir>");

@@ -27,7 +27,7 @@ pub fn rank_for(tier: i64) -> Option<&'static str> {
         return None;
     }
     let index = ((tier - 1) as usize).min(TITLE_RANKS.len() - 1);
-    Some(TITLE_RANKS[index])
+    TITLE_RANKS.get(index).copied()
 }
 
 /// The coats unlocked by full months.

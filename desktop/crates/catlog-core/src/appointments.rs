@@ -265,7 +265,7 @@ impl Catalog {
             }
         }
         let mut result: Vec<Vec<Appointment>> = groups.into_iter().map(|(_, l)| l).collect();
-        result.sort_by_key(|g| g[0].start());
+        result.sort_by_key(|g| g.first().map(|a| a.start()));
         Ok(result)
     }
 

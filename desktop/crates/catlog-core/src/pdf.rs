@@ -65,7 +65,9 @@ impl Font {
         if let Some(g) = self.glyphs.lock().ok().and_then(|m| m.get(&c).copied()) {
             return g;
         }
-        let face = ttf_parser::Face::parse(&self.data, 0).expect("parsed once already");
+        let Ok(face) = ttf_parser::Face::parse(&self.data, 0) else {
+            return (0, 0);
+        };
         let id = face.glyph_index(c).map(|g| g.0).unwrap_or(0);
         let advance = face.glyph_hor_advance(ttf_parser::GlyphId(id)).unwrap_or(0);
         if let Ok(mut m) = self.glyphs.lock() {
@@ -280,9 +282,9 @@ impl Page {
         self.rect(x, top - size, size, size, Rgb::WHITE);
         let quiet = 2.0;
         let cell = size / (width as f32 + 2.0 * quiet);
-        for row in 0..width {
-            for col in 0..width {
-                if colors[row * width + col] == qrcode::Color::Dark {
+        for (row, cells) in colors.chunks(width.max(1)).enumerate() {
+            for (col, color) in cells.iter().enumerate() {
+                if *color == qrcode::Color::Dark {
                     let cx = x + (col as f32 + quiet) * cell;
                     let cy = top - (row as f32 + quiet + 1.0) * cell;
                     self.rect(cx, cy, cell + 0.05, cell + 0.05, Rgb::BLACK);
@@ -387,12 +389,11 @@ impl Pdf {
 
     /// Starts a page, A4 unless told otherwise.
     pub fn page(&mut self, width: f32, height: f32) -> &mut Page {
-        self.pages.push(Page {
+        self.pages.push_mut(Page {
             width,
             height,
             ..Default::default()
-        });
-        self.pages.last_mut().expect("just pushed")
+        })
     }
 
     /// The finished file.
@@ -479,11 +480,15 @@ impl Pdf {
             ));
             let mut resources = String::from("<< /Font << ");
             for f in &page.fonts {
-                resources.push_str(&format!("/F{} {} 0 R ", f, font_ids[f - 1]));
+                if let Some(id) = f.checked_sub(1).and_then(|k| font_ids.get(k)) {
+                    resources.push_str(&format!("/F{f} {id} 0 R "));
+                }
             }
             resources.push_str(">> /XObject << ");
             for i in &page.images {
-                resources.push_str(&format!("/Im{} {} 0 R ", i, image_ids[i - 1]));
+                if let Some(id) = i.checked_sub(1).and_then(|k| image_ids.get(k)) {
+                    resources.push_str(&format!("/Im{i} {id} 0 R "));
+                }
             }
             resources.push_str(">> >>");
             let id = add(format!(
@@ -496,18 +501,20 @@ impl Pdf {
             page_ids.push(id);
         }
         let kids: Vec<String> = page_ids.iter().map(|id| format!("{id} 0 R")).collect();
-        objects[1] = format!(
-            "<< /Type /Pages /Kids [{}] /Count {} >>",
-            kids.join(" "),
-            page_ids.len()
-        )
-        .into_bytes();
-        objects[0] = b"<< /Type /Catalog /Pages 2 0 R >>".to_vec();
-        objects[2] = format!(
-            "<< /Title ({}) /Producer (cat\\(a\\)log) >>",
-            escape_literal(&self.title)
-        )
-        .into_bytes();
+        if let [catalog, pages, info, ..] = objects.as_mut_slice() {
+            *pages = format!(
+                "<< /Type /Pages /Kids [{}] /Count {} >>",
+                kids.join(" "),
+                page_ids.len()
+            )
+            .into_bytes();
+            *catalog = b"<< /Type /Catalog /Pages 2 0 R >>".to_vec();
+            *info = format!(
+                "<< /Title ({}) /Producer (cat\\(a\\)log) >>",
+                escape_literal(&self.title)
+            )
+            .into_bytes();
+        }
         // Serialise.
         let mut out: Vec<u8> = Vec::new();
         out.extend_from_slice(b"%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");

@@ -30,6 +30,14 @@ pub struct CatalogInfo {
     pub created: String,
 }
 
+/// What `active` answers for a registry without Catalogs, which `open`
+/// never leaves behind: it creates the first one.
+static NO_CATALOG: CatalogInfo = CatalogInfo {
+    id: String::new(),
+    name: String::new(),
+    created: String::new(),
+};
+
 #[derive(Debug, Default, Serialize, Deserialize)]
 struct Registry {
     catalogs: Vec<CatalogInfo>,
@@ -145,7 +153,8 @@ impl CatalogManager {
             .active
             .as_deref()
             .and_then(|id| self.by_id(id))
-            .unwrap_or(&self.registry.catalogs[0])
+            .or_else(|| self.registry.catalogs.first())
+            .unwrap_or(&NO_CATALOG)
     }
 
     pub fn set_active(&mut self, id: &str) -> Result<()> {

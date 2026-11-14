@@ -160,7 +160,9 @@ impl Catalog {
             });
         }
         for group in self.open_appointment_groups()? {
-            let a = &group[0];
+            let Some(a) = group.first() else {
+                continue;
+            };
             let minutes = match a.alert {
                 AppointmentAlert::None => continue,
                 AppointmentAlert::DayBefore => 24 * 60,

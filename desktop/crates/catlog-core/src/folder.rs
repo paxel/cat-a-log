@@ -226,7 +226,12 @@ impl Catalog {
             if lines.len() < segment.lines {
                 return None;
             }
-            fresh.extend(lines[have..segment.lines].iter().map(|l| l.to_string()));
+            fresh.extend(
+                lines
+                    .get(have..segment.lines)?
+                    .iter()
+                    .map(|l| l.to_string()),
+            );
         }
         Some(fresh)
     }

@@ -321,14 +321,10 @@ pub fn day_key(d: NaiveDate) -> String {
 
 pub fn parse_day(raw: Option<&str>) -> Option<NaiveDate> {
     let parts: Vec<&str> = raw?.split('-').collect();
-    if parts.len() != 3 {
+    let [year, month, day] = parts.as_slice() else {
         return None;
-    }
-    NaiveDate::from_ymd_opt(
-        parts[0].parse().ok()?,
-        parts[1].parse().ok()?,
-        parts[2].parse().ok()?,
-    )
+    };
+    NaiveDate::from_ymd_opt(year.parse().ok()?, month.parse().ok()?, day.parse().ok()?)
 }
 
 /// What a day is for a chore.
