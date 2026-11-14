@@ -40,7 +40,9 @@ pub enum AppointmentAction {
 /// The words of an appointment: day, time, what, and for a run the
 /// count.
 pub fn appointment_words(t: &L10n, group: &[Appointment]) -> String {
-    let a = &group[0];
+    let Some(a) = group.first() else {
+        return String::new();
+    };
     let mut when = format_day(t.locale(), a.date);
     if let Some(time) = a.time {
         when.push(' ');
@@ -69,7 +71,7 @@ pub fn appointment_card(
     with_names: bool,
 ) -> Option<AppointmentAction> {
     let mut action = None;
-    let a = &group[0];
+    let a = group.first()?;
     let face = store
         .profile_image(&a.entity)
         .ok()
@@ -529,7 +531,9 @@ fn day_entries(
                 repeats: false,
             }),
             AgendaItem::Appointments(group) => {
-                let a = &group[0];
+                let Some(a) = group.first() else {
+                    continue;
+                };
                 out.push(DayEntry {
                     day: when.date(),
                     at: (!midnight).then(|| when.time()),
@@ -880,7 +884,9 @@ pub fn ics_events(store: &Catalog, t: &L10n) -> Vec<IcsEvent> {
                 });
             }
             AgendaItem::Appointments(group) => {
-                let a = &group[0];
+                let Some(a) = group.first() else {
+                    continue;
+                };
                 let names: Vec<String> = group.iter().map(|m| name_of(&m.entity)).collect();
                 let names = names.join(", ");
                 let start = a.start();

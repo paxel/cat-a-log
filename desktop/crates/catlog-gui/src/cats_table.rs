@@ -370,11 +370,15 @@ impl CatsTable {
             && let Some(at) = self.columns_at(column)
         {
             rows.sort_by(|a, b| {
-                let order = match (&a.cells[at].key, &b.cells[at].key) {
-                    (SortKey::Number(x), SortKey::Number(y)) => x.total_cmp(y),
-                    (SortKey::Text(x), SortKey::Text(y)) => x.cmp(y),
-                    (SortKey::Number(_), _) => std::cmp::Ordering::Less,
-                    (_, SortKey::Number(_)) => std::cmp::Ordering::Greater,
+                let order = match (
+                    a.cells.get(at).map(|c| &c.key),
+                    b.cells.get(at).map(|c| &c.key),
+                ) {
+                    (Some(SortKey::Number(x)), Some(SortKey::Number(y))) => x.total_cmp(y),
+                    (Some(SortKey::Text(x)), Some(SortKey::Text(y))) => x.cmp(y),
+                    (Some(SortKey::Number(_)), _) => std::cmp::Ordering::Less,
+                    (_, Some(SortKey::Number(_))) => std::cmp::Ordering::Greater,
+                    _ => std::cmp::Ordering::Equal,
                 };
                 if *descending { order.reverse() } else { order }
             });
@@ -401,7 +405,8 @@ impl CatsTable {
             if !modifiers.command {
                 self.selected.clear();
             }
-            self.selected.extend(self.order[from..=to].iter().cloned());
+            self.selected
+                .extend(self.order.iter().take(to + 1).skip(from).cloned());
             return;
         }
         if modifiers.command {
@@ -526,13 +531,14 @@ impl CatsTable {
                     (Some(i), true) => (i + 1).min(self.order.len() - 1),
                     (Some(i), false) => i.saturating_sub(1),
                 };
-                let id = self.order[next].clone();
-                let modifiers = egui::Modifiers {
-                    shift,
-                    ..Default::default()
-                };
-                self.select(&id, modifiers);
-                self.scroll_to = Some(next);
+                if let Some(id) = self.order.get(next).cloned() {
+                    let modifiers = egui::Modifiers {
+                        shift,
+                        ..Default::default()
+                    };
+                    self.select(&id, modifiers);
+                    self.scroll_to = Some(next);
+                }
             } else if enter && let Some(id) = self.cursor.clone() {
                 action = TableAction::Open(id);
             }
@@ -608,7 +614,9 @@ impl CatsTable {
             })
             .body(|body| {
                 body.rows(34.0, rows.len(), |mut row| {
-                    let r = &rows[row.index()];
+                    let Some(r) = rows.get(row.index()) else {
+                        return;
+                    };
                     row.set_selected(self.selected.contains(&r.id));
                     row.col(|ui| {
                         let mut on = open.contains(&r.id);

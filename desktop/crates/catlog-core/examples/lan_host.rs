@@ -6,7 +6,12 @@
 //! and runs until stdin closes.
 
 // A developer tool, never shipped: it may unwrap, expect, panic and index.
-#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::indexing_slicing)]
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing
+)]
 
 use std::io::Read;
 use std::net::{IpAddr, Ipv4Addr};

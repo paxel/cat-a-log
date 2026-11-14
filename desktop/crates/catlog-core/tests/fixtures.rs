@@ -5,7 +5,12 @@
 
 // Tests may unwrap, expect, panic and index (clippy.toml covers #[test]
 // functions; this covers the helpers beside them).
-#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::indexing_slicing)]
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing
+)]
 
 use std::path::{Path, PathBuf};
 

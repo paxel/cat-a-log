@@ -180,7 +180,8 @@ impl ClowdersTable {
             if !modifiers.command {
                 self.selected.clear();
             }
-            self.selected.extend(self.order[from..=to].iter().cloned());
+            self.selected
+                .extend(self.order.iter().take(to + 1).skip(from).cloned());
             return;
         }
         self.anchor = Some(id.to_string());
@@ -263,7 +264,7 @@ impl ClowdersTable {
                     (Some(i), true) => (i + 1).min(self.order.len() - 1),
                     (Some(i), false) => i.saturating_sub(1),
                 };
-                self.cursor = Some(self.order[next].clone());
+                self.cursor = self.order.get(next).cloned();
                 self.scroll_to = Some(next);
             } else if enter && let Some(id) = self.cursor.clone() {
                 action = TableAction::Open(id);
@@ -336,7 +337,9 @@ impl ClowdersTable {
             })
             .body(|body| {
                 body.rows(34.0, rows.len(), |mut row| {
-                    let r = &rows[row.index()];
+                    let Some(r) = rows.get(row.index()) else {
+                        return;
+                    };
                     let id = r.row.view.id.clone();
                     // The stripe has to be set before the cells are
                     // drawn; after them it paints nothing.

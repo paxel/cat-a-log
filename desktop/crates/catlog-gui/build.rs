@@ -16,6 +16,13 @@ fn main() {
             std::process::exit(1);
         }
     };
-    let out = Path::new(&std::env::var("OUT_DIR").expect("OUT_DIR")).join("l10n.rs");
-    std::fs::write(&out, source).expect("write l10n.rs");
+    let Ok(out_dir) = std::env::var("OUT_DIR") else {
+        println!("cargo:warning=l10n: OUT_DIR is not set");
+        std::process::exit(1);
+    };
+    let out = Path::new(&out_dir).join("l10n.rs");
+    if let Err(e) = std::fs::write(&out, source) {
+        println!("cargo:warning=l10n: writing {}: {e}", out.display());
+        std::process::exit(1);
+    }
 }

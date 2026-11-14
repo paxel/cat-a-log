@@ -177,7 +177,9 @@ impl VetView {
                 })
                 .body(|body| {
                     body.rows(34.0, rows.len(), |mut row| {
-                        let r = &rows[row.index()];
+                        let Some(r) = rows.get(row.index()) else {
+                            return;
+                        };
                         let a = &r.first;
                         row.set_selected(self.picked.as_deref() == Some(a.id.as_str()));
                         row.col(|ui| {

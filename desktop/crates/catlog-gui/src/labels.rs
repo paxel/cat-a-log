@@ -460,8 +460,9 @@ pub fn weekday_full(t: &L10n, day: u32) -> String {
             "Friday",
             "Saturday",
             "Sunday",
-        ][(day.clamp(1, 7) - 1) as usize]
-            .to_string()
+        ]
+        .get((day.clamp(1, 7) - 1) as usize)
+        .map_or_else(String::new, |d| d.to_string())
     })
 }
 
@@ -477,8 +478,9 @@ pub fn weekday_short(t: &L10n, day: u32) -> String {
         _ => "weekdaySun",
     };
     t.raw_by_name(key).map(String::from).unwrap_or_else(|| {
-        ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][(day.clamp(1, 7) - 1) as usize]
-            .to_string()
+        ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            .get((day.clamp(1, 7) - 1) as usize)
+            .map_or_else(String::new, |d| d.to_string())
     })
 }
 

@@ -259,14 +259,17 @@ impl MapPage {
     /// A click on a pin: a shared spot opens its list; a single pin
     /// toggles its trail, and a second click opens the thing.
     pub fn click_pin(&mut self, pin: &str) -> MapPageAction {
-        let Some(at) = self.spot_at(pin) else {
+        let Some((at, spot)) = self
+            .spot_at(pin)
+            .and_then(|at| self.spots.get(at).map(|spot| (at, spot)))
+        else {
             return MapPageAction::None;
         };
-        if self.spots[at].merged() {
+        if spot.merged() {
             self.open_spot = Some(at);
             return MapPageAction::None;
         }
-        let id = self.spots[at].front().id.clone();
+        let id = spot.front().id.clone();
         if self.trail_of.as_deref() == Some(id.as_str()) {
             Self::open(&id)
         } else {
@@ -279,7 +282,7 @@ impl MapPage {
     /// down (#85); every other pin has nothing to say.
     pub fn secondary_click_pin(&mut self, pin: &str) {
         if let Some(at) = self.spot_at(pin)
-            && let Some(seq) = self.spots[at].front().seq
+            && let Some(seq) = self.spots.get(at).and_then(|spot| spot.front().seq)
         {
             self.flier_down = Some(seq);
         }
@@ -416,9 +419,10 @@ impl MapPage {
             let count = pins.len() as i32;
             let at = (self.walked + step).rem_euclid(count);
             self.walked = at;
-            let pin = &pins[at as usize];
-            self.map.viewport.lat = pin.lat;
-            self.map.viewport.lon = pin.lon;
+            if let Some(pin) = pins.get(at as usize) {
+                self.map.viewport.lat = pin.lat;
+                self.map.viewport.lon = pin.lon;
+            }
         }
         let circles = Self::circles(store, &self.stray_areas);
         let trail = self

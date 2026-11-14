@@ -287,8 +287,7 @@ pub fn show_dashboard(
             }
         });
         ui.add_space(12.0);
-        ui.columns(2, |cols| {
-            let left = &mut cols[0];
+        ui.columns_const(|[left, right]| {
             section_card(left, t.dashboard_due(), |ui| {
                 let chores = &data.chores;
                 let due: Vec<_> = data
@@ -375,7 +374,6 @@ pub fn show_dashboard(
                     });
                 }
             });
-            let right = &mut cols[1];
             section_card(right, t.dashboard_last_viewed(), |ui| {
                 if data.last_viewed.is_empty() {
                     ui.label(t.dashboard_nothing_viewed());

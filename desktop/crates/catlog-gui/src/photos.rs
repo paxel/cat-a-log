@@ -82,17 +82,21 @@ impl PhotoViewer {
                 {
                     self.index = (self.index + 1) % count;
                 }
-                if ui.button(t.save_photo_as()).clicked() {
-                    action = ViewerAction::Save(self.hashes[self.index].clone());
+                if ui.button(t.save_photo_as()).clicked()
+                    && let Some(hash) = self.hashes.get(self.index)
+                {
+                    action = ViewerAction::Save(hash.clone());
                 }
-                if ui.button(t.copy_photo()).clicked() {
-                    action = ViewerAction::Copy(self.hashes[self.index].clone());
+                if ui.button(t.copy_photo()).clicked()
+                    && let Some(hash) = self.hashes.get(self.index)
+                {
+                    action = ViewerAction::Copy(hash.clone());
                 }
                 if ui.button(t.close()).clicked() {
                     close = true;
                 }
             });
-            let hash = self.hashes[self.index].clone();
+            let hash = self.hashes.get(self.index).cloned().unwrap_or_default();
             let area = Vec2::new(size.x.max(200.0), (size.y - 60.0).max(120.0));
             match faces.face(ui.ctx(), store, &hash) {
                 Some(texture) => {

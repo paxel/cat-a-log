@@ -230,7 +230,10 @@ impl TransferDialog {
         if self.targets.is_empty() || self.options.is_empty() {
             return false;
         }
-        self.target = (self.targets.len() == 1).then(|| self.targets[0].0.clone());
+        self.target = match self.targets.as_slice() {
+            [(only, ..)] => Some(only.clone()),
+            _ => None,
+        };
         self.open = true;
         self.id += 1;
         true
@@ -258,7 +261,10 @@ impl TransferDialog {
         if self.targets.is_empty() || self.options.is_empty() {
             return false;
         }
-        self.target = (self.targets.len() == 1).then(|| self.targets[0].0.clone());
+        self.target = match self.targets.as_slice() {
+            [(only, ..)] => Some(only.clone()),
+            _ => None,
+        };
         self.open = true;
         self.id += 1;
         true

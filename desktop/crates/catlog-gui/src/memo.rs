@@ -45,10 +45,10 @@ impl<K: PartialEq, T> Memo<K, T> {
             None => true,
         };
         if stale {
-            self.value = Some(build());
+            self.value = None;
             self.built_for = Some((generation, key));
         }
-        self.value.as_ref().expect("built just now")
+        self.value.get_or_insert_with(build)
     }
 }
 

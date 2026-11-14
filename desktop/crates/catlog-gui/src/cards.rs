@@ -166,9 +166,8 @@ impl Desk {
         for id in ids {
             if !self.open.contains(id) {
                 let place = self.free_place();
-                self.positions.entry(id.clone()).or_insert(place);
+                let pos = *self.positions.entry(id.clone()).or_insert(place);
                 self.open.push(id.clone());
-                let pos = self.positions[id];
                 let _ = store.set_local_setting(&pos_key(id), &format!("{},{}", pos.x, pos.y));
             }
             self.raise = Some(id.clone());
@@ -1384,7 +1383,10 @@ fn trend(ui: &mut Ui, store: &Catalog, t: &L10n, id: &str, def: &FieldDef) {
     if !ui.is_rect_visible(rect) {
         return;
     }
-    let (from, to) = (points[0].at, points[points.len() - 1].at);
+    let (Some(first), Some(last)) = (points.first(), points.last()) else {
+        return;
+    };
+    let (from, to) = (first.at, last.at);
     let (mut lo, mut hi) = points.iter().fold((f64::MAX, f64::MIN), |(lo, hi), p| {
         (lo.min(p.value), hi.max(p.value))
     });

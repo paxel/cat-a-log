@@ -106,7 +106,7 @@ pub fn show_moments(
         } else {
             all.len().min(RECENT_MOMENTS)
         };
-        for m in &all[..shown] {
+        for m in all.iter().take(shown) {
             ui.horizontal(|ui| {
                 ui.label(format!("{} · {}", moment_title(t, m), moment_detail(t, m)));
                 if ui.button(t.go_back_to_here()).clicked() {

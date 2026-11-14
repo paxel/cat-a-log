@@ -91,7 +91,8 @@ pub fn propose(store: &Catalog, locale: &str, roll: u64) -> Option<String> {
     x ^= x >> 29;
     x = x.wrapping_mul(0xBF58_476D_1CE4_E5B9);
     x ^= x >> 32;
-    Some(free[(x % free.len() as u64) as usize].to_string())
+    free.get((x % free.len() as u64) as usize)
+        .map(|name| name.to_string())
 }
 
 /// A roll from the clock, for a fresh proposal each time the dice is thrown.

@@ -6,7 +6,12 @@
 //! ```
 
 // A developer tool, never shipped: it may unwrap, expect, panic and index.
-#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::indexing_slicing)]
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing
+)]
 
 fn main() {
     let Some(dir) = std::env::args().nth(1) else {

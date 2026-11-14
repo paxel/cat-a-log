@@ -624,7 +624,9 @@ impl App {
         if self.fonts_installed.as_deref() == Some(language.as_str()) {
             return false;
         }
-        let set = self.fonts().clone();
+        let Some(set) = self.fonts().cloned() else {
+            return false;
+        };
         ctx.set_fonts(crate::theme::fonts(&set));
         ctx.request_discard("fonts installed");
         self.fonts_installed = Some(language);
@@ -1101,7 +1103,11 @@ impl App {
         if !pictures.is_empty() {
             match self.home.selection.clone() {
                 Selection::Cat(cat) => self.add_photos(&cat, &pictures),
-                Selection::Clowder(clowder) => self.set_cover(&clowder, &pictures[0]),
+                Selection::Clowder(clowder) => {
+                    if let Some(picture) = pictures.first() {
+                        self.set_cover(&clowder, picture);
+                    }
+                }
                 Selection::None => {}
             }
         }
@@ -1687,8 +1693,9 @@ impl App {
     }
 
     /// The fonts for the current language, fetched and cached under the
-    /// data dir on first use.
-    pub fn fonts(&mut self) -> &FontSet {
+    /// data dir on first use; the bundled ones when that fails, none when
+    /// even those do not parse.
+    pub fn fonts(&mut self) -> Option<&FontSet> {
         let language = self
             .t
             .locale()
@@ -1698,12 +1705,13 @@ impl App {
             .to_string();
         if self.fonts.as_ref().is_none_or(|(l, _)| *l != language) {
             let cache = self.manager.root().join("fonts");
-            let set = catlog_core::fonts::fonts_for(&language, &cache, self.font_source.as_ref())
-                .or_else(|_| FontSet::bundled())
-                .expect("the bundled fonts parse");
-            self.fonts = Some((language.clone(), set));
+            self.fonts =
+                catlog_core::fonts::fonts_for(&language, &cache, self.font_source.as_ref())
+                    .or_else(|_| FontSet::bundled())
+                    .ok()
+                    .map(|set| (language.clone(), set));
         }
-        &self.fonts.as_ref().expect("just built").1
+        self.fonts.as_ref().map(|(_, set)| set)
     }
 
     /// The current document as PDF bytes.
@@ -1712,8 +1720,8 @@ impl App {
         let units = self.pages.units;
         let today = self.pages.today;
         let kind = self.document.kind?;
-        let complete = self.fonts().complete;
-        let fonts = self.fonts().clone();
+        let fonts = self.fonts()?.clone();
+        let complete = fonts.complete;
         Some(match kind {
             DocKind::Card => {
                 let card = self
@@ -1785,13 +1793,17 @@ impl App {
                 if query.is_empty() {
                     return;
                 }
-                match self.geocoder.search(&query) {
-                    Ok(hits) if !hits.is_empty() => {
-                        self.capture.draft.address_position = Some((hits[0].lat, hits[0].lon));
-                        self.capture.draft.flier_position = Some((hits[0].lat, hits[0].lon));
-                        self.capture.address_hit = Some(hits[0].name.clone());
+                match self
+                    .geocoder
+                    .search(&query)
+                    .map(|hits| hits.into_iter().next())
+                {
+                    Ok(Some(hit)) => {
+                        self.capture.draft.address_position = Some((hit.lat, hit.lon));
+                        self.capture.draft.flier_position = Some((hit.lat, hit.lon));
+                        self.capture.address_hit = Some(hit.name);
                     }
-                    Ok(_) => self.capture.address_hit = Some(t.no_places_found().to_string()),
+                    Ok(None) => self.capture.address_hit = Some(t.no_places_found().to_string()),
                     Err(e) => self.capture.error = Some(e),
                 }
             }
@@ -1867,7 +1879,9 @@ impl App {
                 let card =
                     self.document
                         .card_content(&self.store, &t, self.pages.units, self.pages.today);
-                let fonts = self.fonts().clone();
+                let Some(fonts) = self.fonts().cloned() else {
+                    return;
+                };
                 let Some(png) = card_png(&card, &fonts) else {
                     return;
                 };
@@ -2680,8 +2694,11 @@ impl App {
                 match self.history.show(ui, &self.store, &t, &entity, &def) {
                     HistoryAction::None => {}
                     HistoryAction::CopyGraph(sheet) => {
-                        let fonts = self.fonts().clone();
-                        if let Some(image) = graph_image(&sheet, &fonts) {
+                        if let Some(image) = self
+                            .fonts()
+                            .cloned()
+                            .and_then(|fonts| graph_image(&sheet, &fonts))
+                        {
                             self.copy_image(to_color_image(&image));
                         }
                     }
@@ -2873,12 +2890,12 @@ impl App {
                 self.act_capture(action);
             }
             Modal::Document => {
-                let fonts = self.fonts().clone();
+                let fonts = self.fonts().cloned();
                 let units = self.pages.units;
                 let today = self.pages.today;
                 let action = self
                     .document
-                    .show(ui, &self.store, &t, Some(&fonts), units, today);
+                    .show(ui, &self.store, &t, fonts.as_ref(), units, today);
                 self.act_document(action);
             }
             Modal::Moments => {
@@ -2982,7 +2999,9 @@ impl App {
 
     /// The Card drawn to pixels and put on the clipboard.
     fn copy_card(&mut self, card: &catlog_core::documents::CardContent) {
-        let fonts = self.fonts().clone();
+        let Some(fonts) = self.fonts().cloned() else {
+            return;
+        };
         if let Some(image) = card_png(card, &fonts).and_then(|png| crate::textures::decode(&png)) {
             self.copy_image(image);
         }
@@ -8858,8 +8877,8 @@ mod tests {
         app.store_mut().import_folder(&fixture, None).unwrap();
         let mut h = harness(app);
         h.run();
-        assert!(!h.state_mut().fonts().complete);
-        assert!(h.state_mut().fonts().rtl);
+        assert!(!h.state_mut().fonts().unwrap().complete);
+        assert!(h.state_mut().fonts().unwrap().rtl);
         let miezi = "cat:00000000-0000-4000-8000-000000000001";
         {
             let app = h.state_mut();

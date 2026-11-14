@@ -11,6 +11,10 @@
 //! UPDATE_SNAPSHOTS=force cargo test -p catlog-gui --test site_frames -- --ignored
 //! ```
 
+// Tests may unwrap, expect, panic and index (clippy.toml covers #[test]
+// functions; this covers the helpers beside them).
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::indexing_slicing)]
+
 use std::path::PathBuf;
 use std::sync::Arc;
 

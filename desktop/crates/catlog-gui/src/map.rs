@@ -151,8 +151,9 @@ impl TileLoader {
         }
         let mut used: Vec<u64> = self.textures.values().map(|k| k.used).collect();
         used.sort_unstable();
-        let cutoff = used[self.textures.len() - MAX_TEXTURES - 1];
-        self.textures.retain(|_, kept| kept.used > cutoff);
+        if let Some(&cutoff) = used.get(self.textures.len() - MAX_TEXTURES - 1) {
+            self.textures.retain(|_, kept| kept.used > cutoff);
+        }
     }
 }
 

@@ -198,7 +198,7 @@ impl L10n {{
     }}
 
     pub fn locale(&self) -> &'static str {{
-        LOCALES[self.index]
+        LOCALES.get(self.index).copied().unwrap_or("en")
     }}
 
     fn raw(&self, key: usize) -> &'static str {{
