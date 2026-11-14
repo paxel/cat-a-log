@@ -5,7 +5,8 @@
 # builds can never collide (#39).
 #
 #   gate           — full Linux gate, tags only (analyze fatal-infos, all tests,
-#                    the Rust desktop's tests, tag = pubspec = Cargo versions)
+#                    the Rust desktop's tests, tag = pubspec = Cargo versions,
+#                    no known vulnerability in a lockfile)
 #   build-android  — signed per-ABI + universal APKs
 #   build-linux    — Rust desktop: tar.gz, .deb and AppImage per arch
 #   build-windows  — Rust desktop: zip with catlog.exe
@@ -73,6 +74,19 @@ jobs:
           tag=${RELEASE_TAG#v}
           [ "$ver" = "$tag" ] || { echo "tag v$tag != pubspec version $ver" >&2; exit 1; }
           [ "$cargo_ver" = "$tag" ] || { echo "tag v$tag != Cargo version $cargo_ver" >&2; exit 1; }
+      # No known vulnerability in a lockfile (cat-1004), as on every push;
+      # unmaintained notices are reported only, tool/osv_gate.py decides.
+      - name: osv-scanner
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
+        with:
+          scan-args: |-
+            --format=json
+            --output-file=osv-results.json
+            --recursive
+            ./
+      - name: No known vulnerability (unmaintained notices reported only)
+        run: python3 tool/osv_gate.py osv-results.json
       - name: Core — analyze and test
         working-directory: packages/catalog_core
         run: |
