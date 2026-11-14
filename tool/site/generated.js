@@ -140,7 +140,7 @@ const TYPE_NAMES = {
 
 /** The starter fields of the Dart core: slug, English name, type and scope. */
 export function parseStarters(dart) {
-  const re = /\(slug:\s*'([^']+)',\s*name:\s*'([^']+)',\s*type:\s*FieldType\.(\w+),\s*scope:\s*FieldScope\.(\w+)/g;
+  const re = /\(\s*slug:\s*'([^']+)',\s*name:\s*'([^']+)',\s*type:\s*FieldType\.(\w+),\s*scope:\s*FieldScope\.(\w+)/g;
   const out = [];
   let m;
   while ((m = re.exec(dart)) !== null) out.push({ slug: m[1], name: m[2], type: m[3], scope: m[4] });
