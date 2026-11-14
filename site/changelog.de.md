@@ -2,7 +2,9 @@
 
 Die deutschen Änderungsnotizen zu cat(a)log, Abschnitt für Abschnitt wie `CHANGELOG.md` und `OLDER_CHANGES.md` im Wurzelverzeichnis, in einer Datei: die aktuelle Version oben ohne Datum, die veröffentlichten darunter mit dem Datum ihres Tags, ab 2.0.0. Die Seite "Was ist neu" der Dokumentation wird daraus gebaut; eine englische Version ohne deutschen Abschnitt lässt den Bau fehlschlagen. Versionen vor 2.0.0 gibt es nur auf Englisch.
 
-## [2.5.0]
+## [2.6.0]
+
+## [2.5.0] - 2026-10-22
 
 ### Neu
 - Spielen, in den Aktionen von Home vor den Einstellungen, hat zwei Spielzeuge für die Katze: einen Laserpunkt, der losschießt und wartet, und eine Maus, die an den Rändern entlangflitzt und wieder hereinschaut (#172). Sie laufen im Vollbild, der Bildschirm bleibt an und es gibt kein Zeitlimit; sie werden schneller, wenn sie gefangen werden, und langsamer, wenn niemand sie jagt, und quieken, zirpen und trippeln, solange "Spielzeug-Geräusche" an ist. Zurück tut nichts, solange ein Spielzeug läuft; das Gerät hochzuheben beendet es, ebenso drei Sekunden auf dem Schloss in der Ecke, und Spielen zeigt danach, wie viele Fänge das Spiel hatte und wie lange es lief.
