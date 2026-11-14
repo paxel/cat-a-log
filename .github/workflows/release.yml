@@ -7,7 +7,8 @@
 #   gate           — full Linux gate, tags only (analyze fatal-infos, all tests,
 #                    the Rust desktop's tests, tag = pubspec = Cargo versions,
 #                    no known vulnerability in a lockfile, a CHANGELOG section
-#                    for the version)
+#                    for the version, no open high or critical code-scanning
+#                    alert)
 #   build-android  — signed per-ABI + universal APKs
 #   build-linux    — Rust desktop: tar.gz, .deb and AppImage per arch
 #   build-windows  — Rust desktop: zip with catlog.exe
@@ -60,8 +61,15 @@ jobs:
     name: Gate (Linux, full)
     if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: read
     steps:
+      # The full history, so the code-scanning step finds the branches
+      # that hold the tagged commit.
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
@@ -86,6 +94,39 @@ jobs:
             grab && (/^## \[/ || /^---/) { exit }
             grab && NF { print }
           ' CHANGELOG.md | grep -q . || { echo "no ## [$ver] section with entries in CHANGELOG.md" >&2; exit 1; }
+      # CodeQL analyses branches, not tags (cat-1007): every open alert on a
+      # branch that holds this commit is listed, and one of severity high
+      # or critical (security severity, or rule severity error) stops the
+      # release. A branch CodeQL never analysed is skipped; none analysed
+      # at all stops it too.
+      - name: No open high or critical code-scanning alert
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(git rev-parse HEAD)
+          branches=$(git branch -r --contains "$sha" --format='%(refname:lstrip=3)' | grep -vx HEAD || true)
+          analysed=0
+          blocking=0
+          for b in $branches; do
+            if ! gh api --paginate "repos/$GITHUB_REPOSITORY/code-scanning/alerts?ref=refs/heads/$b&state=open&per_page=100" \
+              --jq '.[] | [(.rule.security_severity_level // "-"), .rule.severity, .rule.id, .most_recent_instance.location.path, .html_url] | @tsv' \
+              > "$RUNNER_TEMP/alerts.tsv" 2> "$RUNNER_TEMP/error.txt"; then
+              if grep -q 'no analysis found' "$RUNNER_TEMP/error.txt"; then
+                echo "$b: not analysed by CodeQL, skipped"
+                continue
+              fi
+              cat "$RUNNER_TEMP/error.txt" >&2
+              exit 1
+            fi
+            analysed=$((analysed + 1))
+            echo "Open code-scanning alerts on $b (security severity, severity, rule, file, link):"
+            cat "$RUNNER_TEMP/alerts.tsv"
+            n=$(awk -F'\t' '$1 == "high" || $1 == "critical" || $2 == "error"' "$RUNNER_TEMP/alerts.tsv" | wc -l)
+            echo "$n of them high or critical"
+            blocking=$((blocking + n))
+          done
+          [ "$analysed" -gt 0 ] || { echo "no CodeQL analysis on any branch that holds $sha" >&2; exit 1; }
+          [ "$blocking" -eq 0 ] || { echo "$blocking open high or critical code-scanning alerts" >&2; exit 1; }
       # No known vulnerability in a lockfile (cat-1004), as on every push;
       # unmaintained notices are reported only, tool/osv_gate.py decides.
       - name: osv-scanner
