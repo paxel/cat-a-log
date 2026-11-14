@@ -4,6 +4,9 @@ Die deutschen Änderungsnotizen zu cat(a)log, Abschnitt für Abschnitt wie `CHAN
 
 ## [2.6.0]
 
+### Neu
+- Jede Datei eines Releases trägt eine signierte Herkunftsangabe: `gh attestation verify <Datei> --repo paxel/cat-a-log` zeigt, dass der Release-Workflow dieses Repositorys sie aus dem getaggten Commit gebaut hat ([cat-1022](https://github.com/paxel/cat-a-log/issues/195)).
+
 ## [2.5.0] - 2026-10-22
 
 ### Neu

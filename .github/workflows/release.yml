@@ -24,6 +24,7 @@
 #   testflight     — signed iPhone build, uploaded to TestFlight when
 #                    publishing
 #   release        — GitHub Release, notes = the CHANGELOG section for the tag
+#                    and signed build provenance for every file
 #   channels       — the rendered files pushed to the tap and the bucket, after
 #                    the Release, when publishing
 #
@@ -492,14 +493,31 @@ jobs:
     needs: [gate, build-android, build-linux, build-windows, build-macos]
     if: github.ref_type == 'tag' || github.event.inputs.publish == 'true'
     runs-on: ubuntu-latest
+    # contents: the release itself. id-token and attestations: the signed
+    # build provenance (Sigstore certificate from the workflow's OIDC token).
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           path: dist
           merge-multiple: true
+      # SLSA build provenance for every release file (cat-1022), signed with
+      # Sigstore and stored with GitHub's attestations
+      # (`gh attestation verify <file> --repo paxel/cat-a-log`). The bundle
+      # is also a release asset, for verification without GitHub's API.
+      - name: Attest build provenance
+        id: attest
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/*
+      - name: Add the provenance bundle to the release assets
+        env:
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+        run: cp "$BUNDLE" "dist/catlog-${RELEASE_TAG}.intoto.jsonl"
       - name: Release notes from the CHANGELOG section
         run: |
           ver=${RELEASE_TAG#v}
