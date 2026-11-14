@@ -1,0 +1,100 @@
+# CodeQL code scanning (cat-1003), advanced setup so it is versioned here:
+# Rust (desktop/), Kotlin (android/) and the workflows themselves. Dart is
+# not a CodeQL language; SonarQube Cloud covers it. The alerts show under
+# Security ▸ Code scanning; the release gate refuses a tag while a high or
+# critical one is open (cat-1007).
+#
+# Once per tree, as in oldbrainfix: on a push to any branch but summer,
+# whose merged tree is the pull request head's tree that was analysed; on a
+# pull request only for one from a fork, whose commits are never pushed
+# here, and under another name for one from this repository, so its skipped
+# job stands in for no required check. Weekly on summer, because new
+# queries appear without any change in this repo.
+# Settings ▸ Code security ▸ Code scanning ▸ Default setup stays off: it
+# cannot run beside this workflow.
+#
+# Third-party actions are pinned to full commit SHAs; the comment names the
+# version.
+name: CodeQL
+
+on:
+  push:
+    branches-ignore: [summer]
+  pull_request:
+  schedule:
+    - cron: "41 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: ${{ github.event_name == 'pull_request' && !github.event.pull_request.head.repo.fork && 'Analyze (runs on push)' || format('Analyze ({0})', matrix.language) }}
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: rust
+            build-mode: none
+          - language: actions
+            build-mode: none
+          # Kotlin is only extracted while kotlinc compiles it; with
+          # build-mode none CodeQL skips it with a warning.
+          - language: java-kotlin
+            build-mode: manual
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      # The Rust extractor may run build scripts: ALSA for the sounds, as in
+      # CI's Desktop job.
+      - name: System libraries for the Rust build scripts
+        if: matrix.language == 'rust'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev pkg-config
+
+      # The Gradle project needs the Flutter SDK, android/local.properties and
+      # the Gradle wrapper: `flutter pub get` writes the properties, `flutter
+      # build apk --config-only` the wrapper and the rest of the build files,
+      # without building anything.
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        if: matrix.language == 'java-kotlin'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        if: matrix.language == 'java-kotlin'
+        with:
+          channel: stable
+          cache: true
+      - name: Flutter packages and the Gradle project's local.properties
+        if: matrix.language == 'java-kotlin'
+        run: flutter pub get
+      - name: The Gradle wrapper and build files
+        if: matrix.language == 'java-kotlin'
+        run: flutter build apk --debug --config-only
+
+      - uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          # Test code holds fixed keys and secrets on purpose; shipped code keeps every rule.
+          config: |
+            paths-ignore:
+              - desktop/crates/*/tests
+              - desktop/crates/**/*tests.rs
+              - desktop/fixtures
+
+      # Only the app's Kotlin compile. No daemon, so every compilation runs
+      # under CodeQL's tracer.
+      - name: Compile the app's Kotlin
+        if: matrix.language == 'java-kotlin'
+        working-directory: android
+        run: ./gradlew --no-daemon :app:compileDebugKotlin
+
+      - uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          category: /language:${{ matrix.language }}
