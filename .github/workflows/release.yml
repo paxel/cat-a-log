@@ -9,7 +9,8 @@
 #                    no known vulnerability in a lockfile, a CHANGELOG section
 #                    for the version, no open high or critical code-scanning
 #                    alert, Dart format, no untranslated string)
-#   build-android  — signed per-ABI + universal APKs
+#   build-android  — signed per-ABI + universal APKs, refused when signed
+#                    with the debug key
 #   build-linux    — Rust desktop: tar.gz, .deb and AppImage per arch
 #   build-windows  — Rust desktop: zip with catlog.exe
 #   build-macos    — Rust desktop: unsigned catlog.app in a .dmg, per arch
@@ -216,6 +217,28 @@ jobs:
         run: |
           flutter build apk --release --split-per-abi --build-number=$((GITHUB_RUN_NUMBER + 100))
           flutter build apk --release --build-number=$((GITHUB_RUN_NUMBER + 100))
+      # Gradle already refuses a release build without key.properties;
+      # this checks what actually came out, before anything is uploaded
+      # (cat-1010). An APK signed with the debug key would lock F-Droid
+      # clients to it for good, and Play refuses the bundle.
+      - name: Refuse anything signed with the debug key
+        run: |
+          shopt -s nullglob
+          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          for apk in build/app/outputs/flutter-apk/app-*release.apk; do
+            "$apksigner" verify --print-certs "$apk" > certs.txt
+            if grep -q "CN=Android Debug" certs.txt; then
+              echo "$apk is signed with the debug key" >&2
+              exit 1
+            fi
+          done
+          aab=build/app/outputs/bundle/release/app-release.aab
+          keytool -printcert -jarfile "$aab" > certs.txt
+          grep -q "Owner:" certs.txt || { echo "$aab is not signed" >&2; exit 1; }
+          if grep -q "CN=Android Debug" certs.txt; then
+            echo "$aab is signed with the debug key" >&2
+            exit 1
+          fi
       - name: Rename artifacts
         if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
         run: |
