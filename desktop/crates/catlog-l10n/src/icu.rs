@@ -94,8 +94,7 @@ fn parse(message: &str) -> Vec<Part> {
 fn parse_parts(chars: &[char], pos: &mut usize, in_form: bool) -> Vec<Part> {
     let mut parts = Vec::new();
     let mut text = String::new();
-    while *pos < chars.len() {
-        let c = chars[*pos];
+    while let Some(&c) = chars.get(*pos) {
         if in_form && c == '}' {
             break;
         }
@@ -127,39 +126,39 @@ fn parse_parts(chars: &[char], pos: &mut usize, in_form: bool) -> Vec<Part> {
 /// After an opening brace: `name}` or `name, plural, forms}`.
 fn parse_argument(chars: &[char], pos: &mut usize) -> Part {
     let mut name = String::new();
-    while *pos < chars.len() && chars[*pos] != '}' && chars[*pos] != ',' {
-        name.push(chars[*pos]);
+    while let Some(&c) = chars.get(*pos).filter(|&&c| c != '}' && c != ',') {
+        name.push(c);
         *pos += 1;
     }
     let name = name.trim().to_string();
-    if *pos >= chars.len() || chars[*pos] == '}' {
+    if matches!(chars.get(*pos), None | Some('}')) {
         *pos += 1;
         return Part::Var(name);
     }
     *pos += 1; // the comma
     let mut kind = String::new();
-    while *pos < chars.len() && chars[*pos] != ',' && chars[*pos] != '}' {
-        kind.push(chars[*pos]);
+    while let Some(&c) = chars.get(*pos).filter(|&&c| c != ',' && c != '}') {
+        kind.push(c);
         *pos += 1;
     }
-    if *pos < chars.len() && chars[*pos] == ',' {
+    if chars.get(*pos) == Some(&',') {
         *pos += 1;
     }
     let mut forms = Vec::new();
     loop {
-        while *pos < chars.len() && chars[*pos].is_whitespace() {
+        while chars.get(*pos).is_some_and(|c| c.is_whitespace()) {
             *pos += 1;
         }
-        if *pos >= chars.len() || chars[*pos] == '}' {
+        if matches!(chars.get(*pos), None | Some('}')) {
             *pos += 1;
             break;
         }
         let mut selector = String::new();
-        while *pos < chars.len() && chars[*pos] != '{' && chars[*pos] != '}' {
-            selector.push(chars[*pos]);
+        while let Some(&c) = chars.get(*pos).filter(|&&c| c != '{' && c != '}') {
+            selector.push(c);
             *pos += 1;
         }
-        if *pos >= chars.len() || chars[*pos] == '}' {
+        if matches!(chars.get(*pos), None | Some('}')) {
             *pos += 1;
             break;
         }
