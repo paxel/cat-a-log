@@ -8,7 +8,8 @@
 #                    the Rust desktop's tests, tag = pubspec = Cargo versions,
 #                    no known vulnerability in a lockfile, a CHANGELOG section
 #                    for the version, no open high or critical code-scanning
-#                    alert, Dart format, no untranslated string)
+#                    alert, Dart format, no untranslated string,
+#                    the SonarQube Cloud quality gate OK)
 #   geiger         — cargo geiger, report-only: unsafe counts in the log,
 #                    never blocks
 #   build-android  — signed per-ABI + universal APKs, refused when signed
@@ -135,6 +136,15 @@ jobs:
           done
           [ "$analysed" -gt 0 ] || { echo "no CodeQL analysis on any branch that holds $sha" >&2; exit 1; }
           [ "$blocking" -eq 0 ] || { echo "$blocking open high or critical code-scanning alerts" >&2; exit 1; }
+      # SonarQube Cloud's quality gate (cat-1018). The free plan analyses
+      # summer only (sonar.yml), so this is summer's latest analysis:
+      # release from summer after its SonarQube Cloud run has finished.
+      - name: SonarQube Cloud quality gate
+        run: |
+          status=$(curl -fsS "https://sonarcloud.io/api/qualitygates/project_status?projectKey=paxel_cat-a-log" \
+            | jq -r .projectStatus.status)
+          echo "quality gate: $status"
+          [ "$status" = "OK" ] || { echo "SonarQube Cloud quality gate is $status, not OK" >&2; exit 1; }
       # No known vulnerability in a lockfile (cat-1004), as on every push;
       # unmaintained notices are reported only, tool/osv_gate.py decides.
       - name: osv-scanner
