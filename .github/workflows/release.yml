@@ -6,7 +6,8 @@
 #
 #   gate           — full Linux gate, tags only (analyze fatal-infos, all tests,
 #                    the Rust desktop's tests, tag = pubspec = Cargo versions,
-#                    no known vulnerability in a lockfile)
+#                    no known vulnerability in a lockfile, a CHANGELOG section
+#                    for the version)
 #   build-android  — signed per-ABI + universal APKs
 #   build-linux    — Rust desktop: tar.gz, .deb and AppImage per arch
 #   build-windows  — Rust desktop: zip with catlog.exe
@@ -74,6 +75,17 @@ jobs:
           tag=${RELEASE_TAG#v}
           [ "$ver" = "$tag" ] || { echo "tag v$tag != pubspec version $ver" >&2; exit 1; }
           [ "$cargo_ver" = "$tag" ] || { echo "tag v$tag != Cargo version $cargo_ver" >&2; exit 1; }
+      # The Release's notes are this section (the release job below), which
+      # would otherwise fall back to a bare "Release <version>." line
+      # (cat-1006).
+      - name: CHANGELOG.md has a section for this version
+        run: |
+          ver=${RELEASE_TAG#v}
+          awk -v ver="$ver" '
+            $0 ~ "^## \\[" ver "\\]" { grab = 1; next }
+            grab && (/^## \[/ || /^---/) { exit }
+            grab && NF { print }
+          ' CHANGELOG.md | grep -q . || { echo "no ## [$ver] section with entries in CHANGELOG.md" >&2; exit 1; }
       # No known vulnerability in a lockfile (cat-1004), as on every push;
       # unmaintained notices are reported only, tool/osv_gate.py decides.
       - name: osv-scanner
