@@ -194,17 +194,17 @@ class Chore {
         ...extra,
         'title': title,
         'schedule': schedule.toJson(),
-        if (time != null) 'time': _hhmm(time!),
+        if (time case final t?) 'time': _hhmm(t),
         // A one-time chore starts on its due day: the one day an app
         // from before 2.3.0 shows it.
-        'start': dayKey(once && due != null ? due! : start),
+        'start': dayKey((once ? due : null) ?? start),
         if (paused) 'paused': true,
         if (ended) 'ended': true,
         if (remind) 'remind': true,
-        if (remindAt != null) 'remindAt': _hhmm(remindAt!),
+        if (remindAt case final r?) 'remindAt': _hhmm(r),
         // Read only from 2.3.0 on; an older app keeps both as unknown keys.
         if (once) 'once': true,
-        if (once && due != null) 'due': dayKey(due!),
+        if (due case final d? when once) 'due': dayKey(d),
       };
 
   /// Parses a stored value; null when it is not a chore document.
@@ -341,15 +341,16 @@ List<ChoreOccurrence> occurrences(
       // Walk the ticks in order of the occurrence they settled: every
       // due day before a tick's occurrence was missed, the tick's own
       // occurrence is done, and the schedule restarts from its done day.
-      final settled = ticks.keys.toList()..sort();
+      final settled = ticks.entries.toList()
+        ..sort((a, b) => a.key.compareTo(b.key));
       var anchor = start;
-      for (final occurrence in settled) {
+      for (final MapEntry(key: occurrence, value: doneOn) in settled) {
         while (anchor.isBefore(occurrence)) {
           add(anchor);
           anchor = schedule.step(anchor);
         }
         add(occurrence);
-        anchor = schedule.step(dayOf(ticks[occurrence]!));
+        anchor = schedule.step(dayOf(doneOn));
       }
       while (!anchor.isAfter(to)) {
         add(anchor);
@@ -536,8 +537,10 @@ List<Chore> todayOrder(List<Chore> chores,
     };
   }
 
-  int minutes(Chore c) =>
-      c.time == null ? -1 : c.time!.hour * 60 + c.time!.minute;
+  int minutes(Chore c) => switch (c.time) {
+        final t? => t.hour * 60 + t.minute,
+        null => -1,
+      };
   final far = DateTime(9999);
   return [...chores]..sort((a, b) {
       final byGroup = group(a).compareTo(group(b));
@@ -649,8 +652,8 @@ class ChoreLogRow {
   const ChoreLogRow(this.due, this.state,
       {this.doneOn, this.author, this.recorded, this.tick});
 
-  bool get early => doneOn != null && doneOn!.isBefore(due);
-  bool get late => doneOn != null && doneOn!.isAfter(due);
+  bool get early => doneOn?.isBefore(due) ?? false;
+  bool get late => doneOn?.isAfter(due) ?? false;
 }
 
 /// The chore's due days from its start to [today], newest first, each

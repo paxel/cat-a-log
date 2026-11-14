@@ -133,7 +133,10 @@ pw.Document missingPosterPdf(PosterContent c, PdfFonts fonts) {
   final width = posterWidth;
   final bold = pw.TextStyle(fontWeight: pw.FontWeight.bold);
   final sizes = posterTitleSizes(
-    lines: [...c.lines, if ((c.extra ?? '').isNotEmpty) c.extra!],
+    lines: [
+      ...c.lines,
+      if (c.extra case final extra? when extra.isNotEmpty) extra,
+    ],
     photos: c.photos.isNotEmpty,
     phone: c.phone != null,
     codes: c.codes.isNotEmpty,
@@ -182,7 +185,10 @@ pw.Document missingPosterPdf(PosterContent c, PdfFonts fonts) {
   }
 
   final photos = c.photos.take(2).toList();
-  final lines = [...c.lines, if ((c.extra ?? '').isNotEmpty) c.extra!];
+  final lines = [
+    ...c.lines,
+    if (c.extra case final extra? when extra.isNotEmpty) extra,
+  ];
   final codeSize = c.codes.isEmpty
       ? 0.0
       : math.min(120.0, (width - 14 * (c.codes.length - 1)) / c.codes.length);
@@ -246,7 +252,7 @@ pw.Document missingPosterPdf(PosterContent c, PdfFonts fonts) {
               ),
             ),
           pw.SizedBox(height: 10),
-          if (c.phone != null)
+          if (c.phone case final phone?)
             pw.Container(
               color: PdfColors.black,
               padding: const pw.EdgeInsets.symmetric(
@@ -259,7 +265,7 @@ pw.Document missingPosterPdf(PosterContent c, PdfFonts fonts) {
                   fit: pw.BoxFit.scaleDown,
                   alignment: pw.Alignment.centerLeft,
                   child: pw.Text(
-                    c.phone!,
+                    phone,
                     style: bold.copyWith(fontSize: 46, color: PdfColors.white),
                     maxLines: 1,
                   ),
@@ -267,8 +273,8 @@ pw.Document missingPosterPdf(PosterContent c, PdfFonts fonts) {
               ),
             ),
           pw.SizedBox(height: 14),
-          if (c.looks != null)
-            pw.Text(c.looks!, style: bold.copyWith(fontSize: 13), maxLines: 3),
+          if (c.looks case final looks?)
+            pw.Text(looks, style: bold.copyWith(fontSize: 13), maxLines: 3),
           pw.SizedBox(height: 6),
           pw.Text(c.standing, style: bold.copyWith(fontSize: 13), maxLines: 3),
           if (c.codes.isNotEmpty) ...[

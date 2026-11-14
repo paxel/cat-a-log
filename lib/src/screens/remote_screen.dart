@@ -95,7 +95,8 @@ class _RemoteScreenState extends State<RemoteScreen> {
   /// ran: the arrival page at once only when the signatures need a look.
   Future<void> _syncNow() async {
     final t = context.t;
-    final folder = widget.store.localSetting('syncFolder')!;
+    final folder = widget.store.localSetting('syncFolder');
+    if (folder == null) return;
     try {
       final before = widget.store.currentSeq();
       final result = await folderSyncIn(
@@ -187,10 +188,10 @@ class _RemoteScreenState extends State<RemoteScreen> {
               t.folderCatalogHint(_catalogDir),
               style: Theme.of(context).textTheme.bodySmall,
             ),
-          if (widget.store.localSetting('syncFolder') == null &&
-              _lastFolder != null)
+          if (_lastFolder case final lastFolder?
+              when widget.store.localSetting('syncFolder') == null)
             TextButton(
-              onPressed: () => _use(_lastFolder!),
+              onPressed: () => _use(lastFolder),
               child: Text(t.useSameFolder),
             ),
           if (widget.store.localSetting('syncFolder') != null) ...[

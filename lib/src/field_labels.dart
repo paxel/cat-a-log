@@ -57,8 +57,8 @@ String fieldValueDisplay(AppLocalizations t, FieldDef? def, String? value) {
     if (n != null) return formatNumber(t.localeName, n, 6);
   }
   // A Unit Value is stored in the base unit and read in the device's.
-  if (def?.type == FieldType.unitValue) {
-    return formatUnitValue(t.localeName, def!.unitDimension, value);
+  if (def case final def? when def.type == FieldType.unitValue) {
+    return formatUnitValue(t.localeName, def.unitDimension, value);
   }
   // Looks read as group: values, in the device language.
   if (def?.type == FieldType.tags) return looksDisplay(t, value);
@@ -218,10 +218,12 @@ String valueLabel(
       value,
     );
     if (a == null) return value;
-    final when = a.time == null
-        ? ''
-        : ' ${a.time!.hour.toString().padLeft(2, '0')}:'
-              '${a.time!.minute.toString().padLeft(2, '0')}';
+    final when = switch (a.time) {
+      final time? =>
+        ' ${time.hour.toString().padLeft(2, '0')}:'
+            '${time.minute.toString().padLeft(2, '0')}',
+      null => '',
+    };
     // The outcome notes belong to the visit: "how did it go" is what
     // the history is read for.
     final notes = a.notes.isEmpty ? '' : '\n${a.notes}';

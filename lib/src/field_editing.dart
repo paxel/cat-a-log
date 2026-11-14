@@ -178,13 +178,14 @@ class _FieldValueInputState extends State<FieldValueInput> {
 
   @override
   Widget build(BuildContext context) {
+    final excludeId = widget.excludeId;
     switch (def.type) {
       case FieldType.yesNo:
       case FieldType.choice:
         // Breed follows the animal's species (#95): a dog is offered
         // dog breeds, the cat list stays the field's own.
-        final species = def.slug == 'breed' && widget.excludeId != null
-            ? widget.store?.current(widget.excludeId!, 'f:species')
+        final species = def.slug == 'breed' && excludeId != null
+            ? widget.store?.current(excludeId, 'f:species')
             : null;
         final options = def.type == FieldType.yesNo
             ? const ['yes', 'no']
@@ -279,9 +280,9 @@ class _FieldValueInputState extends State<FieldValueInput> {
         // Looks: chips per group, the groups following the animal's
         // species; the controller's text holds the encoded line.
         return LooksInput(
-          species: widget.excludeId == null
+          species: excludeId == null
               ? null
-              : widget.store?.current(widget.excludeId!, 'f:species'),
+              : widget.store?.current(excludeId, 'f:species'),
           value: c.text.text.isEmpty ? null : c.text.text,
           onChanged: (v) => setState(() => c.text.text = v ?? ''),
           store: widget.store,
@@ -383,10 +384,10 @@ class _FieldEditDialogState extends State<_FieldEditDialog> {
     locale: Localizations.localeOf(context).toString(),
   );
   late DateTime _asOf = widget.asOf?.toLocal() ?? clockNow();
-  late bool _private =
-      widget.store != null &&
-      widget.excludeId != null &&
-      widget.store!.isFieldPrivate(widget.excludeId!, widget.def.key);
+  late bool _private = switch ((widget.store, widget.excludeId)) {
+    (final store?, final id?) => store.isFieldPrivate(id, widget.def.key),
+    _ => false,
+  };
 
   @override
   void dispose() {

@@ -515,8 +515,10 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
   List<Widget> _familyRows() {
     final f = store.family(id);
     return [
-      if (f.mother != null) _familyRow(context.t.starterMother, [f.mother!]),
-      if (f.father != null) _familyRow(context.t.starterFather, [f.father!]),
+      if (f.mother case final mother?)
+        _familyRow(context.t.starterMother, [mother]),
+      if (f.father case final father?)
+        _familyRow(context.t.starterFather, [father]),
       if (f.littermates.isNotEmpty)
         _familyRow(context.t.littermatesLabel, f.littermates),
       if (f.siblings.isNotEmpty)

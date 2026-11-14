@@ -95,7 +95,7 @@ class _ToastSettingsScreenState extends State<ToastSettingsScreen> {
         children: [
           for (final (kind, _) in toastKinds)
             SwitchListTile(
-              title: Text(labels[kind]!),
+              title: Text(labels[kind] ?? kind),
               value: toastEnabled(widget.store, kind),
               onChanged: (v) =>
                   setState(() => setToastEnabled(widget.store, kind, v)),

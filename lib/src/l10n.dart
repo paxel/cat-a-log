@@ -13,6 +13,8 @@ final ValueNotifier<Locale?> localeOverride = ValueNotifier(null);
 extension L10nContext on BuildContext {
   /// The app's translations for the ambient locale, with pet mode
   /// applied (#93).
-  AppLocalizations get t =>
-      ModeLocalizations(AppLocalizations.of(this)!, petMode.value);
+  AppLocalizations get t => ModeLocalizations(
+    AppLocalizations.of(this) ?? lookupAppLocalizations(const Locale('en')),
+    petMode.value,
+  );
 }

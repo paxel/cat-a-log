@@ -76,7 +76,7 @@ Future<void> showLanguageDialog(
             ],
           ),
         ),
-        for (final code in _endonyms.keys)
+        for (final MapEntry(key: code, value: endonym) in _endonyms.entries)
           SimpleDialogOption(
             onPressed: () => Navigator.of(context).pop(code),
             child: Row(
@@ -86,7 +86,7 @@ Future<void> showLanguageDialog(
                     padding: EdgeInsets.only(right: 8),
                     child: Icon(Icons.check, size: 18),
                   ),
-                Expanded(child: Text(_endonyms[code]!)),
+                Expanded(child: Text(endonym)),
               ],
             ),
           ),

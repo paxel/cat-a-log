@@ -659,6 +659,7 @@ class _ClowderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cover = _cover();
+    final menu = onContextMenu;
     final scheme = Theme.of(context).colorScheme;
     return Material(
       clipBehavior: Clip.antiAlias,
@@ -673,16 +674,12 @@ class _ClowderCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
-        onSecondaryTapDown: onContextMenu == null
-            ? null
-            : (d) => onContextMenu!(d.globalPosition),
+        onSecondaryTapDown: menu == null ? null : (d) => menu(d.globalPosition),
         // Long-press = menu, the app-wide gesture convention; the cat
         // ear in the corner announces it.
         onLongPress: null,
         child: GestureDetector(
-          onLongPressStart: onContextMenu == null
-              ? null
-              : (d) => onContextMenu!(d.globalPosition),
+          onLongPressStart: menu == null ? null : (d) => menu(d.globalPosition),
           child: Stack(
             fit: StackFit.expand,
             children: [

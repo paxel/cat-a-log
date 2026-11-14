@@ -60,10 +60,10 @@ class DeviceCalendarPort implements CalendarPort {
     }
     return [
       for (final c in calendars.data ?? const <Calendar>[])
-        if (c.id != null)
+        if (c.id case final id?)
           CalendarChoice(
-            id: c.id!,
-            name: c.name ?? c.id!,
+            id: id,
+            name: c.name ?? id,
             account: c.accountName,
             writable: c.isReadOnly != true,
           ),
@@ -86,9 +86,10 @@ class DeviceCalendarPort implements CalendarPort {
       allDay: spec.allDay,
       // Alerts are written on creation only (#75); an update leaves
       // whatever the user set by hand.
-      reminders: withAlert && spec.alertMinutesBefore != null
-          ? [Reminder(minutes: spec.alertMinutesBefore!)]
-          : null,
+      reminders: switch (spec.alertMinutesBefore) {
+        final minutes? when withAlert => [Reminder(minutes: minutes)],
+        _ => null,
+      },
     );
   }
 
@@ -133,8 +134,9 @@ class DeviceCalendarPort implements CalendarPort {
     }
     return [
       for (final e in result.data ?? const <Event>[])
-        if (e.eventId != null && (e.description ?? '').contains(eventMarker))
-          e.eventId!,
+        if (e.eventId case final id?
+            when (e.description ?? '').contains(eventMarker))
+          id,
     ];
   }
 }

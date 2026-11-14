@@ -36,10 +36,8 @@ List<({String value, String text})> earnedTitles(
   final states = ladders(gatherStats(stores, today));
   return [
     for (final s in states)
-      if (s.reached && s.title != null)
-        (
-          value: '${rankFor(s.tier)}|${s.title}',
-          text: titleWithChore(t, rankFor(s.tier)!, s.title!),
-        ),
+      if ((rankFor(s.tier), s.title) case (final rank?, final title?)
+          when s.reached)
+        (value: '$rank|$title', text: titleWithChore(t, rank, title)),
   ];
 }

@@ -89,8 +89,8 @@ class _VideoFramesScreenState extends State<VideoFramesScreen> {
     if (mounted) setState(() {});
   }
 
-  ImageProvider _tile(int ms) =>
-      _tiles[ms] ??= ResizeImage(MemoryImage(_kept[ms]!), width: 320);
+  ImageProvider _tile(int ms, Uint8List bytes) =>
+      _tiles[ms] ??= ResizeImage(MemoryImage(bytes), width: 320);
 
   Duration get _frame => Duration(microseconds: (1000000 / player.fps).round());
 
@@ -149,7 +149,7 @@ class _VideoFramesScreenState extends State<VideoFramesScreen> {
         // stands in for it, rather than a spinner that never ends.
         whole = null;
       }
-      kept.add(whole ?? _kept[ms]!);
+      if (whole ?? _kept[ms] case final frame?) kept.add(frame);
     }
     if (!mounted) return;
     Navigator.of(context).pop(kept);
@@ -276,41 +276,45 @@ class _VideoFramesScreenState extends State<VideoFramesScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           children: [
                             for (final ms in _kept.keys.toList()..sort())
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: GestureDetector(
-                                  onTap: () => setState(() => _kept.remove(ms)),
-                                  child: Tooltip(
-                                    message: _clock(Duration(milliseconds: ms)),
-                                    child: Stack(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
+                              if (_kept[ms] case final bytes?)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: GestureDetector(
+                                    onTap: () =>
+                                        setState(() => _kept.remove(ms)),
+                                    child: Tooltip(
+                                      message: _clock(
+                                        Duration(milliseconds: ms),
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            // A fixed frame: the tile has its
+                                            // place before the picture decodes.
+                                            child: Image(
+                                              image: _tile(ms, bytes),
+                                              width: 128,
+                                              height: 96,
+                                              fit: BoxFit.cover,
+                                              gaplessPlayback: true,
+                                            ),
                                           ),
-                                          // A fixed frame: the tile has its
-                                          // place before the picture decodes.
-                                          child: Image(
-                                            image: _tile(ms),
-                                            width: 128,
-                                            height: 96,
-                                            fit: BoxFit.cover,
-                                            gaplessPlayback: true,
+                                          const Positioned(
+                                            top: 4,
+                                            right: 4,
+                                            child: Icon(
+                                              Icons.check_circle,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        ),
-                                        const Positioned(
-                                          top: 4,
-                                          right: 4,
-                                          child: Icon(
-                                            Icons.check_circle,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
                           ],
                         ),
                 ),

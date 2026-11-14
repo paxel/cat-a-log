@@ -57,17 +57,22 @@ class _MatchCandidatesScreenState extends State<MatchCandidatesScreen> {
     final t = context.t;
     switch (c.reason) {
       case MatchReason.idExact:
-        return Text(t.sameIdField(fieldDefName(t, c.idField!)));
+        final idField = c.idField;
+        if (idField == null) return const SizedBox.shrink();
+        return Text(t.sameIdField(fieldDefName(t, idField)));
       case MatchReason.geoDate:
-        return Text(t.metersApart(c.distanceMeters!.round().toString()));
+        final meters = c.distanceMeters;
+        if (meters == null) return const SizedBox.shrink();
+        return Text(t.metersApart(meters.round().toString()));
       case MatchReason.looks:
         // Weighted like the ranking: a shared feature counts double.
         final line = t.traitsAgree(
           c.agreeing.fold(0, (n, g) => n + looksGroupWeight(g)),
         );
-        final apart = c.distanceMeters == null
+        final meters = c.distanceMeters;
+        final apart = meters == null
             ? line
-            : '$line · ${t.metersApart(c.distanceMeters!.round().toString())}';
+            : '$line · ${t.metersApart(meters.round().toString())}';
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

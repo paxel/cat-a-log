@@ -157,7 +157,9 @@ Uint8List catShareBytes(CatalogStore store,
       archive.addFile(ArchiveFile('blobs/$hash.jpg', bytes.length, bytes));
     }
   }
-  return Uint8List.fromList(ZipEncoder().encode(archive)!);
+  final zip = ZipEncoder().encode(archive);
+  if (zip == null) throw StateError('The share could not be zipped');
+  return Uint8List.fromList(zip);
 }
 
 /// Writes the share to a `.catsync` file and returns its path.

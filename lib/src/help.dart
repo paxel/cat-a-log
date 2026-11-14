@@ -72,22 +72,22 @@ class HelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final text = helpTexts[screenId]!;
-    final hasTips = store != null && spotlightManifest.containsKey(screenId);
+    final text = helpTexts[screenId];
+    final store = this.store;
     return Scaffold(
       appBar: pageBar(context, title: Text(t.helpTitle)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text(text(t)),
-          if (hasTips) ...[
+          if (text != null) Text(text(t)),
+          if (store != null && spotlightManifest.containsKey(screenId)) ...[
             const SizedBox(height: 20),
             FilledButton.tonalIcon(
               icon: const Icon(Icons.lightbulb_outline),
               label: Text(t.showTipsAgain),
               onPressed: () {
                 // Only this screen's tips come back, not every tour.
-                replaySpotlights(store!, screenId);
+                replaySpotlights(store, screenId);
                 Navigator.of(context).pop();
               },
             ),

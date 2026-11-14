@@ -32,6 +32,11 @@ jobs:
           dart pub get
           dart analyze --fatal-infos
           dart test
+      # No `!` null assertion outside tests (cat-1015), in the core and the
+      # app: the Dart counterpart of the desktop's ban on panics.
+      - name: No null assertion outside tests
+        working-directory: packages/catalog_core
+        run: dart run tool/no_null_assertions.dart lib ../../lib
       - name: Core — the fixture corpus the desktop core is tested against is current
         working-directory: packages/catalog_core
         run: |

@@ -86,9 +86,10 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
   );
   late ChoreRepeat _repeat = _source?.schedule.repeat ?? ChoreRepeat.daily;
   // Two at least; a new chore has no existing schedule to read.
-  late int _every = _source == null || _source!.schedule.every < 2
-      ? 2
-      : _source!.schedule.every;
+  late int _every = switch (_source?.schedule.every) {
+    final every? when every >= 2 => every,
+    _ => 2,
+  };
   late ChoreUnit _unit = _source?.schedule.unit ?? ChoreUnit.days;
 
   /// The longest gap that still means something per unit.
@@ -146,8 +147,9 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
     final name = _title.text.trim();
     if (name.isEmpty) return;
     final Chore saved;
+    final existing = this.existing;
     if (existing != null) {
-      saved = existing!.copyWith(
+      saved = existing.copyWith(
         title: name,
         schedule: _schedule,
         time: _time,
@@ -193,7 +195,9 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
   }
 
   void _pauseOrResume() {
-    final changed = existing!.copyWith(paused: !existing!.paused);
+    final existing = this.existing;
+    if (existing == null) return;
+    final changed = existing.copyWith(paused: !existing.paused);
     store.updateChore(changed);
     Navigator.of(context).pop(changed);
   }
@@ -221,7 +225,9 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
       ),
     );
     if (sure != true || !mounted) return;
-    final changed = existing!.copyWith(ended: true);
+    final existing = this.existing;
+    if (existing == null) return;
+    final changed = existing.copyWith(ended: true);
     store.updateChore(changed);
     Navigator.of(context).pop(changed);
   }
@@ -250,6 +256,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
   String _nextReminderText(AppLocalizations t) {
     final at = _remindAt ?? _time;
     if (at == null) return t.remindNone;
+    final existing = this.existing;
     final draft =
         (existing ??
                 Chore(
@@ -268,7 +275,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
             );
     final ticks = existing == null
         ? <DateTime, DateTime>{}
-        : store.choreTicks(existing!);
+        : store.choreTicks(existing);
     final now = clockNow();
     final today = dayOf(now);
     DateTime moment(DateTime day) =>
@@ -330,6 +337,10 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
     final t = context.t;
     final locale = Localizations.localeOf(context).toString();
     final theme = Theme.of(context);
+    final existing = this.existing;
+    final due = _due;
+    final time = _time;
+    final remindAt = _remindAt;
     return Scaffold(
       appBar: pageBar(
         context,
@@ -388,9 +399,9 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.event),
               title: Text(
-                _due == null
+                due == null
                     ? t.choreNoDueDate
-                    : '${t.dueDateLabel}: ${DateFormat.yMMMEd(locale).format(_due!)}',
+                    : '${t.dueDateLabel}: ${DateFormat.yMMMEd(locale).format(due)}',
               ),
               trailing: _due == null
                   ? null
@@ -463,7 +474,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.schedule),
-            title: Text(_time == null ? t.choreNoTime : _clock(_time!)),
+            title: Text(time == null ? t.choreNoTime : _clock(time)),
             trailing: _time == null
                 ? null
                 : IconButton(
@@ -476,8 +487,8 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
             contentPadding: EdgeInsets.zero,
             secondary: const Icon(Icons.notifications_outlined),
             title: Text(t.remindMe),
-            subtitle: _remind && _remindAt != null
-                ? Text(_clock(_remindAt!))
+            subtitle: _remind && remindAt != null
+                ? Text(_clock(remindAt))
                 : null,
             value: _remind,
             onChanged: _toggleRemind,
@@ -488,12 +499,13 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
             Text(_nextReminderText(t), style: theme.textTheme.bodySmall),
             FutureBuilder<int>(
               future: port.pendingCount(),
-              builder: (context, snap) => snap.hasData
-                  ? Text(
-                      t.remindPending(snap.data!),
-                      style: theme.textTheme.bodySmall,
-                    )
-                  : const SizedBox.shrink(),
+              builder: (context, snap) => switch (snap.data) {
+                final pending? => Text(
+                  t.remindPending(pending),
+                  style: theme.textTheme.bodySmall,
+                ),
+                null => const SizedBox.shrink(),
+              },
             ),
             // Reminders are inexact alarms: Android picks the moment.
             Text(t.remindLateHint, style: theme.textTheme.bodySmall),
@@ -537,7 +549,7 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) =>
-                      ChoreHistoryScreen(store: store, chore: existing!),
+                      ChoreHistoryScreen(store: store, chore: existing),
                 ),
               ),
             ),
@@ -547,12 +559,10 @@ class _ChoreEditorScreenState extends State<ChoreEditorScreen> {
               onTap: _duplicate,
             ),
             // A deadline has nothing to pause: End covers "not needed".
-            if (!existing!.once)
+            if (!existing.once)
               ListTile(
-                leading: Icon(
-                  existing!.paused ? Icons.play_arrow : Icons.pause,
-                ),
-                title: Text(existing!.paused ? t.choreResume : t.chorePause),
+                leading: Icon(existing.paused ? Icons.play_arrow : Icons.pause),
+                title: Text(existing.paused ? t.choreResume : t.chorePause),
                 onTap: _pauseOrResume,
               ),
             ListTile(

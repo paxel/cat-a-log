@@ -182,8 +182,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
     final homes = {
       for (final m in members) store.current(m.entity, Keys.clowder),
     };
-    if (homes.length == 1 && homes.single != null) {
-      return _openEntity(homes.single!);
+    if (homes.length == 1) {
+      if (homes.single case final home?) return _openEntity(home);
     }
     final saved = await showAppointmentDialog(
       context,
@@ -303,8 +303,9 @@ class _AgendaScreenState extends State<AgendaScreen> {
     ]..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
     // By time of day; chores without a time first, they fit any hour.
     int byTime(Chore a, Chore b) {
-      final ta = a.time == null ? -1 : a.time!.hour * 60 + a.time!.minute;
-      final tb = b.time == null ? -1 : b.time!.hour * 60 + b.time!.minute;
+      final at = a.time, bt = b.time;
+      final ta = at == null ? -1 : at.hour * 60 + at.minute;
+      final tb = bt == null ? -1 : bt.hour * 60 + bt.minute;
       final t = ta.compareTo(tb);
       return t != 0
           ? t

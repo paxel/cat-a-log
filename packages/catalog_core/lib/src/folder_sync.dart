@@ -739,12 +739,12 @@ Future<int> publishOwn(CatalogStore store, SyncFolder folder,
         tail = await folder.read(dir, tailName);
         if (tail == null || tail.length >= segmentCap) tail = null;
       }
-      if (tail != null) {
+      if (tail != null && tailName != null) {
         // The segment is read back rather than appended to: the folder
         // knows no append, and a segment is small by design.
         final held = _splitLines(tail);
         await folder.write(
-            dir, tailName!, utf8.encode([...held, ...lines].join('\n')));
+            dir, tailName, utf8.encode([...held, ...lines].join('\n')));
         segments[segments.length - 1] = (tailName, held.length + lines.length);
       } else {
         final n = segments.length + 1;

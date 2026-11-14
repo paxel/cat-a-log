@@ -111,8 +111,9 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
       return;
     }
     if (!mounted) return;
-    setState(() => _picked = LatLng(position.$1, position.$2));
-    _controller.move(_picked!, 15);
+    final picked = LatLng(position.$1, position.$2);
+    setState(() => _picked = picked);
+    _controller.move(picked, 15);
   }
 
   Future<void> _runSearch() async {
@@ -150,9 +151,11 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
   }
 
   void _pop() {
+    final picked = _picked;
+    if (picked == null) return;
     _lastRegion = _controller.camera.center;
     _lastZoom = _controller.camera.zoom;
-    Navigator.of(context).pop('${_picked!.latitude},${_picked!.longitude}');
+    Navigator.of(context).pop('${picked.latitude},${picked.longitude}');
   }
 
   @override
@@ -231,11 +234,11 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
                 userAgentPackageName: 'io.github.paxel.catlog',
                 tileProvider: _tiles,
               ),
-              if (_picked != null)
+              if (_picked case final picked?)
                 MarkerLayer(
                   markers: [
                     Marker(
-                      point: _picked!,
+                      point: picked,
                       width: 44,
                       height: 44,
                       alignment: Alignment.topCenter,
@@ -252,15 +255,15 @@ class _PositionPickerScreenState extends State<PositionPickerScreen> {
               ),
             ],
           ),
-          if (_hits != null)
+          if (_hits case final hits?)
             Material(
               elevation: 4,
-              child: _hits!.isEmpty
+              child: hits.isEmpty
                   ? ListTile(title: Text(context.t.noPlacesFound))
                   : ListView(
                       shrinkWrap: true,
                       children: [
-                        for (final hit in _hits!)
+                        for (final hit in hits)
                           ListTile(
                             dense: true,
                             leading: const Icon(Icons.place_outlined),

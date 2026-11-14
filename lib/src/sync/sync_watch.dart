@@ -339,15 +339,14 @@ class SyncWatcher extends ChangeNotifier {
   /// failed note, and no second one for the same outage.
   void _failed() {
     final now = clock();
-    _failingSince ??= now;
-    if (_outageNoted || now.difference(_failingSince!) < outageAfter) return;
+    final since = _failingSince ??= now;
+    if (_outageNoted || now.difference(since) < outageAfter) return;
     _outageNoted = true;
-    final since = _failingSince!;
     _outageNote = Note.failed(
       (t) => t.noteFolderUnreachable(_clockText(since)),
       detail: store.localSetting('syncFolder'),
     );
-    notes.add(_outageNote!);
+    if (_outageNote case final note?) notes.add(note);
   }
 
   static String _clockText(DateTime at) =>

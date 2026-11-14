@@ -8,7 +8,8 @@
 #                    the Rust desktop's tests, tag = pubspec = Cargo versions,
 #                    no known vulnerability in a lockfile, a CHANGELOG section
 #                    for the version, no open high or critical code-scanning
-#                    alert, Dart format, no untranslated string,
+#                    alert, Dart format, no null assertion,
+#                    no untranslated string,
 #                    the SonarQube Cloud quality gate OK, cargo-deny)
 #   geiger         — cargo geiger, report-only: unsafe counts in the log,
 #                    never blocks
@@ -170,6 +171,11 @@ jobs:
           dart pub get
           dart analyze --fatal-infos
           dart test
+      # No `!` null assertion outside tests (cat-1015), in the core and the
+      # app: the Dart counterpart of the desktop's ban on panics.
+      - name: No null assertion outside tests
+        working-directory: packages/catalog_core
+        run: dart run tool/no_null_assertions.dart lib ../../lib
       - name: App — analyze and test
         run: |
           flutter pub get

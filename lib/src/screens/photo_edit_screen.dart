@@ -75,8 +75,7 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
   }
 
   /// Where the image actually renders inside [box] with BoxFit.contain.
-  Rect _renderedRect(Size box) {
-    final image = _imageSize!;
+  Rect _renderedRect(Size box, Size image) {
     final scale = (box.width / image.width) < (box.height / image.height)
         ? box.width / image.width
         : box.height / image.height;
@@ -86,18 +85,20 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
   }
 
   Rect? get _selection {
-    if (_start == null || _end == null) return null;
-    return Rect.fromPoints(_start!, _end!);
+    final start = _start, end = _end;
+    if (start == null || end == null) return null;
+    return Rect.fromPoints(start, end);
   }
 
   Size _boxSize = Size.zero;
 
   Future<void> _apply() async {
     final selection = _selection;
-    if (selection == null || _imageSize == null || _boxSize == Size.zero) {
+    final imageSize = _imageSize;
+    if (selection == null || imageSize == null || _boxSize == Size.zero) {
       return;
     }
-    final rendered = _renderedRect(_boxSize);
+    final rendered = _renderedRect(_boxSize, imageSize);
     final sel = selection.intersect(rendered);
     if (sel.width < 8 || sel.height < 8) return;
     // Normalize to 0..1 image fractions.
@@ -231,6 +232,7 @@ class _SelectionPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final selection = this.selection;
     if (selection == null) return;
     final casing = Paint()
       ..style = PaintingStyle.stroke
@@ -241,11 +243,11 @@ class _SelectionPainter extends CustomPainter {
       ..strokeWidth = 3
       ..color = Colors.deepOrange;
     if (ellipse) {
-      canvas.drawOval(selection!, casing);
-      canvas.drawOval(selection!, stroke);
+      canvas.drawOval(selection, casing);
+      canvas.drawOval(selection, stroke);
     } else {
-      canvas.drawRect(selection!, casing);
-      canvas.drawRect(selection!, stroke);
+      canvas.drawRect(selection, casing);
+      canvas.drawRect(selection, stroke);
     }
   }
 

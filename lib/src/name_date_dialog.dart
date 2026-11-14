@@ -115,7 +115,9 @@ class _NameDateDialogState extends State<_NameDateDialog> {
   }
 
   Future<void> _reroll() async {
-    final name = await widget.propose!();
+    final propose = widget.propose;
+    if (propose == null) return;
+    final name = await propose();
     if (name == null || !mounted) return;
     _name.text = name;
     // Selected, so typing replaces the proposal without extra taps.

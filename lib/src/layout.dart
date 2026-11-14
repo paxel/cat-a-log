@@ -313,7 +313,8 @@ class _PageBar extends StatelessWidget {
           child: DefaultTextStyle(
             style:
                 (theme.appBarTheme.titleTextStyle ??
-                        theme.textTheme.titleLarge!)
+                        theme.textTheme.titleLarge ??
+                        const TextStyle())
                     .copyWith(
                       color: foregroundColor ?? theme.colorScheme.onSurface,
                     ),

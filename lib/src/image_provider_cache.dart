@@ -37,8 +37,8 @@ CatalogImage? imageProviderFor(CatalogStore store, String hash) {
   _bytesHeld += bytes.length;
   while (_providers.length > _maxEntries ||
       (_bytesHeld > _maxBytes && _providers.length > 1)) {
-    final evicted = _providers.remove(_providers.keys.first)!;
-    _bytesHeld -= evicted.bytes.length;
+    final evicted = _providers.remove(_providers.keys.first);
+    if (evicted != null) _bytesHeld -= evicted.bytes.length;
   }
   return provider;
 }

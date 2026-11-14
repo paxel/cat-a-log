@@ -151,7 +151,7 @@ List<String> urlsIn(String text) {
   final pattern =
       RegExp(r'(?:https?://|www\.)[^\s<>"' r"'" r']+', caseSensitive: false);
   for (final m in pattern.allMatches(text)) {
-    var url = m.group(0)!;
+    var url = text.substring(m.start, m.end);
     // Trailing sentence punctuation is not part of the link.
     url = url.replaceAll(RegExp(r'[.,;:)\]]+$'), '');
     if (!url.toLowerCase().startsWith('http')) url = 'https://$url';

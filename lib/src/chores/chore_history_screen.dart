@@ -63,9 +63,11 @@ class _ChoreHistoryScreenState extends State<ChoreHistoryScreen> {
     final day = DateFormat.yMEd(locale);
     switch (r.state) {
       case ChoreDay.done:
-        final when = r.tick == null
-            ? day.format(r.doneOn!)
-            : historyMoment(locale, r.tick!.date);
+        final when = switch ((r.tick, r.doneOn)) {
+          (final tick?, _) => historyMoment(locale, tick.date),
+          (null, final doneOn?) => day.format(doneOn),
+          (null, null) => '',
+        };
         final base = t.choreDoneAt(when, r.author ?? '');
         if (r.early) return '$base · ${t.choreDoneEarly}';
         if (r.late) return '$base · ${t.choreDoneLate}';
@@ -190,26 +192,31 @@ class _ChoreHistoryScreenState extends State<ChoreHistoryScreen> {
           // removes, a removed tick offers its way back.
           for (final r in _rows)
             ListTile(
-              onTap: r.tick == null ? null : () => _correct(r.tick!),
-              trailing: r.tick != null
-                  ? IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      tooltip: t.removeThisValue,
-                      onPressed: () {
-                        store.removeEntry(r.tick!.seq);
-                        setState(() {});
-                      },
-                    )
-                  : _voidedTick(r) == null
-                  ? null
-                  : IconButton(
-                      icon: const Icon(Icons.restore),
-                      tooltip: t.restoreThisValue,
-                      onPressed: () {
-                        store.restoreEntry(_voidedTick(r)!.seq);
-                        setState(() {});
-                      },
-                    ),
+              onTap: switch (r.tick) {
+                final tick? => () => _correct(tick),
+                null => null,
+              },
+              trailing: switch (r.tick) {
+                final tick? => IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: t.removeThisValue,
+                  onPressed: () {
+                    store.removeEntry(tick.seq);
+                    setState(() {});
+                  },
+                ),
+                null when _voidedTick(r) == null => null,
+                null => IconButton(
+                  icon: const Icon(Icons.restore),
+                  tooltip: t.restoreThisValue,
+                  onPressed: () {
+                    if (_voidedTick(r) case final gone?) {
+                      store.restoreEntry(gone.seq);
+                    }
+                    setState(() {});
+                  },
+                ),
+              },
               leading: Icon(
                 switch (r.state) {
                   ChoreDay.done => Icons.check_circle,

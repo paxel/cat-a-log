@@ -124,6 +124,6 @@ String formatAddress(Object? address, {required String fallback}) {
 (double, double, double, double)? _bounds(Object? raw) {
   if (raw is! List || raw.length != 4) return null;
   final v = [for (final x in raw) double.tryParse('$x')];
-  if (v.any((x) => x == null)) return null;
-  return (v[0]!, v[1]!, v[2]!, v[3]!);
+  if (v case [final a?, final b?, final c?, final d?]) return (a, b, c, d);
+  return null;
 }

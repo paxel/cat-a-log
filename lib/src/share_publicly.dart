@@ -85,11 +85,12 @@ class _SharePubliclyScreenState extends State<SharePubliclyScreen> {
   Set<String>? _inlineFor;
 
   String get _inlinePayload {
-    if (_inline == null || !setEquals(_inlineFor, _selected)) {
-      _inline = encodeShareData(_bytes(photos: false));
-      _inlineFor = {..._selected};
-    }
-    return _inline!;
+    final inline = _inline;
+    if (inline != null && setEquals(_inlineFor, _selected)) return inline;
+    final fresh = encodeShareData(_bytes(photos: false));
+    _inline = fresh;
+    _inlineFor = {..._selected};
+    return fresh;
   }
 
   Future<void> _exportFile() async {

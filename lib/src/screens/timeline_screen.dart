@@ -79,11 +79,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   List<_Row> _rows() {
     final t = context.t;
-    final entries = widget.field == null
+    final field = widget.field;
+    final entries = field == null
         ? store.timeline(widget.entityId, includeVoided: _showVoided)
         : store.fieldHistory(
             widget.entityId,
-            widget.field!,
+            field,
             includeVoided: _showVoided,
           );
     final rows = <_Row>[
@@ -297,14 +298,13 @@ class _TimelineScreenState extends State<TimelineScreen> {
     return Scaffold(
       appBar: pageBar(
         context,
-        title: Text(
-          widget.field == null
-              ? context.t.timelineOf(name)
-              : context.t.fieldHistoryOf(
-                  fieldLabel(context.t, store, widget.field!),
-                  name,
-                ),
-        ),
+        title: Text(switch (widget.field) {
+          null => context.t.timelineOf(name),
+          final field => context.t.fieldHistoryOf(
+            fieldLabel(context.t, store, field),
+            name,
+          ),
+        }),
         help: PageHelp('timeline', store: store),
         actions: [
           PageAction(

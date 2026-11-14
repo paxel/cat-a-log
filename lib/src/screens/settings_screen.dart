@@ -203,14 +203,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: Text(_coatLabel(t)),
             onTap: _chooseCoat,
           ),
-          if (catalogManager != null)
+          if (catalogManager case final manager?)
             ListTile(
               leading: const Icon(Icons.emoji_events_outlined),
               title: Text(t.achievementsTitle),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => AchievementsScreen(
-                    manager: catalogManager!,
+                    manager: manager,
                     stores: [widget.store],
                   ),
                 ),

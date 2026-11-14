@@ -156,10 +156,8 @@ Future<void> _restoreWindow(CatalogStore store) async {
   await windowManager.waitUntilReadyToShow(null, () async {
     if (saved != null && saved.length == 4) {
       final v = saved.map(double.tryParse).toList();
-      if (!v.contains(null)) {
-        await windowManager.setBounds(
-          Rect.fromLTWH(v[0]!, v[1]!, v[2]!, v[3]!),
-        );
+      if (v case [final l?, final t?, final w?, final h?]) {
+        await windowManager.setBounds(Rect.fromLTWH(l, t, w, h));
       }
     }
     await windowManager.show();
@@ -456,6 +454,7 @@ class _CatlogAppState extends State<CatlogApp>
 
   @override
   Widget build(BuildContext context) {
+    final catalogs = widget.catalogs;
     return ValueListenableBuilder<Locale?>(
       valueListenable: localeOverride,
       builder: (context, locale, _) => MaterialApp(
@@ -510,7 +509,7 @@ class _CatlogAppState extends State<CatlogApp>
                 child: NoteStrip(
                   queue: NoteQueue.instance,
                   busy: busyFlows,
-                  openIn: () => navigatorKey.currentContext!,
+                  openIn: () => navigatorKey.currentContext ?? context,
                   child: child ?? const SizedBox.shrink(),
                 ),
               ),
@@ -532,9 +531,9 @@ class _CatlogAppState extends State<CatlogApp>
                 store: _store,
                 onDone: () => setState(() => _freshSetup = true),
               )
-            : _freshSetup && !_restoreOffered && widget.catalogs != null
+            : _freshSetup && !_restoreOffered && catalogs != null
             ? RestoreScreen(
-                catalogs: widget.catalogs!,
+                catalogs: catalogs,
                 onDone: (first) {
                   setState(() => _restoreOffered = true);
                   if (first != null) _switchCatalog(first);
@@ -544,10 +543,10 @@ class _CatlogAppState extends State<CatlogApp>
             ? IntroScreen(store: _store, onDone: () => setState(() {}))
             : HomeShell(
                 store: _store,
-                switching: widget.catalogs == null
+                switching: catalogs == null
                     ? null
                     : CatalogSwitching(
-                        catalogs: widget.catalogs!,
+                        catalogs: catalogs,
                         onSwitch: _switchCatalog,
                         onChanged: () => setState(() {}),
                       ),

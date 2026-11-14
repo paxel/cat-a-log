@@ -55,12 +55,13 @@ class _AddFanState extends State<AddFan> with SingleTickerProviderStateMixin {
 
   void _openFan() {
     final overlay = Overlay.of(context);
-    final box = _button.currentContext!.findRenderObject() as RenderBox;
+    final box = _button.currentContext?.findRenderObject();
+    if (box is! RenderBox) return;
     final overlayBox = overlay.context.findRenderObject() as RenderBox;
     final rect =
         box.localToGlobal(Offset.zero, ancestor: overlayBox) & box.size;
     _motion.duration = _duration;
-    _entry = OverlayEntry(
+    final entry = OverlayEntry(
       builder: (_) => _Fan(
         anchor: rect,
         items: widget.items,
@@ -69,7 +70,8 @@ class _AddFanState extends State<AddFan> with SingleTickerProviderStateMixin {
         onPick: _pick,
       ),
     );
-    overlay.insert(_entry!);
+    _entry = entry;
+    overlay.insert(entry);
     _motion.forward(from: 0);
     setState(() {});
   }

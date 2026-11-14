@@ -56,7 +56,9 @@ class ReminderCard extends StatelessWidget {
 
   /// The box unticked again: the fact goes, the plan is live again.
   void _undo() {
-    store.removeEntry(reminder.doneBy!.seq);
+    final doneBy = reminder.doneBy;
+    if (doneBy == null) return;
+    store.removeEntry(doneBy.seq);
     onChanged();
   }
 

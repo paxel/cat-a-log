@@ -59,14 +59,10 @@ class _AboutScreenState extends State<AboutScreen> {
           Center(
             child: FutureBuilder<PackageInfo>(
               future: PackageInfo.fromPlatform(),
-              builder: (context, snapshot) => Text(
-                snapshot.hasData
-                    ? t.versionLabel(
-                        snapshot.data!.version,
-                        snapshot.data!.buildNumber,
-                      )
-                    : '',
-              ),
+              builder: (context, snapshot) => Text(switch (snapshot.data) {
+                final info? => t.versionLabel(info.version, info.buildNumber),
+                null => '',
+              }),
             ),
           ),
           const SizedBox(height: 8),

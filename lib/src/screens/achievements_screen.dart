@@ -68,7 +68,9 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     ];
     final titled = [
       for (final s in states)
-        if (shown(s) && s.title != null) s,
+        if (shown(s))
+          if ((rankFor(s.tier), s.title) case (final rank?, final title?))
+            (s, rank, title),
     ];
     final months = states.firstWhere((s) => s.id == fullMonthId).times;
     final coats = unlockedCoats(months);
@@ -100,12 +102,12 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                 subtitle: Text(t.achievementReached(s.times, since(s))),
               ),
             ),
-          for (final s in titled)
+          for (final (s, rank, title) in titled)
             _row(
               s,
               ListTile(
                 leading: const Icon(Icons.workspace_premium_outlined),
-                title: Text(titleWithChore(t, rankFor(s.tier)!, s.title!)),
+                title: Text(titleWithChore(t, rank, title)),
                 // A master ladder counts ticks, not stretches: "done".
                 // No next rung here; the page lists what was earned,
                 // nothing to chase.

@@ -46,7 +46,10 @@ void afterChoreTick(
                 fullYearId => t.achievementYear,
                 fullDecadeId => t.achievementDecade,
                 fullCenturyId => t.achievementCentury,
-                _ => titleWithChore(t, rankFor(s.tier)!, s.title ?? ''),
+                _ => switch (rankFor(s.tier)) {
+                  final rank? => titleWithChore(t, rank, s.title ?? ''),
+                  null => s.title ?? '',
+                },
               },
           ].join(', '),
         ),
@@ -65,8 +68,10 @@ void afterChoreTick(
   List<Chore> chores,
   DateTime today,
 ) {
-  int minutes(Chore c) =>
-      c.time == null ? -1 : c.time!.hour * 60 + c.time!.minute;
+  int minutes(Chore c) => switch (c.time) {
+    final time? => time.hour * 60 + time.minute,
+    null => -1,
+  };
   int byTime(Chore a, Chore b) {
     final t = minutes(a).compareTo(minutes(b));
     return t != 0 ? t : a.title.toLowerCase().compareTo(b.title.toLowerCase());
@@ -87,10 +92,11 @@ void afterChoreTick(
   }
   final ordered = todayOrder(due, store.choreTicks, today);
   later.sort((a, b) {
-    if (a.$2 == null && b.$2 == null) return byTime(a.$1, b.$1);
-    if (a.$2 == null) return 1;
-    if (b.$2 == null) return -1;
-    final d = a.$2!.compareTo(b.$2!);
+    final (aDue, bDue) = (a.$2, b.$2);
+    if (aDue == null && bDue == null) return byTime(a.$1, b.$1);
+    if (aDue == null) return 1;
+    if (bDue == null) return -1;
+    final d = aDue.compareTo(bDue);
     return d != 0 ? d : byTime(a.$1, b.$1);
   });
   paused.sort(byTime);

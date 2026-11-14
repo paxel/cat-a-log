@@ -105,7 +105,8 @@ List<GraphPoint> graphPoints(
 ) {
   final points = <GraphPoint>[];
   for (final e in store.fieldHistory(entityId, def.key).reversed) {
-    final raw = e.value == null ? null : double.tryParse(e.value!);
+    final text = e.value;
+    final raw = text == null ? null : double.tryParse(text);
     if (raw == null) continue;
     final value = def.type == FieldType.unitValue
         ? fromBase(def.unitDimension, unitSystem.value, raw)
@@ -129,9 +130,8 @@ bool hasGraph(CatalogStore store, String entityId, FieldDef def) {
   if (!_graphable(def)) return false;
   var numbers = 0;
   for (final e in store.fieldHistory(entityId, def.key)) {
-    if (e.value != null &&
-        double.tryParse(e.value!) != null &&
-        ++numbers >= 2) {
+    final text = e.value;
+    if (text != null && double.tryParse(text) != null && ++numbers >= 2) {
       return true;
     }
   }
@@ -303,14 +303,14 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
   final _pictureKey = GlobalKey();
 
   /// The picture as PNG, three device pixels per logical one.
+  /// Empty when the picture is not laid out or could not be encoded.
   Future<Uint8List> pictureAsPng() async {
-    final boundary =
-        _pictureKey.currentContext!.findRenderObject()!
-            as RenderRepaintBoundary;
+    final boundary = _pictureKey.currentContext?.findRenderObject();
+    if (boundary is! RenderRepaintBoundary) return Uint8List(0);
     final image = await boundary.toImage(pixelRatio: 3);
     try {
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
-      return data!.buffer.asUint8List();
+      return data?.buffer.asUint8List() ?? Uint8List(0);
     } finally {
       image.dispose();
     }
@@ -318,7 +318,7 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
 
   Future<void> _share() async {
     final png = await pictureAsPng();
-    if (!mounted) return;
+    if (png.isEmpty || !mounted) return;
     final name = store.current(widget.entityId, Keys.name) ?? 'cat';
     final field = fieldDefName(context.t, widget.def);
     await shareFiles(context, [
@@ -470,7 +470,9 @@ class _FieldGraphScreenState extends State<FieldGraphScreen> {
                         lineColor: Theme.of(context).colorScheme.primary,
                         // The painter draws its own text: it must carry the app's
                         // font, or it falls back to the engine's box glyphs.
-                        labelStyle: Theme.of(context).textTheme.bodySmall!,
+                        labelStyle:
+                            Theme.of(context).textTheme.bodySmall ??
+                            const TextStyle(),
                         tickColor: Theme.of(context).colorScheme.tertiary,
                         format: _number,
                         dateFormat: (d) => DateFormat.MMMd(locale).format(d),
@@ -547,7 +549,8 @@ class GraphPainter extends CustomPainter {
     final axis = Paint()
       ..color = textColor.withValues(alpha: 0.3)
       ..strokeWidth = 1;
-    if (points.isEmpty || from == null) {
+    final start = from;
+    if (points.isEmpty || start == null) {
       canvas.drawLine(
         Offset(8, size.height - bottom),
         Offset(size.width - right, size.height - bottom),
@@ -555,7 +558,6 @@ class GraphPainter extends CustomPainter {
       );
       return;
     }
-    final start = from!;
     final spanMs = math.max(1, to.difference(start).inMilliseconds);
     var lo = points.map((p) => p.value).reduce(math.min);
     var hi = points.map((p) => p.value).reduce(math.max);

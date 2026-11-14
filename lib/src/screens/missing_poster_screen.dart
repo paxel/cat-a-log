@@ -385,20 +385,21 @@ class _MissingPosterScreenState extends State<MissingPosterScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final (i, hash) in chosen.indexed) ...[
-                if (i > 0) const SizedBox(width: 8),
-                Expanded(
-                  child: PosterFrame(
-                    key: ValueKey('frame-$hash'),
-                    bytes: photos[hash]!.bytes,
-                    aspect: posterFrameAspect(chosen.length, i),
-                    onChanged: (p) {
-                      photos[hash] = p;
-                      _schedulePreview();
-                    },
+              for (final (i, hash) in chosen.indexed)
+                if (photos[hash] case final photo?) ...[
+                  if (i > 0) const SizedBox(width: 8),
+                  Expanded(
+                    child: PosterFrame(
+                      key: ValueKey('frame-$hash'),
+                      bytes: photo.bytes,
+                      aspect: posterFrameAspect(chosen.length, i),
+                      onChanged: (p) {
+                        photos[hash] = p;
+                        _schedulePreview();
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
             ],
           ),
         ),
@@ -450,7 +451,7 @@ class _MissingPosterScreenState extends State<MissingPosterScreen> {
             : null,
         children: [
           // The page as it prints, redrawn after every change.
-          if (_previewPng != null) ...[
+          if (_previewPng case final previewPng?) ...[
             Text(
               t.posterPreview,
               style: Theme.of(context).textTheme.titleSmall,
@@ -465,7 +466,7 @@ class _MissingPosterScreenState extends State<MissingPosterScreen> {
                       border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                     child: Image.memory(
-                      _previewPng!,
+                      previewPng,
                       fit: BoxFit.contain,
                       gaplessPlayback: true,
                     ),
@@ -514,7 +515,11 @@ class _MissingPosterScreenState extends State<MissingPosterScreen> {
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
             value: _qr && qrFits,
-            onChanged: qrFits ? (v) => _changed(() => _qr = v!) : null,
+            onChanged: qrFits
+                ? (v) {
+                    if (v != null) _changed(() => _qr = v);
+                  }
+                : null,
             title: Text(t.posterQr),
             subtitle: qrFits ? null : Text(t.posterQrTooBig),
           ),

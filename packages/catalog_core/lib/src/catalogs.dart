@@ -425,5 +425,8 @@ class Achievement {
 
   /// Whether a ladder at [tier] is on show: not waved off, or climbed
   /// past the tier it was waved off at.
-  bool shows(int tier) => dismissed == null || tier > dismissed!;
+  bool shows(int tier) => switch (dismissed) {
+        final d? => tier > d,
+        null => true,
+      };
 }

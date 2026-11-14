@@ -128,9 +128,8 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
     for (final def in store.visibleFieldDefs(scope: FieldScope.clowder))
       if (def.type == FieldType.id &&
           def.idDisplay != IdDisplay.plain &&
-          _selected.contains(def.key) &&
-          store.current(id, def.key) != null)
-        (def, store.current(id, def.key)!),
+          _selected.contains(def.key))
+        if (store.current(id, def.key) case final value?) (def, value),
   ];
 
   Widget _scannable(FieldDef def, String value) => Padding(
@@ -180,13 +179,13 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
     );
   }
 
-  Future<Uint8List> _cardAsPng() async {
-    final boundary =
-        _cardKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+  Future<Uint8List?> _cardAsPng() async {
+    final boundary = _cardKey.currentContext?.findRenderObject();
+    if (boundary is! RenderRepaintBoundary) return null;
     final image = await boundary.toImage(pixelRatio: 3);
     try {
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
-      return data!.buffer.asUint8List();
+      return data?.buffer.asUint8List();
     } finally {
       image.dispose();
     }
@@ -195,7 +194,7 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
   Future<void> _shareImage() async {
     final png = await _cardAsPng();
     final name = store.current(id, Keys.name) ?? 'clowder';
-    if (!mounted) return;
+    if (png == null || !mounted) return;
     await shareFiles(context, [
       XFile.fromData(png, mimeType: 'image/png', name: '$name-card.png'),
     ]);

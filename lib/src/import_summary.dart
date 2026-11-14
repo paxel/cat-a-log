@@ -319,8 +319,9 @@ ImportReview reviewImport(
       } else if (c.field == Keys.clowder && !isNew) {
         if (c.after == null) {
           tags.add(tagEscaped);
-        } else if (store.current(store.resolveEntity(c.after!), 'f:status') ==
-            'forever-home') {
+        } else if (c.after case final after?
+            when store.current(store.resolveEntity(after), 'f:status') ==
+                'forever-home') {
           tags.add(tagAdopted);
         }
       } else if (c.field == 'f:deceased' && c.after != null && !isNew) {
@@ -667,10 +668,12 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
   );
 
   Future<void> _reject() async {
+    final undo = widget.undo;
+    if (undo == null) return;
     final done = await confirmUndoImport(
       context,
       store,
-      widget.undo!,
+      undo,
       saveTo: widget.saveTo,
     );
     if (done && mounted) Navigator.of(context).pop();

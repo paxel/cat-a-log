@@ -146,21 +146,23 @@ bool _hasKittensAs(CatalogStore store, String entityId, String role) {
 
 String objectionText(BuildContext context, Objection objection) {
   final t = context.t;
-  String d(DateTime date) =>
-      DateFormat.yMd(Localizations.localeOf(context).toString()).format(date);
+  String d(DateTime? date) => date == null
+      ? ''
+      : DateFormat.yMd(Localizations.localeOf(context).toString()).format(date);
+  final name = objection.name ?? '';
   return switch (objection.kind) {
     ObjectionKind.birthdateInFuture => t.birthdateInFuture,
     ObjectionKind.deceasedInFuture => t.deceasedInFuture,
     ObjectionKind.deceasedBeforeBirth => t.deceasedBeforeBirth(
-      d(objection.date!),
+      d(objection.date),
     ),
-    ObjectionKind.bornAfterDeceased => t.bornAfterDeceased(d(objection.date!)),
+    ObjectionKind.bornAfterDeceased => t.bornAfterDeceased(d(objection.date)),
     ObjectionKind.malePregnant => t.malePregnant,
-    ObjectionKind.fatherNotMale => t.fatherNotMale(objection.name!),
-    ObjectionKind.motherNotFemale => t.motherNotFemale(objection.name!),
+    ObjectionKind.fatherNotMale => t.fatherNotMale(name),
+    ObjectionKind.motherNotFemale => t.motherNotFemale(name),
     ObjectionKind.parentBornAfterKitten => t.parentBornAfterKitten(
-      objection.name!,
-      d(objection.date!),
+      name,
+      d(objection.date),
     ),
     ObjectionKind.genderFatherFemale => t.genderFatherFemale,
     ObjectionKind.genderMotherMale => t.genderMotherMale,

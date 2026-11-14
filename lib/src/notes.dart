@@ -446,15 +446,18 @@ Future<void> showFailureDialog(BuildContext context, Note note) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (note.detail case final detail?) SelectableText(detail),
-            if (note.onOpenPage != null && note.pageLabel != null) ...[
+            if ((note.onOpenPage, note.pageLabel) case (
+              final openPage?,
+              final pageLabel?,
+            )) ...[
               const SizedBox(height: 12),
               InkWell(
                 onTap: () {
                   Navigator.of(context).pop();
-                  note.onOpenPage!();
+                  openPage();
                 },
                 child: Text(
-                  t.failureOpenPage(note.pageLabel!(t)),
+                  t.failureOpenPage(pageLabel(t)),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
                     decoration: TextDecoration.underline,

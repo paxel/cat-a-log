@@ -100,8 +100,8 @@ class AppointmentCard extends StatelessWidget {
   /// finish wrote onto its linked field goes with it.
   void _reopen() {
     final a = appointment;
-    if (a.linkedField != null) {
-      final last = store.fieldHistory(a.entity, a.linkedField!).firstOrNull;
+    if (a.linkedField case final linkedField?) {
+      final last = store.fieldHistory(a.entity, linkedField).firstOrNull;
       if (last != null && !last.reminder && last.value == a.linkedValue) {
         store.removeEntry(last.seq);
       }
@@ -144,10 +144,12 @@ class AppointmentCard extends StatelessWidget {
         ? DateUtils.dateOnly(a.date).isBefore(DateUtils.dateOnly(now))
         : a.start.isBefore(now);
     final locale = Localizations.localeOf(context).toString();
-    final when = a.allDay
-        ? DateFormat.yMd(locale).format(a.date)
-        : '${DateFormat.yMd(locale).format(a.date)} '
-              '${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay(hour: a.time!.hour, minute: a.time!.minute))}';
+    final when = switch (a.time) {
+      final time? =>
+        '${DateFormat.yMd(locale).format(a.date)} '
+            '${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay(hour: time.hour, minute: time.minute))}',
+      null => DateFormat.yMd(locale).format(a.date),
+    };
     // One cat: its name in the line. Several: chips below, one each.
     final who = showEntity && members.length == 1
         ? '${_nameOf(context, a.entity)} · '
@@ -230,9 +232,10 @@ class AppointmentCard extends StatelessWidget {
                       ActionChip(
                         label: Text(_nameOf(context, m.entity)),
                         visualDensity: VisualDensity.compact,
-                        onPressed: onOpenEntity == null
-                            ? null
-                            : () => onOpenEntity!(m.entity),
+                        onPressed: switch (onOpenEntity) {
+                          final open? => () => open(m.entity),
+                          null => null,
+                        },
                       ),
                   ],
                 ),

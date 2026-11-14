@@ -27,11 +27,11 @@ class PartialDate implements Comparable<PartialDate> {
   DateTime get earliest => DateTime(year, month ?? 1, day ?? 1);
 
   /// Last day of the period.
-  DateTime get latest => day != null
-      ? DateTime(year, month!, day!)
-      : month != null
-          ? DateTime(year, month! + 1, 0)
-          : DateTime(year, 12, 31);
+  DateTime get latest => switch ((month, day)) {
+        (final m?, final d?) => DateTime(year, m, d),
+        (final m?, null) => DateTime(year, m + 1, 0),
+        _ => DateTime(year, 12, 31),
+      };
 
   /// The stored form parsed back; null for anything else.
   static PartialDate? parse(String? value) {
@@ -39,11 +39,9 @@ class PartialDate implements Comparable<PartialDate> {
     final m =
         RegExp(r'^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?$').firstMatch(value.trim());
     if (m == null) return null;
-    return _checked(
-      int.parse(m.group(1)!),
-      m.group(2) == null ? null : int.parse(m.group(2)!),
-      m.group(3) == null ? null : int.parse(m.group(3)!),
-    );
+    final y = _number(m, 1);
+    if (y == null) return null;
+    return _checked(y, _number(m, 2), _number(m, 3));
   }
 
   /// A date as people type or posters print it: `2021`, `5/2021`,
@@ -56,19 +54,34 @@ class PartialDate implements Comparable<PartialDate> {
     if (iso != null) return iso;
     final dmy = RegExp(r'^(\d{1,2})[./](\d{1,2})[./](\d{4})$').firstMatch(s);
     if (dmy != null) {
-      return _checked(int.parse(dmy.group(3)!), int.parse(dmy.group(2)!),
-          int.parse(dmy.group(1)!));
+      return switch ((_number(dmy, 3), _number(dmy, 2), _number(dmy, 1))) {
+        (final y?, final mo?, final d?) => _checked(y, mo, d),
+        _ => null,
+      };
     }
     final my = RegExp(r'^(\d{1,2})[./](\d{4})$').firstMatch(s);
     if (my != null) {
-      return _checked(int.parse(my.group(2)!), int.parse(my.group(1)!), null);
+      return switch ((_number(my, 2), _number(my, 1))) {
+        (final y?, final mo?) => _checked(y, mo, null),
+        _ => null,
+      };
     }
     final ym = RegExp(r'^(\d{4})[./](\d{1,2})$').firstMatch(s);
     if (ym != null) {
-      return _checked(int.parse(ym.group(1)!), int.parse(ym.group(2)!), null);
+      return switch ((_number(ym, 1), _number(ym, 2))) {
+        (final y?, final mo?) => _checked(y, mo, null),
+        _ => null,
+      };
     }
     return null;
   }
+
+  /// Group [i] of [m] as a number; null when the group did not take
+  /// part in the match.
+  static int? _number(RegExpMatch m, int i) => switch (m.group(i)) {
+        final g? => int.parse(g),
+        null => null,
+      };
 
   /// The first date found inside free text (a poster line), by the same
   /// spellings as [parseLoose]; null when there is none.
@@ -83,7 +96,7 @@ class PartialDate implements Comparable<PartialDate> {
       final m = re.firstMatch(text);
       // The fullest spelling present decides; an impossible day is no
       // date, not a month plucked from its tail.
-      if (m != null) return parseLoose(m.group(0)!);
+      if (m != null) return parseLoose(text.substring(m.start, m.end));
     }
     return null;
   }
@@ -102,11 +115,13 @@ class PartialDate implements Comparable<PartialDate> {
   /// allows: a year-only date yields months null. Null before the date.
   ({int years, int? months})? ageAt(DateTime today) {
     var years = today.year - year;
+    final month = this.month;
     if (month == null) {
       return years < 0 ? null : (years: years, months: null);
     }
-    var months = today.month - month!;
-    if (day != null && today.day < day!) months -= 1;
+    var months = today.month - month;
+    final day = this.day;
+    if (day != null && today.day < day) months -= 1;
     if (months < 0) {
       years -= 1;
       months += 12;

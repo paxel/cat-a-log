@@ -116,7 +116,8 @@ class LanSyncHost {
 
   Uint8List get fingerprint => identity.fingerprint;
 
-  int get port => _server!.port;
+  /// The port being served; 0 before [start].
+  int get port => _server?.port ?? 0;
 
   /// True once too many wrong PINs arrived: the host no longer answers
   /// anything and must be started again with a new PIN.
@@ -139,8 +140,9 @@ class LanSyncHost {
       }
     }
     address ??= InternetAddress.loopbackIPv4;
-    _server = await HttpServer.bindSecure(address, 0, identity.context);
-    _server!.listen(_handle, onError: (_) {});
+    final server = await HttpServer.bindSecure(address, 0, identity.context);
+    _server = server;
+    server.listen(_handle, onError: (_) {});
     return address.address;
   }
 
@@ -219,9 +221,10 @@ class LanSyncHost {
         final author = body['author'] as String? ?? '?';
         final deviceName = body['deviceName'] as String? ?? '?';
         final deviceId = body['deviceId'] as String? ?? '';
+        final onJoinRequest = this.onJoinRequest;
         final decision = onJoinRequest == null
             ? const JoinDecision(true, false)
-            : await onJoinRequest!(author, '$deviceName|$deviceId');
+            : await onJoinRequest(author, '$deviceName|$deviceId');
         if (!decision.allow) {
           req.response.statusCode = HttpStatus.forbidden;
           req.response.write('declined');

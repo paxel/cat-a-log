@@ -250,13 +250,15 @@ class _MapScreenState extends State<MapScreen>
         (EntityView(s.front.id, s.front.name), LatLng(s.lat, s.lon)),
     ];
     if (pins.isEmpty) return;
-    if (_navChain == null || _navChain!.length != pins.length) {
-      _navChain = navChain(pins, _controller.camera.center);
+    var chain = _navChain;
+    if (chain == null || chain.length != pins.length) {
+      chain = navChain(pins, _controller.camera.center);
+      _navChain = chain;
       _navIndex = -1;
     }
-    _navIndex = (_navIndex + direction) % _navChain!.length;
-    if (_navIndex < 0) _navIndex += _navChain!.length;
-    _animateTo(_navChain![_navIndex].$2, 15);
+    _navIndex = (_navIndex + direction) % chain.length;
+    if (_navIndex < 0) _navIndex += chain.length;
+    _animateTo(chain[_navIndex].$2, 15);
   }
 
   /// The dated positions of one location field, oldest first. For the
@@ -560,7 +562,9 @@ class _MapScreenState extends State<MapScreen>
   /// removal — all at the dot, nothing sliding in.
   Future<void> _dotMenu(Entry entry, Offset at) async {
     final t = context.t;
-    final (id, field) = _trailOf!;
+    final trail = _trailOf;
+    if (trail == null) return;
+    final (id, field) = trail;
     final def = _trailDef(field);
     final date = entry.date.toLocal().toIso8601String().substring(0, 10);
     final action = await showMenu<String>(
@@ -585,9 +589,10 @@ class _MapScreenState extends State<MapScreen>
           ),
         );
       case 'correct':
+        if (def == null) return;
         final edit = await editFieldValue(
           context,
-          def!,
+          def,
           entry.value,
           store: store,
           excludeId: id,
@@ -871,14 +876,14 @@ class _MapScreenState extends State<MapScreen>
 
   /// The bar under a drawn trail: whose, how many values, the tapped
   /// dot's date and author, a way into the page, and off.
-  Widget _trailBar(BuildContext context) {
+  Widget _trailBar(BuildContext context, (String, String) trail) {
     final t = context.t;
-    final (id, field) = _trailOf!;
+    final (id, field) = trail;
     final name = store.current(id, Keys.name) ?? t.unnamed;
     final def = field == CatalogStore.positionKey
         ? null
         : store.fieldDefs().where((d) => d.key == field).firstOrNull;
-    final count = _trailPoints(_trailOf!).length;
+    final count = _trailPoints(trail).length;
     // A cat is sighted; a home simply moves, like its people.
     var label = def != null
         ? t.trailOfField(name, fieldDefName(t, def), count)
@@ -1026,12 +1031,13 @@ class _MapScreenState extends State<MapScreen>
                       ),
                     // The trail line lies under the pins and dots, so both stay
                     // tappable.
-                    if (_trailOf != null && _trailPoints(_trailOf!).length > 1)
+                    if (_trailOf case final trail?
+                        when _trailPoints(trail).length > 1)
                       PolylineLayer(
                         polylines: [
                           Polyline(
                             points: [
-                              for (final (_, p) in _trailPoints(_trailOf!)) p,
+                              for (final (_, p) in _trailPoints(trail)) p,
                             ],
                             strokeWidth: 3,
                             color: Colors.redAccent,
@@ -1160,15 +1166,15 @@ class _MapScreenState extends State<MapScreen>
                     ),
                   ],
                 ),
-                if (_hits != null && _hits!.length != 1)
+                if (_hits case final hits? when hits.length != 1)
                   Material(
                     elevation: 4,
-                    child: _hits!.isEmpty
+                    child: hits.isEmpty
                         ? ListTile(title: Text(context.t.noPlacesFound))
                         : ListView(
                             shrinkWrap: true,
                             children: [
-                              for (final (entity, point) in _hits!)
+                              for (final (entity, point) in hits)
                                 ListTile(
                                   dense: true,
                                   leading: Icon(
@@ -1186,15 +1192,15 @@ class _MapScreenState extends State<MapScreen>
                             ],
                           ),
                   ),
-                if (_placeHits != null)
+                if (_placeHits case final placeHits?)
                   Material(
                     elevation: 4,
-                    child: _placeHits!.isEmpty
+                    child: placeHits.isEmpty
                         ? ListTile(title: Text(context.t.noPlacesFound))
                         : ListView(
                             shrinkWrap: true,
                             children: [
-                              for (final hit in _placeHits!)
+                              for (final hit in placeHits)
                                 ListTile(
                                   dense: true,
                                   leading: const Icon(Icons.place_outlined),
@@ -1225,7 +1231,10 @@ class _MapScreenState extends State<MapScreen>
           _toolbar(context),
         ],
       ),
-      bottomNavigationBar: _trailOf == null ? null : _trailBar(context),
+      bottomNavigationBar: switch (_trailOf) {
+        final trail? => _trailBar(context, trail),
+        null => null,
+      },
     );
   }
 }
@@ -1262,11 +1271,10 @@ class _MapPin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final menu = onLongPress;
     return GestureDetector(
       onTap: onTap,
-      onLongPressStart: onLongPress == null
-          ? null
-          : (d) => onLongPress!(d.globalPosition),
+      onLongPressStart: menu == null ? null : (d) => menu(d.globalPosition),
       // The marker box is laid out tight; packing to the end keeps the
       // tip's apex on the bottom edge, which is the coordinate.
       child: Column(

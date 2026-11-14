@@ -108,7 +108,8 @@ List<MatchCandidate> matchCandidates(CatalogStore store) {
     ];
     positions[cat.id] = sightings;
     fliers[cat.id] = store.flierPositions(cat.id);
-    homeOf[cat.id] = isStray[cat.id]! ? store.formerClowder(cat.id) : null;
+    homeOf[cat.id] =
+        (isStray[cat.id] ?? false) ? store.formerClowder(cat.id) : null;
     final home = strayHomePosition(store, cat.id);
     homes[cat.id] = home == null ? const [] : [home];
   }
@@ -117,12 +118,19 @@ List<MatchCandidate> matchCandidates(CatalogStore store) {
     for (var j = i + 1; j < cats.length; j++) {
       final a = cats[i].id, b = cats[j].id;
       if (seen.contains(_pairKey(a, b))) continue;
+      final strayA = isStray[a] ?? false, strayB = isStray[b] ?? false;
+      final positionsA = positions[a] ?? const [],
+          positionsB = positions[b] ?? const [];
+      final fliersA = fliers[a] ?? const [], fliersB = fliers[b] ?? const [];
+      final homesA = homes[a] ?? const [], homesB = homes[b] ?? const [];
       double? best;
       void check(List<(double, double)> xs, List<(double, double)> ys) {
         for (final x in xs) {
           for (final y in ys) {
             final d = haversineMeters(x.$1, x.$2, y.$1, y.$2);
-            if (d <= strayAreaRadiusMeters && (best == null || d < best!)) {
+            final current = best;
+            if (d <= strayAreaRadiusMeters &&
+                (current == null || d < current)) {
               best = d;
             }
           }
@@ -131,18 +139,18 @@ List<MatchCandidate> matchCandidates(CatalogStore store) {
 
       // Flier circle of one against a STRAY's sightings, both ways,
       // and sighting against sighting only for stray↔stray.
-      if (isStray[b]!) check(fliers[a]!, positions[b]!);
-      if (isStray[a]!) check(fliers[b]!, positions[a]!);
+      if (strayB) check(fliersA, positionsB);
+      if (strayA) check(fliersB, positionsA);
       // A stray's old home counts like one more flier circle: cats run
       // from where they lived. Two strays off the SAME home are skipped
       // here — every housemate would otherwise pair with every other;
       // their sightings still match each other below.
       if (homeOf[a] == null || homeOf[a] != homeOf[b]) {
-        if (isStray[b]!) check(homes[a]!, positions[b]!);
-        if (isStray[a]!) check(homes[b]!, positions[a]!);
+        if (strayB) check(homesA, positionsB);
+        if (strayA) check(homesB, positionsA);
       }
-      if (isStray[a]! && isStray[b]!) {
-        check(positions[a]!, positions[b]!);
+      if (strayA && strayB) {
+        check(positionsA, positionsB);
       }
       if (best != null) {
         seen.add(_pairKey(a, b));
@@ -151,7 +159,8 @@ List<MatchCandidate> matchCandidates(CatalogStore store) {
       }
     }
   }
-  geo.sort((x, y) => x.distanceMeters!.compareTo(y.distanceMeters!));
+  geo.sort((x, y) => (x.distanceMeters ?? double.infinity)
+      .compareTo(y.distanceMeters ?? double.infinity));
 
   // Looks last: already ranked, a pair the ID or the map found is not
   // listed twice.

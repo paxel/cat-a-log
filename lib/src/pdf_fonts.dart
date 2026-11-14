@@ -39,9 +39,13 @@ pw.Font? _bold;
 
 /// The bundled faces, read once.
 Future<(pw.Font, pw.Font)> _bundled() async {
-  _regular ??= pw.Font.ttf(await rootBundle.load('fonts/NotoSans-Regular.ttf'));
-  _bold ??= pw.Font.ttf(await rootBundle.load('fonts/NotoSans-Bold.ttf'));
-  return (_regular!, _bold!);
+  final regular = _regular ??= pw.Font.ttf(
+    await rootBundle.load('fonts/NotoSans-Regular.ttf'),
+  );
+  final bold = _bold ??= pw.Font.ttf(
+    await rootBundle.load('fonts/NotoSans-Bold.ttf'),
+  );
+  return (regular, bold);
 }
 
 /// Which fetched face a language needs, if any.

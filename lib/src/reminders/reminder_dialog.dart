@@ -102,13 +102,9 @@ class _ReminderDialogState extends State<_ReminderDialog> {
       _entity != null && _def != null && (_value?.value ?? '').isNotEmpty;
 
   void _save() {
-    store.append(
-      _entity!,
-      _def!.key,
-      _value!.value,
-      date: _due,
-      reminder: true,
-    );
+    final (entity, def, value) = (_entity, _def, _value);
+    if (entity == null || def == null || value == null) return;
+    store.append(entity, def.key, value.value, date: _due, reminder: true);
     Navigator.of(context).pop(true);
   }
 
@@ -159,12 +155,12 @@ class _ReminderDialogState extends State<_ReminderDialog> {
               trailing: const Icon(Icons.edit_calendar_outlined),
               onTap: _pickDue,
             ),
-            if (_value != null) ...[
+            if (_value case final value?) ...[
               const SizedBox(height: 8),
               ListenableBuilder(
-                listenable: _value!,
+                listenable: value,
                 builder: (context, _) => FieldValueInput(
-                  controller: _value!,
+                  controller: value,
                   store: store,
                   excludeId: _entity,
                 ),

@@ -107,9 +107,9 @@ class Appointment {
         'date': '${date.year.toString().padLeft(4, '0')}-'
             '${date.month.toString().padLeft(2, '0')}-'
             '${date.day.toString().padLeft(2, '0')}',
-        if (time != null)
-          'time': '${time!.hour.toString().padLeft(2, '0')}:'
-              '${time!.minute.toString().padLeft(2, '0')}',
+        if (time case final t?)
+          'time': '${t.hour.toString().padLeft(2, '0')}:'
+              '${t.minute.toString().padLeft(2, '0')}',
         'title': title,
         if (notes.isNotEmpty) 'notes': notes,
         if (linkedField != null) 'field': linkedField,
@@ -325,9 +325,8 @@ extension Appointments on CatalogStore {
   void finishAppointment(Appointment a, {String? notes, DateTime? date}) {
     final closed = a.copyWith(notes: notes ?? a.notes, done: true);
     updateAppointment(closed, date: date);
-    if (closed.linkedField != null) {
-      append(closed.entity, closed.linkedField!, closed.linkedValue,
-          date: date);
+    if (closed.linkedField case final field?) {
+      append(closed.entity, field, closed.linkedValue, date: date);
     }
   }
 

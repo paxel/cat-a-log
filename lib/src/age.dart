@@ -24,8 +24,8 @@ String? ageDisplay(
   if (age == null) return null;
   final parts = [
     if (age.years > 0 || age.months == null) t.ageYears(age.years),
-    if (age.months != null && (age.months! > 0 || age.years == 0))
-      t.ageMonths(age.months!),
+    if (age.months case final months? when months > 0 || age.years == 0)
+      t.ageMonths(months),
   ];
   return died == null ? parts.join(' ') : '${parts.join(' ')} †';
 }

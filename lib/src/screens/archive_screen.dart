@@ -86,8 +86,9 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     final stamp = DateFormat('yyyy-MM-dd').format(clockNow());
     final name = 'catlog-archive-$stamp.catsync';
     try {
-      if (widget.saveTo != null) {
-        final chosen = await widget.saveTo!(name);
+      final saveTo = widget.saveTo;
+      if (saveTo != null) {
+        final chosen = await saveTo(name);
         if (chosen == null) {
           if (mounted) setState(() => _working = false);
           return;

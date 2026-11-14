@@ -16,7 +16,7 @@ Random proposalDice = Random();
 final Map<String, List<String>> _cache = {};
 
 Future<List<String>> _load(String asset) async {
-  if (_cache.containsKey(asset)) return _cache[asset]!;
+  if (_cache[asset] case final names?) return names;
   List<String> names;
   try {
     names = (await rootBundle.loadString(asset))

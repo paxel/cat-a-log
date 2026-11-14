@@ -67,7 +67,13 @@ Future<void> _scanShareCode(
   }
   Uint8List bytes;
   try {
-    bytes = decoded.data ?? await (fetch ?? fetchShare)(decoded.url!);
+    bytes = switch ((decoded.data, decoded.url)) {
+      (final data?, _) => data,
+      (null, final url?) => await (fetch ?? fetchShare)(url),
+      (null, null) => throw StateError(
+        'The share code holds no data and no link',
+      ),
+    };
   } catch (e) {
     if (context.mounted) {
       noteFailed(context.t.bundleImportFailed('$e'), detail: '$e');
@@ -122,11 +128,11 @@ Future<void> _scanShareCode(
           const SizedBox(height: 8),
           Text(catName, style: Theme.of(context).textTheme.titleMedium),
           if (clowderName != null) Text(clowderName),
-          if (decoded.url != null)
+          if (decoded.url case final url?)
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                context.t.shareSource(decoded.url!),
+                context.t.shareSource(url),
                 style: Theme.of(context).textTheme.bodySmall,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

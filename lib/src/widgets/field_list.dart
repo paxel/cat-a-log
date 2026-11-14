@@ -142,19 +142,19 @@ class FieldList extends StatelessWidget {
                   ? IconButton(
                       icon: const Icon(Icons.open_in_new),
                       tooltip: context.t.lookUpId,
-                      onPressed: () => onLookup!(def, value),
+                      onPressed: () => onLookup?.call(def, value),
                     )
                   : graph
                   ? IconButton(
                       icon: const Icon(Icons.show_chart),
                       tooltip: context.t.graphLabel,
-                      onPressed: () => onGraph!(def),
+                      onPressed: () => onGraph?.call(def),
                     )
                   : history
                   ? IconButton(
                       icon: const Icon(Icons.history),
                       tooltip: context.t.fieldHistoryTooltip,
-                      onPressed: () => onValueHistory!(def),
+                      onPressed: () => onValueHistory?.call(def),
                     )
                   : editing
                   ? const Icon(Icons.edit_outlined)
@@ -180,9 +180,10 @@ class FieldList extends StatelessWidget {
                 // handler a long press would land as a tap and open the editor.
                 onLongPress: editing
                     ? (_filled(def) ? () => onHistory(def) : () {})
-                    : onReadLongPress == null
-                    ? null
-                    : () => onReadLongPress!(def),
+                    : switch (onReadLongPress) {
+                        final hold? => () => hold(def),
+                        null => null,
+                      },
               );
               final row = hasHold ? WithCatEar(child: tile) : tile;
               // The address row carries the locate button beneath it (#81).
@@ -208,10 +209,10 @@ class FieldList extends StatelessWidget {
                             label: Text(context.t.locateAddress),
                             onPressed: locating ? null : onLocate,
                           ),
-                          if (locateNote != null)
+                          if (locateNote case final note?)
                             Expanded(
                               child: Text(
-                                locateNote!,
+                                note,
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ),

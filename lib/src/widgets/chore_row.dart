@@ -84,7 +84,10 @@ class ChoreRow extends StatelessWidget {
       < 0 => t.overdueByDays(-toDue),
       0 => t.dueToday,
       <= 3 => t.choreDue(t.dueInDays(toDue)),
-      _ => t.choreDue(DateFormat.MMMEd(locale).format(chore.due!)),
+      _ => switch (chore.due) {
+        final due? => t.choreDue(DateFormat.MMMEd(locale).format(due)),
+        null => null,
+      },
     };
     final parts = <String>[
       if (showEntity) store.current(chore.entity, Keys.name) ?? t.unnamed,

@@ -125,8 +125,9 @@ class _InPersonScreenState extends State<InPersonScreen> {
 
   Future<void> _toggleHost() async {
     if (_starting) return;
-    if (_host != null) {
-      await _host!.stop();
+    final running = _host;
+    if (running != null) {
+      await running.stop();
       if (_hotspotQr != null) await stopHotspot();
       setState(() {
         _host = null;
@@ -309,7 +310,8 @@ class _InPersonScreenState extends State<InPersonScreen> {
     }
     if (!mounted) return;
     // A code without a fingerprint comes from a version before TLS.
-    if (info.fingerprint == null) {
+    final fingerprint = info.fingerprint;
+    if (fingerprint == null) {
       noteFailed(context.t.syncPeerNoTls);
       return;
     }
@@ -326,7 +328,7 @@ class _InPersonScreenState extends State<InPersonScreen> {
           info.host,
           info.port,
           info.pin,
-          fingerprint: info.fingerprint!,
+          fingerprint: fingerprint,
           includePrivate: _includePrivate,
         ),
       );
@@ -453,7 +455,7 @@ class _InPersonScreenState extends State<InPersonScreen> {
                 leading: const Icon(Icons.wifi_off),
                 title: Text(t.connectToWifiFirst),
               ),
-            if (_pairCode != null) ...[
+            if (_pairCode case final pairCode?) ...[
               const SizedBox(height: 12),
               Card(
                 child: Padding(
@@ -461,7 +463,7 @@ class _InPersonScreenState extends State<InPersonScreen> {
                   child: Column(
                     children: [
                       QrImageView(
-                        data: _hotspotQr ?? _pairCodeQr ?? _pairCode!,
+                        data: _hotspotQr ?? _pairCodeQr ?? pairCode,
                         size: 220,
                         backgroundColor: Colors.white,
                       ),
@@ -469,13 +471,13 @@ class _InPersonScreenState extends State<InPersonScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Flexible(child: PairCodeText(_pairCode!)),
+                          Flexible(child: PairCodeText(pairCode)),
                           IconButton(
                             icon: const Icon(Icons.copy),
                             tooltip: t.copyCode,
                             onPressed: () async {
                               await Clipboard.setData(
-                                ClipboardData(text: _pairCode!),
+                                ClipboardData(text: pairCode),
                               );
                               if (context.mounted) {
                                 paw(context);

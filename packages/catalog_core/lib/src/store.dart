@@ -251,8 +251,8 @@ class CatalogStore {
   SigningKey? _signingKey;
 
   /// This catalog's signing key (1.2.0, see signing.dart).
-  SigningKey get signingKey =>
-      _signingKey ??= SigningKey.fromSeed(fromHex(_rawSetting('signseed')!));
+  SigningKey get signingKey => _signingKey ??= SigningKey.fromSeed(fromHex(
+      _rawSetting('signseed') ?? (throw StateError('No signing key yet'))));
 
   /// The first own dseq that carries a signature.
   int get signingSince => int.parse(_rawSetting('signsince') ?? '1');
@@ -901,8 +901,10 @@ class CatalogStore {
     final targets = _mergeTargets();
     var current = id;
     final seen = <String>{};
-    while (targets.containsKey(current) && seen.add(current)) {
-      current = targets[current]!;
+    for (var next = targets[current];
+        next != null && seen.add(current);
+        next = targets[current]) {
+      current = next;
     }
     return current;
   }
@@ -915,8 +917,10 @@ class CatalogStore {
     if (targets.isEmpty) return [id];
     String resolve(String x) {
       final seen = <String>{};
-      while (targets.containsKey(x) && seen.add(x)) {
-        x = targets[x]!;
+      for (var next = targets[x];
+          next != null && seen.add(x);
+          next = targets[x]) {
+        x = next;
       }
       return x;
     }
@@ -1067,9 +1071,8 @@ class CatalogStore {
     final result = <ActiveReminder>[
       for (final MapEntry(key: (String entity, String field), value: Entry e)
           in newest.entries)
-        if (e.reminder && e.value != null && !isDeleted(entity))
-          ActiveReminder(
-              entity: entity, field: field, value: e.value!, entry: e)
+        if (e.value case final value? when e.reminder && !isDeleted(entity))
+          ActiveReminder(entity: entity, field: field, value: value, entry: e)
     ];
     result.sort((a, b) => a.due.compareTo(b.due));
     return result;
@@ -1098,7 +1101,8 @@ class CatalogStore {
       for (final MapEntry(key: (String entity, String field), value: pair)
           in newest.entries)
         if (pair.length == 2 && !isDeleted(entity))
-          if ((pair[0], pair[1]) case (final fact, final plan)
+          if ((pair[0], pair[1])
+              case (final fact, final plan && Entry(value: final planValue?))
               when !fact.reminder &&
                   fact.value != null &&
                   plan.reminder &&
@@ -1107,7 +1111,7 @@ class CatalogStore {
             ActiveReminder(
                 entity: entity,
                 field: field,
-                value: plan.value!,
+                value: planValue,
                 entry: plan,
                 doneBy: fact)
     ];
@@ -1226,7 +1230,8 @@ class CatalogStore {
     // A corrected plan is still a plan (#74), not a fact.
     append(entry.entity, entry.field, value,
         date: date ?? entry.date, reminder: entry.reminder);
-    final fresh = entryById(device, next)!;
+    final fresh = entryById(device, next) ??
+        (throw StateError('Correction $device/$next was not written'));
     _setVoid(entry, fresh.id);
     return fresh;
   }
@@ -1308,7 +1313,7 @@ class CatalogStore {
   /// runs from where it was last, not from every home it ever had.
   String? formerClowder(String catId) {
     for (final e in fieldHistory(catId, Keys.clowder)) {
-      if (e.value != null) return resolveEntity(e.value!);
+      if (e.value case final v?) return resolveEntity(v);
     }
     return null;
   }
@@ -1338,7 +1343,10 @@ class CatalogStore {
       final history = fieldHistory(catId, Keys.clowder).reversed;
       String? prev;
       for (final e in history) {
-        final value = e.value == null ? null : resolveEntity(e.value!);
+        final value = switch (e.value) {
+          final v? => resolveEntity(v),
+          null => null,
+        };
         if (value == target && prev != target) {
           events.add(ClowderEvent(
               entry: e, catId: catId, arrived: true, counterpart: prev));
@@ -2696,8 +2704,9 @@ class CatalogStore {
         append(id, Keys.fieldIdDisplay, IdDisplay.barcode.name, as: seedAuthor);
       }
       if (f.type == FieldType.unitValue) {
-        append(id, Keys.fieldDimension, starterDimensions[f.slug]!.name,
-            as: seedAuthor);
+        if (starterDimensions[f.slug] case final dimension?) {
+          append(id, Keys.fieldDimension, dimension.name, as: seedAuthor);
+        }
       }
     }
   }
