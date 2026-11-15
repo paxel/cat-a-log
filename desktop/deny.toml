@@ -1,4 +1,4 @@
-# cargo deny (cat-1023), run by CI and the release gate: RustSec advisories for
+# cargo deny (cat-1022), run by CI and the release gate: RustSec advisories for
 # the desktop's dependencies, their licences and their sources. A
 # vulnerability, an unmaintained or unsound crate and a yanked version all fail
 # the check. An exception is an entry in `ignore` below, with its reason; the

@@ -1,4 +1,4 @@
-# The iPhone app (cat-1020): built for a device without signing, and the
+# The iPhone app (cat-1019): built for a device without signing, and the
 # Runner's XCTest target (ios/RunnerTests) run on a simulator. The release
 # pipeline calls the same job as a gate before the TestFlight upload, which
 # is release.yml's.

@@ -24,7 +24,7 @@ Single-context: `CONTEXT.md` + `docs/adr/` at repo root. See `docs/agents/domain
 
 ### Quality gates
 
-The decisions behind these are in `docs/adr/0011-security-hardening.md` (cat-1026).
+The decisions behind these are in `docs/adr/0011-security-hardening.md` (cat-1025).
 
 - **No panics, no `!`.** The desktop workspace denies `unsafe_code`, `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, `unreachable!` and indexing (`desktop/Cargo.toml`); tests may (`desktop/clippy.toml`, and an allow at the top of each file in `tests/` and `examples/`). The Dart code is analysed strictly (`analysis_options.yaml`) and `packages/catalog_core/tool/no_null_assertions.dart` fails on any `!` outside tests. Handle the `None`, `Err` or `null`; never add an allow to get past a lint.
 - **Coverage ratchet.** `tool/coverage.sh` checks each group against `tool/coverage-floors.txt` and raises a floor when coverage rose; commit the raised floor with the change that earned it. Floors are never lowered. Every feature ships with tests that hold or raise coverage.

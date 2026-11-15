@@ -5,11 +5,11 @@ Die deutschen Änderungsnotizen zu cat(a)log, Abschnitt für Abschnitt wie `CHAN
 ## [2.6.0]
 
 ### Neu
-- Jede Datei eines Releases trägt eine signierte Herkunftsangabe: `gh attestation verify <Datei> --repo paxel/cat-a-log` zeigt, dass der Release-Workflow dieses Repositorys sie aus dem getaggten Commit gebaut hat ([cat-1022](https://github.com/paxel/cat-a-log/issues/195)).
-- Eine Sicherheitsrichtlinie (`SECURITY.md`): Schwachstellen werden vertraulich über GitHubs private Schwachstellenmeldung gemeldet ([cat-1025](https://github.com/paxel/cat-a-log/issues/198)).
+- Jede Datei eines Releases trägt eine signierte Herkunftsangabe: `gh attestation verify <Datei> --repo paxel/cat-a-log` zeigt, dass der Release-Workflow dieses Repositorys sie aus dem getaggten Commit gebaut hat ([cat-1021](https://github.com/paxel/cat-a-log/issues/194)).
+- Eine Sicherheitsrichtlinie (`SECURITY.md`): Schwachstellen werden vertraulich über GitHubs private Schwachstellenmeldung gemeldet ([cat-1024](https://github.com/paxel/cat-a-log/issues/197)).
 
 ### Sicherheit
-- Das SQLite des Schreibtischs ist 3.54 oder neuer und gibt keinen veralteten Speicher mehr zurück, wenn eine Datenbank neben einem Write-Ahead-Log mit anderer Seitengröße geöffnet wird ([cat-1023](https://github.com/paxel/cat-a-log/issues/196)).
+- Das SQLite des Schreibtischs ist 3.54 oder neuer und gibt keinen veralteten Speicher mehr zurück, wenn eine Datenbank neben einem Write-Ahead-Log mit anderer Seitengröße geöffnet wird ([cat-1022](https://github.com/paxel/cat-a-log/issues/195)).
 
 ## [2.5.0] - 2026-10-22
 

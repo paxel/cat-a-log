@@ -1,4 +1,4 @@
-# OpenSSF Scorecard (cat-1021): checks the repository's supply-chain practices (pinned
+# OpenSSF Scorecard (cat-1020): checks the repository's supply-chain practices (pinned
 # actions, branch protection, token permissions, …) on every push to summer,
 # weekly and when branch protection changes. The results show under Security >
 # Code scanning and on https://scorecard.dev/viewer/?uri=github.com/paxel/cat-a-log,
