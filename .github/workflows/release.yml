@@ -10,7 +10,8 @@
 #                    for the version, no open high or critical code-scanning
 #                    alert, Dart format, no null assertion,
 #                    no untranslated string,
-#                    the SonarQube Cloud quality gate OK, cargo-deny)
+#                    the SonarQube Cloud quality gate OK, cargo-deny,
+#                    the coverage floors)
 #   geiger         — cargo geiger, report-only: unsafe counts in the log,
 #                    never blocks
 #   build-android  — signed per-ABI + universal APKs, refused when signed
@@ -110,7 +111,7 @@ jobs:
       # or critical (security severity, or rule severity error) stops the
       # release. A branch CodeQL never analysed is skipped; none analysed
       # at all stops it too. CodeQL's alerts only: OpenSSF Scorecard's
-      # (cat-1021) grade the repository's settings, not the code.
+      # (cat-1020) grade the repository's settings, not the code.
       - name: No open high or critical code-scanning alert
         env:
           GH_TOKEN: ${{ github.token }}
@@ -181,6 +182,10 @@ jobs:
           flutter pub get
           flutter analyze --fatal-infos
           flutter test
+      # Coverage floors (cat-1016), the Dart half: the core and the app
+      # below their floor in tool/coverage-floors.txt stop the release.
+      - name: Coverage floors — Dart core and app
+        run: tool/coverage.sh dart-core flutter-app
       # flutter pub get runs gen-l10n, which lists every message missing
       # in a locale in build/untranslated.json (l10n.yaml); any of them
       # fails the build (cat-1009).
@@ -188,13 +193,13 @@ jobs:
         run: test "$(tr -d '[:space:]' < build/untranslated.json)" = "{}"
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
         with:
-          components: rustfmt, clippy
+          components: rustfmt, clippy, llvm-tools-preview
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: desktop
       - name: Desktop build dependencies
         run: sudo apt-get install -y --no-install-recommends libasound2-dev pkg-config
-      # As on every push (cat-1023): advisories, licences and sources of
+      # As on every push (cat-1022): advisories, licences and sources of
       # the desktop's dependencies.
       - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
         with:
@@ -206,6 +211,12 @@ jobs:
           cargo fmt --check
           cargo clippy --workspace --all-targets --locked -- -D warnings
           cargo test --workspace --locked
+      - uses: taiki-e/install-action@4a76afe23f9e08d2d9550fb56e556444e8611d21 # v2.90.4
+        with:
+          tool: cargo-llvm-cov
+      # The Rust half: each crate below its floor stops the release.
+      - name: Coverage floors — Rust core, GUI and l10n
+        run: tool/coverage.sh rust-core rust-gui rust-l10n
 
   # Report-only (cat-1011): the unsafe counts of the desktop and its
   # dependencies, for the log. cargo geiger is known to abort on some
@@ -517,7 +528,7 @@ jobs:
         with:
           path: dist
           merge-multiple: true
-      # SLSA build provenance for every release file (cat-1022), signed with
+      # SLSA build provenance for every release file (cat-1021), signed with
       # Sigstore and stored with GitHub's attestations
       # (`gh attestation verify <file> --repo paxel/cat-a-log`). The bundle
       # is also a release asset, for verification without GitHub's API.
@@ -573,7 +584,7 @@ jobs:
 
   # The iPhone app built unsigned and its XCTest target run on a simulator
   # (ios.yml, the same job as on every push to a branch); a gate: the
-  # TestFlight upload needs it (cat-1020).
+  # TestFlight upload needs it (cat-1019).
   ios:
     name: iOS
     needs: gate

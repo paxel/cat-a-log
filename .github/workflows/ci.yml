@@ -54,6 +54,10 @@ jobs:
         run: test "$(tr -d '[:space:]' < build/untranslated.json)" = "{}"
       - name: Tools — test
         run: python3 -m unittest discover -s tool -p 'test_*.py'
+      # Line coverage of the Dart core and the app against
+      # tool/coverage-floors.txt (cat-1016).
+      - name: Coverage floors — Dart core and app
+        run: tool/coverage.sh dart-core flutter-app
 
   # Known vulnerabilities in any lockfile (pubspec.lock, the core's
   # pubspec.lock, desktop/Cargo.lock) fail every push (cat-1004). A notice
@@ -81,7 +85,7 @@ jobs:
       - name: No known vulnerability (unmaintained notices reported only)
         run: python3 tool/osv_gate.py osv-results.json
 
-  # The desktop's dependencies (cat-1023): RustSec advisories, unsound
+  # The desktop's dependencies (cat-1022): RustSec advisories, unsound
   # and yanked crates, licences outside desktop/deny.toml's list and
   # unknown sources fail every push.
   cargo-deny:
@@ -123,8 +127,10 @@ jobs:
       - uses: taiki-e/install-action@4a76afe23f9e08d2d9550fb56e556444e8611d21 # v2.90.4
         with:
           tool: cargo-llvm-cov
-      - name: Coverage per crate, 80% floor
-        run: tool/coverage.sh
+      # Line coverage per crate against tool/coverage-floors.txt (cat-1016):
+      # below its floor fails; the floors only rise.
+      - name: Coverage floors — Rust core, GUI and l10n
+        run: ../tool/coverage.sh rust-core rust-gui rust-l10n
       - name: Reverse corpus — the desktop writes, the Dart core reads
         run: cargo run -p catlog-core --example reverse_corpus --locked -- target/reverse
       - uses: dart-lang/setup-dart@2286a0c042b44434fe26d292bbce8d34f7ec662b # v1.8.2

@@ -15,7 +15,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace                             # all tests
 cargo test -p catlog-gui --test render -- --ignored   # PNGs into target/
 cargo test -p catlog-gui --test snapshots -- --ignored   # the look, pixel by pixel
-tool/coverage.sh                                   # per-crate 80% gate
+tool/coverage.sh                                   # per-crate coverage floors (tool/coverage-floors.txt)
 ```
 
 Coverage needs `cargo-llvm-cov` and the `llvm-tools-preview` component. The
