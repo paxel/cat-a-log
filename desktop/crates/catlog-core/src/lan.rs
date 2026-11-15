@@ -595,8 +595,9 @@ fn serve_connection(
 }
 
 /// Reads one request; `None` once its body exceeds the limit for its
-/// path (the rest is not read).
-fn read_request<R: BufRead>(reader: &mut R, from: IpAddr) -> std::io::Result<Option<Request>> {
+/// path (the rest is not read). Public for the fuzz target that feeds it
+/// what a peer on the network could send.
+pub fn read_request<R: BufRead>(reader: &mut R, from: IpAddr) -> std::io::Result<Option<Request>> {
     let mut line = String::new();
     reader.read_line(&mut line)?;
     let mut parts = line.split_whitespace();
