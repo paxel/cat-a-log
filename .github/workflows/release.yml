@@ -569,6 +569,17 @@ jobs:
               dist/*
           fi
 
+  # The release's documentation frames as its asset, for the older versions
+  # of every later site build (site-frames.yml, tool/site/build-all.js).
+  site-frames:
+    name: Site frames
+    needs: release
+    permissions:
+      contents: write
+    uses: ./.github/workflows/site-frames.yml
+    with:
+      tag: ${{ github.event.inputs.tag || github.ref_name }}
+
   render-channels:
     name: Render cask, formula and manifest
     needs: [gate, build-linux, build-windows, build-macos]

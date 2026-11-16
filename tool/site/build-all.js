@@ -7,9 +7,11 @@
 // place of the tag with the same version. Every version is built with
 // today's build.js and today's assets from that release's own pages,
 // frames, glossary, fields and changelogs, so the version menu looks the
-// same everywhere and an old version shows its own app. A release that no
-// longer builds fails the whole build. Zero dependencies beyond git and
-// tar; Node 22+. Usage:
+// same everywhere and an old version shows its own app. The frames are never
+// committed, so a tag's frames come from its release asset (framesAsset,
+// written by .github/workflows/site-frames.yml). A release that no longer
+// builds, or has no frames asset, fails the whole build. Zero dependencies
+// beyond git, tar and the gh CLI; Node 22+. Usage:
 //   node tool/site/build-all.js [--out site-dist] [--base /]
 
 import { execFileSync } from "node:child_process";
@@ -80,6 +82,37 @@ export function extractTag(repoRoot, tag, destDir) {
   execFileSync("tar", ["-x", "-C", destDir], { input: archive });
 }
 
+/** The release asset that carries a tag's rendered frames (site/assets/frames). */
+export function framesAsset(tag) {
+  return `catlog-${tag}-site-frames.tar.gz`;
+}
+
+/**
+ * Unpacks a tag's frames from its release asset into the extracted
+ * site/assets of destDir; frames already there are kept. gh downloads the
+ * asset, with GH_TOKEN on a runner.
+ */
+export function fetchFrames(repoRoot, tag, destDir) {
+  const assets = path.join(destDir, "site", "assets");
+  if (fs.existsSync(path.join(assets, "frames"))) return;
+  const asset = framesAsset(tag);
+  let archive;
+  try {
+    archive = execFileSync("gh", ["release", "download", tag, "--pattern", asset, "--output", "-"], {
+      cwd: repoRoot,
+      maxBuffer: 1024 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+  } catch (err) {
+    const why = String(err.stderr || err.message).trim();
+    throw new Error(`no frames: release asset ${asset} not downloaded (Run workflow "Site frames" with ${tag}): ${why}`, {
+      cause: err,
+    });
+  }
+  fs.mkdirSync(assets, { recursive: true });
+  execFileSync("tar", ["-xz", "-C", assets], { input: archive });
+}
+
 /**
  * Which versions to build and from where: one per minor version, the
  * latest patch of each, from its tag; the working tree replaces the tag
@@ -116,9 +149,12 @@ export function buildAll({ repoRoot = REPO_ROOT, outDir = path.join(REPO_ROOT, "
   try {
     for (const entry of plan) {
       entry.root = entry.source === "tag" ? path.join(scratch, entry.tag) : repoRoot;
-      if (entry.source === "tag") extractTag(repoRoot, entry.tag, entry.root);
       entry.srcDir = path.join(entry.root, "site");
       try {
+        if (entry.source === "tag") {
+          extractTag(repoRoot, entry.tag, entry.root);
+          fetchFrames(repoRoot, entry.tag, entry.root);
+        }
         entry.pages = collectPages({ srcDir: entry.srcDir, generated: generatedPages(entry.srcDir, entry.root) });
       } catch (err) {
         throw new Error(`${entry.tag ?? "working tree"}: ${err.message}`, { cause: err });

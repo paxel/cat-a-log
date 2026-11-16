@@ -9,7 +9,8 @@ name: Pages
 # Every build assembles every released minor version (the latest patch of
 # each tag that carries a site, under /vX.Y.Z/) plus the working tree at the
 # root, so a release whose docs no longer build fails on summer, not on
-# release day.
+# release day. An older version's frames come from its release asset, which
+# site-frames.yml renders from the tag.
 #
 # One-time steps in the repository settings, done on 2026-10-20:
 #   1. Settings -> Pages -> Source: "GitHub Actions".
@@ -68,7 +69,10 @@ jobs:
           flutter pub get
           tool/frames.sh
 
+      # An older version's frames are its release asset (site-frames.yml).
       - name: Build site, every released minor version and the working tree
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: node tool/site/build-all.js --base "/${{ github.event.repository.name }}/"
 
       - name: Test site build
