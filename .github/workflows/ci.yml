@@ -23,9 +23,13 @@ jobs:
       - name: Install sqlite3 for pure-Dart core tests
         run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
       # The app, the Dart core and the tools, formatted as `dart format`
-      # writes them (cat-1008).
+      # writes them (cat-1008). It reads each package's language version
+      # from .dart_tool/package_config.json, so the packages come first.
       - name: Dart format
-        run: dart format --output=none --set-exit-if-changed .
+        run: |
+          flutter pub get
+          (cd packages/catalog_core && dart pub get)
+          dart format --output=none --set-exit-if-changed .
       - name: Core — analyze and test
         working-directory: packages/catalog_core
         run: |
