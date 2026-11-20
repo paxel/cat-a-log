@@ -2,6 +2,15 @@
 
 Historical release notes for cat(a)log. The current version lives in [CHANGELOG.md](CHANGELOG.md).
 
+## [2.5.0] - 2026-10-22
+
+### Added
+- Play, in Home's actions before Settings, has two toys for the cat: a laser dot that darts and waits, and a mouse that scurries along the edges and peeks back in (#172). They run full screen with the screen kept on and no time limit, get faster when caught and slower when ignored, and squeak, chirp and scurry unless "Toy sounds" is off. Back does nothing while a toy runs; picking the device up ends it, as does holding the lock in the corner for three seconds, and Play then shows how many catches the game had and how long it ran.
+- About on the phone and on the desk links to the documentation, in German when the app is in German and in English otherwise.
+
+### Fixed
+- Installing the desk through Homebrew on Linux no longer warns that `post_install` is deprecated.
+
 ## [2.4.1] - 2026-10-20
 
 ### Added

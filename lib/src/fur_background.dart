@@ -250,7 +250,7 @@ class FurPainter extends CustomPainter {
     final paint = Paint()..color = mark;
     // Stripes cover far more ground than spots — halfway to the base
     // keeps them fur, not wallpaper.
-    final faint = Paint()..color = Color.lerp(base, mark, 0.4)!;
+    final faint = Paint()..color = Color.lerp(base, mark, 0.4) ?? mark;
     final offset = scroll.value;
     final region = Rect.fromLTWH(0, offset, size.width, size.height);
     canvas.save();

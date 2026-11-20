@@ -13,6 +13,7 @@ CatalogManager? catalogManager;
 /// These three always travel together, so they travel as one.
 class CatalogSwitching {
   final CatalogManager catalogs;
+
   /// Switches the app to [CatalogInfo]. With `unwind` (the default)
   /// the navigation stack collapses to the home screen; the manage
   /// screen passes false to stay open across the switch (#46 sibling:
@@ -20,21 +21,27 @@ class CatalogSwitching {
   final void Function(CatalogInfo, {bool unwind}) onSwitch;
   final VoidCallback? onChanged;
 
-  const CatalogSwitching(
-      {required this.catalogs, required this.onSwitch, this.onChanged});
+  const CatalogSwitching({
+    required this.catalogs,
+    required this.onSwitch,
+    this.onChanged,
+  });
 
   /// The catalog currently open.
   CatalogInfo get active => catalogs.active;
 }
 
 /// True when there is somewhere else to move things to.
-bool get canMoveBetweenCatalogs =>
-    (catalogManager?.catalogs().length ?? 0) > 1;
+bool get canMoveBetweenCatalogs => (catalogManager?.catalogs().length ?? 0) > 1;
 
 /// Asks which cats and clowders should move. Returns the chosen ids, or
 /// null when the picker was dismissed.
-Future<Set<String>?> pickWhatToMove(BuildContext context, CatalogStore from,
-    {bool clowders = true, bool strays = true}) {
+Future<Set<String>?> pickWhatToMove(
+  BuildContext context,
+  CatalogStore from, {
+  bool clowders = true,
+  bool strays = true,
+}) {
   final options = <({String id, String name, bool isClowder})>[
     if (clowders)
       for (final c in from.clowders())
@@ -52,28 +59,34 @@ Future<Set<String>?> pickWhatToMove(BuildContext context, CatalogStore from,
         title: Text(context.t.chooseWhatToMove),
         content: SizedBox(
           width: 360,
-          child: ListView(shrinkWrap: true, children: [
-            for (final option in options)
-              CheckboxListTile(
-                value: chosen.contains(option.id),
-                secondary: Icon(option.isClowder
-                    ? Icons.home_outlined
-                    : Icons.pets_outlined),
-                title: Text(option.name),
-                onChanged: (on) => setState(() {
-                  if (on == true) {
-                    chosen.add(option.id);
-                  } else {
-                    chosen.remove(option.id);
-                  }
-                }),
-              ),
-          ]),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              for (final option in options)
+                CheckboxListTile(
+                  value: chosen.contains(option.id),
+                  secondary: Icon(
+                    option.isClowder
+                        ? Icons.home_outlined
+                        : Icons.pets_outlined,
+                  ),
+                  title: Text(option.name),
+                  onChanged: (on) => setState(() {
+                    if (on == true) {
+                      chosen.add(option.id);
+                    } else {
+                      chosen.remove(option.id);
+                    }
+                  }),
+                ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(context.t.cancel)),
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(context.t.cancel),
+          ),
           FilledButton(
             onPressed: chosen.isEmpty
                 ? null
@@ -88,8 +101,12 @@ Future<Set<String>?> pickWhatToMove(BuildContext context, CatalogStore from,
 
 /// Moves [ids] into [into] without asking which catalog — used right
 /// after creating one, where the destination is already decided.
-Future<int> moveInto(CatalogStore from, CatalogManager catalogs,
-    CatalogInfo into, Set<String> ids) async {
+Future<int> moveInto(
+  CatalogStore from,
+  CatalogManager catalogs,
+  CatalogInfo into,
+  Set<String> ids,
+) async {
   final to = catalogs.openStore(into);
   try {
     return transferEntities(from, to, ids).moved.length;
@@ -104,8 +121,11 @@ Future<int> moveInto(CatalogStore from, CatalogManager catalogs,
 /// moves is gone from here afterwards, so callers on a detail page pop
 /// back to the list.
 Future<CatalogInfo?> moveToAnotherCatalog(
-    BuildContext context, CatalogStore from, Set<String> ids,
-    {CatalogManager? manager}) async {
+  BuildContext context,
+  CatalogStore from,
+  Set<String> ids, {
+  CatalogManager? manager,
+}) async {
   final catalogs = manager ?? catalogManager;
   if (catalogs == null || ids.isEmpty) return null;
   final here = catalogs.active.id;
@@ -120,11 +140,13 @@ Future<CatalogInfo?> moveToAnotherCatalog(
         for (final catalog in others)
           SimpleDialogOption(
             onPressed: () => Navigator.of(context).pop(catalog),
-            child: Row(children: [
-              const Icon(Icons.folder_outlined),
-              const SizedBox(width: 12),
-              Expanded(child: Text(catalog.name)),
-            ]),
+            child: Row(
+              children: [
+                const Icon(Icons.folder_outlined),
+                const SizedBox(width: 12),
+                Expanded(child: Text(catalog.name)),
+              ],
+            ),
           ),
       ],
     ),

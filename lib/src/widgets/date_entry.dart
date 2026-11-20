@@ -199,7 +199,10 @@ class _DayDialogState extends State<_DayDialog> {
     final t = context.t;
     final picked = _picked;
     return AlertDialog(
-      title: widget.title == null ? null : Text(widget.title!),
+      title: switch (widget.title) {
+        final title? => Text(title),
+        null => null,
+      },
       content: DateEntryField(
         initial: _picked,
         lastDate: widget.lastDate,

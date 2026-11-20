@@ -152,7 +152,9 @@ class FlierTemplateSet {
     final json = jsonDecode(source) as Map<String, dynamic>;
     return FlierTemplateSet(
       [
-        for (final t in (json['templates'] as List? ?? const []))
+        for (final t
+            in (json['templates'] as List? ?? const [])
+                .cast<Map<String, dynamic>>())
           FlierTemplate(
             name: t['name'] as String,
             registry: t['registry'] as String,
@@ -312,12 +314,12 @@ FlierReading readFlier(List<FlierPair> pairs, FlierTemplateSet templates) {
       );
       continue;
     }
-    if (labelParts.length == 1) {
+    if (targets case [final target?]) {
       entries.add(
         FlierEntry(
           label: label,
-          value: templates.normalize(targets.first!, pair.value),
-          target: targets.first!,
+          value: templates.normalize(target, pair.value),
+          target: target,
         ),
       );
       continue;
@@ -401,9 +403,11 @@ List<FlierEntry> _loneLine(
   FlierTemplateSet templates,
 ) {
   final match = template.namePattern?.firstMatch(text);
-  if (match != null && match.groupCount >= 2) {
-    final prefix = match.group(1)!;
-    final name = match.group(2)!.trim();
+  final groups = match != null && match.groupCount >= 2
+      ? (match[1], match[2])
+      : (null, null);
+  if (groups case (final prefix?, final rawName?)) {
+    final name = rawName.trim();
     return [
       FlierEntry(label: prefix, value: name, target: FlierTarget.name),
       if (templates.knows('gender', prefix))
@@ -443,20 +447,16 @@ PartialDate? parseFlierDate(String text, {DateTime? today}) {
   final s = text.toLowerCase();
   final dmy = RegExp(r'(?<!\d)(\d{1,2})[./-](\d{1,2})[./-](\d{4}|\d{2})(?!\d)')
       .firstMatch(s);
-  if (dmy != null) {
-    return _day(
-      _year(dmy.group(3)!),
-      int.parse(dmy.group(2)!),
-      int.parse(dmy.group(1)!),
-    );
+  if ((dmy?[1], dmy?[2], dmy?[3]) case (final d?, final m?, final y?)) {
+    return _day(_year(y), int.parse(m), int.parse(d));
   }
   final iso = RegExp(r'(\d{4})-(\d{2})-(\d{2})').firstMatch(s);
-  if (iso != null) return PartialDate.parse(iso.group(0)!);
+  if (iso?[0] case final date?) return PartialDate.parse(date);
   final written = _writtenDate(s, now);
   if (written != null) return written;
   final dm = RegExp(r'(?<![\d.])(\d{1,2})\.(\d{1,2})\.(?![\d])').firstMatch(s);
-  if (dm != null) {
-    return _latest(int.parse(dm.group(2)!), int.parse(dm.group(1)!), now);
+  if ((dm?[1], dm?[2]) case (final d?, final m?)) {
+    return _latest(int.parse(m), int.parse(d), now);
   }
   return PartialDate.find(text);
 }
@@ -529,35 +529,29 @@ PartialDate? _writtenDate(String s, DateTime today) {
     '(?<!\\d)(\\d{1,2})\\.?\\s*($names)\\b\\.?(?:\\s*,?\\s*(\\d{4}))?',
     unicode: true,
   ).firstMatch(s);
-  if (dayFirst != null) {
-    return _dated(
-      dayFirst.group(3),
-      _months[dayFirst.group(2)]!,
-      int.parse(dayFirst.group(1)!),
-      today,
-    );
+  if ((dayFirst?[1], _months[dayFirst?[2]]) case (final day?, final month?)) {
+    return _dated(dayFirst?[3], month, int.parse(day), today);
   }
   final monthFirst = RegExp(
     '\\b($names)\\b\\.?\\s*(\\d{1,2})(?:st|nd|rd|th)?(?!\\d)'
     '(?:\\s*,?\\s*(\\d{4}))?',
     unicode: true,
   ).firstMatch(s);
-  if (monthFirst != null) {
-    return _dated(
-      monthFirst.group(3),
-      _months[monthFirst.group(1)]!,
-      int.parse(monthFirst.group(2)!),
-      today,
-    );
+  if ((_months[monthFirst?[1]], monthFirst?[2]) case (
+    final month?,
+    final day?,
+  )) {
+    return _dated(monthFirst?[3], month, int.parse(day), today);
   }
   final monthYear = RegExp(
     '\\b($names)\\b\\.?\\s*(\\d{4})',
     unicode: true,
   ).firstMatch(s);
-  if (monthYear != null) {
-    return PartialDate.parse(
-      '${monthYear.group(2)}-${_months[monthYear.group(1)]!.toString().padLeft(2, '0')}',
-    );
+  if ((monthYear?[2], _months[monthYear?[1]]) case (
+    final year?,
+    final month?,
+  )) {
+    return PartialDate.parse('$year-${month.toString().padLeft(2, '0')}');
   }
   return null;
 }

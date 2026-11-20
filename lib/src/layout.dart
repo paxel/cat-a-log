@@ -87,26 +87,26 @@ class PageAction {
     required this.onPressed,
     this.spotlightId,
     this.busy,
-  })  : menu = null,
-        onSelected = null;
+  }) : menu = null,
+       onSelected = null;
 
   const PageAction.labelled({
     required this.label,
     required this.onPressed,
     this.busy,
-  })  : icon = null,
-        spotlightId = null,
-        menu = null,
-        onSelected = null;
+  }) : icon = null,
+       spotlightId = null,
+       menu = null,
+       onSelected = null;
 
   const PageAction.menu({
     required IconData this.icon,
     required this.label,
     required List<(String, String)> this.menu,
     required this.onSelected,
-  })  : onPressed = null,
-        spotlightId = null,
-        busy = null;
+  }) : onPressed = null,
+       spotlightId = null,
+       busy = null;
 
   /// Pinned actions never overflow: a labelled button has no icon to
   /// stand in a row, a menu cannot nest in the ⋮.
@@ -145,8 +145,7 @@ PreferredSizeWidget pageBar(
   Color? backgroundColor,
   Color? foregroundColor,
 }) {
-  final roomy =
-      narrow ?? MediaQuery.sizeOf(context).width < desktopBreakpoint;
+  final roomy = narrow ?? MediaQuery.sizeOf(context).width < desktopBreakpoint;
   final all = [
     if (help != null && helpTexts.containsKey(help.screenId))
       PageAction(
@@ -156,7 +155,8 @@ PreferredSizeWidget pageBar(
       ),
     ...actions,
   ];
-  final height = kToolbarHeight +
+  final height =
+      kToolbarHeight +
       (roomy ? _titleLineHeight : 0) +
       (bottom?.preferredSize.height ?? 0);
   return PreferredSize(
@@ -206,8 +206,9 @@ class _PageBar extends StatelessWidget {
     var budget = width - leading - 8 - (roomy ? 0 : _minTitleWidth);
     double widthOf(PageAction a) =>
         a.icon == null ? a.label.length * 8.0 + 24 : slot;
-    final pinned =
-        actions.where((a) => a.pinned).fold(0.0, (w, a) => w + widthOf(a));
+    final pinned = actions
+        .where((a) => a.pinned)
+        .fold(0.0, (w, a) => w + widthOf(a));
     final icons = actions.where((a) => !a.pinned).length;
     if (pinned + icons * slot <= budget) return (actions, const []);
     // The ⋮ takes a slot; the pinned ones keep theirs; the rest fill up
@@ -310,10 +311,13 @@ class _PageBar extends StatelessWidget {
         child: Align(
           alignment: AlignmentDirectional.centerStart,
           child: DefaultTextStyle(
-            style: (theme.appBarTheme.titleTextStyle ??
-                    theme.textTheme.titleLarge!)
-                .copyWith(
-                    color: foregroundColor ?? theme.colorScheme.onSurface),
+            style:
+                (theme.appBarTheme.titleTextStyle ??
+                        theme.textTheme.titleLarge ??
+                        const TextStyle())
+                    .copyWith(
+                      color: foregroundColor ?? theme.colorScheme.onSurface,
+                    ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             child: title,
@@ -330,7 +334,8 @@ class _PageBar extends StatelessWidget {
       foregroundColor: foregroundColor,
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(
-            _titleLineHeight + (below?.preferredSize.height ?? 0)),
+          _titleLineHeight + (below?.preferredSize.height ?? 0),
+        ),
         child: below == null
             ? titleLine
             : Column(

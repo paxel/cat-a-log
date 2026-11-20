@@ -20,8 +20,7 @@ void main() {
     expect(def.idDisplay, IdDisplay.qr);
     // Plain is the default and needs no entry.
     store.defineField('Ring number', FieldType.id);
-    final ring =
-        store.fieldDefs().firstWhere((d) => d.slug == 'ring-number');
+    final ring = store.fieldDefs().firstWhere((d) => d.slug == 'ring-number');
     expect(ring.idDisplay, IdDisplay.plain);
   });
 

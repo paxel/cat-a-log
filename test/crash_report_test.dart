@@ -16,8 +16,7 @@ void main() {
     // instead of leaving a blank where the version should be.
     expect(lines[0].trim(), isNot('cat(a)log'));
     expect(lines[1], contains(Platform.operatingSystem));
-    expect(lines[1].length,
-        greaterThan(Platform.operatingSystem.length + 1));
+    expect(lines[1].length, greaterThan(Platform.operatingSystem.length + 1));
     expect(lines[2], startsWith('locale '));
     expect(lines[3], '2026-08-20T12:00:00.000Z');
   });
@@ -38,8 +37,11 @@ void main() {
       expect(await previousRunDied(), isFalse);
 
       markRunning();
-      expect(await previousRunDied(), isTrue,
-          reason: 'a run that never paused cleanly was killed');
+      expect(
+        await previousRunDied(),
+        isTrue,
+        reason: 'a run that never paused cleanly was killed',
+      );
       expect(await previousRunDied(), isFalse, reason: 'asked exactly once');
     });
 
@@ -56,8 +58,12 @@ void main() {
 
     test('the last crash is readable once and can be cleared', () {
       expect(lastCrashText(), isNull);
-      FlutterError.onError!(FlutterErrorDetails(
-          exception: StateError('boom'), stack: StackTrace.current));
+      FlutterError.onError!(
+        FlutterErrorDetails(
+          exception: StateError('boom'),
+          stack: StackTrace.current,
+        ),
+      );
       final text = lastCrashText();
       expect(text, contains('boom'));
       expect(text, contains(Platform.operatingSystem));
@@ -85,7 +91,10 @@ void main() {
     final ours = mail.indexOf('celebration.dart');
     expect(ours, greaterThan(0));
     expect(mail.indexOf('catalog_core'), greaterThan(ours));
-    expect(mail.indexOf('flutter/src'), greaterThan(mail.indexOf('catalog_core')));
+    expect(
+      mail.indexOf('flutter/src'),
+      greaterThan(mail.indexOf('catalog_core')),
+    );
     expect(mail, startsWith('cat(a)log 1.2.0+166'));
     expect(mailBody('x' * 3000).length, mailBodyLimit);
   });

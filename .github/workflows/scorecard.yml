@@ -1,0 +1,42 @@
+# OpenSSF Scorecard (cat-1020): checks the repository's supply-chain practices (pinned
+# actions, branch protection, token permissions, …) on every push to summer,
+# weekly and when branch protection changes. The results show under Security >
+# Code scanning and on https://scorecard.dev/viewer/?uri=github.com/paxel/cat-a-log,
+# which also serves the README badge (publish_results).
+#
+# publish_results limits this job: no top-level env or defaults, no other steps
+# than these, and the workflow must run from the default branch.
+name: Scorecard
+
+on:
+  push:
+    branches: [summer]
+  schedule:
+    - cron: '17 4 * * 1'
+  branch_protection_rule:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    permissions:
+      # Upload the results to code scanning.
+      security-events: write
+      # Publish the results for the badge.
+      id-token: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - uses: ossf/scorecard-action@fa7117db83c52d787ae5a89f350999701505d78e # v2.5.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: results.sarif

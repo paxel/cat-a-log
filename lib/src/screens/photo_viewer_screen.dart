@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:typed_data';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -19,20 +21,22 @@ class PhotoViewerScreen extends StatefulWidget {
   /// Used in shared photos' file names.
   final String name;
 
-  const PhotoViewerScreen(
-      {super.key,
-      required this.store,
-      required this.hashes,
-      required this.initialIndex,
-      required this.name});
+  const PhotoViewerScreen({
+    super.key,
+    required this.store,
+    required this.hashes,
+    required this.initialIndex,
+    required this.name,
+  });
 
   @override
   State<PhotoViewerScreen> createState() => _PhotoViewerScreenState();
 }
 
 class _PhotoViewerScreenState extends State<PhotoViewerScreen> {
-  late final PageController _pages =
-      PageController(initialPage: widget.initialIndex);
+  late final PageController _pages = PageController(
+    initialPage: widget.initialIndex,
+  );
   late int _current = widget.initialIndex;
 
   /// Bytes per hash, fetched once: a fresh Uint8List on every rebuild
@@ -65,11 +69,15 @@ class _PhotoViewerScreenState extends State<PhotoViewerScreen> {
             onPressed: () {
               final bytes = _bytesFor(widget.hashes[_current]);
               if (bytes == null) return;
-              shareFiles(context, [
-                XFile.fromData(bytes,
+              unawaited(
+                shareFiles(context, [
+                  XFile.fromData(
+                    bytes,
                     mimeType: 'image/jpeg',
-                    name: '${widget.name}-${_current + 1}.jpg'),
-              ]);
+                    name: '${widget.name}-${_current + 1}.jpg',
+                  ),
+                ]),
+              );
             },
           ),
         ],
@@ -86,8 +94,12 @@ class _PhotoViewerScreenState extends State<PhotoViewerScreen> {
           return InteractiveViewer(
             maxScale: 8,
             child: Center(
-                child: Image.memory(bytes,
-                    fit: BoxFit.contain, gaplessPlayback: true)),
+              child: Image.memory(
+                bytes,
+                fit: BoxFit.contain,
+                gaplessPlayback: true,
+              ),
+            ),
           );
         },
       ),

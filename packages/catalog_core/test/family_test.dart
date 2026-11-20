@@ -9,8 +9,7 @@ void main() {
   setUp(() => store = CatalogStore.inMemory()..author = 'anna');
   tearDown(() => store.close());
 
-  test('family derives littermates, siblings, and kittens from mother',
-      () {
+  test('family derives littermates, siblings, and kittens from mother', () {
     final mom = store.createCat('Queen');
     final a = store.createCat('A');
     final b = store.createCat('B');

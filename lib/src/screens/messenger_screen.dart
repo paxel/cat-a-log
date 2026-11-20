@@ -34,8 +34,7 @@ class _MessengerScreenState extends State<MessengerScreen> {
         writeBundle(widget.store, path, includePrivate: _includePrivate);
         if (!mounted) return;
         // iPads need the popover anchor or the share throws (#43).
-        await shareFiles(
-            context, [XFile(path, mimeType: 'application/zip')]);
+        await shareFiles(context, [XFile(path, mimeType: 'application/zip')]);
       });
     } catch (e) {
       noteFailed(t.syncFailed('$e'), detail: '$e');
@@ -48,17 +47,31 @@ class _MessengerScreenState extends State<MessengerScreen> {
     final path = picked?.files.single.path;
     if (path == null || !mounted || !widget.store.isOpen) return;
     try {
-      final imported = importWithMoment(widget.store, path,
-          label: path.split(Platform.pathSeparator).last);
+      final imported = importWithMoment(
+        widget.store,
+        path,
+        label: path.split(Platform.pathSeparator).last,
+      );
       final result = imported.result;
       if (!mounted) return;
       if (needsAttention(result.report)) {
-        await showImportSummary(context, widget.store, result.applied,
-            undo: imported.moment, report: result.report);
+        await showImportSummary(
+          context,
+          widget.store,
+          result.applied,
+          undo: imported.moment,
+          report: result.report,
+        );
       } else {
-        NoteQueue.instance.add(arrivalNote(context, widget.store,
+        NoteQueue.instance.add(
+          arrivalNote(
+            context,
+            widget.store,
             result.applied,
-            undo: imported.moment, report: result.report));
+            undo: imported.moment,
+            report: result.report,
+          ),
+        );
       }
     } on UnsupportedBundleFormat {
       noteFailed(t.bundleNewerError);
@@ -71,7 +84,11 @@ class _MessengerScreenState extends State<MessengerScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.syncChooserMessenger), help: PageHelp('messenger', store: widget.store)),
+      appBar: pageBar(
+        context,
+        title: Text(t.syncChooserMessenger),
+        help: PageHelp('messenger', store: widget.store),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -81,7 +98,8 @@ class _MessengerScreenState extends State<MessengerScreen> {
             value: _includePrivate,
             onChanged: (v) => setState(() => _includePrivate = v),
             secondary: Icon(
-                _includePrivate ? Icons.lock_open : Icons.lock_outline),
+              _includePrivate ? Icons.lock_open : Icons.lock_outline,
+            ),
             title: Text(t.includePrivate),
             contentPadding: EdgeInsets.zero,
           ),

@@ -7,36 +7,42 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 
 void main() {
-  testWidgets('drag a rectangle and confirm returns cropped bytes',
-      (tester) async {
+  testWidgets('drag a rectangle and confirm returns cropped bytes', (
+    tester,
+  ) async {
     final source = Uint8List.fromList(
-        img.encodeJpg(img.Image(width: 400, height: 400)));
+      img.encodeJpg(img.Image(width: 400, height: 400)),
+    );
     Uint8List? result;
 
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (context) => ElevatedButton(
-          onPressed: () async {
-            result = await Navigator.of(context).push<Uint8List>(
-              MaterialPageRoute(
-                builder: (_) => PhotoEditScreen(
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => ElevatedButton(
+            onPressed: () async {
+              result = await Navigator.of(context).push<Uint8List>(
+                MaterialPageRoute(
+                  builder: (_) => PhotoEditScreen(
                     bytes: source,
                     mode: PhotoEditMode.crop,
-                    allowSkip: true),
-              ),
-            );
-          },
-          child: const Text('go'),
+                    allowSkip: true,
+                  ),
+                ),
+              );
+            },
+            child: const Text('go'),
+          ),
         ),
       ),
-    ));
+    );
     await tester.tap(find.text('go'));
     await tester.pump();
     // Real time for the image decode to finish.
     await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 400)));
+      () => Future<void>.delayed(const Duration(milliseconds: 400)),
+    );
     await tester.pump(const Duration(milliseconds: 400));
     // The preview is decoded at screen size, never at photo size.
     expect(tester.widget<Image>(find.byType(Image)).image, isA<ResizeImage>());
@@ -54,15 +60,20 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     final confirm = tester.widget<TextButton>(
-        find.widgetWithText(TextButton, 'Crop'));
-    expect(confirm.onPressed, isNotNull,
-        reason: 'drag should have produced a selection');
+      find.widgetWithText(TextButton, 'Crop'),
+    );
+    expect(
+      confirm.onPressed,
+      isNotNull,
+      reason: 'drag should have produced a selection',
+    );
 
     await tester.tap(find.widgetWithText(TextButton, 'Crop'));
     await tester.pump();
     // Real time for the crop isolate to finish.
     await tester.runAsync(
-        () => Future<void>.delayed(const Duration(seconds: 1)));
+      () => Future<void>.delayed(const Duration(seconds: 1)),
+    );
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(result, isNotNull);
@@ -72,33 +83,38 @@ void main() {
 
   testWidgets('use full photo returns the original bytes', (tester) async {
     final source = Uint8List.fromList(
-        img.encodeJpg(img.Image(width: 100, height: 100)));
+      img.encodeJpg(img.Image(width: 100, height: 100)),
+    );
     Uint8List? result;
 
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (context) => ElevatedButton(
-          onPressed: () async {
-            result = await Navigator.of(context).push<Uint8List>(
-              MaterialPageRoute(
-                builder: (_) => PhotoEditScreen(
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => ElevatedButton(
+            onPressed: () async {
+              result = await Navigator.of(context).push<Uint8List>(
+                MaterialPageRoute(
+                  builder: (_) => PhotoEditScreen(
                     bytes: source,
                     mode: PhotoEditMode.crop,
-                    allowSkip: true),
-              ),
-            );
-          },
-          child: const Text('go'),
+                    allowSkip: true,
+                  ),
+                ),
+              );
+            },
+            child: const Text('go'),
+          ),
         ),
       ),
-    ));
+    );
     await tester.tap(find.text('go'));
     await tester.pump();
     // Real time for the image decode to finish.
     await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 400)));
+      () => Future<void>.delayed(const Duration(milliseconds: 400)),
+    );
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pump(const Duration(milliseconds: 400));
     await tester.tap(find.text('Use full photo'));
@@ -109,36 +125,43 @@ void main() {
   });
 
   group('select only', () {
-    Future<CropChoice?> open(WidgetTester tester,
-        Future<void> Function() act) async {
+    Future<CropChoice?> open(
+      WidgetTester tester,
+      Future<void> Function() act,
+    ) async {
       final source = Uint8List.fromList(
-          img.encodeJpg(img.Image(width: 400, height: 400)));
+        img.encodeJpg(img.Image(width: 400, height: 400)),
+      );
       CropChoice? result;
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Builder(
-          builder: (context) => ElevatedButton(
-            onPressed: () async {
-              result = await Navigator.of(context).push<CropChoice>(
-                MaterialPageRoute(
-                  builder: (_) => PhotoEditScreen(
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () async {
+                result = await Navigator.of(context).push<CropChoice>(
+                  MaterialPageRoute(
+                    builder: (_) => PhotoEditScreen(
                       bytes: source,
                       mode: PhotoEditMode.crop,
                       allowSkip: true,
-                      selectOnly: true),
-                ),
-              );
-            },
-            child: const Text('go'),
+                      selectOnly: true,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('go'),
+            ),
           ),
         ),
-      ));
+      );
       await tester.tap(find.text('go'));
       await tester.pump();
       // Real time for the image decode to finish.
       await tester.runAsync(
-          () => Future<void>.delayed(const Duration(milliseconds: 400)));
+        () => Future<void>.delayed(const Duration(milliseconds: 400)),
+      );
       await tester.pump(const Duration(milliseconds: 400));
       await tester.pump(const Duration(milliseconds: 400));
       await act();
@@ -147,12 +170,14 @@ void main() {
       return result;
     }
 
-    testWidgets('a drag and Crop return the selection, not bytes',
-        (tester) async {
+    testWidgets('a drag and Crop return the selection, not bytes', (
+      tester,
+    ) async {
       final result = await open(tester, () async {
         final center = tester.getCenter(find.byKey(const Key('photoEditArea')));
-        final gesture =
-            await tester.startGesture(center - const Offset(80, 80));
+        final gesture = await tester.startGesture(
+          center - const Offset(80, 80),
+        );
         await gesture.moveBy(const Offset(80, 80));
         await tester.pump();
         await gesture.moveBy(const Offset(80, 80));
@@ -169,8 +194,10 @@ void main() {
     });
 
     testWidgets('use full photo returns no crop', (tester) async {
-      final result =
-          await open(tester, () => tester.tap(find.text('Use full photo')));
+      final result = await open(
+        tester,
+        () => tester.tap(find.text('Use full photo')),
+      );
       expect(result, isNotNull, reason: 'kept, not canceled');
       expect(result!.crop, isNull);
     });

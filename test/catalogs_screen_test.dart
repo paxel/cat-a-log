@@ -35,39 +35,47 @@ void main() {
   });
 
   Future<void> pumpHome(WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: StatefulBuilder(builder: (context, setState) {
-        return HomeShell(
-          store: store,
-          switching: CatalogSwitching(
-            catalogs: catalogs,
-            onSwitch: (to, {bool unwind = true}) {
-              store.close();
-              catalogs.active = to;
-              store = catalogs.openStore(to);
-              setState(() {});
-            },
-            onChanged: () => setState(() {}),
-          ),
-        );
-      }),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatefulBuilder(
+          builder: (context, setState) {
+            return HomeShell(
+              store: store,
+              switching: CatalogSwitching(
+                catalogs: catalogs,
+                onSwitch: (to, {bool unwind = true}) {
+                  store.close();
+                  catalogs.active = to;
+                  store = catalogs.openStore(to);
+                  setState(() {});
+                },
+                onChanged: () => setState(() {}),
+              ),
+            );
+          },
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
   /// The gear on the row of the catalog called [name].
   Future<void> openSettings(WidgetTester tester, String name) async {
     final row = find.ancestor(
-        of: find.text(name), matching: find.byType(ListTile));
-    await tester.tap(find.descendant(
-        of: row, matching: find.byIcon(Icons.settings_outlined)));
+      of: find.text(name),
+      matching: find.byType(ListTile),
+    );
+    await tester.tap(
+      find.descendant(of: row, matching: find.byIcon(Icons.settings_outlined)),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('the title names the catalog and opens the switcher',
-      (tester) async {
+  testWidgets('the title names the catalog and opens the switcher', (
+    tester,
+  ) async {
     catalogs.create('Paris');
     await pumpHome(tester);
     expect(find.widgetWithText(AppBar, 'Berlin'), findsOneWidget);
@@ -93,8 +101,9 @@ void main() {
     expect(find.text('Hinterhof'), findsNothing);
   });
 
-  testWidgets('a new catalog is created empty and becomes the one you are in',
-      (tester) async {
+  testWidgets('a new catalog is created empty and becomes the one you are in', (
+    tester,
+  ) async {
     store.createClowder('Hinterhof');
     await pumpHome(tester);
     await tester.tap(find.text('Berlin'));
@@ -139,8 +148,9 @@ void main() {
     expect(find.text('Berlin Nord'), findsWidgets);
   });
 
-  testWidgets('a name already taken is refused with cause and fix',
-      (tester) async {
+  testWidgets('a name already taken is refused with cause and fix', (
+    tester,
+  ) async {
     catalogs.create('Paris');
     await pumpHome(tester);
     await tester.tap(find.text('Berlin'));
@@ -155,8 +165,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-        find.textContaining('A catalog called Paris already exists'),
-        findsOneWidget);
+      find.textContaining('A catalog called Paris already exists'),
+      findsOneWidget,
+    );
     expect(catalogs.catalogs(), hasLength(2));
   });
 
@@ -168,8 +179,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.help_outline));
     await tester.pumpAndSettle();
-    expect(find.textContaining('A catalog is a world of its own'),
-        findsOneWidget);
+    expect(
+      find.textContaining('A catalog is a world of its own'),
+      findsOneWidget,
+    );
     expect(find.textContaining('The gear on a catalog'), findsOneWidget);
   });
 
@@ -182,8 +195,10 @@ void main() {
     await openSettings(tester, 'Berlin');
     await tester.tap(find.byIcon(Icons.help_outline));
     await tester.pumpAndSettle();
-    expect(find.textContaining('belongs to this catalog alone'),
-        findsOneWidget);
+    expect(
+      find.textContaining('belongs to this catalog alone'),
+      findsOneWidget,
+    );
   });
 
   group('deleting a catalog', () {
@@ -194,24 +209,26 @@ void main() {
       addTearDown(() {
         if (saved.existsSync()) saved.deleteSync(recursive: true);
       });
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: CatalogsScreen(
-          catalogs: catalogs,
-          storeOf: () => store,
-          onSwitch: (to, {bool unwind = true}) {
-            store.close();
-            catalogs.active = to;
-            store = catalogs.openStore(to);
-          },
-          saveTo: (path, name) async {
-            final to = '${saved.path}/$name';
-            File(path).copySync(to);
-            return to;
-          },
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: CatalogsScreen(
+            catalogs: catalogs,
+            storeOf: () => store,
+            onSwitch: (to, {bool unwind = true}) {
+              store.close();
+              catalogs.active = to;
+              store = catalogs.openStore(to);
+            },
+            saveTo: (path, name) async {
+              final to = '${saved.path}/$name';
+              File(path).copySync(to);
+              return to;
+            },
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
     }
 
@@ -221,8 +238,9 @@ void main() {
       expect(find.text('Delete catalog'), findsNothing);
     });
 
-    testWidgets('deleting the catalog you are in says why it cannot',
-        (tester) async {
+    testWidgets('deleting the catalog you are in says why it cannot', (
+      tester,
+    ) async {
       catalogs.create('Paris');
       await pumpManage(tester);
       await openSettings(tester, 'Berlin');
@@ -261,8 +279,9 @@ void main() {
       expect(catalogs.catalogs(), hasLength(2));
     });
 
-    testWidgets('the typed name deletes it, and the file is kept first',
-        (tester) async {
+    testWidgets('the typed name deletes it, and the file is kept first', (
+      tester,
+    ) async {
       final paris = catalogs.create('Paris');
       final parisStore = catalogs.openStore(paris)..author = 'test';
       parisStore.createClowder('Belleville');
@@ -317,8 +336,9 @@ void main() {
       expect(notesSaid(), anyElement(contains('catlog-paris.catsync')));
     });
 
-    testWidgets('the settings of a catalog you are not in act on it alone',
-        (tester) async {
+    testWidgets('the settings of a catalog you are not in act on it alone', (
+      tester,
+    ) async {
       final paris = catalogs.create('Paris');
       final parisStore = catalogs.openStore(paris)..author = 'Kathrin';
       parisStore.createCat('Minou');
@@ -341,9 +361,15 @@ void main() {
       await tester.tap(find.text('Authors & bans'));
       await tester.pumpAndSettle();
       final kathrin = find.ancestor(
-          of: find.text('Kathrin'), matching: find.byType(ListTile));
-      await tester.tap(find.descendant(
-          of: kathrin, matching: find.byIcon(Icons.delete_forever_outlined)));
+        of: find.text('Kathrin'),
+        matching: find.byType(ListTile),
+      );
+      await tester.tap(
+        find.descendant(
+          of: kathrin,
+          matching: find.byIcon(Icons.delete_forever_outlined),
+        ),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
       await tester.pumpAndSettle();
@@ -363,16 +389,18 @@ void main() {
 
   testWidgets('renaming a catalog renames its backup file', (tester) async {
     final removed = <String>[];
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: CatalogsScreen(
-        catalogs: catalogs,
-        storeOf: () => store,
-        onSwitch: (_, {bool unwind = true}) {},
-        removeSaved: (name) async => removed.add(name),
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatalogsScreen(
+          catalogs: catalogs,
+          storeOf: () => store,
+          onSwitch: (_, {bool unwind = true}) {},
+          removeSaved: (name) async => removed.add(name),
+        ),
       ),
-    ));
+    );
     await tester.pumpAndSettle();
     await openSettings(tester, 'Berlin');
     await tester.tap(find.text('Name'));
@@ -387,12 +415,17 @@ void main() {
   testWidgets('each catalog shows what it costs in space', (tester) async {
     store.createClowder('Hinterhof');
     catalogs.create('Paris');
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: CatalogsScreen(
-          catalogs: catalogs, storeOf: () => store, onSwitch: (_, {bool unwind = true}) {}),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatalogsScreen(
+          catalogs: catalogs,
+          storeOf: () => store,
+          onSwitch: (_, {bool unwind = true}) {},
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     for (final catalog in catalogs.catalogs()) {
@@ -400,8 +433,10 @@ void main() {
       expect(catalog.sizeInBytes, greaterThan(0));
     }
     // A size is shown for every catalog, in units a person reads.
-    expect(find.textContaining(RegExp(r'\d+(\.\d+)? (B|KB|MB|GB)')),
-        findsNWidgets(2));
+    expect(
+      find.textContaining(RegExp(r'\d+(\.\d+)? (B|KB|MB|GB)')),
+      findsNWidgets(2),
+    );
   });
 
   testWidgets('switching from the manage screen stays there; back leaves '
@@ -423,8 +458,9 @@ void main() {
     expect(tester.takeException(), isNull);
     // Still on the manage screen, Paris now marked active.
     expect(find.text('Catalogs'), findsOneWidget);
-    final parisTile = tester.widget<ListTile>(find.ancestor(
-        of: find.text('Paris'), matching: find.byType(ListTile)));
+    final parisTile = tester.widget<ListTile>(
+      find.ancestor(of: find.text('Paris'), matching: find.byType(ListTile)),
+    );
     expect(parisTile.selected, isTrue);
 
     // Back leaves into the switched catalog.
@@ -434,8 +470,9 @@ void main() {
     expect(find.widgetWithText(AppBar, 'Paris'), findsOneWidget);
   });
 
-  testWidgets('each catalog keeps its own backup file across a switch',
-      (tester) async {
+  testWidgets('each catalog keeps its own backup file across a switch', (
+    tester,
+  ) async {
     final written = <String>[];
     final paris = catalogs.create('Paris');
     store.createClowder('Hinterhof');
@@ -450,7 +487,10 @@ void main() {
     }
 
     expect(written, ['catlog-berlin.catsync', 'catlog-paris.catsync']);
-    expect(written.toSet(), hasLength(2),
-        reason: 'using one catalog must not overwrite the other backup');
+    expect(
+      written.toSet(),
+      hasLength(2),
+      reason: 'using one catalog must not overwrite the other backup',
+    );
   });
 }

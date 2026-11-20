@@ -151,15 +151,9 @@ const _anyFeatures = LooksGroup('features', single: false, values: [
 ]);
 
 /// A tortoise's shell and skin, in the colours there are words for.
-const _shellColours = LooksGroup('colours', single: false, values: [
-  'black',
-  'brown',
-  'tan',
-  'yellow',
-  'orange',
-  'green',
-  'grey'
-]);
+const _shellColours = LooksGroup('colours',
+    single: false,
+    values: ['black', 'brown', 'tan', 'yellow', 'orange', 'green', 'grey']);
 
 /// Species with fur, a tail and ears worth describing.
 const _furred = {
@@ -287,11 +281,13 @@ String? encodeLooks(Map<String, Set<String>> looks) {
     for (final g in looksGroupOrder)
       if (looks[g]?.isNotEmpty ?? false) g,
     for (final g in looks.keys)
-      if (!looksGroupOrder.contains(g) && looks[g]!.isNotEmpty) g,
+      if (!looksGroupOrder.contains(g) && (looks[g]?.isNotEmpty ?? false)) g,
   ];
   if (groups.isEmpty) return null;
   return [
-    for (final g in groups) '$g=${(looks[g]!.toList()..sort()).join(',')}',
+    for (final g in groups)
+      if (looks[g] case final values?)
+        '$g=${(values.toList()..sort()).join(',')}',
   ].join('; ');
 }
 
@@ -345,7 +341,8 @@ LooksComparison compareLooks({
       if (looksA.containsKey(g) && looksB.containsKey(g)) g,
   ];
   for (final g in groups) {
-    final a = looksA[g]!, b = looksB[g]!;
+    final a = looksA[g], b = looksB[g];
+    if (a == null || b == null) continue;
     if (looksGroupIsSingle(g)) {
       if (a.first != b.first) return const LooksComparison(true, []);
       addAgreeing(g);
@@ -431,15 +428,17 @@ List<LooksMatch> looksCandidates(CatalogStore store,
   for (var i = 0; i < cats.length; i++) {
     for (var j = i + 1; j < cats.length; j++) {
       final a = cats[i].id, b = cats[j].id;
-      if (!stray[a]! && !stray[b]!) continue;
-      if (looks[a]!.isEmpty || looks[b]!.isEmpty) continue;
+      if (!(stray[a] ?? false) && !(stray[b] ?? false)) continue;
+      final looksA = looks[a], looksB = looks[b];
+      if (looksA == null || looksB == null) continue;
+      if (looksA.isEmpty || looksB.isEmpty) continue;
       final c = compareLooks(
         speciesA: species[a],
         speciesB: species[b],
         genderA: gender[a],
         genderB: gender[b],
-        looksA: looks[a]!,
-        looksB: looks[b]!,
+        looksA: looksA,
+        looksB: looksB,
       );
       if (c.contradiction || c.agreements < looksCandidateMinimum) continue;
       if (!includeRejected && isLooksRejected(store, a, b)) continue;

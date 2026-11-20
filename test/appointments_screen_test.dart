@@ -25,16 +25,19 @@ void main() {
   tearDown(() => store.close());
 
   Future<void> pump(WidgetTester tester, Widget home) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: home,
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: home,
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('the plus fans Appointment out, which records a visit',
-      (tester) async {
+  testWidgets('the plus fans Appointment out, which records a visit', (
+    tester,
+  ) async {
     await pump(tester, CatDetailScreen(store: store, catId: cat));
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
@@ -74,14 +77,22 @@ void main() {
   testWidgets('the agenda mixes both kinds by date', (tester) async {
     final soon = DateTime.now().add(const Duration(days: 2));
     final later = DateTime.now().add(const Duration(days: 9));
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: later, reminder: true);
-    store.createAppointment(Appointment(
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: later,
+      reminder: true,
+    );
+    store.createAppointment(
+      Appointment(
         id: '',
         entity: cat,
         date: DateTime(soon.year, soon.month, soon.day),
         time: (hour: 14, minute: 30),
-        title: 'Vet'));
+        title: 'Vet',
+      ),
+    );
     await pump(tester, AgendaScreen(store: store));
     expect(find.byType(AppointmentCard), findsOneWidget);
     expect(find.byType(ReminderCard), findsOneWidget);
@@ -91,15 +102,19 @@ void main() {
     expect(find.textContaining('2:30'), findsOneWidget);
   });
 
-  testWidgets('finishing asks for the outcome and closes the visit',
-      (tester) async {
-    store.createAppointment(Appointment(
+  testWidgets('finishing asks for the outcome and closes the visit', (
+    tester,
+  ) async {
+    store.createAppointment(
+      Appointment(
         id: '',
         entity: cat,
         date: DateTime.now().add(const Duration(days: 1)),
         title: 'Vet',
         linkedField: Keys.userField('remarks'),
-        linkedValue: 'checked'));
+        linkedValue: 'checked',
+      ),
+    );
     await pump(tester, AgendaScreen(store: store));
     await tester.tap(find.byTooltip('Finish'));
     await tester.pumpAndSettle();
@@ -122,8 +137,10 @@ void main() {
     await tester.enterText(find.byType(TextField), 'all fine, 4.2 kg');
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
-    expect(store.appointmentsOf(cat, includeDone: true).single.notes,
-        'all fine, 4.2 kg');
+    expect(
+      store.appointmentsOf(cat, includeDone: true).single.notes,
+      'all fine, 4.2 kg',
+    );
 
     // Unticked: open again, the linked value gone with it.
     await tester.tap(find.byType(Checkbox));
@@ -143,11 +160,14 @@ void main() {
   });
 
   testWidgets('long-press deletes an appointment', (tester) async {
-    store.createAppointment(Appointment(
+    store.createAppointment(
+      Appointment(
         id: '',
         entity: cat,
         date: DateTime.now().add(const Duration(days: 1)),
-        title: 'Vet'));
+        title: 'Vet',
+      ),
+    );
     await pump(tester, AgendaScreen(store: store));
     // The bin on the card deletes it.
     await tester.tap(find.byTooltip('Delete appointment'));
@@ -155,24 +175,31 @@ void main() {
     expect(store.appointmentsOf(cat, includeDone: true), isEmpty);
   });
 
-  testWidgets('an appointment within three days wants attention',
-      (tester) async {
+  testWidgets('an appointment within three days wants attention', (
+    tester,
+  ) async {
     expect(agendaWantsAttention(store), isFalse);
-    store.createAppointment(Appointment(
+    store.createAppointment(
+      Appointment(
         id: '',
         entity: cat,
         date: DateTime.now().add(const Duration(days: 2)),
-        title: 'Vet'));
+        title: 'Vet',
+      ),
+    );
     expect(agendaWantsAttention(store), isTrue);
   });
 
   testWidgets('the timeline shows the visit, not its JSON', (tester) async {
-    store.createAppointment(Appointment(
+    store.createAppointment(
+      Appointment(
         id: '',
         entity: cat,
         date: DateTime(2026, 9, 3),
         time: (hour: 14, minute: 30),
-        title: 'Vet'));
+        title: 'Vet',
+      ),
+    );
     await pump(tester, TimelineScreen(store: store, entityId: cat));
     expect(find.textContaining('Vet 14:30'), findsOneWidget);
     expect(find.textContaining('{"date"'), findsNothing);

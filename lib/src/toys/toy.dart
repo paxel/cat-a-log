@@ -93,9 +93,10 @@ class LaserDot implements Toy {
       return false;
     }
     // Caught: off to the farthest of a few spots, at once.
-    _target = List.generate(4, (_) => _spot(size)).reduce(
-      (a, b) => (a - point).distance > (b - point).distance ? a : b,
-    );
+    _target = List.generate(
+      4,
+      (_) => _spot(size),
+    ).reduce((a, b) => (a - point).distance > (b - point).distance ? a : b);
     _wait = 0;
     return true;
   }
@@ -141,7 +142,8 @@ class Mouse implements Toy {
   double get _outset => _out * (_inset + radius * 2);
 
   double get _perimeter =>
-      2 * (max(1, _size.width - 2 * _inset) + max(1, _size.height - 2 * _inset));
+      2 *
+      (max(1, _size.width - 2 * _inset) + max(1, _size.height - 2 * _inset));
 
   /// The point of the track [s] along it, the outward normal there and
   /// the way forward.
@@ -150,18 +152,34 @@ class Mouse implements Toy {
     final h = max(1.0, _size.height - 2 * _inset);
     var d = s % (2 * (w + h));
     if (d < w) {
-      return (Offset(_inset + d, _inset), const Offset(0, -1), const Offset(1, 0));
+      return (
+        Offset(_inset + d, _inset),
+        const Offset(0, -1),
+        const Offset(1, 0),
+      );
     }
     d -= w;
     if (d < h) {
-      return (Offset(_inset + w, _inset + d), const Offset(1, 0), const Offset(0, 1));
+      return (
+        Offset(_inset + w, _inset + d),
+        const Offset(1, 0),
+        const Offset(0, 1),
+      );
     }
     d -= h;
     if (d < w) {
-      return (Offset(_inset + w - d, _inset + h), const Offset(0, 1), const Offset(-1, 0));
+      return (
+        Offset(_inset + w - d, _inset + h),
+        const Offset(0, 1),
+        const Offset(-1, 0),
+      );
     }
     d -= w;
-    return (Offset(_inset, _inset + h - d), const Offset(-1, 0), const Offset(0, -1));
+    return (
+      Offset(_inset, _inset + h - d),
+      const Offset(-1, 0),
+      const Offset(0, -1),
+    );
   }
 
   void _somewhereElse() {

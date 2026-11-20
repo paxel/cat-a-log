@@ -9,6 +9,15 @@
 //! UPDATE_SNAPSHOTS=1 cargo test -p catlog-gui --test snapshots -- --ignored
 //! ```
 
+// Tests may unwrap, expect, panic and index (clippy.toml covers #[test]
+// functions; this covers the helpers beside them).
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing
+)]
+
 use std::sync::Arc;
 
 use catlog_core::tiles::{TileCache, TileFetcher, TileId, TileSource};

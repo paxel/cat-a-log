@@ -27,7 +27,8 @@ class TransferResult {
 /// happened. In the catalog it left, the entity is deleted the ordinary
 /// way — its partners already hold it and that cannot be unsent, so
 /// "deleted" is the truthful thing to tell them.
-TransferResult transferEntities(CatalogStore from, CatalogStore to, Set<String> ids,
+TransferResult transferEntities(
+    CatalogStore from, CatalogStore to, Set<String> ids,
     {DateTime? date}) {
   final wanted = <String>{};
   for (final id in ids) {

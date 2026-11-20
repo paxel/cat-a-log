@@ -54,8 +54,9 @@ void main() {
     expect(store.localSetting('choreLogOldestFirst'), 'yes');
   });
 
-  testWidgets('the bin removes a tick, shows it on request, restores it',
-      (tester) async {
+  testWidgets('the bin removes a tick, shows it on request, restores it', (
+    tester,
+  ) async {
     final store = CatalogStore.inMemory()..author = 'anna';
     addTearDown(store.close);
     final today = DateUtils.dateOnly(DateTime.now());

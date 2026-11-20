@@ -7,9 +7,27 @@
 <p align="center">
   <a href="https://github.com/paxel/cat-a-log/actions/workflows/ci.yml"><img src="https://github.com/paxel/cat-a-log/actions/workflows/ci.yml/badge.svg?branch=summer" alt="CI"/></a>
   <a href="https://github.com/paxel/cat-a-log/actions/workflows/security.yml"><img src="https://github.com/paxel/cat-a-log/actions/workflows/security.yml/badge.svg?branch=summer" alt="Security"/></a>
+  <a href="https://github.com/paxel/cat-a-log/actions/workflows/codeql.yml"><img src="https://github.com/paxel/cat-a-log/actions/workflows/codeql.yml/badge.svg?branch=summer" alt="CodeQL"/></a>
+  <a href="https://github.com/paxel/cat-a-log/actions/workflows/fuzz.yml"><img src="https://github.com/paxel/cat-a-log/actions/workflows/fuzz.yml/badge.svg?branch=summer" alt="Fuzz"/></a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/paxel/cat-a-log"><img src="https://api.scorecard.dev/projects/github.com/paxel/cat-a-log/badge" alt="OpenSSF Scorecard"/></a>
+  <a href="https://sonarcloud.io/summary/new_code?id=paxel_cat-a-log"><img src="https://sonarcloud.io/api/project_badges/measure?project=paxel_cat-a-log&metric=alert_status" alt="Quality gate"/></a>
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/paxel/cat-a-log/summer/.github/badges/coverage-rust-core.json" alt="Coverage Rust core"/>
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/paxel/cat-a-log/summer/.github/badges/coverage-rust-gui.json" alt="Coverage Rust GUI"/>
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/paxel/cat-a-log/summer/.github/badges/coverage-rust-l10n.json" alt="Coverage Rust l10n"/>
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/paxel/cat-a-log/summer/.github/badges/coverage-dart-core.json" alt="Coverage Dart core"/>
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/paxel/cat-a-log/summer/.github/badges/coverage-flutter-app.json" alt="Coverage Flutter app"/>
+  <a href="https://github.com/paxel/cat-a-log/blob/summer/desktop/Cargo.toml"><img src="https://img.shields.io/badge/unsafe-forbidden-success" alt="unsafe: none"/></a>
+  <a href="https://github.com/paxel/cat-a-log/blob/summer/desktop/Cargo.toml"><img src="https://img.shields.io/badge/panic--free-linted-success" alt="panic-free"/></a>
   <a href="https://github.com/paxel/cat-a-log/releases/latest"><img src="https://img.shields.io/github/v/release/paxel/cat-a-log" alt="Release"/></a>
   <a href="#get-it"><img src="https://img.shields.io/badge/F--Droid-paxel.github.io-1976D2?logo=f-droid" alt="F-Droid repository"/></a>
+  <a href="https://paxel.github.io/cat-a-log/"><img src="https://img.shields.io/badge/docs-paxel.github.io-informational" alt="Documentation"/></a>
   <a href="#get-it"><img src="https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20Windows%20%7C%20macOS%20%7C%20Linux-informational" alt="Platforms"/></a>
+  <img src="https://img.shields.io/github/languages/top/paxel/cat-a-log" alt="Top language"/>
+  <img src="https://img.shields.io/github/languages/code-size/paxel/cat-a-log" alt="Code size"/>
+  <img src="https://img.shields.io/github/repo-size/paxel/cat-a-log" alt="Repository size"/>
+  <a href="https://sonarcloud.io/summary/overall?id=paxel_cat-a-log"><img src="https://sonarcloud.io/api/project_badges/measure?project=paxel_cat-a-log&metric=ncloc" alt="Lines of code"/></a>
+  <img src="https://img.shields.io/github/commit-activity/m/paxel/cat-a-log" alt="Commit activity"/>
+  <img src="https://img.shields.io/github/last-commit/paxel/cat-a-log/summer" alt="Last commit"/>
   <a href="LICENSE-MIT"><img src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue" alt="License"/></a>
 </p>
 

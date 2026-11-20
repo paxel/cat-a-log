@@ -35,7 +35,10 @@ class FakeCalendar implements CalendarPort {
 
   @override
   Future<bool> updateEvent(
-      String calendarId, String eventId, EventSpec spec) async {
+    String calendarId,
+    String eventId,
+    EventSpec spec,
+  ) async {
     events[eventId] = spec; // alerts untouched, like the real port
     updated++;
     return true;
@@ -50,9 +53,9 @@ class FakeCalendar implements CalendarPort {
 
   @override
   Future<List<String>> markedEventIds(String calendarId) async => [
-        for (final MapEntry(:key, :value) in events.entries)
-          if (value.description.contains(eventMarker)) key
-      ];
+    for (final MapEntry(:key, :value) in events.entries)
+      if (value.description.contains(eventMarker)) key,
+  ];
 }
 
 /// A calendar that answers only when told — the catalog can be closed
@@ -101,8 +104,13 @@ void main() {
   DateTime inDays(int days) => DateTime.now().add(Duration(days: days));
 
   test('a plan becomes one all-day event with name and field', () async {
-    store.append(cat, Keys.userField('remarks'), 'vaccine refresh',
-        date: inDays(30), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'vaccine refresh',
+      date: inDays(30),
+      reminder: true,
+    );
     await reconcileCalendar(store, calendar, t);
     expect(calendar.events, hasLength(1));
     final event = calendar.events.values.single;
@@ -113,8 +121,13 @@ void main() {
   });
 
   test('reconcile twice changes nothing', () async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(10), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(10),
+      reminder: true,
+    );
     await reconcileCalendar(store, calendar, t);
     await reconcileCalendar(store, calendar, t);
     expect(calendar.created, 1);
@@ -123,12 +136,22 @@ void main() {
   });
 
   test('a rescheduled plan patches its event in place', () async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(10), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(10),
+      reminder: true,
+    );
     await reconcileCalendar(store, calendar, t);
     final id = calendar.events.keys.single;
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(20), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(20),
+      reminder: true,
+    );
     await reconcileCalendar(store, calendar, t);
     expect(calendar.events.keys.single, id);
     expect(calendar.updated, 1);
@@ -136,8 +159,13 @@ void main() {
   });
 
   test('a done plan loses its event', () async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(10), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(10),
+      reminder: true,
+    );
     await reconcileCalendar(store, calendar, t);
     store.append(cat, Keys.userField('remarks'), 'worming');
     await reconcileCalendar(store, calendar, t);
@@ -146,8 +174,13 @@ void main() {
   });
 
   test('an event the user deleted stays deleted', () async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(10), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(10),
+      reminder: true,
+    );
     await reconcileCalendar(store, calendar, t);
     calendar.events.clear(); // deleted by hand in the calendar app
     await reconcileCalendar(store, calendar, t);
@@ -156,8 +189,13 @@ void main() {
   });
 
   test('two reconciles at once create one event, not two', () async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(10), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(10),
+      reminder: true,
+    );
     final slow = SlowCalendar();
     final first = reconcileCalendarOnce(store, slow, t);
     final second = reconcileCalendarOnce(store, slow, t);
@@ -168,48 +206,71 @@ void main() {
     expect(slow.events, hasLength(1));
   });
 
-  test('resync removes every cat(a)log event and writes the plans fresh',
-      () async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(10), reminder: true);
-    await reconcileCalendar(store, calendar, t);
-    // Three stray copies from the old overlapping syncs, plus one the
-    // user made by hand.
-    final copy = calendar.events.values.single;
-    for (var i = 0; i < 3; i++) {
-      await calendar.createEvent('cal-1', copy);
-    }
-    await calendar.createEvent(
+  test(
+    'resync removes every cat(a)log event and writes the plans fresh',
+    () async {
+      store.append(
+        cat,
+        Keys.userField('remarks'),
+        'worming',
+        date: inDays(10),
+        reminder: true,
+      );
+      await reconcileCalendar(store, calendar, t);
+      // Three stray copies from the old overlapping syncs, plus one the
+      // user made by hand.
+      final copy = calendar.events.values.single;
+      for (var i = 0; i < 3; i++) {
+        await calendar.createEvent('cal-1', copy);
+      }
+      await calendar.createEvent(
         'cal-1',
         EventSpec(
-            start: inDays(1),
-            end: inDays(2),
-            allDay: true,
-            title: 'Dentist',
-            description: 'mine',
-            alertMinutesBefore: null));
-    expect(calendar.events, hasLength(5));
-    final outcome = await resyncCalendar(store, calendar, t);
-    expect(outcome, MirrorOutcome.ok);
-    expect(calendar.events, hasLength(2));
-    expect(calendar.events.values.map((e) => e.title),
-        containsAll(['Dentist']));
-    expect(calendar.events.values.where((e) => e.title.contains('Miezi')),
-        hasLength(1));
-  });
+          start: inDays(1),
+          end: inDays(2),
+          allDay: true,
+          title: 'Dentist',
+          description: 'mine',
+          alertMinutesBefore: null,
+        ),
+      );
+      expect(calendar.events, hasLength(5));
+      final outcome = await resyncCalendar(store, calendar, t);
+      expect(outcome, MirrorOutcome.ok);
+      expect(calendar.events, hasLength(2));
+      expect(
+        calendar.events.values.map((e) => e.title),
+        containsAll(['Dentist']),
+      );
+      expect(
+        calendar.events.values.where((e) => e.title.contains('Miezi')),
+        hasLength(1),
+      );
+    },
+  );
 
   test('the mirror stays silent when switched off', () async {
     store.setLocalSetting(calendarMirrorEnabledKey, 'off');
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(10), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(10),
+      reminder: true,
+    );
     await reconcileCalendar(store, calendar, t);
     expect(calendar.events, isEmpty);
   });
 
   test('no chosen calendar is reported, not guessed', () async {
     store.removeLocalSetting(calendarMirrorCalendarKey);
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(10), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(10),
+      reminder: true,
+    );
     final outcome = await reconcileCalendar(store, calendar, t);
     expect(outcome, MirrorOutcome.noCalendarChosen);
     expect(calendar.events, isEmpty);
@@ -221,32 +282,41 @@ void main() {
     expect(outcome, MirrorOutcome.calendarGone);
   });
 
-  test('switching calendars moves the events instead of doubling them',
-      () async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(10), reminder: true);
-    await reconcileCalendar(store, calendar, t);
-    calendar.calendars = const [
-      CalendarChoice(id: 'cal-1', name: 'Work'),
-      CalendarChoice(id: 'cal-2', name: 'Home'),
-    ];
-    store.setLocalSetting(calendarMirrorCalendarKey, 'cal-2');
-    await reconcileCalendar(store, calendar, t);
-    expect(calendar.events, hasLength(1));
-    expect(calendar.deleted, 1);
-    expect(calendar.created, 2);
-  });
+  test(
+    'switching calendars moves the events instead of doubling them',
+    () async {
+      store.append(
+        cat,
+        Keys.userField('remarks'),
+        'worming',
+        date: inDays(10),
+        reminder: true,
+      );
+      await reconcileCalendar(store, calendar, t);
+      calendar.calendars = const [
+        CalendarChoice(id: 'cal-1', name: 'Work'),
+        CalendarChoice(id: 'cal-2', name: 'Home'),
+      ];
+      store.setLocalSetting(calendarMirrorCalendarKey, 'cal-2');
+      await reconcileCalendar(store, calendar, t);
+      expect(calendar.events, hasLength(1));
+      expect(calendar.deleted, 1);
+      expect(calendar.created, 2);
+    },
+  );
 
   test('an appointment becomes a timed event with its alert', () async {
-    store.createAppointment(Appointment(
-      id: '',
-      entity: cat,
-      date: DateTime(2026, 9, 3),
-      time: (hour: 14, minute: 30),
-      title: 'Vet',
-      notes: 'bring the form',
-      alert: AppointmentAlert.hourBefore,
-    ));
+    store.createAppointment(
+      Appointment(
+        id: '',
+        entity: cat,
+        date: DateTime(2026, 9, 3),
+        time: (hour: 14, minute: 30),
+        title: 'Vet',
+        notes: 'bring the form',
+        alert: AppointmentAlert.hourBefore,
+      ),
+    );
     await reconcileCalendar(store, calendar, t);
     final event = calendar.events.values.single;
     expect(event.allDay, isFalse);
@@ -258,13 +328,15 @@ void main() {
   });
 
   test('an all-day appointment without alert stays silent', () async {
-    store.createAppointment(Appointment(
-      id: '',
-      entity: cat,
-      date: DateTime(2026, 9, 3),
-      title: 'Vet',
-      alert: AppointmentAlert.none,
-    ));
+    store.createAppointment(
+      Appointment(
+        id: '',
+        entity: cat,
+        date: DateTime(2026, 9, 3),
+        title: 'Vet',
+        alert: AppointmentAlert.none,
+      ),
+    );
     await reconcileCalendar(store, calendar, t);
     final event = calendar.events.values.single;
     expect(event.allDay, isTrue);
@@ -272,23 +344,31 @@ void main() {
   });
 
   test('finishing an appointment removes its event', () async {
-    final made = store.createAppointment(Appointment(
-        id: '', entity: cat, date: DateTime(2026, 9, 3), title: 'Vet'));
+    final made = store.createAppointment(
+      Appointment(
+        id: '',
+        entity: cat,
+        date: DateTime(2026, 9, 3),
+        title: 'Vet',
+      ),
+    );
     await reconcileCalendar(store, calendar, t);
     store.finishAppointment(made, notes: 'fine');
     await reconcileCalendar(store, calendar, t);
     expect(calendar.events, isEmpty);
   });
 
-  test('rescheduling patches the event and leaves its alert alone',
-      () async {
-    final made = store.createAppointment(Appointment(
+  test('rescheduling patches the event and leaves its alert alone', () async {
+    final made = store.createAppointment(
+      Appointment(
         id: '',
         entity: cat,
         date: DateTime(2026, 9, 3),
         time: (hour: 9, minute: 0),
         title: 'Vet',
-        alert: AppointmentAlert.dayBefore));
+        alert: AppointmentAlert.dayBefore,
+      ),
+    );
     await reconcileCalendar(store, calendar, t);
     final id = calendar.events.keys.single;
     store.updateAppointment(made.copyWith(date: DateTime(2026, 9, 4)));
@@ -299,24 +379,35 @@ void main() {
     expect(calendar.updated, 1);
   });
 
-  test('a catalog closed mid-reconcile is left alone, without an error',
-      () async {
-    store.append(cat, Keys.userField('remarks'), 'vaccine refresh',
-        date: inDays(30), reminder: true);
-    final slow = SlowCalendar();
-    final pending = reconcileCalendar(store, slow, t);
-    store.close();
-    slow.gate.complete();
-    expect(await pending, MirrorOutcome.abandoned);
-    expect(slow.created, 0);
-    // tearDown closes again; a second close must not throw either.
-    store = CatalogStore.inMemory()..author = 'test';
-  });
+  test(
+    'a catalog closed mid-reconcile is left alone, without an error',
+    () async {
+      store.append(
+        cat,
+        Keys.userField('remarks'),
+        'vaccine refresh',
+        date: inDays(30),
+        reminder: true,
+      );
+      final slow = SlowCalendar();
+      final pending = reconcileCalendar(store, slow, t);
+      store.close();
+      slow.gate.complete();
+      expect(await pending, MirrorOutcome.abandoned);
+      expect(slow.created, 0);
+      // tearDown closes again; a second close must not throw either.
+      store = CatalogStore.inMemory()..author = 'test';
+    },
+  );
 
-  test('an event created while the catalog closed is deleted again',
-      () async {
-    store.append(cat, Keys.userField('remarks'), 'vaccine refresh',
-        date: inDays(30), reminder: true);
+  test('an event created while the catalog closed is deleted again', () async {
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'vaccine refresh',
+      date: inDays(30),
+      reminder: true,
+    );
     final slow = SlowCreateCalendar();
     final pending = reconcileCalendar(store, slow, t);
     await Future<void>.delayed(Duration.zero);
@@ -328,10 +419,14 @@ void main() {
     store = CatalogStore.inMemory()..author = 'test';
   });
 
-  test('resync waits for a running reconcile instead of racing it',
-      () async {
-    store.append(cat, Keys.userField('remarks'), 'vaccine refresh',
-        date: inDays(30), reminder: true);
+  test('resync waits for a running reconcile instead of racing it', () async {
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'vaccine refresh',
+      date: inDays(30),
+      reminder: true,
+    );
     final slow = SlowCalendar();
     final running = reconcileCalendarOnce(store, slow, t);
     final resync = resyncCalendar(store, slow, t);
@@ -341,17 +436,29 @@ void main() {
     expect(slow.events, hasLength(1));
   });
 
-  test('a calendar that never answers releases the catalog after the limit',
-      () async {
-    store.append(cat, Keys.userField('remarks'), 'vaccine refresh',
-        date: inDays(30), reminder: true);
-    final slow = SlowCalendar(); // gate never completes
-    await expectLater(
-        reconcileCalendarOnce(store, slow, t,
-            timeout: const Duration(milliseconds: 100)),
-        throwsA(isA<TimeoutException>()));
-    // The next pass is not blocked by the stuck one.
-    final fresh = FakeCalendar();
-    expect(await reconcileCalendarOnce(store, fresh, t), MirrorOutcome.ok);
-  });
+  test(
+    'a calendar that never answers releases the catalog after the limit',
+    () async {
+      store.append(
+        cat,
+        Keys.userField('remarks'),
+        'vaccine refresh',
+        date: inDays(30),
+        reminder: true,
+      );
+      final slow = SlowCalendar(); // gate never completes
+      await expectLater(
+        reconcileCalendarOnce(
+          store,
+          slow,
+          t,
+          timeout: const Duration(milliseconds: 100),
+        ),
+        throwsA(isA<TimeoutException>()),
+      );
+      // The next pass is not blocked by the stuck one.
+      final fresh = FakeCalendar();
+      expect(await reconcileCalendarOnce(store, fresh, t), MirrorOutcome.ok);
+    },
+  );
 }

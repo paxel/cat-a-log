@@ -59,7 +59,10 @@ String _entryText(FieldDef def, String? current, String locale) {
   final base = double.tryParse(current);
   if (base == null) return current;
   return formatNumber(
-      locale, fromBase(def.unitDimension, unitSystem.value, base), 2);
+    locale,
+    fromBase(def.unitDimension, unitSystem.value, base),
+    2,
+  );
 }
 
 /// The state behind a [FieldValueInput]: what the user picked or typed,
@@ -117,8 +120,7 @@ class FieldValueController extends ChangeNotifier {
         // Typed in the device's unit, stored in the base unit (#96).
         final entered = parseEntry(text.text);
         if (entered == null) return null;
-        return baseString(toBase(
-            def.unitDimension, unitSystem.value, entered));
+        return baseString(toBase(def.unitDimension, unitSystem.value, entered));
     }
   }
 
@@ -164,31 +166,32 @@ class _FieldValueInputState extends State<FieldValueInput> {
   /// blank without selecting and deleting the old one first. Shown only
   /// while there is something to clear.
   Widget _clearButton() => ListenableBuilder(
-        listenable: c.text,
-        builder: (context, _) => c.text.text.isEmpty
-            ? const SizedBox.shrink()
-            : IconButton(
-                icon: const Icon(Icons.clear),
-                tooltip: context.t.clearField,
-                onPressed: () => setState(() => c.text.clear()),
-              ),
-      );
+    listenable: c.text,
+    builder: (context, _) => c.text.text.isEmpty
+        ? const SizedBox.shrink()
+        : IconButton(
+            icon: const Icon(Icons.clear),
+            tooltip: context.t.clearField,
+            onPressed: () => setState(() => c.text.clear()),
+          ),
+  );
 
   @override
   Widget build(BuildContext context) {
+    final excludeId = widget.excludeId;
     switch (def.type) {
       case FieldType.yesNo:
       case FieldType.choice:
         // Breed follows the animal's species (#95): a dog is offered
         // dog breeds, the cat list stays the field's own.
-        final species = def.slug == 'breed' && widget.excludeId != null
-            ? widget.store?.current(widget.excludeId!, 'f:species')
+        final species = def.slug == 'breed' && excludeId != null
+            ? widget.store?.current(excludeId, 'f:species')
             : null;
         final options = def.type == FieldType.yesNo
             ? const ['yes', 'no']
             : def.slug == 'breed'
-                ? breedOptions(def, species)
-                : def.options;
+            ? breedOptions(def, species)
+            : def.options;
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -252,8 +255,7 @@ class _FieldValueInputState extends State<FieldValueInput> {
           decoration: InputDecoration(
             labelText: context.t.value,
             suffixIcon: _clearButton(),
-            suffixText: entryUnit(
-                def.unitDimension, unitSystem.value),
+            suffixText: entryUnit(def.unitDimension, unitSystem.value),
           ),
         );
       case FieldType.location:
@@ -278,9 +280,9 @@ class _FieldValueInputState extends State<FieldValueInput> {
         // Looks: chips per group, the groups following the animal's
         // species; the controller's text holds the encoded line.
         return LooksInput(
-          species: widget.excludeId == null
+          species: excludeId == null
               ? null
-              : widget.store?.current(widget.excludeId!, 'f:species'),
+              : widget.store?.current(excludeId, 'f:species'),
           value: c.text.text.isEmpty ? null : c.text.text,
           onChanged: (v) => setState(() => c.text.text = v ?? ''),
           store: widget.store,
@@ -309,21 +311,24 @@ class _FieldValueInputState extends State<FieldValueInput> {
             labelText: context.t.value,
             helperText: def.slug == 'chipid' ? context.t.chipScanHint : null,
             helperMaxLines: 3,
-            suffixIcon: Row(mainAxisSize: MainAxisSize.min, children: [
-              _clearButton(),
-              IconButton(
-                icon: const Icon(Icons.qr_code_scanner),
-                tooltip: context.t.scanPrintedCode,
-                onPressed: () async {
-                  final value = await Navigator.of(context).push<String>(
-                    MaterialPageRoute(builder: (_) => const ScanScreen()),
-                  );
-                  if (value != null && value.isNotEmpty) {
-                    setState(() => c.text.text = value);
-                  }
-                },
-              ),
-            ]),
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _clearButton(),
+                IconButton(
+                  icon: const Icon(Icons.qr_code_scanner),
+                  tooltip: context.t.scanPrintedCode,
+                  onPressed: () async {
+                    final value = await Navigator.of(context).push<String>(
+                      MaterialPageRoute(builder: (_) => const ScanScreen()),
+                    );
+                    if (value != null && value.isNotEmpty) {
+                      setState(() => c.text.text = value);
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         );
       case FieldType.cat:
@@ -379,10 +384,10 @@ class _FieldEditDialogState extends State<_FieldEditDialog> {
     locale: Localizations.localeOf(context).toString(),
   );
   late DateTime _asOf = widget.asOf?.toLocal() ?? clockNow();
-  late bool _private =
-      widget.store != null &&
-      widget.excludeId != null &&
-      widget.store!.isFieldPrivate(widget.excludeId!, widget.def.key);
+  late bool _private = switch ((widget.store, widget.excludeId)) {
+    (final store?, final id?) => store.isFieldPrivate(id, widget.def.key),
+    _ => false,
+  };
 
   @override
   void dispose() {
@@ -412,8 +417,15 @@ class _FieldEditDialogState extends State<_FieldEditDialog> {
     );
     if (!mounted) return;
     if (picked != null) {
-      setState(() => _asOf = DateTime(_asOf.year, _asOf.month, _asOf.day,
-          picked.hour, picked.minute));
+      setState(
+        () => _asOf = DateTime(
+          _asOf.year,
+          _asOf.month,
+          _asOf.day,
+          picked.hour,
+          picked.minute,
+        ),
+      );
     }
   }
 
@@ -460,9 +472,8 @@ class _FieldEditDialogState extends State<_FieldEditDialog> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.schedule),
               title: Text(
-                DateFormat.Hm(
-                  Localizations.localeOf(context).toString(),
-                ).format(_asOf),
+                DateFormat.Hm(Localizations.localeOf(context).toString())
+                    .format(_asOf),
               ),
               trailing: const Icon(Icons.edit_outlined),
               onTap: _pickTime,

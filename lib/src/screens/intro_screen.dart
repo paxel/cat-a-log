@@ -42,73 +42,75 @@ class _IntroScreenState extends State<IntroScreen> {
     ];
     return Scaffold(
       body: SafeArea(
-        child: Column(children: [
-          Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: TextButton(
-              onPressed: _finish,
-              child: Text(t.introSkip),
+        child: Column(
+          children: [
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: TextButton(onPressed: _finish, child: Text(t.introSkip)),
             ),
-          ),
-          Expanded(
-            child: PageView(
-              controller: _controller,
-              onPageChanged: (p) => setState(() => _page = p),
-              children: [
-                for (final (icon, title, body) in pages)
-                  Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(icon,
+            Expanded(
+              child: PageView(
+                controller: _controller,
+                onPageChanged: (p) => setState(() => _page = p),
+                children: [
+                  for (final (icon, title, body) in pages)
+                    Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            icon,
                             size: 96,
-                            color:
-                                Theme.of(context).colorScheme.primary),
-                        const SizedBox(height: 32),
-                        Text(title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineSmall,
-                            textAlign: TextAlign.center),
-                        const SizedBox(height: 16),
-                        Text(body, textAlign: TextAlign.center),
-                      ],
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(height: 32),
+                          Text(
+                            title,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(body, textAlign: TextAlign.center),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (var i = 0; i < pages.length; i++)
+                  Container(
+                    margin: const EdgeInsets.all(4),
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: i == _page
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.outlineVariant,
                     ),
                   ),
               ],
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for (var i = 0; i < pages.length; i++)
-                Container(
-                  margin: const EdgeInsets.all(4),
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: i == _page
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.outlineVariant,
-                  ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: FilledButton(
+                onPressed: _page == pages.length - 1
+                    ? _finish
+                    : () => _controller.nextPage(
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeOut,
+                      ),
+                child: Text(
+                  _page == pages.length - 1 ? t.introDone : t.introNext,
                 ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: FilledButton(
-              onPressed: _page == pages.length - 1
-                  ? _finish
-                  : () => _controller.nextPage(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeOut),
-              child: Text(
-                  _page == pages.length - 1 ? t.introDone : t.introNext),
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }

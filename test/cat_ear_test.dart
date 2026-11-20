@@ -24,11 +24,13 @@ void main() {
   tearDown(() => store.close());
 
   Future<void> pump(WidgetTester tester, Widget home) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: home,
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: home,
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -40,13 +42,20 @@ void main() {
   });
 
   testWidgets('agenda cards wear the ear', (tester) async {
-    store.append(cat, Keys.userField('remarks'), 'due soon',
-        date: DateTime.now().add(const Duration(days: 3)),
-        reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'due soon',
+      date: DateTime.now().add(const Duration(days: 3)),
+      reminder: true,
+    );
     await pump(tester, AgendaScreen(store: store));
     expect(
-        find.descendant(
-            of: find.byType(Card), matching: find.byType(CatEarBadge)),
-        findsOneWidget);
+      find.descendant(
+        of: find.byType(Card),
+        matching: find.byType(CatEarBadge),
+      ),
+      findsOneWidget,
+    );
   });
 }

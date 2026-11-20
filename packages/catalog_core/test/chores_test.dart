@@ -154,7 +154,8 @@ void main() {
           id: 'x',
           entity: 'cat:1',
           title: 'Vet papers',
-          schedule: ChoreSchedule.fromJson(json['schedule']),
+          schedule:
+              ChoreSchedule.fromJson(json['schedule'] as Map<String, dynamic>),
           start: d(5));
       expect(occurrences(old, {}, d(0), d(3000)).map((o) => o.due), [d(5)]);
     });

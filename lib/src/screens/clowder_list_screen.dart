@@ -1,3 +1,4 @@
+import 'dart:async';
 
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
@@ -52,14 +53,15 @@ class ClowderListScreen extends StatefulWidget {
   /// whole window, so the layout around this screen has to know.
   final VoidCallback? onViewChanged;
 
-  const ClowderListScreen(
-      {super.key,
-      required this.store,
-      this.onOpenPage,
-      this.selectedPageId,
-      this.catalogName,
-      this.switching,
-      this.onViewChanged});
+  const ClowderListScreen({
+    super.key,
+    required this.store,
+    this.onOpenPage,
+    this.selectedPageId,
+    this.catalogName,
+    this.switching,
+    this.onViewChanged,
+  });
 
   @override
   State<ClowderListScreen> createState() => _ClowderListScreenState();
@@ -71,8 +73,7 @@ const clowderColumnsKey = 'clowderColumns';
 const clowderSortKey = 'clowderSort';
 
 class _ClowderListScreenState extends State<ClowderListScreen> {
-  bool get _tableView =>
-      widget.store.localSetting(clowderViewKey) == 'table';
+  bool get _tableView => widget.store.localSetting(clowderViewKey) == 'table';
 
   /// Selected field columns; name and cat count are always present.
   Set<String> get _columns {
@@ -89,8 +90,10 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
 
   void _setSort(String column) {
     final (current, asc) = _sort;
-    widget.store.setLocalSetting(clowderSortKey,
-        column == current ? '$column,${asc ? 'desc' : 'asc'}' : '$column,asc');
+    widget.store.setLocalSetting(
+      clowderSortKey,
+      column == current ? '$column,${asc ? 'desc' : 'asc'}' : '$column,asc',
+    );
     setState(() {});
   }
 
@@ -103,9 +106,11 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
       // per app run, so backing out of it stays backed out (#74).
       if (!agendaAutoOpened && agendaWantsAttention(widget.store)) {
         agendaAutoOpened = true;
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => AgendaScreen(store: widget.store),
-        ));
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => AgendaScreen(store: widget.store),
+          ),
+        );
       }
       if (!mounted) return;
       // A sync may have switched the catalog to pets meanwhile.
@@ -113,29 +118,35 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
       // Reminders set in editors or arrived by sync reach the device
       // calendar without a visit to the agenda.
       mirrorAfterChange(context, widget.store);
-      runSpotlights(context, widget.store, 'home');
+      unawaited(runSpotlights(context, widget.store, 'home'));
     });
   }
 
   Future<void> _openConflicts() async {
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => ConflictsScreen(store: widget.store),
-    ));
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ConflictsScreen(store: widget.store),
+      ),
+    );
     if (mounted) setState(() {});
   }
 
   /// Language and units may change in there: rebuild on return.
   Future<void> _openSettings() async {
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => SettingsScreen(store: widget.store),
-    ));
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => SettingsScreen(store: widget.store),
+      ),
+    );
     if (mounted) setState(() {});
   }
 
   Future<void> _openAgenda() async {
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => AgendaScreen(store: widget.store),
-    ));
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => AgendaScreen(store: widget.store),
+      ),
+    );
     if (!mounted) return;
     setState(() {});
   }
@@ -150,7 +161,8 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
       setState(() {});
       return;
     }
-    await Navigator.of(context).push(MaterialPageRoute(builder: page.build));
+    await Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: page.build));
     if (mounted) setState(() {});
   }
 
@@ -167,7 +179,9 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
         builder: (title) => InkWell(
           onTap: () {
             final box = title.findRenderObject() as RenderBox;
-            showCatalogSwitcher(context,
+            unawaited(
+              showCatalogSwitcher(
+                context,
                 at: box.localToGlobal(Offset(0, box.size.height)),
                 catalogs: switching.catalogs,
                 storeOf: () => widget.store,
@@ -175,12 +189,17 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
                 onChanged: () {
                   switching.onChanged?.call();
                   if (mounted) setState(() {});
-                });
+                },
+              ),
+            );
           },
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Flexible(child: text),
-            const Icon(Icons.arrow_drop_down),
-          ]),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(child: text),
+              const Icon(Icons.arrow_drop_down),
+            ],
+          ),
         ),
       ),
     );
@@ -189,11 +208,14 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
   static const _straysPageId = 'strays';
 
   PanePage _straysPage() => PanePage(
-      id: _straysPageId,
-      build: (_) => StraysScreen(store: widget.store));
+    id: _straysPageId,
+    build: (_) => StraysScreen(store: widget.store),
+  );
 
   PanePage _clowderPage(String id) => PanePage.clowder(
-      id, (_) => ClowderDetailScreen(store: widget.store, clowderId: id));
+    id,
+    (_) => ClowderDetailScreen(store: widget.store, clowderId: id),
+  );
 
   Future<void> _addClowder() async {
     final result = await askNameAndDate(context, context.t.newClowder);
@@ -204,8 +226,7 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
     await _open(_clowderPage(id));
   }
 
-  bool _isFavourite(String id) =>
-      widget.store.localSetting('fav:$id') == 'yes';
+  bool _isFavourite(String id) => widget.store.localSetting('fav:$id') == 'yes';
 
   void _toggleFavourite(String id) {
     widget.store.setLocalSetting('fav:$id', _isFavourite(id) ? 'no' : 'yes');
@@ -237,7 +258,9 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             label: _tableView ? context.t.viewAsTiles : context.t.viewAsTable,
             onPressed: () {
               widget.store.setLocalSetting(
-                  clowderViewKey, _tableView ? 'tiles' : 'table');
+                clowderViewKey,
+                _tableView ? 'tiles' : 'table',
+              );
               setState(() {});
               widget.onViewChanged?.call();
             },
@@ -246,13 +269,17 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             icon: Icons.search,
             label: context.t.searchCats,
             // Searching is filtering the list of every cat (#87).
-            onPressed: () => _open(PanePage(
+            onPressed: () => _open(
+              PanePage(
                 id: 'search',
                 build: (_) => CatListScreen(
-                    store: widget.store,
-                    title: context.t.cats,
-                    source: (s) => s.visibleCats(),
-                    autofocusFilter: true))),
+                  store: widget.store,
+                  title: context.t.cats,
+                  source: (s) => s.visibleCats(),
+                  autofocusFilter: true,
+                ),
+              ),
+            ),
           ),
           PageAction(
             spotlightId: 'home-agenda',
@@ -264,9 +291,11 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             icon: Icons.map_outlined,
             label: context.t.map,
             onPressed: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => MapScreen(store: widget.store),
-              ));
+              await Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => MapScreen(store: widget.store),
+                ),
+              );
               if (!mounted) return;
               setState(() {});
             },
@@ -276,9 +305,11 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             icon: Icons.sync,
             label: context.t.sync,
             onPressed: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => SyncScreen(store: widget.store),
-              ));
+              await Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => SyncScreen(store: widget.store),
+                ),
+              );
               if (!mounted) return;
               setState(() {});
             },
@@ -298,9 +329,12 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
           PageAction(
             icon: Icons.copy_all_outlined,
             label: context.t.findDuplicates,
-            onPressed: () => _open(PanePage(
+            onPressed: () => _open(
+              PanePage(
                 id: 'duplicates',
-                build: (_) => DuplicatesScreen(store: widget.store))),
+                build: (_) => DuplicatesScreen(store: widget.store),
+              ),
+            ),
           ),
           // Only while there is something to settle: a sync raised a
           // conflict, the arrival page was closed, and the badges
@@ -317,18 +351,24 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             PageAction(
               icon: Icons.emoji_events_outlined,
               label: context.t.achievementsTitle,
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => AchievementsScreen(
-                    manager: manager, stores: [widget.store]),
-              )),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => AchievementsScreen(
+                    manager: manager,
+                    stores: [widget.store],
+                  ),
+                ),
+              ),
             ),
           // Toys for the cat, right before Settings (#172).
           PageAction(
             icon: Icons.toys_outlined,
             label: context.t.playToys,
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => PlayScreen(store: widget.store),
-            )),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => PlayScreen(store: widget.store),
+              ),
+            ),
           ),
           PageAction(
             icon: Icons.settings_outlined,
@@ -338,9 +378,11 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
           PageAction(
             icon: Icons.info_outline,
             label: context.t.aboutAndFeedback,
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => AboutScreen(store: widget.store),
-            )),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => AboutScreen(store: widget.store),
+              ),
+            ),
           ),
         ],
       ),
@@ -349,72 +391,86 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
           if (clowders.isEmpty)
             Padding(
               padding: const EdgeInsets.all(32),
-              child: Text(context.t.noClowdersYet,
-                  textAlign: TextAlign.center),
+              child: Text(context.t.noClowdersYet, textAlign: TextAlign.center),
             ),
-          if (_tableView) _clowderTable(clowders) else GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1.4,
-            ),
-            itemCount: clowders.length + 1,
-            itemBuilder: (context, i) {
-              // Slot 0: the strays pseudo-clowder (#52) — strays are a
-              // place too, just one without an address.
-              if (i == 0) {
-                return Spotlight(
+          if (_tableView)
+            _clowderTable(clowders)
+          else
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(8),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 1.4,
+              ),
+              itemCount: clowders.length + 1,
+              itemBuilder: (context, i) {
+                // Slot 0: the strays pseudo-clowder (#52) — strays are a
+                // place too, just one without an address.
+                if (i == 0) {
+                  return Spotlight(
                     id: 'home-strays',
                     child: _StraysCard(
                       store: widget.store,
                       selected: widget.selectedPageId == _straysPageId,
                       onTap: () => _open(_straysPage()),
-                    ));
-              }
-              final clowder = clowders[i - 1];
-              final card = _ClowderCard(
-                store: widget.store,
-                clowder: clowder,
-                favourite: _isFavourite(clowder.id),
-                onToggleFavourite: () => _toggleFavourite(clowder.id),
-                selected:
-                    widget.selectedPageId == PanePage.clowderId_(clowder.id),
-                onContextMenu: (position) async {
-                  final action = await showMenu<String>(
-                    context: context,
-                    position: RelativeRect.fromLTRB(position.dx,
-                        position.dy, position.dx, position.dy),
-                    items: [
-                      PopupMenuItem(
-                          value: 'open', child: Text(context.t.open)),
-                      PopupMenuItem(
-                          value: 'hide',
-                          child: Text(widget.store.isHidden(clowder.id)
-                              ? context.t.unhideLabel
-                              : context.t.hideLabel)),
-                    ],
+                    ),
                   );
-                  if (action == 'hide') {
-                    setState(() => widget.store.setHidden(clowder.id,
-                        !widget.store.isHidden(clowder.id)));
-                  }
-                  if (action == 'open' && context.mounted) {
-                    await _open(_clowderPage(clowder.id));
-                  }
-                },
-                onTap: () => _open(_clowderPage(clowder.id)),
-              );
-              // The first clowder card carries the one-time lesson
-              // naming the ear.
-              return i == 1
-                  ? Spotlight(id: 'home-ear', child: card)
-                  : card;
-            },
-          ),
+                }
+                final clowder = clowders[i - 1];
+                final card = _ClowderCard(
+                  store: widget.store,
+                  clowder: clowder,
+                  favourite: _isFavourite(clowder.id),
+                  onToggleFavourite: () => _toggleFavourite(clowder.id),
+                  selected:
+                      widget.selectedPageId == PanePage.clowderId_(clowder.id),
+                  onContextMenu: (position) async {
+                    final action = await showMenu<String>(
+                      context: context,
+                      position: RelativeRect.fromLTRB(
+                        position.dx,
+                        position.dy,
+                        position.dx,
+                        position.dy,
+                      ),
+                      items: [
+                        PopupMenuItem(
+                          value: 'open',
+                          child: Text(context.t.open),
+                        ),
+                        PopupMenuItem(
+                          value: 'hide',
+                          child: Text(
+                            widget.store.isHidden(clowder.id)
+                                ? context.t.unhideLabel
+                                : context.t.hideLabel,
+                          ),
+                        ),
+                      ],
+                    );
+                    if (action == 'hide') {
+                      setState(
+                        () => widget.store.setHidden(
+                          clowder.id,
+                          !widget.store.isHidden(clowder.id),
+                        ),
+                      );
+                    }
+                    if (action == 'open' && context.mounted) {
+                      await _open(_clowderPage(clowder.id));
+                    }
+                  },
+                  onTap: () => _open(_clowderPage(clowder.id)),
+                );
+                // The first clowder card carries the one-time lesson
+                // naming the ear.
+                return i == 1 ? Spotlight(id: 'home-ear', child: card) : card;
+              },
+            ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -434,12 +490,12 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
     // of empty cells is nothing to choose.
     final defs = [
       for (final def in store.visibleFieldDefs(scope: FieldScope.clowder))
-        if (clowders.any((c) => store.current(c.id, def.key) != null)) def
+        if (clowders.any((c) => store.current(c.id, def.key) != null)) def,
     ];
     final chosen = _columns;
     final columns = [
       for (final def in defs)
-        if (chosen.contains(def.key)) def
+        if (chosen.contains(def.key)) def,
     ];
     final (sortKey, asc) = _sort;
     final rows = [...clowders];
@@ -453,9 +509,9 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
             .length
             .compareTo(store.visibleCats(clowderId: b.id).length);
       } else {
-        result = (store.current(a.id, sortKey) ?? '')
-            .toLowerCase()
-            .compareTo((store.current(b.id, sortKey) ?? '').toLowerCase());
+        result = (store.current(a.id, sortKey) ?? '').toLowerCase().compareTo(
+          (store.current(b.id, sortKey) ?? '').toLowerCase(),
+        );
       }
       return asc ? result : -result;
     }
@@ -464,82 +520,102 @@ class _ClowderListScreenState extends State<ClowderListScreen> {
     final sortIndex = sortKey == 'name'
         ? 0
         : sortKey == 'count'
-            ? 1
-            : 2 + columns.indexWhere((d) => d.key == sortKey);
+        ? 1
+        : 2 + columns.indexWhere((d) => d.key == sortKey);
     void open(String clowderId) => _open(_clowderPage(clowderId));
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      FoldableChips(
-        store: store,
-        id: 'clowderColumns',
-        title: t.pickerColumns,
-        options: [
-          for (final def in defs) (key: def.key, label: fieldDefName(t, def))
-        ],
-        selected: chosen,
-        onToggle: (key) {
-          final next = {...chosen};
-          if (!next.remove(key)) next.add(key);
-          store.setLocalSetting(clowderColumnsKey, next.join(','));
-          setState(() {});
-        },
-      ),
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          sortColumnIndex: sortIndex < 0 ? null : sortIndex,
-          sortAscending: asc,
-          showCheckboxColumn: false,
-          columns: [
-            DataColumn(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FoldableChips(
+          store: store,
+          id: 'clowderColumns',
+          title: t.pickerColumns,
+          options: [
+            for (final def in defs) (key: def.key, label: fieldDefName(t, def)),
+          ],
+          selected: chosen,
+          onToggle: (key) {
+            final next = {...chosen};
+            if (!next.remove(key)) next.add(key);
+            store.setLocalSetting(clowderColumnsKey, next.join(','));
+            setState(() {});
+          },
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            sortColumnIndex: sortIndex < 0 ? null : sortIndex,
+            sortAscending: asc,
+            showCheckboxColumn: false,
+            columns: [
+              DataColumn(
                 label: Text(t.name),
-                onSort: (_, _) => _setSort('name')),
-            DataColumn(
+                onSort: (_, _) => _setSort('name'),
+              ),
+              DataColumn(
                 label: Text(t.cats),
                 numeric: true,
-                onSort: (_, _) => _setSort('count')),
-            for (final def in columns)
-              DataColumn(
+                onSort: (_, _) => _setSort('count'),
+              ),
+              for (final def in columns)
+                DataColumn(
                   label: Text(fieldDefName(t, def)),
-                  onSort: (_, _) => _setSort(def.key)),
-          ],
-          rows: [
-            // Strays pinned first, visually distinct, never sorted away.
-            DataRow(
-              color: WidgetStatePropertyAll(Theme.of(context)
-                  .colorScheme
-                  .tertiaryContainer
-                  .withValues(alpha: 0.4)),
-              selected: widget.selectedPageId == _straysPageId,
-              onSelectChanged: (_) => _open(_straysPage()),
-              cells: [
-                DataCell(Row(children: [
-                  const Icon(Icons.explore, size: 18),
-                  const SizedBox(width: 6),
-                  Text(t.strays),
-                ])),
-                DataCell(Text('${store.visibleStrays().length}')),
-                for (final _ in columns) const DataCell(Text('')),
-              ],
-            ),
-            for (final clowder in rows)
+                  onSort: (_, _) => _setSort(def.key),
+                ),
+            ],
+            rows: [
+              // Strays pinned first, visually distinct, never sorted away.
               DataRow(
-                selected:
-                    widget.selectedPageId == PanePage.clowderId_(clowder.id),
-                onSelectChanged: (_) => open(clowder.id),
+                color: WidgetStatePropertyAll(
+                  Theme.of(context).colorScheme.tertiaryContainer
+                      .withValues(alpha: 0.4),
+                ),
+                selected: widget.selectedPageId == _straysPageId,
+                onSelectChanged: (_) => _open(_straysPage()),
                 cells: [
-                  DataCell(Text(clowder.name)),
-                  DataCell(Text(
-                      '${store.visibleCats(clowderId: clowder.id).length}')),
-                  for (final def in columns)
-                    DataCell(Text(fieldValueDisplay(
-                        t, def, store.current(clowder.id, def.key)))),
+                  DataCell(
+                    Row(
+                      children: [
+                        const Icon(Icons.explore, size: 18),
+                        const SizedBox(width: 6),
+                        Text(t.strays),
+                      ],
+                    ),
+                  ),
+                  DataCell(Text('${store.visibleStrays().length}')),
+                  for (final _ in columns) const DataCell(Text('')),
                 ],
               ),
-          ],
+              for (final clowder in rows)
+                DataRow(
+                  selected:
+                      widget.selectedPageId == PanePage.clowderId_(clowder.id),
+                  onSelectChanged: (_) => open(clowder.id),
+                  cells: [
+                    DataCell(Text(clowder.name)),
+                    DataCell(
+                      Text(
+                        '${store.visibleCats(clowderId: clowder.id).length}',
+                      ),
+                    ),
+                    for (final def in columns)
+                      DataCell(
+                        Text(
+                          fieldValueDisplay(
+                            t,
+                            def,
+                            store.current(clowder.id, def.key),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+            ],
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -556,14 +632,15 @@ class _ClowderCard extends StatelessWidget {
   final void Function(Offset globalPosition)? onContextMenu;
   final bool selected;
 
-  const _ClowderCard(
-      {required this.store,
-      required this.clowder,
-      required this.onTap,
-      this.onContextMenu,
-      this.favourite = false,
-      this.onToggleFavourite,
-      this.selected = false});
+  const _ClowderCard({
+    required this.store,
+    required this.clowder,
+    required this.onTap,
+    this.onContextMenu,
+    this.favourite = false,
+    this.onToggleFavourite,
+    this.selected = false,
+  });
 
   /// Background: the home's own cover picture, else the profile image
   /// of the first cat in the clowder that has one.
@@ -582,6 +659,7 @@ class _ClowderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cover = _cover();
+    final menu = onContextMenu;
     final scheme = Theme.of(context).colorScheme;
     return Material(
       clipBehavior: Clip.antiAlias,
@@ -596,112 +674,125 @@ class _ClowderCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
-        onSecondaryTapDown: onContextMenu == null
-            ? null
-            : (d) => onContextMenu!(d.globalPosition),
+        onSecondaryTapDown: menu == null ? null : (d) => menu(d.globalPosition),
         // Long-press = menu, the app-wide gesture convention; the cat
         // ear in the corner announces it.
         onLongPress: null,
         child: GestureDetector(
-          onLongPressStart: onContextMenu == null
-              ? null
-              : (d) => onContextMenu!(d.globalPosition),
-          child: Stack(fit: StackFit.expand, children: [
-          if (cover != null)
-            Opacity(
-              opacity: 0.55,
-              child: Image(
-                  image: ResizeImage(cover, width: 800),
-                  fit: BoxFit.cover),
-            )
-          else
-            Center(
-              child: Icon(Icons.pets,
-                  size: 40, color: scheme.onSurfaceVariant.withValues(alpha: 0.4)),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  clowder.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: cover != null ? Colors.white : scheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                    shadows: cover != null
-                        ? const [
-                            Shadow(blurRadius: 6, color: Colors.black87),
-                            Shadow(blurRadius: 2, color: Colors.black),
-                          ]
-                        : null,
+          onLongPressStart: menu == null ? null : (d) => menu(d.globalPosition),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (cover != null)
+                Opacity(
+                  opacity: 0.55,
+                  child: Image(
+                    image: ResizeImage(cover, width: 800),
+                    fit: BoxFit.cover,
+                  ),
+                )
+              else
+                Center(
+                  child: Icon(
+                    Icons.pets,
+                    size: 40,
+                    color: scheme.onSurfaceVariant.withValues(alpha: 0.4),
                   ),
                 ),
-                const Spacer(),
-                // The faces keep clear of the star at the end and shrink
-                // rather than run under it.
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 40),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: AlignmentDirectional.centerStart,
-                    child: _FaceRow(store: store, clowderId: clowder.id,
-                        onLight: cover != null),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      clowder.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: cover != null ? Colors.white : scheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                        shadows: cover != null
+                            ? const [
+                                Shadow(blurRadius: 6, color: Colors.black87),
+                                Shadow(blurRadius: 2, color: Colors.black),
+                              ]
+                            : null,
+                      ),
+                    ),
+                    const Spacer(),
+                    // The faces keep clear of the star at the end and shrink
+                    // rather than run under it.
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(end: 40),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentDirectional.centerStart,
+                        child: _FaceRow(
+                          store: store,
+                          clowderId: clowder.id,
+                          onLight: cover != null,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // The type as a small end-aligned label on the center line —
+              // the chip crowded the card and its text never fit (#54).
+              if (store.current(clowder.id, 'f:status') case final status?)
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 8),
+                    child: Text(
+                      statusDisplay(context.t, status) ?? status,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: cover != null
+                            ? Colors.white
+                            : scheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                        shadows: cover != null
+                            ? const [
+                                Shadow(blurRadius: 4, color: Colors.black87),
+                              ]
+                            : null,
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            ),
+              if (onContextMenu != null)
+                const PositionedDirectional(
+                  top: 0,
+                  end: 0,
+                  child: CatEarBadge(),
+                ),
+              if (onToggleFavourite != null)
+                PositionedDirectional(
+                  bottom: 0,
+                  end: 0,
+                  child: IconButton(
+                    icon: Icon(favourite ? Icons.star : Icons.star_border),
+                    color: favourite
+                        ? Colors.amber
+                        : (cover != null
+                              ? Colors.white
+                              : scheme.onSurfaceVariant),
+                    tooltip: favourite
+                        ? context.t.favouriteRemove
+                        : context.t.favouriteAdd,
+                    onPressed: onToggleFavourite,
+                  ),
+                ),
+            ],
           ),
-          // The type as a small end-aligned label on the center line —
-          // the chip crowded the card and its text never fit (#54).
-          if (store.current(clowder.id, 'f:status') case final status?)
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.only(end: 8),
-                child: Text(
-                  statusDisplay(context.t, status) ?? status,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: cover != null ? Colors.white : scheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
-                    shadows: cover != null
-                        ? const [Shadow(blurRadius: 4, color: Colors.black87)]
-                        : null,
-                  ),
-                ),
-              ),
-            ),
-          if (onContextMenu != null)
-            const PositionedDirectional(
-                top: 0, end: 0, child: CatEarBadge()),
-          if (onToggleFavourite != null)
-            PositionedDirectional(
-              bottom: 0,
-              end: 0,
-              child: IconButton(
-                icon: Icon(favourite ? Icons.star : Icons.star_border),
-                color: favourite
-                    ? Colors.amber
-                    : (cover != null ? Colors.white : scheme.onSurfaceVariant),
-                tooltip: favourite
-                    ? context.t.favouriteRemove
-                    : context.t.favouriteAdd,
-                onPressed: onToggleFavourite,
-              ),
-            ),
-        ]),
         ),
       ),
     );
   }
 }
-
-
 
 /// Up to five little faces plus a count — who lives here, at a glance.
 /// The Strays pseudo-clowder card: pinned first in the grid, cover from
@@ -711,8 +802,11 @@ class _StraysCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool selected;
 
-  const _StraysCard(
-      {required this.store, required this.onTap, this.selected = false});
+  const _StraysCard({
+    required this.store,
+    required this.onTap,
+    this.selected = false,
+  });
 
   ImageProvider? _cover(List<EntityView> strays) {
     if (coverImage(store, straysEntity) case final own?) return own;
@@ -740,69 +834,80 @@ class _StraysCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-            color: selected ? scheme.primary : scheme.tertiary, width: 2),
+          color: selected ? scheme.primary : scheme.tertiary,
+          width: 2,
+        ),
       ),
       child: InkWell(
         onTap: onTap,
-        child: Stack(fit: StackFit.expand, children: [
-          if (cover != null)
-            Opacity(
-              opacity: 0.55,
-              child: Image(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (cover != null)
+              Opacity(
+                opacity: 0.55,
+                child: Image(
                   image: ResizeImage(cover, width: 800),
-                  fit: BoxFit.cover),
-            )
-          else
-            Center(
-              child: Icon(Icons.explore,
-                  size: 40,
-                  color: scheme.onSurfaceVariant.withValues(alpha: 0.4)),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${context.t.strays} (${strays.length})',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color:
-                        cover != null ? Colors.white : scheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                    shadows: cover != null
-                        ? const [
-                            Shadow(blurRadius: 6, color: Colors.black87),
-                            Shadow(blurRadius: 2, color: Colors.black),
-                          ]
-                        : null,
-                  ),
+                  fit: BoxFit.cover,
                 ),
-                const Spacer(),
-                if (strays.isNotEmpty)
-                  Row(children: [
-                    for (final cat in strays.take(shown))
-                      Padding(
-                        padding: const EdgeInsets.only(right: 2),
-                        child: CatAvatar(
-                            store: store, catId: cat.id, size: 26),
-                      ),
-                    if (strays.length > shown)
-                      Text('+${strays.length - shown}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall
-                              ?.copyWith(
-                                color: cover != null ? Colors.white : null,
-                                fontWeight: FontWeight.bold,
-                              )),
-                  ]),
-              ],
+              )
+            else
+              Center(
+                child: Icon(
+                  Icons.explore,
+                  size: 40,
+                  color: scheme.onSurfaceVariant.withValues(alpha: 0.4),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${context.t.strays} (${strays.length})',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: cover != null ? Colors.white : scheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                      shadows: cover != null
+                          ? const [
+                              Shadow(blurRadius: 6, color: Colors.black87),
+                              Shadow(blurRadius: 2, color: Colors.black),
+                            ]
+                          : null,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (strays.isNotEmpty)
+                    Row(
+                      children: [
+                        for (final cat in strays.take(shown))
+                          Padding(
+                            padding: const EdgeInsets.only(right: 2),
+                            child: CatAvatar(
+                              store: store,
+                              catId: cat.id,
+                              size: 26,
+                            ),
+                          ),
+                        if (strays.length > shown)
+                          Text(
+                            '+${strays.length - shown}',
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
+                                  color: cover != null ? Colors.white : null,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -813,36 +918,40 @@ class _FaceRow extends StatelessWidget {
   final String clowderId;
   final bool onLight;
 
-  const _FaceRow(
-      {required this.store, required this.clowderId, required this.onLight});
+  const _FaceRow({
+    required this.store,
+    required this.clowderId,
+    required this.onLight,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cats = store.visibleCats(clowderId: clowderId);
     if (cats.isEmpty) return const SizedBox.shrink();
     const shown = 5;
-    return Row(children: [
-      for (final cat in cats.take(shown))
-        Padding(
-          padding: const EdgeInsets.only(right: 2),
-          child: CatAvatar(store: store, catId: cat.id, size: 26),
-        ),
-      // The number only says what the faces cannot: the rest past five.
-      if (cats.length > shown)
-        Padding(
-          padding: const EdgeInsets.only(left: 2),
-          child: Text(
-            '+${cats.length - shown}',
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: onLight ? Colors.white : null,
-              fontWeight: FontWeight.bold,
-              shadows: onLight
-                  ? const [Shadow(blurRadius: 4, color: Colors.black87)]
-                  : null,
+    return Row(
+      children: [
+        for (final cat in cats.take(shown))
+          Padding(
+            padding: const EdgeInsets.only(right: 2),
+            child: CatAvatar(store: store, catId: cat.id, size: 26),
+          ),
+        // The number only says what the faces cannot: the rest past five.
+        if (cats.length > shown)
+          Padding(
+            padding: const EdgeInsets.only(left: 2),
+            child: Text(
+              '+${cats.length - shown}',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: onLight ? Colors.white : null,
+                fontWeight: FontWeight.bold,
+                shadows: onLight
+                    ? const [Shadow(blurRadius: 4, color: Colors.black87)]
+                    : null,
+              ),
             ),
           ),
-        ),
-
-    ]);
+      ],
+    );
   }
 }

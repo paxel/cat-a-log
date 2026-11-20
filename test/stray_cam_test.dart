@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:typed_data';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -13,11 +15,13 @@ Uint8List _jpeg() =>
     Uint8List.fromList(img.encodeJpg(img.Image(width: 4, height: 4)));
 
 Future<BuildContext> _pumpHost(WidgetTester tester) async {
-  await tester.pumpWidget(MaterialApp(
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    home: const Scaffold(body: SizedBox()),
-  ));
+  await tester.pumpWidget(
+    MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const Scaffold(body: SizedBox()),
+    ),
+  );
   return tester.element(find.byType(SizedBox));
 }
 
@@ -36,40 +40,54 @@ void main() {
   testWidgets('location denied: no cat, dialog explains', (tester) async {
     final context = await _pumpHost(tester);
     String? result = 'sentinel';
-    strayCam(context, store,
-            locate: () async => (pos: null, failure: LocationFailure.denied),
-            pickPhoto: (_) async => fail('camera must not open'))
-        .then((r) => result = r);
+    unawaited(
+      strayCam(
+        context,
+        store,
+        locate: () async => (pos: null, failure: LocationFailure.denied),
+        pickPhoto: (_) async => fail('camera must not open'),
+      ).then((r) => result = r),
+    );
     await tester.pumpAndSettle();
     expect(
-        find.text('cat(a)log has no permission to use your location. '
-            'Try again and allow it when asked.'),
-        findsOneWidget);
+      find.text(
+        'cat(a)log has no permission to use your location. '
+        'Try again and allow it when asked.',
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
     expect(result, isNull);
     expect(store.cats(), isEmpty);
   });
 
-  testWidgets('location service off: dialog opens location settings',
-      (tester) async {
+  testWidgets('location service off: dialog opens location settings', (
+    tester,
+  ) async {
     final context = await _pumpHost(tester);
     var opened = false;
     String? result = 'sentinel';
-    strayCam(context, store,
-            locate: () async =>
-                (pos: null, failure: LocationFailure.serviceOff),
-            pickPhoto: (_) async => fail('camera must not open'),
-            openLocationSettings: () async {
-              opened = true;
-              return true;
-            })
-        .then((r) => result = r);
+    unawaited(
+      strayCam(
+        context,
+        store,
+        locate: () async => (pos: null, failure: LocationFailure.serviceOff),
+        pickPhoto: (_) async => fail('camera must not open'),
+        openLocationSettings: () async {
+          opened = true;
+          return true;
+        },
+      ).then((r) => result = r),
+    );
     await tester.pumpAndSettle();
     expect(
-        find.text('Location is turned off on this device. '
-            'Turn it on in the settings and try again.'),
-        findsOneWidget);
+      find.text(
+        'Location is turned off on this device. '
+        'Turn it on in the settings and try again.',
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.text('Open settings'));
     await tester.pumpAndSettle();
     expect(opened, isTrue);
@@ -81,15 +99,18 @@ void main() {
     final context = await _pumpHost(tester);
     var opened = false;
     String? result = 'sentinel';
-    strayCam(context, store,
-            locate: () async =>
-                (pos: null, failure: LocationFailure.deniedForever),
-            pickPhoto: (_) async => fail('camera must not open'),
-            openSettings: () async {
-              opened = true;
-              return true;
-            })
-        .then((r) => result = r);
+    unawaited(
+      strayCam(
+        context,
+        store,
+        locate: () async => (pos: null, failure: LocationFailure.deniedForever),
+        pickPhoto: (_) async => fail('camera must not open'),
+        openSettings: () async {
+          opened = true;
+          return true;
+        },
+      ).then((r) => result = r),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Open settings'), findsOneWidget);
     await tester.tap(find.text('Open settings'));
@@ -101,47 +122,71 @@ void main() {
 
   testWidgets('camera canceled or killed: no orphan cat', (tester) async {
     final context = await _pumpHost(tester);
-    final result = await strayCam(context, store,
-        locate: () async => (pos: (48.1, 11.5), failure: null),
-        pickPhoto: (_) async => null);
+    final result = await strayCam(
+      context,
+      store,
+      locate: () async => (pos: (48.1, 11.5), failure: null),
+      pickPhoto: (_) async => null,
+    );
     expect(result, isNull);
-    expect(store.cats(), isEmpty,
-        reason: 'the cat must only exist once a photo arrived');
+    expect(
+      store.cats(),
+      isEmpty,
+      reason: 'the cat must only exist once a photo arrived',
+    );
     expect(store.localSetting(strayCamPendingKey), isEmpty);
   });
 
   testWidgets('photo taken: cat with position and image', (tester) async {
     final context = await _pumpHost(tester);
-    final result = await tester.runAsync(() => strayCam(context, store,
+    final result = await tester.runAsync(
+      () => strayCam(
+        context,
+        store,
         locate: () async => (pos: (48.1, 11.5), failure: null),
-        pickPhoto: (_) async => _jpeg()));
+        pickPhoto: (_) async => _jpeg(),
+      ),
+    );
     expect(result, isNotNull);
     final cat = store.cats().single;
     expect(store.positionOf(cat.id), (48.1, 11.5));
     expect(store.images(cat.id), isNotEmpty);
   });
 
-  testWidgets('in a pets catalog the last species picked is a field, no prompt',
-      (tester) async {
-    petMode.value = true;
-    addTearDown(() => petMode.value = false);
-    store.setLocalSetting(lastSpeciesKey, 'dog');
-    final context = await _pumpHost(tester);
-    final result = await tester.runAsync(() => strayCam(context, store,
-        locate: () async => (pos: (48.1, 11.5), failure: null),
-        pickPhoto: (_) async => _jpeg()));
-    expect(result, isNotNull);
-    expect(store.current(result!, 'f:species'), 'dog');
-    expect(find.text('Species'), findsNothing);
-  });
+  testWidgets(
+    'in a pets catalog the last species picked is a field, no prompt',
+    (tester) async {
+      petMode.value = true;
+      addTearDown(() => petMode.value = false);
+      store.setLocalSetting(lastSpeciesKey, 'dog');
+      final context = await _pumpHost(tester);
+      final result = await tester.runAsync(
+        () => strayCam(
+          context,
+          store,
+          locate: () async => (pos: (48.1, 11.5), failure: null),
+          pickPhoto: (_) async => _jpeg(),
+        ),
+      );
+      expect(result, isNotNull);
+      expect(store.current(result!, 'f:species'), 'dog');
+      expect(find.text('Species'), findsNothing);
+    },
+  );
 
-  testWidgets('killed capture is completed from lost data on next start',
-      (tester) async {
-    store.setLocalSetting(strayCamPendingKey,
-        '{"lat": 48.1, "lon": 11.5, "name": "Stray 2026-08-17"}');
-    await tester.runAsync(() => recoverStrayCam(store,
-        retrieve: () async =>
-            LostDataResponse(file: XFile.fromData(_jpeg()))));
+  testWidgets('killed capture is completed from lost data on next start', (
+    tester,
+  ) async {
+    store.setLocalSetting(
+      strayCamPendingKey,
+      '{"lat": 48.1, "lon": 11.5, "name": "Stray 2026-08-17"}',
+    );
+    await tester.runAsync(
+      () => recoverStrayCam(
+        store,
+        retrieve: () async => LostDataResponse(file: XFile.fromData(_jpeg())),
+      ),
+    );
     final cat = store.cats().single;
     expect(cat.name, 'Stray 2026-08-17');
     expect(store.positionOf(cat.id), (48.1, 11.5));
@@ -149,42 +194,64 @@ void main() {
     expect(store.localSetting(strayCamPendingKey), isEmpty);
   });
 
-  testWidgets('failed retrieval keeps the parked capture for next start',
-      (tester) async {
-    store.setLocalSetting(strayCamPendingKey,
-        '{"lat": 48.1, "lon": 11.5, "name": "Stray X"}');
-    await tester.runAsync(() => recoverStrayCam(store,
-        retrieve: () async => throw Exception('no channel')));
+  testWidgets('failed retrieval keeps the parked capture for next start', (
+    tester,
+  ) async {
+    store.setLocalSetting(
+      strayCamPendingKey,
+      '{"lat": 48.1, "lon": 11.5, "name": "Stray X"}',
+    );
+    await tester.runAsync(
+      () => recoverStrayCam(
+        store,
+        retrieve: () async => throw Exception('no channel'),
+      ),
+    );
     expect(store.cats(), isEmpty);
-    expect(store.localSetting(strayCamPendingKey), isNotEmpty,
-        reason: 'a failed retrieval must not discard the capture');
+    expect(
+      store.localSetting(strayCamPendingKey),
+      isNotEmpty,
+      reason: 'a failed retrieval must not discard the capture',
+    );
   });
 
   testWidgets('no lost data: pending marker just clears', (tester) async {
-    store.setLocalSetting(strayCamPendingKey,
-        '{"lat": 48.1, "lon": 11.5, "name": "Stray X"}');
-    await tester.runAsync(() => recoverStrayCam(store,
-        retrieve: () async => LostDataResponse()));
+    store.setLocalSetting(
+      strayCamPendingKey,
+      '{"lat": 48.1, "lon": 11.5, "name": "Stray X"}',
+    );
+    await tester.runAsync(
+      () => recoverStrayCam(store, retrieve: () async => LostDataResponse()),
+    );
     expect(store.cats(), isEmpty);
     expect(store.localSetting(strayCamPendingKey), isEmpty);
   });
 
-  test('flier hangs here records a flier position where the device is (#85)',
-      () async {
-    final store = CatalogStore.inMemory();
-    addTearDown(store.close);
-    store.author = 'axel';
-    final cat = store.createCat('Minka');
-    final failure = await flierHangsHere(store, cat,
-        locate: () async => (pos: (48.1, 11.5), failure: null));
-    expect(failure, isNull);
-    expect(store.flierPositions(cat), [(48.1, 11.5)]);
-    expect(store.sightingPositionOf(cat), isNull);
-    // Without a fix nothing is written and the reason comes back.
-    expect(
-        await flierHangsHere(store, cat,
-            locate: () async => (pos: null, failure: LocationFailure.denied)),
-        LocationFailure.denied);
-    expect(store.flierPositions(cat), hasLength(1));
-  });
+  test(
+    'flier hangs here records a flier position where the device is (#85)',
+    () async {
+      final store = CatalogStore.inMemory();
+      addTearDown(store.close);
+      store.author = 'axel';
+      final cat = store.createCat('Minka');
+      final failure = await flierHangsHere(
+        store,
+        cat,
+        locate: () async => (pos: (48.1, 11.5), failure: null),
+      );
+      expect(failure, isNull);
+      expect(store.flierPositions(cat), [(48.1, 11.5)]);
+      expect(store.sightingPositionOf(cat), isNull);
+      // Without a fix nothing is written and the reason comes back.
+      expect(
+        await flierHangsHere(
+          store,
+          cat,
+          locate: () async => (pos: null, failure: LocationFailure.denied),
+        ),
+        LocationFailure.denied,
+      );
+      expect(store.flierPositions(cat), hasLength(1));
+    },
+  );
 }

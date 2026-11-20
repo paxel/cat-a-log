@@ -220,10 +220,15 @@ void main() {
       tester,
       FieldHistoryScreen(store: store, entityId: cat, def: remarks),
     );
-    await tester.tap(find.descendant(
-      of: find.ancestor(of: find.text('Vet: fine'), matching: find.byType(Card)),
-      matching: find.byTooltip('Remove this value'),
-    ));
+    await tester.tap(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('Vet: fine'),
+          matching: find.byType(Card),
+        ),
+        matching: find.byTooltip('Remove this value'),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Vet: fine'), findsNothing);
     expect(store.current(cat, 'f:remarks'), 'Sneezing');

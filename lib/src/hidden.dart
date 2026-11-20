@@ -10,15 +10,23 @@ final ValueNotifier<bool> showHidden = ValueNotifier(false);
 extension VisibleReads on CatalogStore {
   bool visible(String id) => showHidden.value || !isHidden(id);
 
-  List<EntityView> visibleCats({String? clowderId}) =>
-      [for (final c in cats(clowderId: clowderId)) if (visible(c.id)) c];
+  List<EntityView> visibleCats({String? clowderId}) => [
+    for (final c in cats(clowderId: clowderId))
+      if (visible(c.id)) c,
+  ];
 
-  List<EntityView> visibleClowders() =>
-      [for (final c in clowders()) if (visible(c.id)) c];
+  List<EntityView> visibleClowders() => [
+    for (final c in clowders())
+      if (visible(c.id)) c,
+  ];
 
-  List<EntityView> visibleStrays() =>
-      [for (final c in strays()) if (visible(c.id)) c];
+  List<EntityView> visibleStrays() => [
+    for (final c in strays())
+      if (visible(c.id)) c,
+  ];
 
-  List<FieldDef> visibleFieldDefs({FieldScope? scope}) =>
-      [for (final d in fieldDefs(scope: scope)) if (visible(d.id)) d];
+  List<FieldDef> visibleFieldDefs({FieldScope? scope}) => [
+    for (final d in fieldDefs(scope: scope))
+      if (visible(d.id)) d,
+  ];
 }

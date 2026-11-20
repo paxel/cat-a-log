@@ -54,16 +54,17 @@ void main() {
     expect(b.clowders(), isEmpty);
   });
 
-  testWidgets('the home screen says Households in pet mode',
-      (tester) async {
+  testWidgets('the home screen says Households in pet mode', (tester) async {
     final store = CatalogStore.inMemory()..author = 'test';
     addTearDown(store.close);
     setPetMode(store, true);
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: ClowderListScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ClowderListScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Households'), findsOneWidget);
     expect(find.text('Clowders'), findsNothing);

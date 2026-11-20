@@ -1,9 +1,9 @@
 import 'package:catalog_core/catalog_core.dart';
 import 'package:test/test.dart';
 
-void sync(CatalogStore from, CatalogStore to) => to.applyEntries(
-    from.entriesSince(to.versionVector()),
-    senderVector: from.versionVector());
+void sync(CatalogStore from, CatalogStore to) =>
+    to.applyEntries(from.entriesSince(to.versionVector()),
+        senderVector: from.versionVector());
 
 /// A device's entry sequence numbers must only ever grow. Peers hold
 /// removed entries under their old numbers, so re-issuing one would make
@@ -53,7 +53,8 @@ void main() {
     expect(a.current(cat, Keys.name), 'Mausi');
   });
 
-  test('a peer that already synced still receives what is written after '
+  test(
+      'a peer that already synced still receives what is written after '
       'a removal', () {
     a.createCat('Miezi');
     sync(a, b);

@@ -191,9 +191,7 @@ void main() {
     expect(previews, 1);
   });
 
-  testWidgets('the preview does not take Share and Print away', (
-    tester,
-  ) async {
+  testWidgets('the preview does not take Share and Print away', (tester) async {
     tester.view.physicalSize = const Size(500, 1400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -260,5 +258,4 @@ void main() {
     await settlePreview();
     expect(previews, 3);
   });
-
 }

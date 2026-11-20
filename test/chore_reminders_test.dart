@@ -19,12 +19,16 @@ class _FakePort implements ReminderPort {
   int batteryOpens = 0;
   final scheduled = <(int, DateTime, String, String)>[];
   final shown = <(String, String)>[];
+
   /// Whether each notification asked for the cat's voice.
   final cats = <bool>[];
 
   @override
-  Future<void> showNow(String title, String body,
-      {required bool catSound}) async {
+  Future<void> showNow(
+    String title,
+    String body, {
+    required bool catSound,
+  }) async {
     shown.add((title, body));
     cats.add(catSound);
   }
@@ -39,8 +43,13 @@ class _FakePort implements ReminderPort {
   }
 
   @override
-  Future<void> schedule(int id, DateTime at, String title, String body,
-      {required bool catSound}) async {
+  Future<void> schedule(
+    int id,
+    DateTime at,
+    String title,
+    String body, {
+    required bool catSound,
+  }) async {
     scheduled.add((id, at, title, body));
     cats.add(catSound);
   }
@@ -143,8 +152,11 @@ void main() {
       expect(at(DateTime(2026, 9, 8, 12)), [
         ('Papers', DateTime(2026, 9, 10, 9)),
       ], reason: 'without a due day, no reminder');
-      expect(at(DateTime(2026, 9, 10, 10)), isEmpty,
-          reason: 'its time passed: no other day follows');
+      expect(
+        at(DateTime(2026, 9, 10, 10)),
+        isEmpty,
+        reason: 'its time passed: no other day follows',
+      );
       expect(at(DateTime(2026, 9, 12, 8)), isEmpty, reason: 'overdue');
     });
 
@@ -324,43 +336,59 @@ void main() {
       // The picker opened at the current time; the minute may have
       // ticked over while the test ran, so either reading passes.
       final now = TimeOfDay.now();
-      final earlier = now.replacing(minute: (now.minute + 59) % 60,
-          hour: now.minute == 0 ? (now.hour + 23) % 24 : now.hour);
+      final earlier = now.replacing(
+        minute: (now.minute + 59) % 60,
+        hour: now.minute == 0 ? (now.hour + 23) % 24 : now.hour,
+      );
       expect(
-          saved!.remindAt,
-          anyOf(
-            (hour: now.hour, minute: now.minute),
-            (hour: earlier.hour, minute: earlier.minute),
-          ));
+        saved!.remindAt,
+        anyOf(
+          (hour: now.hour, minute: now.minute),
+          (hour: earlier.hour, minute: earlier.minute),
+        ),
+      );
       expect(store.choresOf(cat).single.remind, isTrue);
     });
   });
 
-  test('the cat speaks for a reminder unless the switch says otherwise', () async {
-    final store = CatalogStore.inMemory()..author = 'anna';
-    addTearDown(store.close);
-    final cat = store.createCat('Miezi');
-    store.createChore(Chore(
-      id: '',
-      entity: cat,
-      title: 'Feed',
-      schedule: const ChoreSchedule.daily(),
-      start: DateTime(2026, 1, 1),
-      remind: true,
-      remindAt: (hour: 8, minute: 0),
-    ));
-    final port = _FakePort();
-    // Nothing chosen: Socke's Mrrr.
-    expect(reminderCatSound(store), isTrue);
-    await rescheduleChoreReminders(store, port,
-        now: DateTime(2026, 1, 2, 7), body: (c) => 'Miezi');
-    expect(port.cats, [isTrue]);
-    // Switched off: the phone's own sound, and the reminder still stands.
-    setReminderCatSound(store, false);
-    port.cats.clear();
-    await rescheduleChoreReminders(store, port,
-        now: DateTime(2026, 1, 2, 7), body: (c) => 'Miezi');
-    expect(port.cats, [isFalse]);
-    expect(port.scheduled, hasLength(1));
-  });
+  test(
+    'the cat speaks for a reminder unless the switch says otherwise',
+    () async {
+      final store = CatalogStore.inMemory()..author = 'anna';
+      addTearDown(store.close);
+      final cat = store.createCat('Miezi');
+      store.createChore(
+        Chore(
+          id: '',
+          entity: cat,
+          title: 'Feed',
+          schedule: const ChoreSchedule.daily(),
+          start: DateTime(2026, 1, 1),
+          remind: true,
+          remindAt: (hour: 8, minute: 0),
+        ),
+      );
+      final port = _FakePort();
+      // Nothing chosen: Socke's Mrrr.
+      expect(reminderCatSound(store), isTrue);
+      await rescheduleChoreReminders(
+        store,
+        port,
+        now: DateTime(2026, 1, 2, 7),
+        body: (c) => 'Miezi',
+      );
+      expect(port.cats, [isTrue]);
+      // Switched off: the phone's own sound, and the reminder still stands.
+      setReminderCatSound(store, false);
+      port.cats.clear();
+      await rescheduleChoreReminders(
+        store,
+        port,
+        now: DateTime(2026, 1, 2, 7),
+        body: (c) => 'Miezi',
+      );
+      expect(port.cats, [isFalse]);
+      expect(port.scheduled, hasLength(1));
+    },
+  );
 }

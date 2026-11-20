@@ -75,8 +75,9 @@ void main() {
     );
 
     expect(added, isTrue);
-    final stored =
-        img.decodeImage(store.imageBytes(store.images(cat).single)!)!;
+    final stored = img.decodeImage(
+      store.imageBytes(store.images(cat).single)!,
+    )!;
     expect(stored.width, 40, reason: 'the left half of the first frame');
   });
 

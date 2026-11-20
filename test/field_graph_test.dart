@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:catlog/l10n/app_localizations.dart';
 import 'package:catlog/src/screens/cat_detail_screen.dart';
@@ -27,11 +28,13 @@ void main() {
     tester.view.physicalSize = const Size(500, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: home,
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: home,
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -48,22 +51,29 @@ void main() {
     store.append(cat, color.key, '2');
     expect(hasGraph(store, cat, color), isFalse);
     expect(inRange(DateTime(2026, 2, 15), DateTime(2026, 2, 15), null), isTrue);
-    expect(inRange(DateTime(2026, 2, 14), DateTime(2026, 2, 15), null), isFalse);
-    expect(inRange(DateTime(2026, 2, 16), null, DateTime(2026, 2, 15)), isFalse);
+    expect(
+      inRange(DateTime(2026, 2, 14), DateTime(2026, 2, 15), null),
+      isFalse,
+    );
+    expect(
+      inRange(DateTime(2026, 2, 16), null, DateTime(2026, 2, 15)),
+      isFalse,
+    );
     expect(inRange(DateTime(2026, 2, 16), null, null), isTrue);
     expect(pointsBetween(points, DateTime(2026, 2, 15), null), hasLength(1));
     expect(pointsBetween(points, null, DateTime(2026, 2, 15)), hasLength(1));
   });
 
-  test('time ticks adapt to the span, value ticks land on round numbers',
-      () {
+  test('time ticks adapt to the span, value ticks land on round numbers', () {
     // A week: one tick per day, inside the window.
     final week = timeTicks(DateTime(2026, 3, 1), DateTime(2026, 3, 8));
     expect(week, hasLength(7));
     expect(week.first, DateTime(2026, 3, 2));
     // A quarter: weeks. A decade: years — never more than eight.
-    expect(timeTicks(DateTime(2026, 1, 1), DateTime(2026, 4, 1)).length,
-        inInclusiveRange(4, 8));
+    expect(
+      timeTicks(DateTime(2026, 1, 1), DateTime(2026, 4, 1)).length,
+      inInclusiveRange(4, 8),
+    );
     final years = timeTicks(DateTime(2016, 6, 1), DateTime(2026, 6, 1));
     expect(years.length, inInclusiveRange(4, 8));
     expect(years.every((d) => d.month == 1 && d.day == 1), isTrue);
@@ -72,24 +82,31 @@ void main() {
     expect(valueTicks(5, 5), isEmpty);
   });
 
-  testWidgets('the painter receives the points in the device unit',
-      (tester) async {
+  testWidgets('the painter receives the points in the device unit', (
+    tester,
+  ) async {
     store.append(cat, weight.key, '4000', date: DateTime(2026, 1, 1));
     store.append(cat, weight.key, '4250', date: DateTime(2026, 3, 1));
     unitSystem.value = UnitSystem.imperial;
     addTearDown(() => unitSystem.value = UnitSystem.metric);
-    await pump(tester,
-        FieldGraphScreen(store: store, entityId: cat, def: weight));
-    final paint =
-        tester.widget<CustomPaint>(find.byKey(const ValueKey('field-graph')));
+    await pump(
+      tester,
+      FieldGraphScreen(store: store, entityId: cat, def: weight),
+    );
+    final paint = tester.widget<CustomPaint>(
+      find.byKey(const ValueKey('field-graph')),
+    );
     final painter = paint.painter as GraphPainter;
-    expect(painter.points.map((p) => p.value.toStringAsFixed(2)),
-        ['8.82', '9.37']);
+    expect(painter.points.map((p) => p.value.toStringAsFixed(2)), [
+      '8.82',
+      '9.37',
+    ]);
     expect(painter.format(9.37), '9.37 lb');
   });
 
-  testWidgets('one value shows no graph icon, two do; the page opens',
-      (tester) async {
+  testWidgets('one value shows no graph icon, two do; the page opens', (
+    tester,
+  ) async {
     store.append(cat, weight.key, '4000', date: DateTime(2026, 1, 1));
     await pump(tester, CatDetailScreen(store: store, catId: cat));
     expect(find.byIcon(Icons.show_chart), findsNothing);
@@ -120,11 +137,15 @@ void main() {
     expect(store.localSetting(graphTrendKey), 'yes');
   });
 
-  testWidgets('a clowder page offers no graph — the curve is the animal\'s',
-      (tester) async {
+  testWidgets('a clowder page offers no graph — the curve is the animal\'s', (
+    tester,
+  ) async {
     final home = store.createClowder('Home');
-    final id = store.defineField('Headcount', FieldType.number,
-        scope: FieldScope.clowder);
+    final id = store.defineField(
+      'Headcount',
+      FieldType.number,
+      scope: FieldScope.clowder,
+    );
     final headcount = store.fieldDefs().firstWhere((d) => d.id == id);
     store.append(home, headcount.key, '3', date: DateTime(2026, 1, 1));
     store.append(home, headcount.key, '4', date: DateTime(2026, 2, 1));
@@ -163,7 +184,12 @@ void main() {
       findsNothing,
     );
     final state = tester.state(find.byType(FieldGraphScreen)) as dynamic;
-    final png = await tester.runAsync(() => state.pictureAsPng() as Future<Uint8List>);
+    final png = await tester.runAsync(
+      // The screen's state class is private; the test reaches its export
+      // through dynamic on purpose.
+      // ignore: avoid_dynamic_calls
+      () => state.pictureAsPng() as Future<Uint8List>,
+    );
     expect(png!.length, greaterThan(1000));
     expect(png.sublist(1, 4), [0x50, 0x4E, 0x47]);
   });

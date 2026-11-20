@@ -102,22 +102,24 @@ void main() {
       expect((dot.position - at).distance, greaterThan(50));
     });
 
-    test('the mouse runs, scurries, hides behind the border and comes back',
-        () {
-      final mouse = Mouse(Random(2));
-      var scurries = 0, hidden = 0, shown = 0;
-      for (var i = 0; i < 6000; i++) {
-        if (mouse.step(1 / 60, size, 1) == ToySound.scurry) scurries++;
-        if (mouse.visible) {
-          shown++;
-        } else {
-          hidden++;
+    test(
+      'the mouse runs, scurries, hides behind the border and comes back',
+      () {
+        final mouse = Mouse(Random(2));
+        var scurries = 0, hidden = 0, shown = 0;
+        for (var i = 0; i < 6000; i++) {
+          if (mouse.step(1 / 60, size, 1) == ToySound.scurry) scurries++;
+          if (mouse.visible) {
+            shown++;
+          } else {
+            hidden++;
+          }
         }
-      }
-      expect(scurries, greaterThan(5));
-      expect(hidden, greaterThan(100));
-      expect(shown, greaterThan(hidden));
-    });
+        expect(scurries, greaterThan(5));
+        expect(hidden, greaterThan(100));
+        expect(shown, greaterThan(hidden));
+      },
+    );
 
     test('a caught mouse slips out behind the border', () {
       final mouse = Mouse(Random(3));
@@ -158,25 +160,27 @@ void main() {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Builder(
-          builder: (context) => TextButton(
-            onPressed: () => result = Navigator.of(context).push<ToyResult>(
-              MaterialPageRoute(
-                builder: (_) => ToyScreen(
-                  kind: kind,
-                  sounds: false,
-                  random: Random(4),
-                  motion: () => motion,
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => result = Navigator.of(context).push<ToyResult>(
+                MaterialPageRoute(
+                  builder: (_) => ToyScreen(
+                    kind: kind,
+                    sounds: false,
+                    random: Random(4),
+                    motion: () => motion,
+                  ),
                 ),
               ),
+              child: const Text('start'),
             ),
-            child: const Text('start'),
           ),
         ),
-      ));
+      );
       return () => result;
     }
 
@@ -203,10 +207,10 @@ void main() {
       expect((await result())!.catches, 0);
     });
 
-    testWidgets('a paw on the dot counts, the lock held for 3 s ends it',
-        (tester) async {
-      final result =
-          await host(tester, ToyKind.laserDot, const Stream.empty());
+    testWidgets('a paw on the dot counts, the lock held for 3 s ends it', (
+      tester,
+    ) async {
+      final result = await host(tester, ToyKind.laserDot, const Stream.empty());
       await tester.tap(find.text('start'));
       await tester.pump();
       await tester.pump(ms(300));
@@ -249,18 +253,20 @@ void main() {
     testWidgets('starts a toy and shows how the game went', (tester) async {
       ToyKind? started;
       bool? withSounds;
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: PlayScreen(
-          store: store,
-          open: (context, kind, sounds) async {
-            started = kind;
-            withSounds = sounds;
-            return const ToyResult(14, Duration(minutes: 6, seconds: 20));
-          },
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: PlayScreen(
+            store: store,
+            open: (context, kind, sounds) async {
+              started = kind;
+              withSounds = sounds;
+              return const ToyResult(14, Duration(minutes: 6, seconds: 20));
+            },
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
       expect(find.text('Laser dot'), findsOneWidget);
       await tester.tap(find.text('Toy sounds'));

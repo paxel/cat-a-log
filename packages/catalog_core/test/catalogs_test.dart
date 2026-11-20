@@ -27,8 +27,7 @@ void main() {
     expect(m.active.name, 'Clowders');
   });
 
-  test('a catalog carries its own name, so a copied folder is complete',
-      () {
+  test('a catalog carries its own name, so a copied folder is complete', () {
     final m = open();
     addTearDown(m.close);
     final store = m.openStore(m.active);
@@ -77,8 +76,7 @@ void main() {
     b.close();
   });
 
-  test('a setting that became app-wide is still read where it was set',
-      () {
+  test('a setting that became app-wide is still read where it was set', () {
     final m = open();
     addTearDown(m.close);
     final berlin = m.active;
@@ -127,8 +125,8 @@ void main() {
     m.active = berlin;
     m.delete(paris.id);
     expect(m.catalogs(), hasLength(1));
-    expect(Directory('${root.path}/catalogs/${paris.id}').existsSync(),
-        isFalse);
+    expect(
+        Directory('${root.path}/catalogs/${paris.id}').existsSync(), isFalse);
     expect(() => m.delete(m.active.id), throwsStateError);
   });
 
@@ -144,8 +142,7 @@ void main() {
     expect(paris.dir.existsSync(), isTrue);
   });
 
-  test('a migration that fails after the move keeps the moved catalog',
-      () {
+  test('a migration that fails after the move keeps the moved catalog', () {
     final store = CatalogStore.open('${root.path}/catlog.db')
       ..author = 'Patrick';
     store.createClowder('Hinterhof');
@@ -155,8 +152,7 @@ void main() {
     Directory('${root.path}/images').createSync();
     File('${root.path}/images/one').writeAsStringSync('x');
     Process.runSync('chmod', ['500', '${root.path}/images']);
-    addTearDown(
-        () => Process.runSync('chmod', ['700', '${root.path}/images']));
+    addTearDown(() => Process.runSync('chmod', ['700', '${root.path}/images']));
 
     final m = open();
     addTearDown(m.close);
@@ -205,8 +201,7 @@ void main() {
       store.close();
 
       expect(File('${root.path}/images/deadbeef').existsSync(), isFalse);
-      expect(File('${m.active.dir.path}/images/deadbeef').existsSync(),
-          isTrue);
+      expect(File('${m.active.dir.path}/images/deadbeef').existsSync(), isTrue);
       expect(File('${root.path}/catlog.db').existsSync(), isFalse);
     });
 
@@ -249,8 +244,8 @@ void main() {
       // Nothing can be written under a file: force the failure by making
       // the catalogs directory read-only for the duration.
       Process.runSync('chmod', ['500', '${root.path}/catalogs']);
-      addTearDown(() =>
-          Process.runSync('chmod', ['700', '${root.path}/catalogs']));
+      addTearDown(
+          () => Process.runSync('chmod', ['700', '${root.path}/catalogs']));
 
       expect(open, throwsA(isA<MigrationFailed>()));
       Process.runSync('chmod', ['700', '${root.path}/catalogs']);

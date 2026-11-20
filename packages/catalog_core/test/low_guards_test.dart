@@ -20,8 +20,7 @@ void main() {
     expect(isPrivateHost('not.an.ip'), isFalse);
   });
 
-  test('a header claiming 30000x30000 is too large, a real photo is not',
-      () {
+  test('a header claiming 30000x30000 is too large, a real photo is not', () {
     // PNG signature + IHDR declaring 30000x30000, no pixel data.
     final ihdr = [
       73, 72, 68, 82, // IHDR
@@ -41,7 +40,6 @@ void main() {
     addTearDown(store.close);
     store.putBlob('a' * 64, huge);
     expect(store.imageBytes('a' * 64), isNull);
-    expect(CatalogStore.imageTooLarge(Uint8List.fromList([1, 2, 3])),
-        isFalse);
+    expect(CatalogStore.imageTooLarge(Uint8List.fromList([1, 2, 3])), isFalse);
   });
 }

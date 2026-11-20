@@ -22,7 +22,10 @@ void main() {
   test('the demo catalog as a folder for the desk', () async {
     final store = demoStore();
     addTearDown(store.close);
-    final home = store.clowders().firstWhere((c) => c.name == 'Foster Home South').id;
+    final home = store
+        .clowders()
+        .firstWhere((c) => c.name == 'Foster Home South')
+        .id;
     await setCover(store, home, photo(4));
     await setCover(store, straysEntity, photo(5));
     final out = Directory('desktop/crates/catlog-gui/tests/demo/folder');

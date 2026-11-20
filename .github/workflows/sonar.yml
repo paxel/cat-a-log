@@ -1,0 +1,74 @@
+# SonarQube Cloud analysis (cat-1017) of summer after each merge; the free
+# plan analyses the main branch only. Report only here: the quality gate
+# shows on https://sonarcloud.io/summary/new_code?id=paxel_cat-a-log, and
+# the release gate refuses a tag while it is not OK (cat-1018). What is
+# analysed is in sonar-project.properties.
+#
+# One-time setup: the project paxel_cat-a-log on SonarQube Cloud with
+# Automatic Analysis off, and the repository secret SQ_TOKEN.
+#
+# Third-party actions are pinned to full commit SHAs; the comment names the
+# version.
+name: SonarQube Cloud
+
+on:
+  push:
+    branches: [summer]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sonar:
+    name: SonarQube Cloud analysis
+    runs-on: ubuntu-latest
+    # The coverage build's test binaries with full debug info would fill
+    # the runner's disk.
+    env:
+      CARGO_PROFILE_DEV_DEBUG: line-tables-only
+    steps:
+      # The full history, for the blame and the new-code period.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
+      # Clippy compiles the desktop's build scripts, so the same system
+      # libraries as CI's Desktop job; sqlite3 for the Dart core's tests.
+      - name: System libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libasound2-dev pkg-config mesa-vulkan-drivers libvulkan1 libsqlite3-dev
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
+        with:
+          components: clippy, llvm-tools-preview
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: desktop
+      - name: Clippy report for the analyzer
+        working-directory: desktop
+        run: |
+          mkdir -p ../build
+          cargo clippy --workspace --all-targets --locked --message-format=json > ../build/clippy-report.json
+      # The Dart analysis needs the packages resolved.
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+      - name: Dart packages of the core and the app
+        run: |
+          (cd packages/catalog_core && dart pub get)
+          flutter pub get
+      # The LCOV files sonar-project.properties names, from the same script
+      # as the coverage floors. It never stops the scan: a group below its
+      # floor still writes its file. CI and the release gate hold the floors.
+      - uses: taiki-e/install-action@4a76afe23f9e08d2d9550fb56e556444e8611d21 # v2.90.4
+        with:
+          tool: cargo-llvm-cov
+      - name: Coverage (LCOV for the analyzer)
+        continue-on-error: true
+        run: tool/coverage.sh
+      - uses: SonarSource/sonarqube-scan-action@e805d875275f728fac1885b413934be6d7c63f65 # v8.4.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SQ_TOKEN }}

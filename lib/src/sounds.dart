@@ -152,13 +152,15 @@ Future<void> playSource(Source source) async {
     // Released when the sound ends — or after a few seconds if the
     // platform never says so, or at once when the platform closes the
     // stream without an event.
-    firstOrDone(
-      player.onPlayerComplete,
-      const Duration(seconds: 10),
-    ).whenComplete(player.dispose);
+    unawaited(
+      firstOrDone(
+        player.onPlayerComplete,
+        const Duration(seconds: 10),
+      ).whenComplete(player.dispose),
+    );
   } catch (_) {
     // No audio device or platform quirk — the moment passes in silence.
-    player.dispose();
+    unawaited(player.dispose());
   }
 }
 

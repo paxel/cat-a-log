@@ -2,6 +2,7 @@
 // siblings, the language switch, aliases, the search index per language and
 // the link check. Run with `node --test "tool/site/*.test.js"`.
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -17,7 +18,7 @@ import {
   switchHref,
 } from "./build.js";
 import { generatedPages, parseChangelog, parseGlossary, parseStarters } from "./generated.js";
-import { compareVersions, planVersions } from "./build-all.js";
+import { compareVersions, fetchFrames, framesAsset, planVersions } from "./build-all.js";
 import { versionHref } from "./build.js";
 
 const PAGE = (title, body = "<p>Text.</p>", extra = "") =>
@@ -191,6 +192,47 @@ test("one version per minor, the newest patch, the working tree replacing its ow
   const ahead = planVersions({ tags: ["v2.4.1"], workingVersion: "2.5.0" });
   assert.deepEqual(ahead.map((e) => e.version), ["2.5.0", "2.4.1"]);
   assert.deepEqual(["2.9.0", "2.10.0", "3.0.0"].sort(compareVersions), ["3.0.0", "2.10.0", "2.9.0"]);
+});
+
+/** Runs fn with a fake `gh` first on PATH; script is its POSIX shell body. */
+function withFakeGh(script, fn) {
+  const bin = fs.mkdtempSync(path.join(os.tmpdir(), "catlog-fake-gh-"));
+  fs.writeFileSync(path.join(bin, "gh"), `#!/bin/sh\n${script}\n`, { mode: 0o755 });
+  const oldPath = process.env.PATH;
+  process.env.PATH = `${bin}${path.delimiter}${oldPath}`;
+  try {
+    return fn();
+  } finally {
+    process.env.PATH = oldPath;
+  }
+}
+
+test("a tag's frames come from its release asset, frames already there are kept", () => {
+  assert.equal(framesAsset("v2.5.0"), "catlog-v2.5.0-site-frames.tar.gz");
+  // The asset: frames/phone/en/home.png, packed as site-frames.yml packs it.
+  const packed = fs.mkdtempSync(path.join(os.tmpdir(), "catlog-frames-"));
+  fs.mkdirSync(path.join(packed, "frames/phone/en"), { recursive: true });
+  fs.writeFileSync(path.join(packed, "frames/phone/en/home.png"), "png");
+  const tarball = path.join(packed, "frames.tar.gz");
+  execFileSync("tar", ["-czf", tarball, "-C", packed, "frames"]);
+
+  const dest = fs.mkdtempSync(path.join(os.tmpdir(), "catlog-tag-"));
+  withFakeGh(`[ "$*" = "release download v2.5.0 --pattern catlog-v2.5.0-site-frames.tar.gz --output -" ] && cat '${tarball}'`, () =>
+    fetchFrames(REPO_ROOT, "v2.5.0", dest),
+  );
+  assert.equal(fs.readFileSync(path.join(dest, "site/assets/frames/phone/en/home.png"), "utf8"), "png");
+
+  // Frames already unpacked are kept; gh is not asked again.
+  withFakeGh("exit 1", () => fetchFrames(REPO_ROOT, "v2.5.0", dest));
+
+  // A release without the asset fails, naming it and the workflow that writes it.
+  const bare = fs.mkdtempSync(path.join(os.tmpdir(), "catlog-tag-"));
+  withFakeGh("echo 'no assets match the file pattern' >&2; exit 1", () =>
+    assert.throws(
+      () => fetchFrames(REPO_ROOT, "v2.5.0", bare),
+      /catlog-v2\.5\.0-site-frames\.tar\.gz.*"Site frames".*no assets match/,
+    ),
+  );
 });
 
 test("the version menu keeps the page where the other version has it, else its language's start", () => {

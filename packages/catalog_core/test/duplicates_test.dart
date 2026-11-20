@@ -13,8 +13,7 @@ void main() {
 
   tearDown(() => store.close());
 
-  test('normalized-equal names are exact duplicates, cats and clowders',
-      () {
+  test('normalized-equal names are exact duplicates, cats and clowders', () {
     store.createCat('Miezi');
     store.createCat(' miezi ');
     store.createClowder('Foster Home');
@@ -43,9 +42,7 @@ void main() {
     final d = store.createCat('Berta');
     store.append(c, Keys.userField('birthdate'), '2026-05-01');
     store.append(d, Keys.userField('birthdate'), '2026-05-01');
-    expect(
-        duplicateCandidates(store)
-            .where((x) => {x.a, x.b}.contains(c)),
+    expect(duplicateCandidates(store).where((x) => {x.a, x.b}.contains(c)),
         isEmpty);
   });
 

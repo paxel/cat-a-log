@@ -22,7 +22,8 @@ const syncWatchKey = 'syncWatch'; // '0' off; on once a folder is chosen
 const syncAutoKey = 'syncAuto'; // '1' merges on its own
 const syncPrivateKey = 'syncPrivate'; // '1' lets private values travel
 const syncSizesKey = 'syncWatchSizes'; // JSON: legacy file → size at last sync
-const syncManifestsKey = 'syncWatchManifests'; // JSON: device → state at last sync
+const syncManifestsKey =
+    'syncWatchManifests'; // JSON: device → state at last sync
 
 const syncWatchEvery = Duration(seconds: 30);
 
@@ -61,9 +62,16 @@ Future<void> recordSyncBaselines(
   final folder = (folderOf ?? syncFolderOf)(store);
   if (folder == null || !store.isOpen) return;
   final catalog = catalogDirOf(store);
-  final sizes = await foreignFileSizes(folder, store.deviceId, catalog: catalog);
-  final manifests =
-      await foreignManifests(folder, store.deviceId, catalog: catalog);
+  final sizes = await foreignFileSizes(
+    folder,
+    store.deviceId,
+    catalog: catalog,
+  );
+  final manifests = await foreignManifests(
+    folder,
+    store.deviceId,
+    catalog: catalog,
+  );
   if (!store.isOpen) return;
   store.setLocalSetting(syncSizesKey, jsonEncode(sizes));
   store.setLocalSetting(syncManifestsKey, jsonEncode(manifests));
@@ -160,7 +168,7 @@ class SyncWatcher extends ChangeNotifier {
     stop();
     if (!store.isOpen) return;
     _timer = Timer.periodic(syncWatchEvery, (_) => check());
-    check();
+    unawaited(check());
   }
 
   /// Nothing waits any more: a manual sync took it, or the folder moved
@@ -255,10 +263,16 @@ class SyncWatcher extends ChangeNotifier {
       final catalog = catalogDirOf(store);
       final sizesBefore = _recordedSizes();
       final manifestsBefore = _recordedManifests();
-      final sizes =
-          await foreignFileSizes(folder, store.deviceId, catalog: catalog);
-      final manifests =
-          await foreignManifests(folder, store.deviceId, catalog: catalog);
+      final sizes = await foreignFileSizes(
+        folder,
+        store.deviceId,
+        catalog: catalog,
+      );
+      final manifests = await foreignManifests(
+        folder,
+        store.deviceId,
+        catalog: catalog,
+      );
       if (!store.isOpen) return;
       _answered();
       // Photo files land after the entry files: fetch what is there
@@ -290,8 +304,7 @@ class SyncWatcher extends ChangeNotifier {
         return;
       }
       _dismissedAt = null;
-      final unseen =
-          await unseenChanges(store, folder, grown, devices: moved);
+      final unseen = await unseenChanges(store, folder, grown, devices: moved);
       if (!store.isOpen) return;
       if (unseen.isEmpty) {
         // Moved on only by absorbing what this device wrote: move on.
@@ -326,15 +339,14 @@ class SyncWatcher extends ChangeNotifier {
   /// failed note, and no second one for the same outage.
   void _failed() {
     final now = clock();
-    _failingSince ??= now;
-    if (_outageNoted || now.difference(_failingSince!) < outageAfter) return;
+    final since = _failingSince ??= now;
+    if (_outageNoted || now.difference(since) < outageAfter) return;
     _outageNoted = true;
-    final since = _failingSince!;
     _outageNote = Note.failed(
       (t) => t.noteFolderUnreachable(_clockText(since)),
       detail: store.localSetting('syncFolder'),
     );
-    notes.add(_outageNote!);
+    if (_outageNote case final note?) notes.add(note);
   }
 
   static String _clockText(DateTime at) =>

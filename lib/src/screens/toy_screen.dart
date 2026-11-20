@@ -25,8 +25,8 @@ class ToyResult {
 /// One reading of the accelerometer, gravity included.
 typedef Motion = ({double x, double y, double z});
 
-Stream<Motion> deviceMotion() => accelerometerEventStream()
-    .map((e) => (x: e.x, y: e.y, z: e.z));
+Stream<Motion> deviceMotion() =>
+    accelerometerEventStream().map((e) => (x: e.x, y: e.y, z: e.z));
 
 /// A toy for the cat (#172): the whole screen, dark, one toy moving on
 /// it. Paws catch it; the game ends when the device is picked up or the
@@ -68,7 +68,9 @@ class _ToyScreenState extends State<ToyScreen>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    unawaited(
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky),
+    );
     _quietly(WakelockPlus.enable);
     _motion = widget.motion().listen(
       (m) {
@@ -83,7 +85,7 @@ class _ToyScreenState extends State<ToyScreen>
 
   static void _quietly(Future<void> Function() call) {
     try {
-      call().catchError((Object _) {});
+      unawaited(call().catchError((Object _) {}));
     } catch (_) {
       // No wake lock on this device: the screen sleeps as it is set to.
     }
@@ -102,7 +104,7 @@ class _ToyScreenState extends State<ToyScreen>
 
   void _play(ToySound sound) {
     if (!widget.sounds) return;
-    playSource(BytesSource(toySound(sound), mimeType: 'audio/wav'));
+    unawaited(playSource(BytesSource(toySound(sound), mimeType: 'audio/wav')));
   }
 
   void _paw(PointerDownEvent event) {
@@ -121,9 +123,9 @@ class _ToyScreenState extends State<ToyScreen>
   @override
   void dispose() {
     _ticker.dispose();
-    _motion?.cancel();
+    _motion?.cancel().ignore();
     _quietly(WakelockPlus.disable);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
     super.dispose();
   }
 
@@ -133,23 +135,30 @@ class _ToyScreenState extends State<ToyScreen>
       canPop: false,
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: LayoutBuilder(builder: (context, box) {
-          _size = box.biggest;
-          return Listener(
-            behavior: HitTestBehavior.opaque,
-            onPointerDown: _paw,
-            child: Stack(children: [
-              Positioned.fill(
-                child: CustomPaint(painter: _ToyPainter(_toy, _now)),
+        body: LayoutBuilder(
+          builder: (context, box) {
+            _size = box.biggest;
+            return Listener(
+              behavior: HitTestBehavior.opaque,
+              onPointerDown: _paw,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: CustomPaint(painter: _ToyPainter(_toy, _now)),
+                  ),
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: HoldLock(
+                      onHeld: _end,
+                      label: context.t.toyHoldToStop,
+                    ),
+                  ),
+                ],
               ),
-              Positioned(
-                top: 12,
-                right: 12,
-                child: HoldLock(onHeld: _end, label: context.t.toyHoldToStop),
-              ),
-            ]),
-          );
-        }),
+            );
+          },
+        ),
       ),
     );
   }
@@ -200,15 +209,18 @@ class _HoldLockState extends State<HoldLock>
           dimension: 44,
           child: AnimatedBuilder(
             animation: _held,
-            builder: (context, _) => Stack(alignment: Alignment.center, children: [
-              CircularProgressIndicator(
-                value: _held.value,
-                strokeWidth: 3,
-                color: Colors.white54,
-                backgroundColor: Colors.white12,
-              ),
-              const Icon(Icons.lock_outline, size: 20, color: Colors.white38),
-            ]),
+            builder: (context, _) => Stack(
+              alignment: Alignment.center,
+              children: [
+                CircularProgressIndicator(
+                  value: _held.value,
+                  strokeWidth: 3,
+                  color: Colors.white54,
+                  backgroundColor: Colors.white12,
+                ),
+                const Icon(Icons.lock_outline, size: 20, color: Colors.white38),
+              ],
+            ),
           ),
         ),
       ),
@@ -237,10 +249,9 @@ class _ToyPainter extends CustomPainter {
       at,
       r * 2.6,
       Paint()
-        ..shader = RadialGradient(colors: [
-          const Color(0x66FF1A1A),
-          const Color(0x00FF1A1A),
-        ]).createShader(Rect.fromCircle(center: at, radius: r * 2.6)),
+        ..shader = RadialGradient(
+          colors: [const Color(0x66FF1A1A), const Color(0x00FF1A1A)],
+        ).createShader(Rect.fromCircle(center: at, radius: r * 2.6)),
     );
     canvas.drawCircle(at, r, Paint()..color = const Color(0xFFFF2020));
     canvas.drawCircle(at, r * 0.45, Paint()..color = const Color(0xFFFFB0B0));

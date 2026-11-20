@@ -207,7 +207,7 @@ class _CatListScreenState extends State<CatListScreen> {
 
   Future<void> _openCat(String catId) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => CatDetailScreen(store: store, catId: catId),
       ),
     );
@@ -219,13 +219,15 @@ class _CatListScreenState extends State<CatListScreen> {
     final t = context.t;
     final cats = _cats();
     final empty = widget.source(store).isEmpty;
+    final emptyText = empty ? widget.emptyText : null;
     return Scaffold(
       appBar: pageBar(
         context,
         title: Text(widget.title),
-        help: widget.helpScreenId == null
-            ? null
-            : PageHelp(widget.helpScreenId!, store: store),
+        help: switch (widget.helpScreenId) {
+          final screenId? => PageHelp(screenId, store: store),
+          null => null,
+        },
         actions: [
           PageAction(
             icon: _tableView ? Icons.view_list : Icons.table_rows_outlined,
@@ -269,8 +271,8 @@ class _CatListScreenState extends State<CatListScreen> {
             ),
           ),
           Expanded(
-            child: empty && widget.emptyText != null
-                ? Center(child: Text(widget.emptyText!))
+            child: emptyText != null
+                ? Center(child: Text(emptyText))
                 : cats.isEmpty
                 ? Center(child: Text(t.searchNoResults))
                 : _tableView

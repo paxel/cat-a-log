@@ -21,8 +21,11 @@ class _FakePlayer extends ChangeNotifier implements FramePlayer {
   _FakePlayer(this.duration);
 
   @override
-  Widget build(BuildContext context) =>
-      const SizedBox(width: 160, height: 90, child: ColoredBox(color: Colors.black));
+  Widget build(BuildContext context) => const SizedBox(
+    width: 160,
+    height: 90,
+    child: ColoredBox(color: Colors.black),
+  );
 
   @override
   Future<void> seekTo(Duration at) async {
@@ -55,33 +58,37 @@ void main() {
     void Function(List<Uint8List>?)? onResult,
   }) async {
     final player = _FakePlayer(const Duration(seconds: 30));
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (context) => ElevatedButton(
-          onPressed: () async {
-            final result = await Navigator.of(context)
-                .push<List<Uint8List>>(MaterialPageRoute(
-              builder: (_) => VideoFramesScreen(
-                player: player,
-                extractFrame: extractFrame,
-                extractFull: extractFull,
-              ),
-            ));
-            onResult?.call(result);
-          },
-          child: const Text('go'),
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => ElevatedButton(
+            onPressed: () async {
+              final result = await Navigator.of(context).push<List<Uint8List>>(
+                MaterialPageRoute(
+                  builder: (_) => VideoFramesScreen(
+                    player: player,
+                    extractFrame: extractFrame,
+                    extractFull: extractFull,
+                  ),
+                ),
+              );
+              onResult?.call(result);
+            },
+            child: const Text('go'),
+          ),
         ),
       ),
-    ));
+    );
     await tester.tap(find.text('go'));
     await tester.pumpAndSettle();
     return player;
   }
 
-  testWidgets('the steps move the clock by a frame, a second, ten seconds',
-      (tester) async {
+  testWidgets('the steps move the clock by a frame, a second, ten seconds', (
+    tester,
+  ) async {
     final player = await open(tester, extractFrame: (_) async => null);
     await tester.tap(find.byTooltip('One frame forward'));
     await tester.pumpAndSettle();
@@ -104,8 +111,9 @@ void main() {
     expect(find.text('0:00.0 / 0:30.0'), findsOneWidget);
   });
 
-  testWidgets('play and pause, and the slider seeks while the finger moves',
-      (tester) async {
+  testWidgets('play and pause, and the slider seeks while the finger moves', (
+    tester,
+  ) async {
     final player = await open(tester, extractFrame: (_) async => null);
     await tester.tap(find.byTooltip('Play'));
     await tester.pumpAndSettle();
@@ -123,8 +131,9 @@ void main() {
     expect(player.position, greaterThan(Duration.zero));
   });
 
-  testWidgets('kept frames line up, a tap lets one go, save pops them full',
-      (tester) async {
+  testWidgets('kept frames line up, a tap lets one go, save pops them full', (
+    tester,
+  ) async {
     final small = _jpeg(64, 48);
     final big = _jpeg(256, 192);
     var fullCalls = 0;
@@ -174,8 +183,11 @@ void main() {
     );
     await tester.tap(find.text('Keep this frame'));
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.check_circle), findsNothing,
-        reason: 'nothing kept');
+    expect(
+      find.byIcon(Icons.check_circle),
+      findsNothing,
+      reason: 'nothing kept',
+    );
     // The second try works: the button was not left dead.
     await tester.tap(find.text('Keep this frame'));
     await tester.pumpAndSettle();

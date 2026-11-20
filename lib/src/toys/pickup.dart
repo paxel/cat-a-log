@@ -39,8 +39,10 @@ class PickupDetector {
       }
       return false;
     }
-    final cos = (v[0] * rest[0] + v[1] * rest[1] + v[2] * rest[2])
-        .clamp(-1.0, 1.0);
+    final cos = (v[0] * rest[0] + v[1] * rest[1] + v[2] * rest[2]).clamp(
+      -1.0,
+      1.0,
+    );
     final degrees = acos(cos) * 180 / pi;
     if (degrees < threshold) {
       _tiltedSince = null;

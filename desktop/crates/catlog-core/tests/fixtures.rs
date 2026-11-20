@@ -3,6 +3,15 @@
 //! must reproduce its `expected.json` after importing the folder and,
 //! separately, the bundle.
 
+// Tests may unwrap, expect, panic and index (clippy.toml covers #[test]
+// functions; this covers the helpers beside them).
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing
+)]
+
 use std::path::{Path, PathBuf};
 
 use catlog_core::Catalog;

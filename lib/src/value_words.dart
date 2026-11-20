@@ -44,7 +44,7 @@ String choreWords(AppLocalizations t, Chore c) => [
   c.title,
   scheduleWords(t, c.schedule),
   if (c.time case final at?) _clock(at),
-  if (c.remind && c.remindAt != null) t.choreRemindAt(_clock(c.remindAt!)),
+  if (c.remindAt case final at? when c.remind) t.choreRemindAt(_clock(at)),
   if (c.paused) t.chorePaused,
   if (c.ended) t.choreEnded,
 ].join(' · ');
@@ -78,7 +78,7 @@ String? documentWords(String raw) {
   }
   if (parsed is! Map) return null;
   final lines = <String>[];
-  void walk(Map map, int depth) {
+  void walk(Map<Object?, Object?> map, int depth) {
     final pad = '  ' * depth;
     for (final entry in map.entries) {
       final v = entry.value;

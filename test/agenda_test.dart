@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:catlog/l10n/app_localizations.dart';
 import 'package:catlog/src/field_editing.dart';
@@ -27,28 +29,41 @@ void main() {
   DateTime inDays(int days) => DateTime.now().add(Duration(days: days));
 
   Future<void> pump(WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: AgendaScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: AgendaScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('plans list ordered by date, overdue marked on top',
-      (tester) async {
-    store.append(cat, Keys.userField('remarks'), 'vaccine refresh',
-        date: inDays(30), reminder: true);
-    store.append(cat, Keys.userField('status'), 'check her paw',
-        date: inDays(-2), reminder: true);
+  testWidgets('plans list ordered by date, overdue marked on top', (
+    tester,
+  ) async {
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'vaccine refresh',
+      date: inDays(30),
+      reminder: true,
+    );
+    store.append(
+      cat,
+      Keys.userField('status'),
+      'check her paw',
+      date: inDays(-2),
+      reminder: true,
+    );
     await pump(tester);
     expect(find.textContaining('check her paw'), findsOneWidget);
     expect(find.textContaining('vaccine refresh'), findsOneWidget);
     expect(find.textContaining('2 days overdue'), findsOneWidget);
-    final overdueY =
-        tester.getTopLeft(find.textContaining('check her paw')).dy;
-    final futureY =
-        tester.getTopLeft(find.textContaining('vaccine refresh')).dy;
+    final overdueY = tester.getTopLeft(find.textContaining('check her paw')).dy;
+    final futureY = tester
+        .getTopLeft(find.textContaining('vaccine refresh'))
+        .dy;
     expect(overdueY, lessThan(futureY));
   });
 
@@ -57,10 +72,16 @@ void main() {
     expect(find.textContaining('No appointments planned'), findsOneWidget);
   });
 
-  testWidgets('done records the fact, asks nothing, and stays for the day',
-      (tester) async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(1), reminder: true);
+  testWidgets('done records the fact, asks nothing, and stays for the day', (
+    tester,
+  ) async {
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(1),
+      reminder: true,
+    );
     await pump(tester);
     await tester.tap(find.byTooltip('Done'));
     await tester.pumpAndSettle();
@@ -90,8 +111,13 @@ void main() {
   });
 
   testWidgets('the done card repeats the plan in a while', (tester) async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(1), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(1),
+      reminder: true,
+    );
     await pump(tester);
     await tester.tap(find.byTooltip('Done'));
     await tester.pumpAndSettle();
@@ -102,15 +128,23 @@ void main() {
     final active = store.activeReminders();
     expect(active, hasLength(1));
     // Default is "3 months" from today.
-    final expected = DateTime(DateTime.now().year,
-        DateTime.now().month + 3, DateTime.now().day);
+    final expected = DateTime(
+      DateTime.now().year,
+      DateTime.now().month + 3,
+      DateTime.now().day,
+    );
     expect(DateUtils.isSameDay(active.single.due, expected), isTrue);
     expect(store.current(cat, Keys.userField('remarks')), 'worming');
   });
 
   testWidgets('unticking a done plan makes it live again', (tester) async {
-    store.append(cat, Keys.userField('remarks'), 'worming',
-        date: inDays(1), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'worming',
+      date: inDays(1),
+      reminder: true,
+    );
     await pump(tester);
     await tester.tap(find.byTooltip('Done'));
     await tester.pumpAndSettle();
@@ -121,10 +155,16 @@ void main() {
     expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isFalse);
   });
 
-  testWidgets('long-press menu removes a reminder without a fact',
-      (tester) async {
-    store.append(cat, Keys.userField('remarks'), 'planned visit',
-        date: inDays(5), reminder: true);
+  testWidgets('long-press menu removes a reminder without a fact', (
+    tester,
+  ) async {
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'planned visit',
+      date: inDays(5),
+      reminder: true,
+    );
     await pump(tester);
     // The bin on the card removes it.
     await tester.tap(find.byTooltip('Remove reminder'));
@@ -133,39 +173,58 @@ void main() {
     expect(store.current(cat, Keys.userField('remarks')), isNull);
   });
 
-  testWidgets('agendaWantsAttention only within the 3-day window',
-      (tester) async {
+  testWidgets('agendaWantsAttention only within the 3-day window', (
+    tester,
+  ) async {
     expect(agendaWantsAttention(store), isFalse);
-    store.append(cat, Keys.userField('remarks'), 'far away',
-        date: inDays(30), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'far away',
+      date: inDays(30),
+      reminder: true,
+    );
     expect(agendaWantsAttention(store), isFalse);
-    store.append(cat, Keys.userField('status'), 'soon',
-        date: inDays(2), reminder: true);
+    store.append(
+      cat,
+      Keys.userField('status'),
+      'soon',
+      date: inDays(2),
+      reminder: true,
+    );
     expect(agendaWantsAttention(store), isTrue);
   });
 
-  testWidgets('field editor: the as-of date cannot lie in the future',
-      (tester) async {
+  testWidgets('field editor: the as-of date cannot lie in the future', (
+    tester,
+  ) async {
     // 1.0.1: plans are made in the reminder dialog; the editor records
     // what happened, and that is never tomorrow's news.
     final def = FieldDef(
-        id: 'fielddef:due',
-        slug: 'due',
-        name: 'Due',
-        type: FieldType.text,
-        scope: FieldScope.cat,
-        options: const []);
+      id: 'fielddef:due',
+      slug: 'due',
+      name: 'Due',
+      type: FieldType.text,
+      scope: FieldScope.cat,
+      options: const [],
+    );
     late BuildContext context;
     FieldEdit? edit;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: Builder(builder: (c) {
-        context = c;
-        return const SizedBox();
-      })),
-    ));
-    editFieldValue(context, def, null).then((e) => edit = e);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (c) {
+              context = c;
+              return const SizedBox();
+            },
+          ),
+        ),
+      ),
+    );
+    unawaited(editFieldValue(context, def, null).then((e) => edit = e));
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.alarm), findsNothing);
     await tester.enterText(find.byType(TextField).first, 'vet visit');
@@ -181,26 +240,33 @@ void main() {
     expect(edit, isNotNull);
     expect(edit!.value, 'vet visit');
     expect(
-        edit!.date.isAfter(DateTime.now().add(const Duration(days: 1))),
-        isFalse);
+      edit!.date.isAfter(DateTime.now().add(const Duration(days: 1))),
+      isFalse,
+    );
   });
 
-  testWidgets('the reminder dialog writes a plan with a well-formed value',
-      (tester) async {
+  testWidgets('the reminder dialog writes a plan with a well-formed value', (
+    tester,
+  ) async {
     // A choice field: the plan's value comes from its options, so done
     // later records a fact the field understands.
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: CatDetailScreen(store: store, catId: cat),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatDetailScreen(store: store, catId: cat),
+      ),
+    );
     await tester.pumpAndSettle();
     // The plus fans the kinds out.
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Reminder').last);
     await tester.pumpAndSettle();
-    expect(find.textContaining('The appointment shows in the Agenda'), findsOneWidget);
+    expect(
+      find.textContaining('The appointment shows in the Agenda'),
+      findsOneWidget,
+    );
     await tester.tap(find.byType(DropdownButtonFormField<String>).last);
     await tester.pumpAndSettle();
     // What a cat *is* cannot be planned: no Gender in the list.
@@ -222,17 +288,25 @@ void main() {
     expect(find.text('Planned'), findsOneWidget);
   });
 
-  testWidgets('a plan on a field without a fact shows on the cat page',
-      (tester) async {
+  testWidgets('a plan on a field without a fact shows on the cat page', (
+    tester,
+  ) async {
     // The Vet case: no fact yet, only a plan — read mode hides empty
     // fields, the Planned section must still show it.
-    store.append(cat, Keys.userField('remarks'), 'vet check-up',
-        date: inDays(20), reminder: true);
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: CatDetailScreen(store: store, catId: cat),
-    ));
+    store.append(
+      cat,
+      Keys.userField('remarks'),
+      'vet check-up',
+      date: inDays(20),
+      reminder: true,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatDetailScreen(store: store, catId: cat),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Planned'), findsOneWidget);
     expect(find.textContaining('vet check-up'), findsOneWidget);

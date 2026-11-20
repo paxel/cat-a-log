@@ -9,7 +9,8 @@ name: Pages
 # Every build assembles every released minor version (the latest patch of
 # each tag that carries a site, under /vX.Y.Z/) plus the working tree at the
 # root, so a release whose docs no longer build fails on summer, not on
-# release day.
+# release day. An older version's frames come from its release asset, which
+# site-frames.yml renders from the tag.
 #
 # One-time steps in the repository settings, done on 2026-10-20:
 #   1. Settings -> Pages -> Source: "GitHub Actions".
@@ -32,22 +33,23 @@ jobs:
       group: pages-build-${{ github.ref }}
       cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0 # every release tag that carries a site is built, see tool/site/build-all.js
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
+          flutter-version: 3.47.9
           cache: true
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: desktop
 
@@ -67,7 +69,10 @@ jobs:
           flutter pub get
           tool/frames.sh
 
+      # An older version's frames are its release asset (site-frames.yml).
       - name: Build site, every released minor version and the working tree
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: node tool/site/build-all.js --base "/${{ github.event.repository.name }}/"
 
       - name: Test site build
@@ -82,7 +87,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
           path: site-dist
 
@@ -101,4 +106,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

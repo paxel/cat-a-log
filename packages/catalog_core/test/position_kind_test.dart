@@ -16,10 +16,9 @@ void main() {
   tearDown(() => store.close());
 
   test('plain values are sightings; flier values carry the marker', () {
-    expect(CatalogStore.parsePositionKind('48.1,11.5'),
-        PositionKind.sighting);
-    expect(CatalogStore.parsePositionKind('48.1,11.5@flier'),
-        PositionKind.flier);
+    expect(CatalogStore.parsePositionKind('48.1,11.5'), PositionKind.sighting);
+    expect(
+        CatalogStore.parsePositionKind('48.1,11.5@flier'), PositionKind.flier);
     // Coordinates parse for both kinds.
     expect(CatalogStore.parsePosition('48.1,11.5@flier'), (48.1, 11.5));
   });
@@ -44,8 +43,8 @@ void main() {
     expect(store.flierPositions(cat), [(50.0, 8.0)]);
     expect(store.flierPositionEntries(cat).single.seq, hanging.last.seq);
     // The history shows the row marked, not gone.
-    final rows = store.fieldHistory(cat, CatalogStore.positionKey,
-        includeVoided: true);
+    final rows =
+        store.fieldHistory(cat, CatalogStore.positionKey, includeVoided: true);
     expect(rows.where((e) => e.voided).single.seq, hanging.first.seq);
   });
 

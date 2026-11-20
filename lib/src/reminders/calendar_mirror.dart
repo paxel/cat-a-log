@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -190,17 +192,21 @@ Future<MirrorOutcome> reconcileCalendarOnce(
   }
   // A calendar that never answers must not hold the catalog — and the
   // lock — for the rest of the session.
-  final run = reconcileCalendar(store, port, t).timeout(timeout).whenComplete(() {
-    _running.remove(store);
-  }).catchError((Object e) {
-    _queued.remove(store);
-    throw e;
-  }).then<MirrorOutcome>((outcome) {
-    if (_queued.remove(store) && store.isOpen) {
-      return reconcileCalendarOnce(store, port, t);
-    }
-    return outcome;
-  });
+  final run = reconcileCalendar(store, port, t)
+      .timeout(timeout)
+      .whenComplete(() {
+        unawaited(_running.remove(store));
+      })
+      .catchError((Object e) {
+        _queued.remove(store);
+        throw e;
+      })
+      .then<MirrorOutcome>((outcome) {
+        if (_queued.remove(store) && store.isOpen) {
+          return reconcileCalendarOnce(store, port, t);
+        }
+        return outcome;
+      });
   _running[store] = run;
   return run;
 }

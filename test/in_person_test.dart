@@ -8,7 +8,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:catlog/src/sync/tls.dart';
+
 import 'tls_fixture.dart';
+
 import 'package:qr_flutter/qr_flutter.dart';
 
 import 'notes_helper.dart';
@@ -24,8 +26,7 @@ void main() {
   setUp(() {
     dir = Directory.systemTemp.createTempSync('catlog-inperson');
     Directory('${dir.path}/mine').createSync();
-    store = CatalogStore.open('${dir.path}/mine/catlog.db')
-      ..author = 'Patrick';
+    store = CatalogStore.open('${dir.path}/mine/catlog.db')..author = 'Patrick';
   });
 
   tearDown(() {
@@ -37,11 +38,13 @@ void main() {
     tester.view.physicalSize = const Size(500, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: InPersonScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: InPersonScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -49,19 +52,24 @@ void main() {
     await pump(tester);
     expect(find.byType(Scaffold), findsOneWidget);
     expect(tester.takeException(), isNull);
-    final tappable = find.byWidgetPredicate((w) =>
-        w is ButtonStyleButton || w is ListTile || w is IconButton);
+    final tappable = find.byWidgetPredicate(
+      (w) => w is ButtonStyleButton || w is ListTile || w is IconButton,
+    );
     expect(tappable, findsWidgets);
   });
 
-  testWidgets('private data is left out unless you say otherwise',
-      (tester) async {
+  testWidgets('private data is left out unless you say otherwise', (
+    tester,
+  ) async {
     await pump(tester);
     final switches = find.byType(SwitchListTile);
     if (switches.evaluate().isNotEmpty) {
       final tile = tester.widget<SwitchListTile>(switches.first);
-      expect(tile.value, isFalse,
-          reason: 'Private stays home until the keeper decides otherwise');
+      expect(
+        tile.value,
+        isFalse,
+        reason: 'Private stays home until the keeper decides otherwise',
+      );
     }
   });
 
@@ -91,19 +99,26 @@ void main() {
     final thrown = tester.takeException();
     expect(thrown, anyOf(isNull, isA<MissingPluginException>()));
     expect(find.byType(QrImageView).evaluate().length, lessThanOrEqualTo(1));
-    expect(find.text('Start hosting').evaluate().length +
-        find.byType(QrImageView).evaluate().length, 1);
+    expect(
+      find.text('Start hosting').evaluate().length +
+          find.byType(QrImageView).evaluate().length,
+      1,
+    );
   });
 
-  testWidgets('a pair code without Wi-Fi says join the Wi-Fi first',
-      (tester) async {
-    InPersonScreen.checkConnectivity =
-        () async => [ConnectivityResult.mobile];
+  testWidgets('a pair code without Wi-Fi says join the Wi-Fi first', (
+    tester,
+  ) async {
+    InPersonScreen.checkConnectivity = () async => [ConnectivityResult.mobile];
     addTearDown(InPersonScreen.resetConnectivityCheck);
     await pump(tester);
-    final code = encodePairCode('192.168.1.23', 4040, '123456',
-        fingerprint: List<int>.generate(fullFingerprintBytes, (i) => i),
-        typed: true);
+    final code = encodePairCode(
+      '192.168.1.23',
+      4040,
+      '123456',
+      fingerprint: List<int>.generate(fullFingerprintBytes, (i) => i),
+      typed: true,
+    );
     await tester.enterText(find.byType(TextField).last, code);
     await tester.pumpAndSettle();
     await tester.drag(find.byType(ListView), const Offset(0, -800));

@@ -90,17 +90,20 @@ pub fn pair_lines(lines: &[FlierLine]) -> Vec<FlierPair> {
             .unwrap_or(std::cmp::Ordering::Equal)
     });
     let mut used = vec![false; lines.len()];
+    let is_used = |used: &[bool], i: usize| used.get(i).copied().unwrap_or(true);
     let mut pairs = Vec::new();
     for (i, line) in &sorted {
-        if used[*i] {
+        if is_used(&used, *i) {
             continue;
         }
-        used[*i] = true;
+        if let Some(u) = used.get_mut(*i) {
+            *u = true;
+        }
         let mut partner: Option<usize> = None;
         let mut gap = f32::INFINITY;
         if line.text.split_whitespace().count() <= 5 {
             for (j, other) in &sorted {
-                if used[*j] || other.left < line.right() - line.height / 2.0 {
+                if is_used(&used, *j) || other.left < line.right() - line.height / 2.0 {
                     continue;
                 }
                 let overlap = line.bottom().min(other.bottom()) - line.top.max(other.top);
@@ -117,8 +120,11 @@ pub fn pair_lines(lines: &[FlierLine]) -> Vec<FlierPair> {
         match partner {
             None => pairs.push(FlierPair::lone(&line.text)),
             Some(j) => {
-                used[j] = true;
-                pairs.push(FlierPair::labelled(&line.text, &lines[j].text));
+                if let Some(u) = used.get_mut(j) {
+                    *u = true;
+                }
+                let partner = lines.get(j).map_or("", |l| l.text.as_str());
+                pairs.push(FlierPair::labelled(&line.text, partner));
             }
         }
     }
@@ -192,26 +198,40 @@ impl FlierTemplateSet {
                 .unwrap_or_default()
         };
         let mut templates = Vec::new();
-        for t in json["templates"].as_array().into_iter().flatten() {
+        for t in json
+            .get("templates")
+            .and_then(|v| v.as_array())
+            .into_iter()
+            .flatten()
+        {
             let mut labels = BTreeMap::new();
-            if let Some(map) = t["labels"].as_object() {
+            if let Some(map) = t.get("labels").and_then(|v| v.as_object()) {
                 for (k, v) in map {
                     labels.insert(k.clone(), strings(Some(v)));
                 }
             }
-            let name_pattern = t["namePattern"]
-                .as_str()
+            let name_pattern = t
+                .get("namePattern")
+                .and_then(|v| v.as_str())
                 .and_then(|p| Regex::new(&format!("(?i){p}")).ok());
             templates.push(FlierTemplate {
-                name: t["name"].as_str().unwrap_or_default().to_string(),
-                registry: t["registry"].as_str().unwrap_or_default().to_string(),
+                name: t
+                    .get("name")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or_default()
+                    .to_string(),
+                registry: t
+                    .get("registry")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or_default()
+                    .to_string(),
                 labels,
                 name_pattern,
                 contact: strings(t.get("contact")),
             });
         }
         let mut values = BTreeMap::new();
-        if let Some(map) = json["values"].as_object() {
+        if let Some(map) = json.get("values").and_then(|v| v.as_object()) {
             for (slug, options) in map {
                 let mut by_option = BTreeMap::new();
                 if let Some(options) = options.as_object() {
@@ -375,8 +395,7 @@ pub fn read_flier(pairs: &[FlierPair], templates: &FlierTemplateSet) -> FlierRea
             entries.push(FlierEntry::new(Some(label), &pair.value, t));
             continue;
         }
-        if parts.len() == 1 {
-            let t = targets[0].expect("one known target");
+        if let [Some(t)] = *targets.as_slice() {
             entries.push(FlierEntry::new(
                 Some(label),
                 &templates.normalize(t, &pair.value),
@@ -404,7 +423,9 @@ fn find_missing_since(entries: &mut [FlierEntry], words: &[String]) {
     let dated =
         |e: &FlierEntry| e.target == target::REMARKS && parse_flier_date(&e.value).is_some();
     for i in 0..entries.len() {
-        let entry = &entries[i];
+        let Some(entry) = entries.get(i) else {
+            break;
+        };
         if entry.target != target::REMARKS {
             continue;
         }
@@ -421,8 +442,8 @@ fn find_missing_since(entries: &mut [FlierEntry], words: &[String]) {
         } else {
             entries.get(i + 1).filter(|next| dated(next)).map(|_| i + 1)
         };
-        if let Some(hit) = hit {
-            entries[hit].target = target::MISSING_SINCE.to_string();
+        if let Some(entry) = hit.and_then(|hit| entries.get_mut(hit)) {
+            entry.target = target::MISSING_SINCE.to_string();
             return;
         }
     }
@@ -437,14 +458,14 @@ fn composite(
     let values: Vec<&str> = value.split(',').map(str::trim).collect();
     let mut entries = Vec::new();
     if values.len() == parts.len() {
-        for (i, part) in parts.iter().enumerate() {
-            match targets[i] {
+        for ((part, target), value) in parts.iter().zip(targets).zip(&values) {
+            match target {
                 Some(t) => entries.push(FlierEntry::new(
                     Some(part),
-                    &templates.normalize(t, values[i]),
+                    &templates.normalize(t, value),
                     t,
                 )),
-                None => entries.push(FlierEntry::new(Some(part), values[i], target::REMARKS)),
+                None => entries.push(FlierEntry::new(Some(part), value, target::REMARKS)),
             }
         }
         return entries;
@@ -456,7 +477,7 @@ fn composite(
             Some(t) => {
                 let index = targets.iter().position(|x| *x == Some(t)).unwrap_or(0);
                 entries.push(FlierEntry::new(
-                    Some(parts[index]),
+                    parts.get(index).copied(),
                     &templates.normalize(t, part),
                     t,
                 ));

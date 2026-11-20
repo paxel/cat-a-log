@@ -1,0 +1,63 @@
+# The iPhone app (cat-1019): built for a device without signing, and the
+# Runner's XCTest target (ios/RunnerTests) run on a simulator. The release
+# pipeline calls the same job as a gate before the TestFlight upload, which
+# is release.yml's.
+#
+# On a push to any branch but summer, as in oldbrainfix: the run on a pull
+# request's head commit is its required check "iOS build and XCTest".
+# summer gets no run after a merge: its ruleset requires a branch up to
+# date before merging, so the merged tree is the tree built here. No pull
+# request trigger: macOS minutes are dear.
+#
+# Third-party actions are pinned to full commit SHAs; the comment names the
+# version.
+name: iOS
+
+on:
+  push:
+    branches-ignore: [summer]
+  workflow_dispatch:
+  workflow_call:
+
+# Read-only: nothing here writes.
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: iOS build and XCTest
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+      # So a red run says which Xcode and simulators it had.
+      - name: Xcode and simulator runtimes
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+      - run: flutter pub get
+      - name: Build for a device, unsigned
+        run: flutter build ios --release --no-codesign
+      # Also writes ios/Flutter/Generated.xcconfig, which xcodebuild needs.
+      - name: Build for the simulator
+        run: flutter build ios --simulator --debug
+      - name: XCTest (RunnerTests) on an iPhone simulator
+        working-directory: ios
+        run: |
+          udid=$(xcrun simctl list devices available --json | jq -r '
+            [.devices | to_entries[]
+              | select(.key | test("SimRuntime\\.iOS-"))
+              | .value[] | select(.name | startswith("iPhone"))][0].udid // empty')
+          if [ -z "$udid" ]; then
+            echo "::error::No iPhone simulator on this runner"
+            exit 1
+          fi
+          xcodebuild test \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Debug \
+            -destination "id=$udid"

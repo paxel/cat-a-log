@@ -29,8 +29,8 @@ in App Store Connect, after which both stores take both languages.
 ## Version
 
 `pubspec.yaml`, `version: X.Y.Z+B`. `B` is the Play versionCode and the
-TestFlight build number. The tag pipeline (`.github/workflows/release.yml`,
-`testflight.yml`) builds `catlog-X.Y.Z-android-playstore.aab`, uploads it to
+TestFlight build number. The tag pipeline (`.github/workflows/release.yml`)
+builds `catlog-X.Y.Z-android-playstore.aab`, uploads it to
 Play's internal track, and uploads the iOS build to TestFlight.
 
 ## Changelog

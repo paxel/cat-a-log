@@ -5,7 +5,9 @@ import 'package:catlog/src/sync/lan.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'tls_fixture.dart';
+
 import 'package:image/image.dart' as img;
+
 import 'dart:typed_data';
 
 /// A joiner that drops the connection mid-request must not take the
@@ -13,34 +15,37 @@ import 'dart:typed_data';
 void main() {
   setUpAll(useSystemSqlite);
 
-  test('a half-sent request and a vanished client leave the host serving',
-      () async {
-    final a = CatalogStore.inMemory()..author = 'a';
-    final b = CatalogStore.inMemory()..author = 'b';
-    addTearDown(a.close);
-    addTearDown(b.close);
-    a.createCat('Miezi');
-    final host = await testHost(a, '123456');
+  test(
+    'a half-sent request and a vanished client leave the host serving',
+    () async {
+      final a = CatalogStore.inMemory()..author = 'a';
+      final b = CatalogStore.inMemory()..author = 'b';
+      addTearDown(a.close);
+      addTearDown(b.close);
+      a.createCat('Miezi');
+      final host = await testHost(a, '123456');
 
-    final socket = await Socket.connect('127.0.0.1', host.port);
-    socket.write('POST /sync HTTP/1.1\r\nHost: x\r\n'
-        'X-Catlog-Pin: 123456\r\nContent-Length: 999999\r\n\r\n{"form');
-    await socket.flush();
-    socket.destroy();
-    // Another vanishing client, this time after the headers of a GET.
-    final second = await Socket.connect('127.0.0.1', host.port);
-    second.write('GET /vector HTTP/1.1\r\nHost: x\r\n\r\n');
-    await second.flush();
-    second.destroy();
-    await Future<void>.delayed(const Duration(milliseconds: 200));
+      final socket = await Socket.connect('127.0.0.1', host.port);
+      socket.write(
+        'POST /sync HTTP/1.1\r\nHost: x\r\n'
+        'X-Catlog-Pin: 123456\r\nContent-Length: 999999\r\n\r\n{"form',
+      );
+      await socket.flush();
+      socket.destroy();
+      // Another vanishing client, this time after the headers of a GET.
+      final second = await Socket.connect('127.0.0.1', host.port);
+      second.write('GET /vector HTTP/1.1\r\nHost: x\r\n\r\n');
+      await second.flush();
+      second.destroy();
+      await Future<void>.delayed(const Duration(milliseconds: 200));
 
-    final result = await syncWith(b, host);
-    expect(result.entriesReceived, greaterThan(0));
-    expect(b.cats().map((c) => c.name), contains('Miezi'));
-  });
+      final result = await syncWith(b, host);
+      expect(result.entriesReceived, greaterThan(0));
+      expect(b.cats().map((c) => c.name), contains('Miezi'));
+    },
+  );
 
-  test('a photo nobody holds is skipped, the entries still land',
-      () async {
+  test('a photo nobody holds is skipped, the entries still land', () async {
     final a = CatalogStore.inMemory()..author = 'a';
     final b = CatalogStore.inMemory()..author = 'b';
     addTearDown(a.close);
@@ -61,7 +66,9 @@ void main() {
     final host = await testHost(a, '123456');
     final client = insecureClient();
     final req = await client.openUrl(
-        'POST', Uri.parse('https://127.0.0.1:${host.port}/blob/${'c' * 64}'));
+      'POST',
+      Uri.parse('https://127.0.0.1:${host.port}/blob/${'c' * 64}'),
+    );
     req.headers.set('x-catlog-pin', '123456');
     req.contentLength = maxBlobBytes + 1;
     req.add(List<int>.filled(maxBlobBytes + 1, 0));
@@ -77,20 +84,23 @@ void main() {
     expect(a.imageBytes('c' * 64), isNull);
   });
 
-  test('five wrong PINs lock an address out, even with the right PIN',
-      () async {
-    final a = CatalogStore.inMemory()..author = 'a';
-    final b = CatalogStore.inMemory()..author = 'b';
-    addTearDown(a.close);
-    addTearDown(b.close);
-    final host = await testHost(a, '123456');
-    for (var i = 0; i < pinFailuresPerAddress; i++) {
-      await expectLater(syncWith(b, host, pin: '000000'),
-          throwsA(isA<SyncException>()));
-    }
-    await expectLater(syncWith(b, host),
-        throwsA(isA<SyncException>()));
-  });
+  test(
+    'five wrong PINs lock an address out, even with the right PIN',
+    () async {
+      final a = CatalogStore.inMemory()..author = 'a';
+      final b = CatalogStore.inMemory()..author = 'b';
+      addTearDown(a.close);
+      addTearDown(b.close);
+      final host = await testHost(a, '123456');
+      for (var i = 0; i < pinFailuresPerAddress; i++) {
+        await expectLater(
+          syncWith(b, host, pin: '000000'),
+          throwsA(isA<SyncException>()),
+        );
+      }
+      await expectLater(syncWith(b, host), throwsA(isA<SyncException>()));
+    },
+  );
 
   test('a blob the log never mentions is not stored', () async {
     final a = CatalogStore.inMemory()..author = 'a';
@@ -98,13 +108,17 @@ void main() {
     addTearDown(a.close);
     addTearDown(b.close);
     final hash = b.addImage(
-        b.createCat('X'),
-        CatalogStore.compressImage(Uint8List.fromList(
-            img.encodeJpg(img.Image(width: 8, height: 8)))));
+      b.createCat('X'),
+      CatalogStore.compressImage(
+        Uint8List.fromList(img.encodeJpg(img.Image(width: 8, height: 8))),
+      ),
+    );
     final host = await testHost(a, '123456');
     final client = insecureClient();
     final req = await client.openUrl(
-        'POST', Uri.parse('https://127.0.0.1:${host.port}/blob/$hash'));
+      'POST',
+      Uri.parse('https://127.0.0.1:${host.port}/blob/$hash'),
+    );
     req.headers.set('x-catlog-pin', '123456');
     req.add(b.imageBytes(hash)!);
     final res = await req.close();
@@ -123,18 +137,18 @@ void main() {
     b.createCat('B');
     c.createCat('C');
     var inFlight = 0, peak = 0;
-    final host = await testHost(a, '123456',
-        onJoinRequest: (_, _) async {
-      inFlight++;
-      peak = inFlight > peak ? inFlight : peak;
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-      inFlight--;
-      return const JoinDecision(true, false);
-    });
-    await Future.wait([
-      syncWith(b, host),
-      syncWith(c, host),
-    ]);
+    final host = await testHost(
+      a,
+      '123456',
+      onJoinRequest: (_, _) async {
+        inFlight++;
+        peak = inFlight > peak ? inFlight : peak;
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        inFlight--;
+        return const JoinDecision(true, false);
+      },
+    );
+    await Future.wait([syncWith(b, host), syncWith(c, host)]);
     expect(peak, 1);
     expect(a.cats().map((x) => x.name), containsAll(['B', 'C']));
   });

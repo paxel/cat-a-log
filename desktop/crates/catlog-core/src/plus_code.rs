@@ -18,15 +18,22 @@ pub fn encode_plus_code(latitude: f64, longitude: f64) -> String {
     let mut out = String::new();
     for (i, res) in RESOLUTIONS.iter().enumerate() {
         // The epsilon keeps exact grid points from flooring one cell low.
-        let a = ((lat / res) + 1e-9).floor() as i64 % 20;
-        let b = ((lon / res) + 1e-9).floor() as i64 % 20;
-        out.push(ALPHABET[a as usize] as char);
-        out.push(ALPHABET[b as usize] as char);
+        let a = ((lat / res) + 1e-9).floor() as i64;
+        let b = ((lon / res) + 1e-9).floor() as i64;
+        out.push(digit(a));
+        out.push(digit(b));
         if i == 3 {
             out.push('+');
         }
     }
     out
+}
+
+/// The code's digit for `value` modulo 20.
+fn digit(value: i64) -> char {
+    ALPHABET
+        .get(value.rem_euclid(20) as usize)
+        .map_or('2', |&b| char::from(b))
 }
 
 #[cfg(test)]

@@ -24,16 +24,19 @@ void main() {
   tearDown(() => store.close());
 
   Future<void> pump(WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: ClowderListScreen(store: store),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ClowderListScreen(store: store),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('toggle flips to a table with strays pinned first',
-      (tester) async {
+  testWidgets('toggle flips to a table with strays pinned first', (
+    tester,
+  ) async {
     await pump(tester);
     expect(find.byType(DataTable), findsNothing);
     await tester.tap(find.byTooltip('Show as table'));
@@ -43,8 +46,7 @@ void main() {
     // Default columns: Name, Cats, Type; strays row pinned on top.
     expect(find.text('Type'), findsWidgets);
     final straysY = tester.getTopLeft(find.text('Strays')).dy;
-    expect(straysY,
-        lessThan(tester.getTopLeft(find.text('Adopter')).dy));
+    expect(straysY, lessThan(tester.getTopLeft(find.text('Adopter')).dy));
     expect(straysY, lessThan(tester.getTopLeft(find.text('Hof')).dy));
     // The choice survives a rebuild (stored per device).
     expect(store.localSetting(clowderViewKey), 'table');
@@ -54,23 +56,29 @@ void main() {
     store.setLocalSetting(clowderViewKey, 'table');
     await pump(tester);
     // Ascending by name: Adopter above Barn.
-    expect(tester.getTopLeft(find.text('Adopter')).dy,
-        lessThan(tester.getTopLeft(find.text('Hof')).dy));
+    expect(
+      tester.getTopLeft(find.text('Adopter')).dy,
+      lessThan(tester.getTopLeft(find.text('Hof')).dy),
+    );
     await tester.tap(find.text('Name'));
     await tester.pumpAndSettle();
     // Second tap on the current column flips to descending.
-    expect(tester.getTopLeft(find.text('Hof')).dy,
-        lessThan(tester.getTopLeft(find.text('Adopter')).dy));
+    expect(
+      tester.getTopLeft(find.text('Hof')).dy,
+      lessThan(tester.getTopLeft(find.text('Adopter')).dy),
+    );
     expect(store.localSetting(clowderSortKey), 'name,desc');
   });
 
-  testWidgets('column chips add and remove field columns',
-      (tester) async {
+  testWidgets('column chips add and remove field columns', (tester) async {
     store.setLocalSetting(clowderViewKey, 'table');
     // A field no home has a value for is not offered as a column; one
     // with a value somewhere is.
-    store.append(store.clowders().first.id, Keys.userField('address'),
-        'Dorfstraße 1');
+    store.append(
+      store.clowders().first.id,
+      Keys.userField('address'),
+      'Dorfstraße 1',
+    );
     await pump(tester);
     // Folded by default (Status is chosen): unfold to see the chips.
     await tester.tap(find.text('Columns'));
@@ -79,10 +87,13 @@ void main() {
     // Add the Address column via its chip.
     await tester.tap(find.widgetWithText(FilterChip, 'Address'));
     await tester.pumpAndSettle();
-    expect(find.descendant(
-            of: find.byType(DataTable),
-            matching: find.text('Address')),
-        findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(DataTable),
+        matching: find.text('Address'),
+      ),
+      findsOneWidget,
+    );
     expect(store.localSetting(clowderColumnsKey), contains('f:address'));
   });
 }

@@ -47,24 +47,25 @@ class FieldList extends StatelessWidget {
   final String? locateNote;
   final bool locating;
 
-  const FieldList(
-      {super.key,
-      required this.store,
-      required this.entityId,
-      required this.defs,
-      required this.editing,
-      required this.onEdit,
-      required this.onConflict,
-      required this.onHistory,
-      required this.onShowMap,
-      this.onLookup,
-      this.onReadLongPress,
-      this.onGraph,
-      this.onValueHistory,
-      this.onAddField,
-      this.onLocate,
-      this.locateNote,
-      this.locating = false});
+  const FieldList({
+    super.key,
+    required this.store,
+    required this.entityId,
+    required this.defs,
+    required this.editing,
+    required this.onEdit,
+    required this.onConflict,
+    required this.onHistory,
+    required this.onShowMap,
+    this.onLookup,
+    this.onReadLongPress,
+    this.onGraph,
+    this.onValueHistory,
+    this.onAddField,
+    this.onLocate,
+    this.locateNote,
+    this.locating = false,
+  });
 
   bool _filled(FieldDef def) {
     final value = store.current(entityId, def.key);
@@ -97,126 +98,140 @@ class FieldList extends StatelessWidget {
               if (_filled(def) ||
                   store.isWithheld(entityId, def.key) ||
                   store.hasConflict(entityId, def.key))
-                def
+                def,
           ];
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      for (final def in rows)
-        Builder(builder: (context) {
-          final conflict = store.hasConflict(entityId, def.key);
-          final value = store.current(entityId, def.key);
-          final mapJump = def.type == FieldType.location && value != null;
-          // An ID that belongs to a service opens there — the same
-          // shape as the map jump on a location.
-          final lookup = onLookup != null &&
-              value != null &&
-              lookupUrl(def, value) != null;
-          final graph = onGraph != null &&
-              !editing &&
-              hasGraph(store, entityId, def);
-          final history = onValueHistory != null &&
-              !editing &&
-              !graph &&
-              hasValueHistory(store, entityId, def.key);
-          // Read mode marks a private value with a lock at the end of
-          // the row — your own and one a partner kept back look alike.
-          // Edit mode shows no lock; the field editor's checkmark is
-          // where Private is set.
-          final lock = !editing &&
-              (store.isFieldPrivate(entityId, def.key) ||
-                  store.isWithheld(entityId, def.key));
-          final action = conflict
-              ? const Icon(Icons.warning_amber, color: Colors.amber)
-              : mapJump
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final def in rows)
+          Builder(
+            builder: (context) {
+              final conflict = store.hasConflict(entityId, def.key);
+              final value = store.current(entityId, def.key);
+              final mapJump = def.type == FieldType.location && value != null;
+              // An ID that belongs to a service opens there — the same
+              // shape as the map jump on a location.
+              final lookup =
+                  onLookup != null &&
+                  value != null &&
+                  lookupUrl(def, value) != null;
+              final graph =
+                  onGraph != null && !editing && hasGraph(store, entityId, def);
+              final history =
+                  onValueHistory != null &&
+                  !editing &&
+                  !graph &&
+                  hasValueHistory(store, entityId, def.key);
+              // Read mode marks a private value with a lock at the end of
+              // the row — your own and one a partner kept back look alike.
+              // Edit mode shows no lock; the field editor's checkmark is
+              // where Private is set.
+              final lock =
+                  !editing &&
+                  (store.isFieldPrivate(entityId, def.key) ||
+                      store.isWithheld(entityId, def.key));
+              final action = conflict
+                  ? const Icon(Icons.warning_amber, color: Colors.amber)
+                  : mapJump
                   ? IconButton(
                       icon: const Icon(Icons.map_outlined),
                       tooltip: context.t.showOnMap,
                       onPressed: () => onShowMap(def, value),
                     )
                   : lookup
-                      ? IconButton(
-                          icon: const Icon(Icons.open_in_new),
-                          tooltip: context.t.lookUpId,
-                          onPressed: () => onLookup!(def, value),
-                        )
+                  ? IconButton(
+                      icon: const Icon(Icons.open_in_new),
+                      tooltip: context.t.lookUpId,
+                      onPressed: () => onLookup?.call(def, value),
+                    )
                   : graph
-                      ? IconButton(
-                          icon: const Icon(Icons.show_chart),
-                          tooltip: context.t.graphLabel,
-                          onPressed: () => onGraph!(def),
-                        )
+                  ? IconButton(
+                      icon: const Icon(Icons.show_chart),
+                      tooltip: context.t.graphLabel,
+                      onPressed: () => onGraph?.call(def),
+                    )
                   : history
-                      ? IconButton(
-                          icon: const Icon(Icons.history),
-                          tooltip: context.t.fieldHistoryTooltip,
-                          onPressed: () => onValueHistory!(def),
-                        )
+                  ? IconButton(
+                      icon: const Icon(Icons.history),
+                      tooltip: context.t.fieldHistoryTooltip,
+                      onPressed: () => onValueHistory?.call(def),
+                    )
                   : editing
-                      ? const Icon(Icons.edit_outlined)
-                      : null;
-          // Edit mode: a hold opens the field's history, so only a field
-          // with a value wears the ear. Read mode: a hold edits the value.
-          final hasHold =
-              editing ? _filled(def) : onReadLongPress != null;
-          final tile = ListTile(
-            title: Text(fieldDefName(context.t, def)),
-            subtitle: Text(_display(context, def)),
-            trailing: lock
-                ? Row(mainAxisSize: MainAxisSize.min, children: [
-                    ?action,
-                    const Icon(Icons.lock, size: 20),
-                  ])
-                : action,
-            onTap: conflict
-                ? () => onConflict(def)
-                : editing
+                  ? const Icon(Icons.edit_outlined)
+                  : null;
+              // Edit mode: a hold opens the field's history, so only a field
+              // with a value wears the ear. Read mode: a hold edits the value.
+              final hasHold = editing ? _filled(def) : onReadLongPress != null;
+              final tile = ListTile(
+                title: Text(fieldDefName(context.t, def)),
+                subtitle: Text(_display(context, def)),
+                trailing: lock
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [?action, const Icon(Icons.lock, size: 20)],
+                      )
+                    : action,
+                onTap: conflict
+                    ? () => onConflict(def)
+                    : editing
                     ? () => onEdit(def)
                     : null,
-            // An empty field in edit mode swallows the hold: without a
-            // handler a long press would land as a tap and open the editor.
-            onLongPress: editing
-                ? (_filled(def) ? () => onHistory(def) : () {})
-                : onReadLongPress == null
-                    ? null
-                    : () => onReadLongPress!(def),
-          );
-          final row = hasHold ? WithCatEar(child: tile) : tile;
-          // The address row carries the locate button beneath it (#81).
-          if (def.slug == 'address' && onLocate != null && value != null) {
-            return Column(mainAxisSize: MainAxisSize.min, children: [
-              row,
-              Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                child: Row(children: [
-                  TextButton.icon(
-                    icon: locating
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.add_location_alt_outlined),
-                    label: Text(context.t.locateAddress),
-                    onPressed: locating ? null : onLocate,
-                  ),
-                  if (locateNote != null)
-                    Expanded(
-                      child: Text(
-                        locateNote!,
-                        style: Theme.of(context).textTheme.bodySmall,
+                // An empty field in edit mode swallows the hold: without a
+                // handler a long press would land as a tap and open the editor.
+                onLongPress: editing
+                    ? (_filled(def) ? () => onHistory(def) : () {})
+                    : switch (onReadLongPress) {
+                        final hold? => () => hold(def),
+                        null => null,
+                      },
+              );
+              final row = hasHold ? WithCatEar(child: tile) : tile;
+              // The address row carries the locate button beneath it (#81).
+              if (def.slug == 'address' && onLocate != null && value != null) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    row,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Row(
+                        children: [
+                          TextButton.icon(
+                            icon: locating
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.add_location_alt_outlined),
+                            label: Text(context.t.locateAddress),
+                            onPressed: locating ? null : onLocate,
+                          ),
+                          if (locateNote case final note?)
+                            Expanded(
+                              child: Text(
+                                note,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                ]),
-              ),
-            ]);
-          }
-          return row;
-        }),
-      if (editing && onAddField != null)
-        ListTile(
-          leading: const Icon(Icons.add),
-          title: Text(context.t.newField),
-          onTap: onAddField,
-        ),
-    ]);
+                  ],
+                );
+              }
+              return row;
+            },
+          ),
+        if (editing && onAddField != null)
+          ListTile(
+            leading: const Icon(Icons.add),
+            title: Text(context.t.newField),
+            onTap: onAddField,
+          ),
+      ],
+    );
   }
 }

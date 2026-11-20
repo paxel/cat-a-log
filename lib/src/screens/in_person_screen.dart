@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 import 'dart:math';
 
@@ -74,6 +76,7 @@ class _InPersonScreenState extends State<InPersonScreen> {
 
   /// A host is being started: a second tap waits, a pop stops it.
   bool _starting = false;
+
   /// A typed code that is no pair code: the field's own answer.
   String? _codeError;
 
@@ -86,14 +89,18 @@ class _InPersonScreenState extends State<InPersonScreen> {
   @override
   void initState() {
     super.initState();
-    _pokeLocalNetwork();
-    Connectivity().checkConnectivity().then((types) {
-      if (mounted) {
-        setState(() => _onLocalNetwork =
-            types.contains(ConnectivityResult.wifi) ||
-                types.contains(ConnectivityResult.ethernet));
-      }
-    });
+    unawaited(_pokeLocalNetwork());
+    unawaited(
+      Connectivity().checkConnectivity().then((types) {
+        if (mounted) {
+          setState(
+            () => _onLocalNetwork =
+                types.contains(ConnectivityResult.wifi) ||
+                types.contains(ConnectivityResult.ethernet),
+          );
+        }
+      }),
+    );
   }
 
   /// iOS gates outgoing LAN connections behind the Local Network
@@ -101,8 +108,7 @@ class _InPersonScreenState extends State<InPersonScreen> {
   Future<void> _pokeLocalNetwork() async {
     if (!Platform.isIOS) return;
     try {
-      final socket =
-          await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+      final socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
       socket.send([0], InternetAddress('224.0.0.251'), 5353);
       socket.close();
     } catch (_) {}
@@ -110,16 +116,18 @@ class _InPersonScreenState extends State<InPersonScreen> {
 
   @override
   void dispose() {
-    _host?.stop();
-    if (_hotspotQr != null) stopHotspot();
+    final host = _host;
+    if (host != null) unawaited(host.stop());
+    if (_hotspotQr != null) unawaited(stopHotspot());
     _code.dispose();
     super.dispose();
   }
 
   Future<void> _toggleHost() async {
     if (_starting) return;
-    if (_host != null) {
-      await _host!.stop();
+    final running = _host;
+    if (running != null) {
+      await running.stop();
       if (_hotspotQr != null) await stopHotspot();
       setState(() {
         _host = null;
@@ -171,10 +179,13 @@ class _InPersonScreenState extends State<InPersonScreen> {
     final pin = (Random.secure().nextInt(900000) + 100000).toString();
     final identity = await tlsIdentity(widget.store);
     if (!mounted) return null;
-    final host = LanSyncHost(widget.store, pin,
-        identity: identity,
-        onSession: _onSession,
-        includePrivate: () => _includePrivate);
+    final host = LanSyncHost(
+      widget.store,
+      pin,
+      identity: identity,
+      onSession: _onSession,
+      includePrivate: () => _includePrivate,
+    );
     final address = await host.start();
     if (!mounted) {
       // Backed out while binding: nothing may keep serving.
@@ -190,24 +201,52 @@ class _InPersonScreenState extends State<InPersonScreen> {
     if (!mounted) return;
     setState(() => _sessions++);
     if (needsAttention(report)) {
-      showImportSummary(context, widget.store, applied,
-          undo: moment, report: report);
+      unawaited(
+        showImportSummary(
+          context,
+          widget.store,
+          applied,
+          undo: moment,
+          report: report,
+        ),
+      );
     } else {
       NoteQueue.instance.add(
-          arrivalNote(context, widget.store, applied, undo: moment, report: report));
+        arrivalNote(
+          context,
+          widget.store,
+          applied,
+          undo: moment,
+          report: report,
+        ),
+      );
     }
   }
 
   /// The pair codes for [ip]: the QR carries the whole fingerprint, the
   /// typed code its first bytes (#92); a hotspot adds its own QR.
-  void _showCodes(LanSyncHost host, String pin, String ip,
-      {HotspotInfo? hotspot}) {
-    final qr = encodePairCode(ip, host.port, pin, fingerprint: host.fingerprint);
+  void _showCodes(
+    LanSyncHost host,
+    String pin,
+    String ip, {
+    HotspotInfo? hotspot,
+  }) {
+    final qr = encodePairCode(
+      ip,
+      host.port,
+      pin,
+      fingerprint: host.fingerprint,
+    );
     setState(() {
       _host = host;
       _pairCodeQr = qr;
-      _pairCode = encodePairCode(ip, host.port, pin,
-          fingerprint: host.fingerprint, typed: true);
+      _pairCode = encodePairCode(
+        ip,
+        host.port,
+        pin,
+        fingerprint: host.fingerprint,
+        typed: true,
+      );
       _hotspotQr = hotspot == null ? null : hotspotQrPayload(hotspot, qr);
       _sessions = 0;
     });
@@ -216,7 +255,8 @@ class _InPersonScreenState extends State<InPersonScreen> {
   /// One scan on the joiner: low-key consent, app-scoped join, sync,
   /// automatic disconnect.
   Future<void> _joinHotspotFlow(
-      ({String ssid, String pass, String pairCode}) info) async {
+    ({String ssid, String pass, String pairCode}) info,
+  ) async {
     if (!Platform.isAndroid) {
       noteFailed(context.t.hotspotAndroidOnly);
       return;
@@ -270,7 +310,8 @@ class _InPersonScreenState extends State<InPersonScreen> {
     }
     if (!mounted) return;
     // A code without a fingerprint comes from a version before TLS.
-    if (info.fingerprint == null) {
+    final fingerprint = info.fingerprint;
+    if (fingerprint == null) {
       noteFailed(context.t.syncPeerNoTls);
       return;
     }
@@ -281,38 +322,54 @@ class _InPersonScreenState extends State<InPersonScreen> {
     try {
       // Under the lanSync key so the activity line shows it running.
       final result = await runExclusive(
-          'lanSync',
-          () => lanSync(widget.store, info.host, info.port, info.pin,
-              fingerprint: info.fingerprint!, includePrivate: _includePrivate));
+        'lanSync',
+        () => lanSync(
+          widget.store,
+          info.host,
+          info.port,
+          info.pin,
+          fingerprint: fingerprint,
+          includePrivate: _includePrivate,
+        ),
+      );
       if (result == null || !mounted || !widget.store.isOpen) return;
       widget.store.setLocalSetting(
-          'lastSync:${info.host}', clockNow().toIso8601String());
+        'lastSync:${info.host}',
+        clockNow().toIso8601String(),
+      );
       if (needsAttention(result.report)) {
-        await showImportSummary(context, widget.store, result.applied,
-            undo: result.moment, report: result.report);
+        await showImportSummary(
+          context,
+          widget.store,
+          result.applied,
+          undo: result.moment,
+          report: result.report,
+        );
       } else {
-        NoteQueue.instance.add(arrivalNote(context, widget.store,
+        NoteQueue.instance.add(
+          arrivalNote(
+            context,
+            widget.store,
             result.applied,
-            undo: result.moment, report: result.report));
+            undo: result.moment,
+            report: result.report,
+          ),
+        );
       }
     } on SyncException catch (e) {
       if (mounted) {
-        noteFailed(
-          switch (e.message) {
-            'declined' => context.t.syncDeclined,
-            'peer-older' => context.t.syncPeerOlder,
-            'peer-newer' => context.t.syncPeerNewer,
-            'peer-no-tls' => context.t.syncPeerNoTls,
-            'wrong-host' => context.t.syncWrongHost,
-            _ => context.t.syncFailed(e.message),
-          },
-          detail: e.message,
-        );
+        noteFailed(switch (e.message) {
+          'declined' => context.t.syncDeclined,
+          'peer-older' => context.t.syncPeerOlder,
+          'peer-newer' => context.t.syncPeerNewer,
+          'peer-no-tls' => context.t.syncPeerNoTls,
+          'wrong-host' => context.t.syncWrongHost,
+          _ => context.t.syncFailed(e.message),
+        }, detail: e.message);
       }
     } on SocketException catch (e) {
       if (mounted) {
-        final hint =
-            Platform.isIOS ? '\n${context.t.iosLocalNetworkHint}' : '';
+        final hint = Platform.isIOS ? '\n${context.t.iosLocalNetworkHint}' : '';
         noteFailed('${context.t.syncUnreachable}$hint', detail: '$e');
       }
     } catch (e) {
@@ -346,18 +403,25 @@ class _InPersonScreenState extends State<InPersonScreen> {
     final iosOffline = Platform.isIOS && onNet == false;
     final canHost = onNet != false;
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.syncChooserInPerson), help: PageHelp('inPerson', store: widget.store)),
+      appBar: pageBar(
+        context,
+        title: Text(t.syncChooserInPerson),
+        help: PageHelp('inPerson', store: widget.store),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(t.trustBothWaysNote,
-              style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            t.trustBothWaysNote,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 12),
           SwitchListTile(
             value: _includePrivate,
             onChanged: (v) => setState(() => _includePrivate = v),
             secondary: Icon(
-                _includePrivate ? Icons.lock_open : Icons.lock_outline),
+              _includePrivate ? Icons.lock_open : Icons.lock_outline,
+            ),
             title: Text(t.includePrivate),
             contentPadding: EdgeInsets.zero,
           ),
@@ -376,19 +440,14 @@ class _InPersonScreenState extends State<InPersonScreen> {
             if (canHost)
               FilledButton.icon(
                 onPressed: _toggleHost,
-                icon: Icon(
-                    _host == null ? Icons.wifi_tethering : Icons.stop),
-                label:
-                    Text(_host == null ? t.startHosting : t.stopHosting),
+                icon: Icon(_host == null ? Icons.wifi_tethering : Icons.stop),
+                label: Text(_host == null ? t.startHosting : t.stopHosting),
               )
             else if (Platform.isAndroid)
               FilledButton.icon(
                 onPressed: _host == null ? _hostViaHotspot : _toggleHost,
-                icon: Icon(_host == null
-                    ? Icons.wifi_tethering
-                    : Icons.stop),
-                label: Text(
-                    _host == null ? t.hostWithoutWifi : t.stopHosting),
+                icon: Icon(_host == null ? Icons.wifi_tethering : Icons.stop),
+                label: Text(_host == null ? t.hostWithoutWifi : t.stopHosting),
               )
             else
               ListTile(
@@ -396,36 +455,40 @@ class _InPersonScreenState extends State<InPersonScreen> {
                 leading: const Icon(Icons.wifi_off),
                 title: Text(t.connectToWifiFirst),
               ),
-            if (_pairCode != null) ...[
+            if (_pairCode case final pairCode?) ...[
               const SizedBox(height: 12),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Column(children: [
-                    QrImageView(
-                      data: _hotspotQr ?? _pairCodeQr ?? _pairCode!,
-                      size: 220,
-                      backgroundColor: Colors.white,
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
+                  child: Column(
+                    children: [
+                      QrImageView(
+                        data: _hotspotQr ?? _pairCodeQr ?? pairCode,
+                        size: 220,
+                        backgroundColor: Colors.white,
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Flexible(child: PairCodeText(_pairCode!)),
+                          Flexible(child: PairCodeText(pairCode)),
                           IconButton(
                             icon: const Icon(Icons.copy),
                             tooltip: t.copyCode,
                             onPressed: () async {
                               await Clipboard.setData(
-                                  ClipboardData(text: _pairCode!));
+                                ClipboardData(text: pairCode),
+                              );
                               if (context.mounted) {
                                 paw(context);
                               }
                             },
                           ),
-                        ]),
-                    Text(t.sessionsSoFar(_sessions)),
-                  ]),
+                        ],
+                      ),
+                      Text(t.sessionsSoFar(_sessions)),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -453,10 +516,10 @@ class _InPersonScreenState extends State<InPersonScreen> {
                     ? const Padding(
                         padding: EdgeInsets.all(12),
                         child: SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2)),
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       )
                     : IconButton(
                         icon: const Icon(Icons.sync),
@@ -470,7 +533,9 @@ class _InPersonScreenState extends State<InPersonScreen> {
               autocorrect: false,
               onChanged: (v) {
                 if (_codeError != null) setState(() => _codeError = null);
-                if (!_joining && decodePairCode(v) != null) _joinWith(v);
+                if (!_joining && decodePairCode(v) != null) {
+                  unawaited(_joinWith(v));
+                }
               },
             ),
           ],
@@ -484,10 +549,10 @@ class _InPersonScreenState extends State<InPersonScreen> {
 class PairCodeFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    final raw = newValue.text
-        .toLowerCase()
-        .replaceAll(RegExp('[^0-9a-z]'), '');
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final raw = newValue.text.toLowerCase().replaceAll(RegExp('[^0-9a-z]'), '');
     final buffer = StringBuffer();
     // The longest code there is: IPv6 carrying the whole fingerprint,
     // as a QR payload pasted into the field.

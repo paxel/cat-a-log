@@ -132,7 +132,18 @@ abstract final class Kinds {
 /// The type of a user-defined Field (see CONTEXT.md: Field). [tags] is
 /// the Looks field (1.2.0): chips in groups, see looks.dart; older
 /// versions read it as text.
-enum FieldType { text, yesNo, date, number, choice, location, cat, id, unitValue, tags }
+enum FieldType {
+  text,
+  yesNo,
+  date,
+  number,
+  choice,
+  location,
+  cat,
+  id,
+  unitValue,
+  tags
+}
 
 /// What a position entry records: a live sighting, or where a
 /// missing-cat flier hangs (#30). Flier positions never render as
@@ -252,26 +263,146 @@ const catBreeds = [
 /// Starter Fields seeded on first launch as ordinary entries, so a card
 /// can be filled without any configuration.
 const starterFields = [
-  (slug: 'gender', name: 'Gender', type: FieldType.choice, scope: FieldScope.cat, options: ['female', 'male', 'unknown']),
-  (slug: 'color', name: 'Color', type: FieldType.text, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'breed', name: 'Breed', type: FieldType.choice, scope: FieldScope.cat, options: catBreeds),
-  (slug: 'chipid', name: 'Chip ID', type: FieldType.id, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'neutered', name: 'Neutered', type: FieldType.yesNo, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'pregnant', name: 'Pregnant', type: FieldType.yesNo, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'birthdate', name: 'Birth date', type: FieldType.date, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'deceased', name: 'Deceased', type: FieldType.date, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'species', name: 'Species', type: FieldType.choice, scope: FieldScope.cat, options: speciesPresets),
-  (slug: 'weight', name: 'Weight', type: FieldType.unitValue, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'looks', name: 'Looks', type: FieldType.tags, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'mother', name: 'Mother', type: FieldType.cat, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'father', name: 'Father', type: FieldType.cat, scope: FieldScope.cat, options: <String>[]),
-  (slug: 'status', name: 'Status', type: FieldType.choice, scope: FieldScope.clowder, options: clowderStatusKeys),
-  (slug: 'address', name: 'Address', type: FieldType.text, scope: FieldScope.clowder, options: <String>[]),
-  (slug: 'responsible', name: 'Responsible person', type: FieldType.text, scope: FieldScope.clowder, options: <String>[]),
-  (slug: 'email', name: 'Email', type: FieldType.text, scope: FieldScope.clowder, options: <String>[]),
-  (slug: 'phone', name: 'Phone', type: FieldType.text, scope: FieldScope.clowder, options: <String>[]),
-  (slug: 'position', name: 'Position', type: FieldType.location, scope: FieldScope.both, options: <String>[]),
-  (slug: 'remarks', name: 'Remarks', type: FieldType.text, scope: FieldScope.both, options: <String>[]),
+  (
+    slug: 'gender',
+    name: 'Gender',
+    type: FieldType.choice,
+    scope: FieldScope.cat,
+    options: ['female', 'male', 'unknown']
+  ),
+  (
+    slug: 'color',
+    name: 'Color',
+    type: FieldType.text,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'breed',
+    name: 'Breed',
+    type: FieldType.choice,
+    scope: FieldScope.cat,
+    options: catBreeds
+  ),
+  (
+    slug: 'chipid',
+    name: 'Chip ID',
+    type: FieldType.id,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'neutered',
+    name: 'Neutered',
+    type: FieldType.yesNo,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'pregnant',
+    name: 'Pregnant',
+    type: FieldType.yesNo,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'birthdate',
+    name: 'Birth date',
+    type: FieldType.date,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'deceased',
+    name: 'Deceased',
+    type: FieldType.date,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'species',
+    name: 'Species',
+    type: FieldType.choice,
+    scope: FieldScope.cat,
+    options: speciesPresets
+  ),
+  (
+    slug: 'weight',
+    name: 'Weight',
+    type: FieldType.unitValue,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'looks',
+    name: 'Looks',
+    type: FieldType.tags,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'mother',
+    name: 'Mother',
+    type: FieldType.cat,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'father',
+    name: 'Father',
+    type: FieldType.cat,
+    scope: FieldScope.cat,
+    options: <String>[]
+  ),
+  (
+    slug: 'status',
+    name: 'Status',
+    type: FieldType.choice,
+    scope: FieldScope.clowder,
+    options: clowderStatusKeys
+  ),
+  (
+    slug: 'address',
+    name: 'Address',
+    type: FieldType.text,
+    scope: FieldScope.clowder,
+    options: <String>[]
+  ),
+  (
+    slug: 'responsible',
+    name: 'Responsible person',
+    type: FieldType.text,
+    scope: FieldScope.clowder,
+    options: <String>[]
+  ),
+  (
+    slug: 'email',
+    name: 'Email',
+    type: FieldType.text,
+    scope: FieldScope.clowder,
+    options: <String>[]
+  ),
+  (
+    slug: 'phone',
+    name: 'Phone',
+    type: FieldType.text,
+    scope: FieldScope.clowder,
+    options: <String>[]
+  ),
+  (
+    slug: 'position',
+    name: 'Position',
+    type: FieldType.location,
+    scope: FieldScope.both,
+    options: <String>[]
+  ),
+  (
+    slug: 'remarks',
+    name: 'Remarks',
+    type: FieldType.text,
+    scope: FieldScope.both,
+    options: <String>[]
+  ),
 ];
 
 /// The dimension of each starter Unit Value field.

@@ -14,15 +14,20 @@ import '../plus_code.dart';
 import '../share.dart';
 import '../widgets/cat_avatar.dart';
 import 'card_screen.dart';
+
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
+
 import '../exclusive.dart';
+
 import 'dart:isolate';
+
 import 'package:image/image.dart' as img;
+
 import '../widgets/foldable_chips.dart';
 
 /// A Clowder's Card: its facts and the cats living there on one sheet,
@@ -32,8 +37,11 @@ class ClowderCardScreen extends StatefulWidget {
   final CatalogStore store;
   final String clowderId;
 
-  const ClowderCardScreen(
-      {super.key, required this.store, required this.clowderId});
+  const ClowderCardScreen({
+    super.key,
+    required this.store,
+    required this.clowderId,
+  });
 
   @override
   State<ClowderCardScreen> createState() => _ClowderCardScreenState();
@@ -61,8 +69,7 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
     } else {
       _selected = {
         _catsKey,
-        for (final def
-            in store.visibleFieldDefs(scope: FieldScope.clowder))
+        for (final def in store.visibleFieldDefs(scope: FieldScope.clowder))
           if (def.slug != 'position') def.key,
       };
     }
@@ -109,47 +116,49 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
   /// scannable geo QR plus the printable Plus Code, because "on the
   /// map" means nothing on paper.
   List<(FieldDef, double, double)> _cardPositions() => [
-        for (final def
-            in store.visibleFieldDefs(scope: FieldScope.clowder))
-          if (def.type == FieldType.location &&
-              _selected.contains(def.key))
-            if (CatalogStore.parsePosition(store.current(id, def.key))
-                case final pos?)
-              (def, pos.$1, pos.$2)
-      ];
+    for (final def in store.visibleFieldDefs(scope: FieldScope.clowder))
+      if (def.type == FieldType.location && _selected.contains(def.key))
+        if (CatalogStore.parsePosition(store.current(id, def.key))
+            case final pos?)
+          (def, pos.$1, pos.$2),
+  ];
 
   /// Selected, filled ID Fields that render scannable (QR/barcode).
   List<(FieldDef, String)> _scannableIds() => [
-        for (final def
-            in store.visibleFieldDefs(scope: FieldScope.clowder))
-          if (def.type == FieldType.id &&
-              def.idDisplay != IdDisplay.plain &&
-              _selected.contains(def.key) &&
-              store.current(id, def.key) != null)
-            (def, store.current(id, def.key)!)
-      ];
+    for (final def in store.visibleFieldDefs(scope: FieldScope.clowder))
+      if (def.type == FieldType.id &&
+          def.idDisplay != IdDisplay.plain &&
+          _selected.contains(def.key))
+        if (store.current(id, def.key) case final value?) (def, value),
+  ];
 
   Widget _scannable(FieldDef def, String value) => Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: Column(children: [
-          if (def.idDisplay == IdDisplay.qr) ...[
-            QrImageView(data: value, size: 110),
-            // The QR alone shows nothing readable — one caption line.
-            Text('${fieldDefName(context.t, def)}: $value',
-                style: Theme.of(context).textTheme.bodySmall),
-          ] else if (printsAsCode128(value))
-            // Code128 prints the number under the bars itself.
-            BarcodeWidget(
-              barcode: Barcode.code128(),
-              data: value,
-              width: 220,
-              height: 64,
-            )
-          else
-            Text('${fieldDefName(context.t, def)}: $value',
-                style: Theme.of(context).textTheme.bodySmall),
-        ]),
-      );
+    padding: const EdgeInsets.only(top: 12),
+    child: Column(
+      children: [
+        if (def.idDisplay == IdDisplay.qr) ...[
+          QrImageView(data: value, size: 110),
+          // The QR alone shows nothing readable — one caption line.
+          Text(
+            '${fieldDefName(context.t, def)}: $value',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ] else if (printsAsCode128(value))
+          // Code128 prints the number under the bars itself.
+          BarcodeWidget(
+            barcode: Barcode.code128(),
+            data: value,
+            width: 220,
+            height: 64,
+          )
+        else
+          Text(
+            '${fieldDefName(context.t, def)}: $value',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+      ],
+    ),
+  );
 
   /// Chips for everything that could be on the card: the cats and each
   /// filled field of this clowder.
@@ -158,8 +167,7 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
     final chips = <(String, String)>[
       if (cats.isNotEmpty) (_catsKey, t.cats),
       for (final def in store.visibleFieldDefs(scope: FieldScope.clowder))
-        if (store.current(id, def.key) != null)
-          (def.key, fieldDefName(t, def)),
+        if (store.current(id, def.key) != null) (def.key, fieldDefName(t, def)),
     ];
     return FoldableChips(
       store: store,
@@ -171,13 +179,13 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
     );
   }
 
-  Future<Uint8List> _cardAsPng() async {
-    final boundary = _cardKey.currentContext!.findRenderObject()!
-        as RenderRepaintBoundary;
+  Future<Uint8List?> _cardAsPng() async {
+    final boundary = _cardKey.currentContext?.findRenderObject();
+    if (boundary is! RenderRepaintBoundary) return null;
     final image = await boundary.toImage(pixelRatio: 3);
     try {
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
-      return data!.buffer.asUint8List();
+      return data?.buffer.asUint8List();
     } finally {
       image.dispose();
     }
@@ -186,7 +194,7 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
   Future<void> _shareImage() async {
     final png = await _cardAsPng();
     final name = store.current(id, Keys.name) ?? 'clowder';
-    if (!mounted) return;
+    if (png == null || !mounted) return;
     await shareFiles(context, [
       XFile.fromData(png, mimeType: 'image/png', name: '$name-card.png'),
     ]);
@@ -210,15 +218,19 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
       }
     }
     final fonts = await pdfFontsFor(language);
-    final doc = pw.Document(title: '$name — cat(a)log card', theme: fonts.theme);
+    final doc = pw.Document(
+      title: '$name — cat(a)log card',
+      theme: fonts.theme,
+    );
     doc.addPage(
       // MultiPage: a long roster flows onto further pages instead of
       // silently clipping at the bottom of a single one.
       pw.MultiPage(
         pageFormat: PdfPageFormat.a5,
-        footer: (context) => pw.Text('cat(a)log',
-            style:
-                const pw.TextStyle(fontSize: 9, color: PdfColors.grey500)),
+        footer: (context) => pw.Text(
+          'cat(a)log',
+          style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey500),
+        ),
         build: (context) => [
           // The cats lead the card, like the photo leads the cat card.
           if (roster.isNotEmpty) ...[
@@ -231,64 +243,86 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
             ),
             pw.SizedBox(height: 12),
           ],
-          pw.Text(name,
-              style: pw.TextStyle(
-                  fontSize: 28, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            name,
+            style: pw.TextStyle(fontSize: 28, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 12),
           for (final (label, value) in facts)
             pw.Padding(
               padding: const pw.EdgeInsets.only(bottom: 4),
-              child: pw.Row(children: [
-                pw.SizedBox(
-                  width: 140,
-                  child: pw.Text(label,
+              child: pw.Row(
+                children: [
+                  pw.SizedBox(
+                    width: 140,
+                    child: pw.Text(
+                      label,
                       style: const pw.TextStyle(
-                          fontSize: 12, color: PdfColors.grey700)),
-                ),
-                pw.Expanded(
-                    child: pw.Text(value,
-                        style: const pw.TextStyle(fontSize: 12))),
-              ]),
+                        fontSize: 12,
+                        color: PdfColors.grey700,
+                      ),
+                    ),
+                  ),
+                  pw.Expanded(
+                    child: pw.Text(
+                      value,
+                      style: const pw.TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
             ),
           for (final (def, lat, lon) in _cardPositions())
             pw.Padding(
               padding: const pw.EdgeInsets.only(top: 10),
-              child: pw.Column(children: [
-                pw.BarcodeWidget(
-                  barcode: pw.Barcode.qrCode(),
-                  data: 'geo:$lat,$lon',
-                  width: 80,
-                  height: 80,
-                ),
-                pw.Text(
+              child: pw.Column(
+                children: [
+                  pw.BarcodeWidget(
+                    barcode: pw.Barcode.qrCode(),
+                    data: 'geo:$lat,$lon',
+                    width: 80,
+                    height: 80,
+                  ),
+                  pw.Text(
                     '${fieldDefName(t, def)}: '
                     '${encodePlusCode(lat, lon)}',
                     style: const pw.TextStyle(
-                        fontSize: 9, color: PdfColors.grey700)),
-              ]),
+                      fontSize: 9,
+                      color: PdfColors.grey700,
+                    ),
+                  ),
+                ],
+              ),
             ),
           for (final (def, value) in _scannableIds())
             pw.Padding(
               padding: const pw.EdgeInsets.only(top: 10),
-              child: pw.Column(children: [
-                if (def.idDisplay == IdDisplay.qr ||
-                    printsAsCode128(value))
-                  pw.BarcodeWidget(
-                    barcode: def.idDisplay == IdDisplay.qr
-                        ? pw.Barcode.qrCode()
-                        : pw.Barcode.code128(),
-                    data: value,
-                    width: def.idDisplay == IdDisplay.qr ? 80 : 180,
-                    height: def.idDisplay == IdDisplay.qr ? 80 : 44,
-                  )
-                else
-                  pw.Text('${fieldDefName(t, def)}: $value',
-                      style: const pw.TextStyle(fontSize: 9)),
-                if (def.idDisplay == IdDisplay.qr)
-                  pw.Text('${fieldDefName(t, def)}: $value',
+              child: pw.Column(
+                children: [
+                  if (def.idDisplay == IdDisplay.qr || printsAsCode128(value))
+                    pw.BarcodeWidget(
+                      barcode: def.idDisplay == IdDisplay.qr
+                          ? pw.Barcode.qrCode()
+                          : pw.Barcode.code128(),
+                      data: value,
+                      width: def.idDisplay == IdDisplay.qr ? 80 : 180,
+                      height: def.idDisplay == IdDisplay.qr ? 80 : 44,
+                    )
+                  else
+                    pw.Text(
+                      '${fieldDefName(t, def)}: $value',
+                      style: const pw.TextStyle(fontSize: 9),
+                    ),
+                  if (def.idDisplay == IdDisplay.qr)
+                    pw.Text(
+                      '${fieldDefName(t, def)}: $value',
                       style: const pw.TextStyle(
-                          fontSize: 9, color: PdfColors.grey700)),
-              ]),
+                        fontSize: 9,
+                        color: PdfColors.grey700,
+                      ),
+                    ),
+                ],
+              ),
             ),
         ],
       ),
@@ -297,40 +331,50 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
   }
 
   pw.Widget _pdfCatTile(EntityView cat, Uint8List? photo) {
-    return pw.Column(children: [
-      if (photo != null)
-        pw.ClipRRect(
-          horizontalRadius: 8,
-          verticalRadius: 8,
-          child: pw.Image(pw.MemoryImage(photo),
-              width: 60, height: 60, fit: pw.BoxFit.cover),
-        )
-      else
-        pw.Container(
-          width: 60,
-          height: 60,
-          decoration: pw.BoxDecoration(
-            color: PdfColors.grey300,
-            borderRadius: pw.BorderRadius.circular(8),
+    return pw.Column(
+      children: [
+        if (photo != null)
+          pw.ClipRRect(
+            horizontalRadius: 8,
+            verticalRadius: 8,
+            child: pw.Image(
+              pw.MemoryImage(photo),
+              width: 60,
+              height: 60,
+              fit: pw.BoxFit.cover,
+            ),
+          )
+        else
+          pw.Container(
+            width: 60,
+            height: 60,
+            decoration: pw.BoxDecoration(
+              color: PdfColors.grey300,
+              borderRadius: pw.BorderRadius.circular(8),
+            ),
           ),
-        ),
-      pw.SizedBox(
-        width: 64,
-        child: pw.Text(cat.name,
+        pw.SizedBox(
+          width: 64,
+          child: pw.Text(
+            cat.name,
             style: const pw.TextStyle(fontSize: 9),
             textAlign: pw.TextAlign.center,
             maxLines: 1,
-            overflow: pw.TextOverflow.clip),
-      ),
-    ]);
+            overflow: pw.TextOverflow.clip,
+          ),
+        ),
+      ],
+    );
   }
 
-  Future<void> _printCard(List<EntityView> cats) => runExclusive('print', () async {
+  Future<void> _printCard(List<EntityView> cats) =>
+      runExclusive('print', () async {
         final doc = await _buildPdf(cats);
         await Printing.layoutPdf(onLayout: (_) => doc.save());
       }, context: context);
 
-  Future<void> _sharePdf(List<EntityView> cats) => runExclusive('share', () async {
+  Future<void> _sharePdf(List<EntityView> cats) =>
+      runExclusive('share', () async {
         await _sharePdfNow(cats);
       }, context: context);
 
@@ -338,22 +382,28 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
     final doc = await _buildPdf(cats);
     final name = store.current(id, Keys.name) ?? 'clowder';
     await Printing.sharePdf(
-        bytes: await doc.save(), filename: '$name-card.pdf');
+      bytes: await doc.save(),
+      filename: '$name-card.pdf',
+    );
   }
 
   Widget _catTile(EntityView cat) => SizedBox(
-        width: 72,
-        child: Column(children: [
-          CatAvatar(store: store, catId: cat.id, size: 64),
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Text(cat.name,
-                style: Theme.of(context).textTheme.bodySmall,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1),
+    width: 72,
+    child: Column(
+      children: [
+        CatAvatar(store: store, catId: cat.id, size: 64),
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Text(
+            cat.name,
+            style: Theme.of(context).textTheme.bodySmall,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
-        ]),
-      );
+        ),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -367,102 +417,108 @@ class _ClowderCardScreenState extends State<ClowderCardScreen> {
         title: Text(context.t.cardTitle(name)),
         actions: [
           PageAction(
-              icon: Icons.ios_share,
-              label: context.t.shareAsImage,
-              onPressed: _shareImage),
+            icon: Icons.ios_share,
+            label: context.t.shareAsImage,
+            onPressed: _shareImage,
+          ),
           PageAction(
-              icon: Icons.picture_as_pdf,
-              label: context.t.shareAsPdf,
-              onPressed: () => _sharePdf(cats)),
+            icon: Icons.picture_as_pdf,
+            label: context.t.shareAsPdf,
+            onPressed: () => _sharePdf(cats),
+          ),
           PageAction(
-              icon: Icons.print,
-              label: context.t.print,
-              onPressed: () => _printCard(cats)),
+            icon: Icons.print,
+            label: context.t.print,
+            onPressed: () => _printCard(cats),
+          ),
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(children: [
-          const SizedBox(height: 8),
-          _contentPicker(cats),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: RepaintBoundary(
-              key: _cardKey,
-              child: Container(
-                width: 360,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                      color:
-                          Theme.of(context).colorScheme.outlineVariant),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // The cats lead the card, like the photo leads the
-                    // cat card. A plain Wrap, not a lazy grid: the whole
-                    // roster must be laid out for the image export —
-                    // the card simply grows tall.
-                    if (roster.isNotEmpty) ...[
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final cat in roster) _catTile(cat),
-                        ],
+        child: Column(
+          children: [
+            const SizedBox(height: 8),
+            _contentPicker(cats),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: RepaintBoundary(
+                key: _cardKey,
+                child: Container(
+                  width: 360,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // The cats lead the card, like the photo leads the
+                      // cat card. A plain Wrap, not a lazy grid: the whole
+                      // roster must be laid out for the image export —
+                      // the card simply grows tall.
+                      if (roster.isNotEmpty) ...[
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [for (final cat in roster) _catTile(cat)],
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      Text(
+                        name,
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                      const SizedBox(height: 12),
-                    ],
-                    Text(name,
-                        style:
-                            Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 8),
-                    for (final (label, value) in facts)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 140,
-                              child: Text(label,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall),
+                      const SizedBox(height: 8),
+                      for (final (label, value) in facts)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 140,
+                                child: Text(
+                                  label,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ),
+                              Expanded(child: Text(value)),
+                            ],
+                          ),
+                        ),
+                      for (final (def, value) in _scannableIds())
+                        Center(child: _scannable(def, value)),
+                      for (final (def, lat, lon) in _cardPositions())
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Column(
+                              children: [
+                                QrImageView(
+                                  data: 'geo:$lat,$lon',
+                                  size: 110,
+                                  backgroundColor: Colors.white,
+                                ),
+                                Text(
+                                  '${fieldDefName(context.t, def)}: '
+                                  '${encodePlusCode(lat, lon)}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
                             ),
-                            Expanded(child: Text(value)),
-                          ],
+                          ),
                         ),
-                      ),
-                    for (final (def, value) in _scannableIds())
-                      Center(child: _scannable(def, value)),
-                    for (final (def, lat, lon) in _cardPositions())
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: Column(children: [
-                            QrImageView(
-                                data: 'geo:$lat,$lon',
-                                size: 110,
-                                backgroundColor: Colors.white),
-                            Text(
-                                '${fieldDefName(context.t, def)}: '
-                                '${encodePlusCode(lat, lon)}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall),
-                          ]),
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }

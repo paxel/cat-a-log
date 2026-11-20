@@ -225,7 +225,7 @@ class _FieldHistoryScreenState extends State<FieldHistoryScreen> {
   /// and this value's dot marked.
   Future<void> _showOnMap(Entry e, LatLng spot) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => MapScreen(
           store: store,
           initialCenter: spot,
@@ -257,7 +257,9 @@ class _FieldHistoryScreenState extends State<FieldHistoryScreen> {
             onPressed: _flip,
           ),
           PageAction(
-            icon: _showVoided ? Icons.visibility_off_outlined : Icons.visibility,
+            icon: _showVoided
+                ? Icons.visibility_off_outlined
+                : Icons.visibility,
             label: _showVoided ? t.hideRemovedValues : t.showRemovedValues,
             onPressed: _flipVoided,
           ),

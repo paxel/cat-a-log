@@ -63,7 +63,7 @@ Map<String, dynamic> _withoutPinnedWriter(Map<String, dynamic> dump) {
   final keys = dump['keys'] as List;
   expect(keys, hasLength(1));
   expect((keys.single as Map)['trust'], 'tofu');
-  return {...dump, 'keys': const []};
+  return {...dump, 'keys': const <Object?>[]};
 }
 
 /// JSON with every map's keys sorted, so two dumps compare as text.

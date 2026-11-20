@@ -14,7 +14,8 @@ void main() {
     final store = CatalogStore.inMemory()..author = 'test';
     final cat = store.createCat('Sissi');
     final bytes = Uint8List.fromList(
-        img.encodeJpg(img.Image(width: 40, height: 40)));
+      img.encodeJpg(img.Image(width: 40, height: 40)),
+    );
     final pending = addCompressedImage(store, cat, bytes);
     store.close();
     expect(await pending, isNull);

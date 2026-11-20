@@ -33,15 +33,13 @@ void main() {
     final home = store.createClowder('Hof', date: long);
     final alive = store.createCat('Minka', clowderId: home, date: long);
     final dead = store.createCat('Mimzy', date: long);
-    store.append(dead, Keys.userField('deceased'), '2020-03-01',
-        date: long);
+    store.append(dead, Keys.userField('deceased'), '2020-03-01', date: long);
     // Recent activity keeps a cat off the list.
     final freshlyDead = store.createCat('Nala');
     store.append(freshlyDead, Keys.userField('deceased'), '2026-08-01');
 
     final ids = {
-      for (final c in archiveCandidates(store, now: DateTime(2026, 8, 20)))
-        c.id
+      for (final c in archiveCandidates(store, now: DateTime(2026, 8, 20))) c.id
     };
     expect(ids, contains(dead));
     expect(ids, isNot(contains(alive)));
@@ -61,8 +59,8 @@ void main() {
     final cat = store.createCat('Mimzy', date: long);
     store.append(cat, Keys.userField('deceased'), '2020-03-01', date: long);
     store.append(cat, Keys.userField('color'), 'tabby', date: long);
-    final path = writeArchive(store, '${dir.path}/archive.catsync',
-        entityIds: {cat});
+    final path =
+        writeArchive(store, '${dir.path}/archive.catsync', entityIds: {cat});
     deleteArchived(store, {cat});
     expect(store.cats().where((c) => c.id == cat), isEmpty);
 
@@ -79,8 +77,8 @@ void main() {
     final cat = store.createCat('Mimzy', date: long);
     store.append(cat, Keys.userField('color'), 'tabby', date: long);
     store.addImage(cat, CatalogStore.compressImage(_jpeg()));
-    final path = writeArchive(store, '${dir.path}/archive.catsync',
-        entityIds: {cat});
+    final path =
+        writeArchive(store, '${dir.path}/archive.catsync', entityIds: {cat});
     deleteArchived(store, {cat});
     expect(store.cats().where((c) => c.id == cat), isEmpty);
 
@@ -100,22 +98,22 @@ void main() {
 
   test('the archive file never carries the original device rows', () {
     final cat = store.createCat('Mimzy', date: long);
-    final path = writeArchive(store, '${dir.path}/archive.catsync',
-        entityIds: {cat});
+    final path =
+        writeArchive(store, '${dir.path}/archive.catsync', entityIds: {cat});
     final other = CatalogStore.inMemory();
     addTearDown(other.close);
     other.author = 'other';
     importBundle(other, path);
     // The importer must not claim knowledge of this device's log, or a
     // later real sync would skip everything withheld from the archive.
-    expect(other.versionVector().keys.where((d) => d == store.deviceId), isEmpty);
+    expect(
+        other.versionVector().keys.where((d) => d == store.deviceId), isEmpty);
   });
 
   test('storage usage counts the database and the photos', () {
     final before = store.storageUsage();
     final cat = store.createCat('Minka');
-    store.addImage(
-        cat, CatalogStore.compressImage(_jpeg()));
+    store.addImage(cat, CatalogStore.compressImage(_jpeg()));
     final after = store.storageUsage();
     expect(after.entries, greaterThan(before.entries));
     expect(after.photoCount, 1);
@@ -133,7 +131,8 @@ void main() {
     store.deleteCat(cat);
 
     peer.append(cat, Keys.userField('color'), 'black');
-    final applied = store.applyEntries(peer.entriesSince(store.versionVector()));
+    final applied =
+        store.applyEntries(peer.entriesSince(store.versionVector()));
 
     expect(applied, isNotEmpty);
     expect(restorableEntities(store, applied), isEmpty);
@@ -143,8 +142,7 @@ void main() {
     final cat = store.createCat('Miezi');
     final dir = Directory.systemTemp.createTempSync('catlog-archive-ask');
     addTearDown(() => dir.deleteSync(recursive: true));
-    final path = writeArchive(store, '${dir.path}/a.catsync',
-        entityIds: {cat});
+    final path = writeArchive(store, '${dir.path}/a.catsync', entityIds: {cat});
     deleteArchived(store, {cat});
 
     final applied = importBundle(store, path).applied;

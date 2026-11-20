@@ -1,0 +1,14 @@
+# Line coverage floors (cat-1016), checked by tool/coverage.sh: a group below
+# its floor fails CI and the release; a group that rose raises its floor
+# here, and the raised file is committed. Floors only rise.
+#
+# Whole percents, one point below the measured line coverage rounded down
+# (89.03 % gives 88): a local run and a CI run may differ by a fraction
+# (other test environment, other Flutter), and that margin keeps such
+# noise from stopping a release. A floor is raised only when the measured
+# value, so computed, is above it; it is never lowered.
+rust-core 94
+rust-gui 92
+rust-l10n 96
+dart-core 92
+flutter-app 74

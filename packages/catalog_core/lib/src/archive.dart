@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-
 import 'bundle.dart';
 import 'entry.dart';
 import 'fields.dart';
@@ -39,8 +38,7 @@ class ArchiveCandidate {
 /// Cats recorded as deceased and clowders without any cat, quiet for
 /// at least [inactiveFor].
 List<ArchiveCandidate> archiveCandidates(CatalogStore store,
-    {Duration inactiveFor = const Duration(days: 365 * 2),
-    DateTime? now}) {
+    {Duration inactiveFor = const Duration(days: 365 * 2), DateTime? now}) {
   final today = now ?? clockNow();
   final result = <ArchiveCandidate>[];
   // One pass over the log, not one per entity: these catalogs are big
@@ -60,11 +58,7 @@ List<ArchiveCandidate> archiveCandidates(CatalogStore store,
       bytes += store.imageBytes(hash)?.length ?? 0;
     }
     result.add(ArchiveCandidate(
-        id: id,
-        name: name,
-        isCat: isCat,
-        lastChange: last,
-        photoBytes: bytes));
+        id: id, name: name, isCat: isCat, lastChange: last, photoBytes: bytes));
   }
 
   for (final cat in store.cats()) {

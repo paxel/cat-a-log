@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -34,7 +36,7 @@ class _PosterFrameState extends State<PosterFrame> {
   @override
   void initState() {
     super.initState();
-    _decode();
+    unawaited(_decode());
   }
 
   @override
@@ -43,7 +45,7 @@ class _PosterFrameState extends State<PosterFrame> {
     if (!identical(old.bytes, widget.bytes)) {
       _controller.value = Matrix4.identity();
       _image = null;
-      _decode();
+      unawaited(_decode());
     }
   }
 

@@ -314,8 +314,8 @@ Future<FolderSyncResult> folderSyncIn(CatalogStore store, SyncFolder folder,
   var blobsOut = 0;
   final blobDir = own('blobs');
   final blobNames = (await folder.list(blobDir)).toSet();
-  final blobsIn =
-      await fetchMissingBlobs(store, folder, catalog: catalog, blobNames: blobNames);
+  final blobsIn = await fetchMissingBlobs(store, folder,
+      catalog: catalog, blobNames: blobNames);
   final live = <String>{};
   for (final entity in [...store.cats(), ...store.clowders()]) {
     for (final hash in store.images(entity.id)) {
@@ -424,7 +424,7 @@ class FolderManifest {
         private: m['private'] == true,
         vector: (m['vector'] as Map).cast<String, int>(),
         segments: [
-          for (final s in (m['segments'] as List).cast<Map>())
+          for (final s in (m['segments'] as List).cast<Map<String, dynamic>>())
             (s['name'] as String, s['lines'] as int)
         ],
       );
@@ -739,12 +739,12 @@ Future<int> publishOwn(CatalogStore store, SyncFolder folder,
         tail = await folder.read(dir, tailName);
         if (tail == null || tail.length >= segmentCap) tail = null;
       }
-      if (tail != null) {
+      if (tail != null && tailName != null) {
         // The segment is read back rather than appended to: the folder
         // knows no append, and a segment is small by design.
         final held = _splitLines(tail);
         await folder.write(
-            dir, tailName!, utf8.encode([...held, ...lines].join('\n')));
+            dir, tailName, utf8.encode([...held, ...lines].join('\n')));
         segments[segments.length - 1] = (tailName, held.length + lines.length);
       } else {
         final n = segments.length + 1;

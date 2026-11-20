@@ -11,8 +11,10 @@ import 'l10n.dart';
 /// either way the badge clears. Two entries with the same value have
 /// nothing to pick, only the badge to clear.
 List<Entry> conflictCandidates(
-        CatalogStore store, String entity, String field) =>
-    store.fieldHistory(entity, field).take(2).toList();
+  CatalogStore store,
+  String entity,
+  String field,
+) => store.fieldHistory(entity, field).take(2).toList();
 
 /// Both entries carry the same value: nothing to pick.
 bool conflictSame(List<Entry> candidates) =>
@@ -21,7 +23,11 @@ bool conflictSame(List<Entry> candidates) =>
 /// Writes the decision: the kept value when it differs from what
 /// stands, then the badge cleared.
 void resolveConflictWith(
-    CatalogStore store, String entity, String field, Entry? kept) {
+  CatalogStore store,
+  String entity,
+  String field,
+  Entry? kept,
+) {
   final candidates = conflictCandidates(store, entity, field);
   final current = store.current(entity, field);
   if (!conflictSame(candidates) && kept != null && kept.value != current) {
@@ -60,13 +66,13 @@ class ConflictChoice extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(t.conflictSame(
-                valueLabel(t, store, field, candidates.firstOrNull?.value))),
-            const SizedBox(height: 8),
-            FilledButton(
-              onPressed: () => _keep(null),
-              child: Text(t.resolve),
+            Text(
+              t.conflictSame(
+                valueLabel(t, store, field, candidates.firstOrNull?.value),
+              ),
             ),
+            const SizedBox(height: 8),
+            FilledButton(onPressed: () => _keep(null), child: Text(t.resolve)),
           ],
         ),
       );

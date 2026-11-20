@@ -37,8 +37,8 @@ void main() {
       expect(store.current(survivor, 'f:neutered'), 'yes');
       expect(store.current(survivor, 'f:color'), 'black'); // gap filled
       // Combined timeline holds the loser's past.
-      expect(store.timeline(survivor).map((e) => e.value),
-          contains('Mizzi II'));
+      expect(
+          store.timeline(survivor).map((e) => e.value), contains('Mizzi II'));
     });
 
     group('the latest move by its own date decides the home', () {
@@ -80,8 +80,8 @@ void main() {
     test('loser photos show on the survivor', () {
       final survivor = store.createCat('Miezi');
       final loser = store.createCat('Mizzi');
-      final hash = store.addImage(
-          loser, CatalogStore.compressImage(jpeg(40, 40)));
+      final hash =
+          store.addImage(loser, CatalogStore.compressImage(jpeg(40, 40)));
 
       store.mergeCat(loser, survivor);
       expect(store.images(survivor), contains(hash));
@@ -121,10 +121,8 @@ void main() {
       // Friend gets everything, then (offline) moves the cat to the dup.
       other.applyEntries(store.entriesSince({}));
       final catOnOther = other.cats().single.id;
-      final loserOnOther = other
-          .clowders()
-          .firstWhere((c) => c.name.contains('dup'))
-          .id;
+      final loserOnOther =
+          other.clowders().firstWhere((c) => c.name.contains('dup')).id;
       // Meanwhile we merge the duplicate away.
       store.mergeClowder(loser, survivor);
       other.moveCat(catOnOther, loserOnOther);
@@ -146,8 +144,7 @@ void main() {
       store.mergeField(limbs, legs);
 
       expect(store.current(cat, 'f:number-of-legs'), '4');
-      expect(store.fieldDefs().map((d) => d.slug),
-          isNot(contains('limbs')));
+      expect(store.fieldDefs().map((d) => d.slug), isNot(contains('limbs')));
       // History reads across both keys.
       expect(store.fieldHistory(cat, 'f:number-of-legs'), isNotEmpty);
       // Display key of the raw stored key resolves to the survivor.

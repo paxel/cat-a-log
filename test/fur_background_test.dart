@@ -18,27 +18,35 @@ void main() {
     expect(dark.base.computeLuminance(), lessThan(0.02));
     // Marks are barely apart from their ground — fur, not wallpaper.
     expect(
-        (light.mark.computeLuminance() - light.base.computeLuminance()).abs(),
-        lessThan(0.15));
+      (light.mark.computeLuminance() - light.base.computeLuminance()).abs(),
+      lessThan(0.15),
+    );
     expect(
-        (dark.mark.computeLuminance() - dark.base.computeLuminance()).abs(),
-        lessThan(0.05));
+      (dark.mark.computeLuminance() - dark.base.computeLuminance()).abs(),
+      lessThan(0.05),
+    );
   });
 
-  testWidgets('every coat paints under a transparent page, both modes',
-      (tester) async {
+  testWidgets('every coat paints under a transparent page, both modes', (
+    tester,
+  ) async {
     for (final pattern in FurPattern.values) {
       for (final brightness in Brightness.values) {
         activeFur = pattern;
-        await tester.pumpWidget(MaterialApp(
-          theme: ThemeData(
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
-                  seedColor: Colors.deepOrange, brightness: brightness),
-              scaffoldBackgroundColor: Colors.transparent),
-          home: const FurBackground(
-            child: Scaffold(body: Center(child: Text('Miezi'))),
+                seedColor: Colors.deepOrange,
+                brightness: brightness,
+              ),
+              scaffoldBackgroundColor: Colors.transparent,
+            ),
+            home: const FurBackground(
+              child: Scaffold(body: Center(child: Text('Miezi'))),
+            ),
           ),
-        ));
+        );
         await tester.pumpAndSettle();
         expect(find.text('Miezi'), findsOneWidget);
         expect(tester.takeException(), isNull, reason: pattern.name);

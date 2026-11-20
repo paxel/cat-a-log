@@ -5,24 +5,42 @@ on:
     branches: ["**"]
   pull_request:
 
+# Read-only by default; a job that writes widens it itself.
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Analyze & test (Linux)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
+          flutter-version: 3.47.9
           cache: true
       - name: Install sqlite3 for pure-Dart core tests
         run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+      # The app, the Dart core and the tools, formatted as `dart format`
+      # writes them (cat-1008). It reads each package's language version
+      # from .dart_tool/package_config.json, so the packages come first.
+      - name: Dart format
+        run: |
+          flutter pub get
+          (cd packages/catalog_core && dart pub get)
+          dart format --output=none --set-exit-if-changed .
       - name: Core — analyze and test
         working-directory: packages/catalog_core
         run: |
           dart pub get
           dart analyze --fatal-infos
           dart test
+      # No `!` null assertion outside tests (cat-1015), in the core and the
+      # app: the Dart counterpart of the desktop's ban on panics.
+      - name: No null assertion outside tests
+        working-directory: packages/catalog_core
+        run: dart run tool/no_null_assertions.dart lib ../../lib
       - name: Core — the fixture corpus the desktop core is tested against is current
         working-directory: packages/catalog_core
         run: |
@@ -33,8 +51,56 @@ jobs:
           flutter pub get
           flutter analyze --fatal-infos
           flutter test
+      # flutter pub get runs gen-l10n, which lists every message missing
+      # in a locale in build/untranslated.json (l10n.yaml); any of them
+      # fails the build (cat-1009).
+      - name: No untranslated strings
+        run: test "$(tr -d '[:space:]' < build/untranslated.json)" = "{}"
       - name: Tools — test
         run: python3 -m unittest discover -s tool -p 'test_*.py'
+      # Line coverage of the Dart core and the app against
+      # tool/coverage-floors.txt (cat-1016).
+      - name: Coverage floors — Dart core and app
+        run: tool/coverage.sh dart-core flutter-app
+
+  # Known vulnerabilities in any lockfile (pubspec.lock, the core's
+  # pubspec.lock, desktop/Cargo.lock) fail every push (cat-1004). A notice
+  # that a crate is unmaintained is listed but does not fail;
+  # tool/osv_gate.py decides. Ignores live in desktop/osv-scanner.toml, each
+  # with a reason and an ignoreUntil date. The weekly Security run stays
+  # stricter: there an unmaintained notice fails too.
+  osv-scanner:
+    name: ${{ github.event_name == 'pull_request' && !github.event.pull_request.head.repo.fork && 'Vulnerable dependencies (OSV-Scanner) (runs on push)' || 'Vulnerable dependencies (OSV-Scanner)' }}
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      # Exits 1 on any finding, unmaintained notices too; the next step
+      # decides from the results, and fails when there are none.
+      - name: osv-scanner
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
+        with:
+          scan-args: |-
+            --format=json
+            --output-file=osv-results.json
+            --recursive
+            ./
+      - name: No known vulnerability (unmaintained notices reported only)
+        run: python3 tool/osv_gate.py osv-results.json
+
+  # The desktop's dependencies (cat-1022): RustSec advisories, unsound
+  # and yanked crates, licences outside desktop/deny.toml's list and
+  # unknown sources fail every push.
+  cargo-deny:
+    name: cargo-deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+        with:
+          manifest-path: desktop/Cargo.toml
+          command: check advisories licenses sources
 
   desktop:
     name: Desktop (Rust)
@@ -43,11 +109,11 @@ jobs:
       run:
         working-directory: desktop
     steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
         with:
           components: rustfmt, clippy, llvm-tools-preview
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: desktop
       - name: System dependencies (software Vulkan for the render tests)
@@ -62,14 +128,16 @@ jobs:
         run: cargo test -p catlog-gui --test render --locked -- --ignored
       - name: Snapshot tests (the look of the six views and a card)
         run: cargo test -p catlog-gui --test snapshots --locked -- --ignored
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@4a76afe23f9e08d2d9550fb56e556444e8611d21 # v2.90.4
         with:
           tool: cargo-llvm-cov
-      - name: Coverage per crate, 80% floor
-        run: tool/coverage.sh
+      # Line coverage per crate against tool/coverage-floors.txt (cat-1016):
+      # below its floor fails; the floors only rise.
+      - name: Coverage floors — Rust core, GUI and l10n
+        run: ../tool/coverage.sh rust-core rust-gui rust-l10n
       - name: Reverse corpus — the desktop writes, the Dart core reads
         run: cargo run -p catlog-core --example reverse_corpus --locked -- target/reverse
-      - uses: dart-lang/setup-dart@v1
+      - uses: dart-lang/setup-dart@2286a0c042b44434fe26d292bbce8d34f7ec662b # v1.8.2
       - name: Install sqlite3 for the Dart core
         run: sudo apt-get install -y --no-install-recommends libsqlite3-dev
       - name: Dart core reads what the desktop wrote
@@ -85,14 +153,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: '17'
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
+          flutter-version: 3.47.9
           cache: true
       - name: Write signing config from secrets
         run: |
@@ -105,20 +174,7 @@ jobs:
           EOF
       - run: flutter pub get
       - run: flutter build apk --release --build-number=$((GITHUB_RUN_NUMBER + 100))
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: catlog-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-
-  ios-build:
-    name: iOS build (unsigned)
-    runs-on: macos-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v5
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-      - run: flutter pub get
-      - run: flutter build ios --release --no-codesign

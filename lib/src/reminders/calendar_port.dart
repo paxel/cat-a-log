@@ -76,11 +76,12 @@ class CalendarChoice {
   /// False when the platform reports it read-only.
   final bool writable;
 
-  const CalendarChoice(
-      {required this.id,
-      required this.name,
-      this.account,
-      this.writable = true});
+  const CalendarChoice({
+    required this.id,
+    required this.name,
+    this.account,
+    this.writable = true,
+  });
 }
 
 /// The platform refused to list or touch calendars; [message] is its

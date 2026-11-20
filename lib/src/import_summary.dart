@@ -25,8 +25,12 @@ class FieldChange {
   final String? after;
   final List<DateTime> ticks;
 
-  const FieldChange(this.field, this.before, this.after,
-      {this.ticks = const []});
+  const FieldChange(
+    this.field,
+    this.before,
+    this.after, {
+    this.ticks = const [],
+  });
 
   bool get isPhoto => field.startsWith(Keys.imagePrefix);
   bool get isTicks => ticks.isNotEmpty;
@@ -34,17 +38,27 @@ class FieldChange {
 
 /// The label of one change on the arrival page: a photo, the ticks of a
 /// chore with its title and count, or the field's name.
-String changeLabel(AppLocalizations t, CatalogStore store, String entity,
-    FieldChange c) {
+String changeLabel(
+  AppLocalizations t,
+  CatalogStore store,
+  String entity,
+  FieldChange c,
+) {
   if (c.isPhoto) return t.labelPhoto;
-  if (c.isTicks) return t.choreTickedShort(choreTitle(t, store, entity, c), c.ticks.length);
+  if (c.isTicks) {
+    return t.choreTickedShort(choreTitle(t, store, entity, c), c.ticks.length);
+  }
   return fieldLabel(t, store, c.field);
 }
 
 /// The chore's title for a folded tick change; the generic word when
 /// the chore itself has not arrived yet.
 String choreTitle(
-    AppLocalizations t, CatalogStore store, String entity, FieldChange c) {
+  AppLocalizations t,
+  CatalogStore store,
+  String entity,
+  FieldChange c,
+) {
   final id = c.field.substring(Keys.chorePrefix.length);
   for (final chore in store.choresOf(entity, includeEnded: true)) {
     if (chore.id == id) return chore.title;
@@ -54,15 +68,18 @@ String choreTitle(
 
 /// "Feed — done 3×, 1–3 Mar" for a folded tick change.
 String ticksLine(
-    AppLocalizations t, CatalogStore store, String entity, FieldChange c) {
+  AppLocalizations t,
+  CatalogStore store,
+  String entity,
+  FieldChange c,
+) {
   final days = DateFormat.MMMd(t.localeName);
   final first = c.ticks.first;
   final last = c.ticks.last;
   final range = first == last
       ? days.format(first)
       : '${days.format(first)} – ${days.format(last)}';
-  return t.choreTicked(
-      choreTitle(t, store, entity, c), c.ticks.length, range);
+  return t.choreTicked(choreTitle(t, store, entity, c), c.ticks.length, range);
 }
 
 /// A cat or a home the import touched: new to this catalog, or an
@@ -77,11 +94,13 @@ class EntityArrival {
   /// The arrived entries about this entity — what "Keep mine" discards.
   final List<Entry> entries;
 
-  const EntityArrival(this.id,
-      {required this.isNew,
-      required this.changes,
-      required this.tags,
-      required this.entries});
+  const EntityArrival(
+    this.id, {
+    required this.isNew,
+    required this.changes,
+    required this.tags,
+    required this.entries,
+  });
 
   bool get isCat => id.startsWith('cat:');
 }
@@ -114,14 +133,14 @@ class ImportReview {
   /// What the signatures said (1.2.0): refused rows, new keys, warnings.
   final ImportReport report;
 
-  ImportReview(
-      {required this.newOnes,
-      required this.updated,
-      required this.deleted,
-      required this.conflicts,
-      required this.meta,
-      ImportReport? report})
-      : report = report ?? ImportReport();
+  ImportReview({
+    required this.newOnes,
+    required this.updated,
+    required this.deleted,
+    required this.conflicts,
+    required this.meta,
+    ImportReport? report,
+  }) : report = report ?? ImportReport();
 
   bool get isEmpty =>
       newOnes.isEmpty &&
@@ -131,12 +150,19 @@ class ImportReview {
       meta.isEmpty &&
       !needsAttention(report);
 
-  List<String> get newCats => [for (final a in newOnes) if (a.isCat) a.id];
-  List<String> get newClowders =>
-      [for (final a in newOnes) if (!a.isCat) a.id];
+  List<String> get newCats => [
+    for (final a in newOnes)
+      if (a.isCat) a.id,
+  ];
+  List<String> get newClowders => [
+    for (final a in newOnes)
+      if (!a.isCat) a.id,
+  ];
 
-  List<String> _tagged(String tag) =>
-      [for (final a in updated) if (a.tags.contains(tag)) a.id];
+  List<String> _tagged(String tag) => [
+    for (final a in updated)
+      if (a.tags.contains(tag)) a.id,
+  ];
 
   /// Known cats whose update was an adoption, a death, an escape — the
   /// toasts' input.
@@ -160,8 +186,11 @@ const tagEscaped = 'escaped';
 /// Reads [applied] against the store after the import. An entry that
 /// changed nothing visible — older than what was here, so it lost — is
 /// not a change; a cat with only such entries does not appear.
-ImportReview reviewImport(CatalogStore store, List<Entry> applied,
-    {ImportReport? report}) {
+ImportReview reviewImport(
+  CatalogStore store,
+  List<Entry> applied, {
+  ImportReport? report,
+}) {
   final arrived = {for (final e in applied) (e.device, e.dseq)};
   bool isArrived(Entry e) => arrived.contains((e.device, e.dseq));
   final byEntity = <String, List<Entry>>{};
@@ -200,8 +229,11 @@ ImportReview reviewImport(CatalogStore store, List<Entry> applied,
   /// Each touched field once, only where the import changed what it
   /// reads. A brand-new entity lists everything it has. The ticks of a
   /// chore — one key per day — fold into one change per chore.
-  List<FieldChange> effective(String entity, List<Entry> entries,
-      {required bool isNew}) {
+  List<FieldChange> effective(
+    String entity,
+    List<Entry> entries, {
+    required bool isNew,
+  }) {
     final changes = <FieldChange>[];
     final ticks = <String, List<DateTime>>{};
     for (final field in {for (final e in entries) e.field}) {
@@ -227,8 +259,11 @@ ImportReview reviewImport(CatalogStore store, List<Entry> applied,
 
   for (final MapEntry(key: entity, value: entries) in byEntity.entries) {
     if (isCatalogSetting(entity)) {
-      if (effective(entity, entries, isNew: false)
-          .any((c) => c.field == catalogModeField)) {
+      if (effective(
+        entity,
+        entries,
+        isNew: false,
+      ).any((c) => c.field == catalogModeField)) {
         meta.add(const MetaChange(MetaKind.mode));
       }
       continue;
@@ -241,8 +276,9 @@ ImportReview reviewImport(CatalogStore store, List<Entry> applied,
         ?.value;
     if (entity.startsWith('${Kinds.fieldDef}:') || kind == Kinds.fieldDef) {
       if (mergedInto != null) {
-        meta.add(MetaChange(MetaKind.fieldMerged,
-            entity: entity, target: mergedInto));
+        meta.add(
+          MetaChange(MetaKind.fieldMerged, entity: entity, target: mergedInto),
+        );
       } else if (isNew) {
         meta.add(MetaChange(MetaKind.fieldAdded, entity: entity));
       } else if (effective(entity, entries, isNew: false).isNotEmpty) {
@@ -263,8 +299,15 @@ ImportReview reviewImport(CatalogStore store, List<Entry> applied,
         entries.any((e) => e.field == Keys.deleted) &&
         store.current(entity, Keys.deleted) == 'true' &&
         before(entity, Keys.deleted) != 'true') {
-      deleted.add(EntityArrival(entity,
-          isNew: false, changes: const [], tags: const {}, entries: entries));
+      deleted.add(
+        EntityArrival(
+          entity,
+          isNew: false,
+          changes: const [],
+          tags: const {},
+          entries: entries,
+        ),
+      );
       continue;
     }
 
@@ -276,8 +319,9 @@ ImportReview reviewImport(CatalogStore store, List<Entry> applied,
       } else if (c.field == Keys.clowder && !isNew) {
         if (c.after == null) {
           tags.add(tagEscaped);
-        } else if (store.current(store.resolveEntity(c.after!), 'f:status') ==
-            'forever-home') {
+        } else if (c.after case final after?
+            when store.current(store.resolveEntity(after), 'f:status') ==
+                'forever-home') {
           tags.add(tagAdopted);
         }
       } else if (c.field == 'f:deceased' && c.after != null && !isNew) {
@@ -296,11 +340,25 @@ ImportReview reviewImport(CatalogStore store, List<Entry> applied,
       }
     }
     if (isNew) {
-      newOnes.add(EntityArrival(entity,
-          isNew: true, changes: changes, tags: const {}, entries: entries));
+      newOnes.add(
+        EntityArrival(
+          entity,
+          isNew: true,
+          changes: changes,
+          tags: const {},
+          entries: entries,
+        ),
+      );
     } else if (changes.isNotEmpty) {
-      updated.add(EntityArrival(entity,
-          isNew: false, changes: changes, tags: tags, entries: entries));
+      updated.add(
+        EntityArrival(
+          entity,
+          isNew: false,
+          changes: changes,
+          tags: tags,
+          entries: entries,
+        ),
+      );
     }
   }
   if (photos > 0) meta.add(MetaChange(MetaKind.photos, count: photos));
@@ -312,28 +370,35 @@ ImportReview reviewImport(CatalogStore store, List<Entry> applied,
   updated.sort(byName);
   deleted.sort(byName);
   return ImportReview(
-      newOnes: newOnes,
-      updated: updated,
-      deleted: deleted,
-      conflicts: conflicts,
-      meta: meta,
-      report: report);
+    newOnes: newOnes,
+    updated: updated,
+    deleted: deleted,
+    conflicts: conflicts,
+    meta: meta,
+    report: report,
+  );
 }
 
 /// The note a finished sync leaves at the top: who sent, and a tap that
 /// opens the arrival page — or, with nothing new, no tap at all.
-Note arrivalNote(BuildContext context, CatalogStore store, List<Entry> applied,
-    {Moment? undo, ImportReport? report}) {
+Note arrivalNote(
+  BuildContext context,
+  CatalogStore store,
+  List<Entry> applied, {
+  Moment? undo,
+  ImportReport? report,
+}) {
   if (applied.isEmpty) return Note.done((t) => t.noteSyncNothingNew);
   final authors = {
     for (final e in applied)
-      if (e.author != seedAuthor) e.author
+      if (e.author != seedAuthor) e.author,
   };
   return Note.done(
     (t) => t.noteSyncDone(
-        authors.isEmpty ? t.syncAnotherDevice : authors.join(', ')),
-    onTap: () => showImportSummary(context, store, applied,
-        undo: undo, report: report),
+      authors.isEmpty ? t.syncAnotherDevice : authors.join(', '),
+    ),
+    onTap: () =>
+        showImportSummary(context, store, applied, undo: undo, report: report),
   );
 }
 
@@ -341,16 +406,20 @@ Note arrivalNote(BuildContext context, CatalogStore store, List<Entry> applied,
 /// Reject. The data is already in the catalog; Reject returns to the
 /// moment before ([undo]), writing the removed entries to a file first.
 Future<void> showImportSummary(
-    BuildContext context, CatalogStore store, List<Entry> applied,
-    {Moment? undo, SaveFile? saveTo, ImportReport? report}) async {
+  BuildContext context,
+  CatalogStore store,
+  List<Entry> applied, {
+  Moment? undo,
+  SaveFile? saveTo,
+  ImportReport? report,
+}) async {
   // An archive file coming home: what it carries is deleted here, and
   // deletion outranks every entry in the file. Ask before undoing it.
   final restorable = restorableEntities(store, applied);
   if (restorable.isNotEmpty && context.mounted) {
     final t = context.t;
     final names = [
-      for (final id in restorable)
-        store.current(id, Keys.name) ?? t.unnamed
+      for (final id in restorable) store.current(id, Keys.name) ?? t.unnamed,
     ];
     final restore = await showDialog<bool>(
       context: context,
@@ -359,11 +428,13 @@ Future<void> showImportSummary(
         content: Text(t.restoreDeletedBody(names.join(', '))),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(t.keepDeleted)),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(t.keepDeleted),
+          ),
           FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(t.restoreAction)),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(t.restoreAction),
+          ),
         ],
       ),
     );
@@ -375,11 +446,17 @@ Future<void> showImportSummary(
   }
   final review = reviewImport(store, applied, report: report);
   if (review.isEmpty || !context.mounted) return;
-  await Navigator.of(context).push(MaterialPageRoute(
-    fullscreenDialog: true,
-    builder: (_) => ArrivalScreen(
-        store: store, review: review, undo: undo, saveTo: saveTo),
-  ));
+  await Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      fullscreenDialog: true,
+      builder: (_) => ArrivalScreen(
+        store: store,
+        review: review,
+        undo: undo,
+        saveTo: saveTo,
+      ),
+    ),
+  );
   // The emotional echo after the sober digest.
   if (context.mounted) showEventToasts(context, store, applied);
 }
@@ -395,12 +472,13 @@ class ArrivalScreen extends StatefulWidget {
   final Moment? undo;
   final SaveFile? saveTo;
 
-  const ArrivalScreen(
-      {super.key,
-      required this.store,
-      required this.review,
-      this.undo,
-      this.saveTo});
+  const ArrivalScreen({
+    super.key,
+    required this.store,
+    required this.review,
+    this.undo,
+    this.saveTo,
+  });
 
   @override
   State<ArrivalScreen> createState() => _ArrivalScreenState();
@@ -449,15 +527,21 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
         ListTile(
           leading: const Icon(Icons.gpp_bad_outlined, color: Colors.red),
           title: Text(t.refusedEntries(count, author)),
-          subtitle: Text(t.keyLine(
-              store.pinnedKey(device)?.record.code ?? device.substring(0, 8))),
+          subtitle: Text(
+            t.keyLine(
+              store.pinnedKey(device)?.record.code ?? device.substring(0, 8),
+            ),
+          ),
         ),
       for (final (name, device) in report.impostors)
         ListTile(
           leading: const Icon(Icons.warning_amber, color: Colors.amber),
-          title: Text(t.newKeyCallsItself(
+          title: Text(
+            t.newKeyCallsItself(
               store.pinnedKey(device)?.record.code ?? device.substring(0, 8),
-              name)),
+              name,
+            ),
+          ),
         ),
       for (final device in report.changedKeys)
         ListTile(
@@ -468,24 +552,26 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
   }
 
   Widget _header(String title) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-        child: Text(title, style: Theme.of(context).textTheme.titleSmall),
-      );
+    padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+    child: Text(title, style: Theme.of(context).textTheme.titleSmall),
+  );
 
   Widget _leading(String id) => id.startsWith('cat:')
       ? CatAvatar(store: store, catId: id, size: 36)
       : const Icon(Icons.home_outlined);
 
   String _tag(String tag) => switch (tag) {
-        tagAdopted => context.t.summaryAdopted,
-        tagDeceased => context.t.summaryDeceased,
-        _ => context.t.summaryEscaped,
-      };
+    tagAdopted => context.t.summaryAdopted,
+    tagDeceased => context.t.summaryDeceased,
+    _ => context.t.summaryEscaped,
+  };
 
   void _openChanges(EntityArrival a) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => _ChangesScreen(store: store, arrival: a),
-    ));
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => _ChangesScreen(store: store, arrival: a),
+      ),
+    );
   }
 
   /// The row names what changed — photo, weight, Feed done 3× — three
@@ -504,49 +590,57 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
       leading: _leading(a.id),
       title: Text(_name(a.id)),
       subtitle: subtitle.isEmpty ? null : Text(subtitle),
-      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-        if (a.isNew)
-          IconButton(
-            icon: Icon(store.isHidden(a.id)
-                ? Icons.visibility_off
-                : Icons.visibility_outlined),
-            tooltip: store.isHidden(a.id) ? t.unhideLabel : t.hideLabel,
-            onPressed: () =>
-                setState(() => store.setHidden(a.id, !store.isHidden(a.id))),
-          )
-        else
-          TextButton(
-              onPressed: () => _keepMine(a), child: Text(t.keepMine)),
-        const Icon(Icons.chevron_right),
-      ]),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (a.isNew)
+            IconButton(
+              icon: Icon(
+                store.isHidden(a.id)
+                    ? Icons.visibility_off
+                    : Icons.visibility_outlined,
+              ),
+              tooltip: store.isHidden(a.id) ? t.unhideLabel : t.hideLabel,
+              onPressed: () =>
+                  setState(() => store.setHidden(a.id, !store.isHidden(a.id))),
+            )
+          else
+            TextButton(onPressed: () => _keepMine(a), child: Text(t.keepMine)),
+          const Icon(Icons.chevron_right),
+        ],
+      ),
       onTap: () => _openChanges(a),
     );
   }
 
   Widget _deletedRow(EntityArrival a) => ListTile(
-        leading: _leading(a.id),
-        title: Text(_name(a.id)),
-        trailing: TextButton(
-            onPressed: () => _keepMine(a), child: Text(context.t.keepMine)),
-      );
+    leading: _leading(a.id),
+    title: Text(_name(a.id)),
+    trailing: TextButton(
+      onPressed: () => _keepMine(a),
+      child: Text(context.t.keepMine),
+    ),
+  );
 
   Widget _conflictRow((String, String) c) {
     final t = context.t;
     final (entity, field) = c;
-    return Column(children: [
-      ListTile(
-        leading: const Icon(Icons.warning_amber, color: Colors.amber),
-        title: Text('${_name(entity)} — ${fieldLabel(t, store, field)}'),
-      ),
-      ConflictChoice(
-        store: store,
-        entity: entity,
-        field: field,
-        onResolved: () {
-          if (mounted) setState(() => _resolved = true);
-        },
-      ),
-    ]);
+    return Column(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.warning_amber, color: Colors.amber),
+          title: Text('${_name(entity)} — ${fieldLabel(t, store, field)}'),
+        ),
+        ConflictChoice(
+          store: store,
+          entity: entity,
+          field: field,
+          onResolved: () {
+            if (mounted) setState(() => _resolved = true);
+          },
+        ),
+      ],
+    );
   }
 
   String _metaLine(MetaChange m) {
@@ -556,8 +650,7 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
     return switch (m.kind) {
       MetaKind.fieldAdded => t.metaFieldAdded(nameOf(m.entity)),
       MetaKind.fieldChanged => t.metaFieldChanged(nameOf(m.entity)),
-      MetaKind.fieldMerged =>
-        t.metaMerged(nameOf(m.entity), nameOf(m.target)),
+      MetaKind.fieldMerged => t.metaMerged(nameOf(m.entity), nameOf(m.target)),
       MetaKind.merged => t.metaMerged(nameOf(m.entity), nameOf(m.target)),
       MetaKind.mode =>
         '${t.catalogHolds}: ${isPetMode(store) ? t.modePets : t.modeCats}',
@@ -567,15 +660,22 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
 
   /// A key met by this import: whose, its code, and how far it is trusted.
   String _keyLine(PinnedKey k) => context.t.metaNewKey(
-      _who(k.record.device),
-      k.record.code,
-      k.trust == KeyTrust.verified
-          ? context.t.keyVerified
-          : context.t.keyFromFile);
+    _who(k.record.device),
+    k.record.code,
+    k.trust == KeyTrust.verified
+        ? context.t.keyVerified
+        : context.t.keyFromFile,
+  );
 
   Future<void> _reject() async {
-    final done = await confirmUndoImport(context, store, widget.undo!,
-        saveTo: widget.saveTo);
+    final undo = widget.undo;
+    if (undo == null) return;
+    final done = await confirmUndoImport(
+      context,
+      store,
+      undo,
+      saveTo: widget.saveTo,
+    );
     if (done && mounted) Navigator.of(context).pop();
   }
 
@@ -585,87 +685,99 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
     final r = widget.review;
     // Conflicts resolved meanwhile leave the list.
     final conflicts = [
-      for (final c in r.conflicts) if (store.hasConflict(c.$1, c.$2)) c
+      for (final c in r.conflicts)
+        if (store.hasConflict(c.$1, c.$2)) c,
     ];
-    List<EntityArrival> shown(List<EntityArrival> list) =>
-        [for (final a in list) if (!_kept.contains(a.id)) a];
+    List<EntityArrival> shown(List<EntityArrival> list) => [
+      for (final a in list)
+        if (!_kept.contains(a.id)) a,
+    ];
     final updated = shown(r.updated);
     final deleted = shown(r.deleted);
     return Scaffold(
       appBar: pageBar(context, title: Text(t.syncSummaryTitle)),
-      body: ListView(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-          child: Text(t.arrivalIntro,
-              style: Theme.of(context).textTheme.bodyMedium),
-        ),
-        if (r.newOnes.isNotEmpty) ...[
-          _header(t.summaryNew),
-          for (final a in r.newOnes) _entityRow(a),
-        ],
-        if (updated.isNotEmpty) ...[
-          _header(t.summaryUpdated),
-          for (final a in updated) _entityRow(a),
-        ],
-        if (deleted.isNotEmpty) ...[
-          _header(t.summaryDeleted),
-          for (final a in deleted) _deletedRow(a),
-        ],
-        if (conflicts.isNotEmpty) ...[
-          _header(t.summaryConflicts),
-          for (final c in conflicts) _conflictRow(c),
-        ],
-        if (needsAttention(r.report)) ...[
-          _header(t.summaryRefused),
-          ..._keyRows(r.report),
-        ],
-        if (r.meta.isNotEmpty || r.report.newKeys.isNotEmpty) ...[
-          _header(t.summaryMeta),
-          for (final m in r.meta)
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.settings_outlined),
-              title: Text(_metaLine(m)),
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Text(
+              t.arrivalIntro,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-          for (final k in r.report.newKeys)
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.key_outlined),
-              title: Text(_keyLine(k)),
-            ),
+          ),
+          if (r.newOnes.isNotEmpty) ...[
+            _header(t.summaryNew),
+            for (final a in r.newOnes) _entityRow(a),
+          ],
+          if (updated.isNotEmpty) ...[
+            _header(t.summaryUpdated),
+            for (final a in updated) _entityRow(a),
+          ],
+          if (deleted.isNotEmpty) ...[
+            _header(t.summaryDeleted),
+            for (final a in deleted) _deletedRow(a),
+          ],
+          if (conflicts.isNotEmpty) ...[
+            _header(t.summaryConflicts),
+            for (final c in conflicts) _conflictRow(c),
+          ],
+          if (needsAttention(r.report)) ...[
+            _header(t.summaryRefused),
+            ..._keyRows(r.report),
+          ],
+          if (r.meta.isNotEmpty || r.report.newKeys.isNotEmpty) ...[
+            _header(t.summaryMeta),
+            for (final m in r.meta)
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.settings_outlined),
+                title: Text(_metaLine(m)),
+              ),
+            for (final k in r.report.newKeys)
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.key_outlined),
+                title: Text(_keyLine(k)),
+              ),
+          ],
+          const SizedBox(height: 80),
         ],
-        const SizedBox(height: 80),
-      ]),
+      ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(children: [
-            if (widget.undo != null && !_resolved) ...[
+          child: Row(
+            children: [
+              if (widget.undo != null && !_resolved) ...[
+                Expanded(
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.undo),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                    label: Text(t.rejectArrival),
+                    onPressed: _reject,
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ] else if (_resolved) ...[
+                Expanded(
+                  child: Text(
+                    t.rejectAfterResolve,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
               Expanded(
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.undo),
-                  style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error),
-                  label: Text(t.rejectArrival),
-                  onPressed: _reject,
+                child: FilledButton.icon(
+                  icon: const Icon(Icons.check),
+                  label: Text(t.acceptArrival),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
               ),
-              const SizedBox(width: 12),
-            ] else if (_resolved) ...[
-              Expanded(
-                child: Text(t.rejectAfterResolve,
-                    style: Theme.of(context).textTheme.bodySmall),
-              ),
-              const SizedBox(width: 12),
             ],
-            Expanded(
-              child: FilledButton.icon(
-                icon: const Icon(Icons.check),
-                label: Text(t.acceptArrival),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-          ]),
+          ),
         ),
       ),
     );
@@ -684,31 +796,40 @@ class _ChangesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: pageBar(context, title: Text(store.current(arrival.id, Keys.name) ?? t.unnamed)),
-      body: ListView(children: [
-        for (final c in arrival.changes)
-          if (c.isPhoto)
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.photo_outlined),
-              title: Text(c.after == 'deleted' ? t.photoRemoved : t.photoAdded),
-            )
-          else if (c.isTicks)
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.check_circle_outline),
-              title: Text(ticksLine(t, store, arrival.id, c)),
-            )
-          else
-            ListTile(
-              dense: true,
-              title: Text(fieldLabel(t, store, c.field)),
-              subtitle: Text(arrival.isNew
-                  ? valueLabel(t, store, c.field, c.after)
-                  : '${valueLabel(t, store, c.field, c.before)} → '
-                      '${valueLabel(t, store, c.field, c.after)}'),
-            ),
-      ]),
+      appBar: pageBar(
+        context,
+        title: Text(store.current(arrival.id, Keys.name) ?? t.unnamed),
+      ),
+      body: ListView(
+        children: [
+          for (final c in arrival.changes)
+            if (c.isPhoto)
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.photo_outlined),
+                title: Text(
+                  c.after == 'deleted' ? t.photoRemoved : t.photoAdded,
+                ),
+              )
+            else if (c.isTicks)
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.check_circle_outline),
+                title: Text(ticksLine(t, store, arrival.id, c)),
+              )
+            else
+              ListTile(
+                dense: true,
+                title: Text(fieldLabel(t, store, c.field)),
+                subtitle: Text(
+                  arrival.isNew
+                      ? valueLabel(t, store, c.field, c.after)
+                      : '${valueLabel(t, store, c.field, c.before)} → '
+                            '${valueLabel(t, store, c.field, c.after)}',
+                ),
+              ),
+        ],
+      ),
     );
   }
 }

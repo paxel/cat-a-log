@@ -8,8 +8,7 @@ void main() {
   setUpAll(useSystemSqlite);
 
   group('groups and encoding', () {
-    test('groups follow the species; unknown gets size, colours, features',
-        () {
+    test('groups follow the species; unknown gets size, colours, features', () {
       List<String> ids(String? s) =>
           looksGroupsFor(s).map((g) => g.id).toList();
       expect(ids('cat'), [
@@ -40,8 +39,10 @@ void main() {
     });
 
     test('features name only the body parts a species has', () {
-      Set<String> features(String? s) =>
-          looksGroupsFor(s).firstWhere((g) => g.id == 'features').values.toSet();
+      Set<String> features(String? s) => looksGroupsFor(s)
+          .firstWhere((g) => g.id == 'features')
+          .values
+          .toSet();
       expect(features('bird'), {
         'missing eye',
         'cloudy eye',

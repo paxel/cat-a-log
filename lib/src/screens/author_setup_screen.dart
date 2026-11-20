@@ -10,8 +10,11 @@ class AuthorSetupScreen extends StatefulWidget {
   final CatalogStore store;
   final VoidCallback onDone;
 
-  const AuthorSetupScreen(
-      {super.key, required this.store, required this.onDone});
+  const AuthorSetupScreen({
+    super.key,
+    required this.store,
+    required this.onDone,
+  });
 
   @override
   State<AuthorSetupScreen> createState() => _AuthorSetupScreenState();
@@ -53,14 +56,13 @@ class _AuthorSetupScreenState extends State<AuthorSetupScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(context.t.welcomeTitle,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    textAlign: TextAlign.center),
-                const SizedBox(height: 12),
                 Text(
-                  context.t.welcomeBody,
+                  context.t.welcomeTitle,
+                  style: Theme.of(context).textTheme.headlineMedium,
                   textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 12),
+                Text(context.t.welcomeBody, textAlign: TextAlign.center),
                 const SizedBox(height: 24),
                 TextField(
                   controller: _controller,
@@ -73,16 +75,17 @@ class _AuthorSetupScreenState extends State<AuthorSetupScreen> {
                   onSubmitted: (_) => _save(),
                 ),
                 const SizedBox(height: 16),
-                FilledButton(
-                    onPressed: _save, child: Text(context.t.start)),
+                FilledButton(onPressed: _save, child: Text(context.t.start)),
                 const SizedBox(height: 24),
                 CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
                   controlAffinity: ListTileControlAffinity.leading,
                   value: _skipTour,
                   onChanged: (v) => setState(() => _skipTour = v ?? false),
-                  title: Text(context.t.skipTour,
-                      style: Theme.of(context).textTheme.bodySmall),
+                  title: Text(
+                    context.t.skipTour,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ),
               ],
             ),

@@ -12,8 +12,12 @@ void main() {
       store.fieldDefs().firstWhere((d) => d.slug == slug);
 
   Objection? check(String slug, String? value) => starterFieldObjection(
-      store, cat, def(slug), value,
-      today: DateTime(2026, 8, 18));
+    store,
+    cat,
+    def(slug),
+    value,
+    today: DateTime(2026, 8, 18),
+  );
 
   setUp(() {
     store = CatalogStore.inMemory();
@@ -24,13 +28,17 @@ void main() {
   tearDown(() => store.close());
 
   test('birth date in the future is refused', () {
-    expect(check('birthdate', '2050-01-01')?.kind,
-        ObjectionKind.birthdateInFuture);
+    expect(
+      check('birthdate', '2050-01-01')?.kind,
+      ObjectionKind.birthdateInFuture,
+    );
   });
 
   test('date of death in the future is refused', () {
     expect(
-        check('deceased', '2050-01-01')?.kind, ObjectionKind.deceasedInFuture);
+      check('deceased', '2050-01-01')?.kind,
+      ObjectionKind.deceasedInFuture,
+    );
   });
 
   test('death before birth is refused, with the birth date named', () {
@@ -67,8 +75,7 @@ void main() {
     expect(check('deceased', ''), isNull);
   });
 
-  test('a female cat cannot be the father, nor a male one the mother',
-      () {
+  test('a female cat cannot be the father, nor a male one the mother', () {
     final dad = store.createCat('Kater');
     store.append(dad, Keys.userField('gender'), 'female');
     final objection = check('father', dad);
@@ -97,26 +104,43 @@ void main() {
     final dad = store.createCat('Kater');
     store.append(cat, Keys.userField('father'), dad);
     expect(
-        starterFieldObjection(store, dad,
-            store.fieldDefs().firstWhere((d) => d.slug == 'gender'),
-            'female',
-            today: DateTime(2026, 8, 18))?.kind,
-        ObjectionKind.genderFatherFemale);
+      starterFieldObjection(
+        store,
+        dad,
+        store.fieldDefs().firstWhere((d) => d.slug == 'gender'),
+        'female',
+        today: DateTime(2026, 8, 18),
+      )?.kind,
+      ObjectionKind.genderFatherFemale,
+    );
     expect(
-        starterFieldObjection(store, dad,
-            store.fieldDefs().firstWhere((d) => d.slug == 'gender'),
-            'male',
-            today: DateTime(2026, 8, 18)),
-        isNull);
+      starterFieldObjection(
+        store,
+        dad,
+        store.fieldDefs().firstWhere((d) => d.slug == 'gender'),
+        'male',
+        today: DateTime(2026, 8, 18),
+      ),
+      isNull,
+    );
   });
 
   test('custom fields are never checked', () {
-    final id = store.defineField('Next vet visit', FieldType.date,
-        scope: FieldScope.cat);
+    final id = store.defineField(
+      'Next vet visit',
+      FieldType.date,
+      scope: FieldScope.cat,
+    );
     final custom = store.fieldDefs().firstWhere((d) => d.id == id);
     expect(
-        starterFieldObjection(store, cat, custom, '2050-01-01',
-            today: DateTime(2026, 8, 18)),
-        isNull);
+      starterFieldObjection(
+        store,
+        cat,
+        custom,
+        '2050-01-01',
+        today: DateTime(2026, 8, 18),
+      ),
+      isNull,
+    );
   });
 }

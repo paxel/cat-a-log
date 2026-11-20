@@ -15,9 +15,9 @@ pub fn qr(ui: &mut Ui, value: &str, size: f32) -> Option<egui::Response> {
         painter.rect_filled(rect, 0.0, Color32::WHITE);
         let quiet = 2.0;
         let cell = size / (width as f32 + 2.0 * quiet);
-        for y in 0..width {
-            for x in 0..width {
-                if colors[y * width + x] == qrcode::Color::Dark {
+        for (y, cells) in colors.chunks(width.max(1)).enumerate() {
+            for (x, color) in cells.iter().enumerate() {
+                if *color == qrcode::Color::Dark {
                     let min =
                         rect.min + Vec2::new((x as f32 + quiet) * cell, (y as f32 + quiet) * cell);
                     painter.rect_filled(

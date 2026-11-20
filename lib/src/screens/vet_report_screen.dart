@@ -237,7 +237,7 @@ class _VetReportScreenState extends State<VetReportScreen> {
         padding: const EdgeInsets.all(12),
         children: [
           // The page as it prints, redrawn after every change.
-          if (_previewPng != null) ...[
+          if (_previewPng case final previewPng?) ...[
             Text(
               t.posterPreview,
               style: Theme.of(context).textTheme.titleSmall,
@@ -252,7 +252,7 @@ class _VetReportScreenState extends State<VetReportScreen> {
                       border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                     child: Image.memory(
-                      _previewPng!,
+                      previewPng,
                       fit: BoxFit.contain,
                       gaplessPlayback: true,
                     ),

@@ -36,7 +36,11 @@ class _ConflictsScreenState extends State<ConflictsScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.summaryConflicts), help: PageHelp('conflicts', store: widget.store)),
+      appBar: pageBar(
+        context,
+        title: Text(t.summaryConflicts),
+        help: PageHelp('conflicts', store: widget.store),
+      ),
       body: ListView(
         children: [
           for (final (entity, field) in store.conflicts()) ...[

@@ -1,0 +1,76 @@
+# The documentation site's frames of a release, as its release asset
+# catlog-<tag>-site-frames.tar.gz. The frames are rendered, never committed
+# (tool/frames.sh), so a tag's tree has none; tool/site/build-all.js downloads
+# this asset for every older version it builds from a tag, so each version of
+# the site shows its own app. release.yml calls this after the GitHub release;
+# Run workflow with a tag renders the frames of a release that lacks them.
+#
+# Third-party actions are pinned to full commit SHAs; the comment names the
+# version.
+name: Site frames
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v2.5.0)"
+        type: string
+        required: true
+
+# Read-only by default; the job widens it to upload the asset.
+permissions:
+  contents: read
+
+jobs:
+  frames:
+    name: Site frames
+    runs-on: ubuntu-latest
+    # contents: the release asset.
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ inputs.tag }}
+    steps:
+      - name: The tag is a release tag
+        run: |
+          if ! printf '%s' "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Not a release tag: $TAG"
+            exit 1
+          fi
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: desktop
+      - name: System dependencies (sqlite3 and pdftoppm for the phone frames, software Vulkan for the desk's)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libsqlite3-dev poppler-utils mesa-vulkan-drivers libvulkan1 pkg-config libasound2-dev
+      - name: Fonts the phone generator draws with
+        run: flutter precache
+      - name: Render the frames, phone and desk, English and German
+        env:
+          FRAMES_JOBS: 4
+        run: |
+          flutter pub get
+          tool/frames.sh
+      - name: Upload the frames to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          asset="catlog-$TAG-site-frames.tar.gz"
+          tar -czf "$asset" -C site/assets frames
+          gh release upload "$TAG" "$asset" --clobber

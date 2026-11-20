@@ -31,14 +31,15 @@ class CatalogsScreen extends StatefulWidget {
   /// rename. Injectable for the same reason.
   final Future<void> Function(String name)? removeSaved;
 
-  const CatalogsScreen(
-      {super.key,
-      required this.catalogs,
-      required this.storeOf,
-      required this.onSwitch,
-      this.onChanged,
-      this.saveTo,
-      this.removeSaved});
+  const CatalogsScreen({
+    super.key,
+    required this.catalogs,
+    required this.storeOf,
+    required this.onSwitch,
+    this.onChanged,
+    this.saveTo,
+    this.removeSaved,
+  });
 
   @override
   State<CatalogsScreen> createState() => _CatalogsScreenState();
@@ -53,8 +54,11 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
   }
 
   Future<void> _create() async {
-    final name = await askCatalogName(context, context.t.newCatalog,
-        taken: widget.catalogs.nameTaken);
+    final name = await askCatalogName(
+      context,
+      context.t.newCatalog,
+      taken: widget.catalogs.nameTaken,
+    );
     if (name == null || !mounted) return;
     try {
       final made = widget.catalogs.create(name);
@@ -78,16 +82,18 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
   /// The catalog's own page; the list redraws on return because a name
   /// may have changed or a catalog may be gone.
   Future<void> _openSettings(CatalogInfo catalog) async {
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => CatalogSettingsScreen(
-        catalogs: widget.catalogs,
-        catalog: catalog,
-        activeStore: widget.storeOf,
-        onChanged: widget.onChanged,
-        saveTo: widget.saveTo,
-        removeSaved: widget.removeSaved,
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CatalogSettingsScreen(
+          catalogs: widget.catalogs,
+          catalog: catalog,
+          activeStore: widget.storeOf,
+          onChanged: widget.onChanged,
+          saveTo: widget.saveTo,
+          removeSaved: widget.removeSaved,
+        ),
       ),
-    ));
+    );
     if (mounted) setState(() {});
   }
 
@@ -96,46 +102,56 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
     final t = context.t;
     final active = widget.catalogs.active;
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.catalogsTitle), help: PageHelp('catalogs', store: store)),
-      body: ListView(children: [
-        for (final catalog in widget.catalogs.catalogs())
-          ListTile(
-            leading: Icon(catalog.id == active.id
-                ? Icons.folder_open
-                : Icons.folder_outlined),
-            selected: catalog.id == active.id,
-            title: Text(catalog.name),
-            subtitle: Text(formatBytes(catalog.sizeInBytes)),
-            trailing: IconButton(
-              icon: const Icon(Icons.settings_outlined),
-              tooltip: t.catalogSettings,
-              onPressed: () => _openSettings(catalog),
-            ),
-            // Tap activates and stays — leaving is the back button's
-            // job, so several catalogs can be handled in one visit.
-            onTap: () {
-              widget.onSwitch(catalog, unwind: false);
-              _changed();
-            },
-          ),
-        const Divider(height: 1),
-        // Backups of an earlier install, or files kept anywhere else.
-        ListTile(
-          leading: const Icon(Icons.restore),
-          title: Text(t.restoreBackupsMenu),
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => RestoreScreen(
-              catalogs: widget.catalogs,
-              skipWhenEmpty: false,
-              onDone: (first) {
-                Navigator.of(context).pop();
-                if (first != null) widget.onSwitch(first, unwind: false);
+      appBar: pageBar(
+        context,
+        title: Text(t.catalogsTitle),
+        help: PageHelp('catalogs', store: store),
+      ),
+      body: ListView(
+        children: [
+          for (final catalog in widget.catalogs.catalogs())
+            ListTile(
+              leading: Icon(
+                catalog.id == active.id
+                    ? Icons.folder_open
+                    : Icons.folder_outlined,
+              ),
+              selected: catalog.id == active.id,
+              title: Text(catalog.name),
+              subtitle: Text(formatBytes(catalog.sizeInBytes)),
+              trailing: IconButton(
+                icon: const Icon(Icons.settings_outlined),
+                tooltip: t.catalogSettings,
+                onPressed: () => _openSettings(catalog),
+              ),
+              // Tap activates and stays — leaving is the back button's
+              // job, so several catalogs can be handled in one visit.
+              onTap: () {
+                widget.onSwitch(catalog, unwind: false);
                 _changed();
               },
             ),
-          )),
-        ),
-      ]),
+          const Divider(height: 1),
+          // Backups of an earlier install, or files kept anywhere else.
+          ListTile(
+            leading: const Icon(Icons.restore),
+            title: Text(t.restoreBackupsMenu),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => RestoreScreen(
+                  catalogs: widget.catalogs,
+                  skipWhenEmpty: false,
+                  onDone: (first) {
+                    Navigator.of(context).pop();
+                    if (first != null) widget.onSwitch(first, unwind: false);
+                    _changed();
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _create,
         tooltip: t.newCatalog,
@@ -148,8 +164,12 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
 /// Asks for a catalog name. Returns null when the dialog is dismissed.
 /// A name [taken] already is refused under the field, and the dialog
 /// stays until a free one is typed.
-Future<String?> askCatalogName(BuildContext context, String title,
-    {String initial = '', bool Function(String name)? taken}) {
+Future<String?> askCatalogName(
+  BuildContext context,
+  String title, {
+  String initial = '',
+  bool Function(String name)? taken,
+}) {
   final controller = TextEditingController(text: initial);
   String? error;
   return showDialog<String>(
@@ -181,8 +201,9 @@ Future<String?> askCatalogName(BuildContext context, String title,
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(context.t.cancel)),
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(context.t.cancel),
+            ),
             FilledButton(onPressed: submit, child: Text(context.t.save)),
           ],
         );
@@ -213,9 +234,11 @@ Future<void> showCatalogSwitcher(
           value: catalog.id,
           child: ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: Icon(catalog.id == active.id
-                ? Icons.folder_open
-                : Icons.folder_outlined),
+            leading: Icon(
+              catalog.id == active.id
+                  ? Icons.folder_open
+                  : Icons.folder_outlined,
+            ),
             selected: catalog.id == active.id,
             title: Text(catalog.name),
           ),
@@ -233,14 +256,16 @@ Future<void> showCatalogSwitcher(
   );
   if (picked == null || !context.mounted) return;
   if (picked == 'manage') {
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => CatalogsScreen(
-        catalogs: catalogs,
-        storeOf: storeOf,
-        onSwitch: onSwitch,
-        onChanged: onChanged,
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CatalogsScreen(
+          catalogs: catalogs,
+          storeOf: storeOf,
+          onSwitch: onSwitch,
+          onChanged: onChanged,
+        ),
       ),
-    ));
+    );
     // Going back in time, deleting, renaming — the pages behind the
     // manage screen change the world; the home must redraw it when the
     // keeper returns, not keep the old picture.

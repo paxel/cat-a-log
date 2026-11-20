@@ -1,0 +1,66 @@
+# Fuzz targets for every parser that reads untrusted input (cat-1023): bundle
+# files (imports and backup restores), what a peer sends over the LAN, pair
+# codes, share QR codes and key records. Run with cargo-fuzz on nightly:
+# `cargo +nightly fuzz run <target>` from desktop/; .github/workflows/fuzz.yml
+# runs every target for a minute on each pull request and longer weekly.
+[package]
+name = "catlog-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+tempfile = "3"
+
+[dependencies.catlog-core]
+path = "../crates/catlog-core"
+
+# Its own workspace, so the fuzz crate stays out of the main build.
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "bundle_import"
+path = "fuzz_targets/bundle_import.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "lan_request"
+path = "fuzz_targets/lan_request.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "lan_sync"
+path = "fuzz_targets/lan_sync.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "pair_code"
+path = "fuzz_targets/pair_code.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "share_qr"
+path = "fuzz_targets/share_qr.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "keys"
+path = "fuzz_targets/keys.rs"
+test = false
+doc = false
+bench = false

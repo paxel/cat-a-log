@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_core/catalog_core.dart';
 import 'package:catlog/l10n/app_localizations.dart';
 import 'package:catlog/l10n/app_localizations_de.dart';
@@ -15,20 +17,25 @@ void main() {
   tearDown(() => unitSystem.value = UnitSystem.metric);
 
   const weight = FieldDef(
-      id: 'fielddef:weight',
-      slug: 'weight',
-      name: 'Weight',
-      type: FieldType.unitValue,
-      scope: FieldScope.cat,
-      dimension: Dimension.weight);
+    id: 'fielddef:weight',
+    slug: 'weight',
+    name: 'Weight',
+    type: FieldType.unitValue,
+    scope: FieldScope.cat,
+    dimension: Dimension.weight,
+  );
 
   test('the region picks the side unless the keeper did', () {
     expect(unitSystemFor(null, const Locale('en', 'US')), UnitSystem.imperial);
     expect(unitSystemFor(null, const Locale('de', 'DE')), UnitSystem.metric);
-    expect(unitSystemFor('metric', const Locale('en', 'US')),
-        UnitSystem.metric);
-    expect(unitSystemFor('imperial', const Locale('de', 'DE')),
-        UnitSystem.imperial);
+    expect(
+      unitSystemFor('metric', const Locale('en', 'US')),
+      UnitSystem.metric,
+    );
+    expect(
+      unitSystemFor('imperial', const Locale('de', 'DE')),
+      UnitSystem.imperial,
+    );
   });
 
   test('display follows the device side and the locale', () {
@@ -40,21 +47,27 @@ void main() {
 
   Future<BuildContext> pump(WidgetTester tester) async {
     late BuildContext context;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: Builder(builder: (c) {
-        context = c;
-        return const SizedBox();
-      })),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (c) {
+              context = c;
+              return const SizedBox();
+            },
+          ),
+        ),
+      ),
+    );
     return context;
   }
 
   testWidgets('the editor shows kilograms and stores grams', (tester) async {
     final context = await pump(tester);
     FieldEdit? edit;
-    editFieldValue(context, weight, '4250').then((e) => edit = e);
+    unawaited(editFieldValue(context, weight, '4250').then((e) => edit = e));
     await tester.pumpAndSettle();
     expect(find.text('4.25'), findsOneWidget);
     expect(find.text('kg'), findsOneWidget);
@@ -68,7 +81,7 @@ void main() {
     unitSystem.value = UnitSystem.imperial;
     final context = await pump(tester);
     FieldEdit? edit;
-    editFieldValue(context, weight, '4250').then((e) => edit = e);
+    unawaited(editFieldValue(context, weight, '4250').then((e) => edit = e));
     await tester.pumpAndSettle();
     expect(find.text('9.37'), findsOneWidget);
     expect(find.text('lb'), findsOneWidget);
@@ -82,7 +95,7 @@ void main() {
     tester,
   ) async {
     final context = await pump(tester);
-    editFieldValue(context, weight, '4250');
+    unawaited(editFieldValue(context, weight, '4250'));
     await tester.pumpAndSettle();
     expect(find.text('4.25'), findsOneWidget);
     await tester.tap(find.byTooltip('Clear'));

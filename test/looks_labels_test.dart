@@ -65,17 +65,24 @@ void main() {
     for (final locale in AppLocalizations.supportedLocales) {
       final t = lookupAppLocalizations(locale);
       final def = const FieldDef(
-          id: 'fielddef:breed',
-          slug: 'breed',
-          name: 'Breed',
-          type: FieldType.choice,
-          scope: FieldScope.cat);
+        id: 'fielddef:breed',
+        slug: 'breed',
+        name: 'Breed',
+        type: FieldType.choice,
+        scope: FieldScope.cat,
+      );
       for (final breed in catBreeds) {
-        expect(fieldValueDisplay(t, def, breed), isNotEmpty,
-            reason: '${locale.languageCode} $breed');
+        expect(
+          fieldValueDisplay(t, def, breed),
+          isNotEmpty,
+          reason: '${locale.languageCode} $breed',
+        );
         if (locale.languageCode == 'ja' || locale.languageCode == 'ru') {
-          expect(fieldValueDisplay(t, def, breed), isNot(breed),
-              reason: '${locale.languageCode} $breed');
+          expect(
+            fieldValueDisplay(t, def, breed),
+            isNot(breed),
+            reason: '${locale.languageCode} $breed',
+          );
         }
       }
     }

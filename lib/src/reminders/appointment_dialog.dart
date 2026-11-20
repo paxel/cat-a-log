@@ -41,11 +41,7 @@ class _AppointmentDialog extends StatefulWidget {
   final String? entityId;
   final Appointment? existing;
 
-  const _AppointmentDialog({
-    required this.store,
-    this.entityId,
-    this.existing,
-  });
+  const _AppointmentDialog({required this.store, this.entityId, this.existing});
 
   @override
   State<_AppointmentDialog> createState() => _AppointmentDialogState();
@@ -59,12 +55,10 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
   late DateTime _date =
       widget.existing?.date ??
       DateUtils.dateOnly(clockNow().add(const Duration(days: 1)));
-  late TimeOfDay? _time = widget.existing?.time == null
-      ? null
-      : TimeOfDay(
-          hour: widget.existing!.time!.hour,
-          minute: widget.existing!.time!.minute,
-        );
+  late TimeOfDay? _time = switch (widget.existing?.time) {
+    final time? => TimeOfDay(hour: time.hour, minute: time.minute),
+    null => null,
+  };
   late AppointmentAlert _alert =
       widget.existing?.alert ?? AppointmentAlert.dayBefore;
   FieldDef? _linked;
@@ -82,7 +76,8 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
 
   /// Whose it is: the For field's value, preset from the page or the
   /// entity being edited, else the one looked at last.
-  late String _entity = widget.entityId ??
+  late String _entity =
+      widget.entityId ??
       widget.existing?.entity ??
       defaultPlanEntity(store) ??
       '';
@@ -146,7 +141,8 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
     setState(() {
       _entity = entity;
       _offerFor(entity);
-      if (_linked != null && !_defs.any((d) => d.key == _linked!.key)) {
+      if (_linked case final linked?
+          when !_defs.any((d) => d.key == linked.key)) {
         _pickLinked(null);
       }
     });
@@ -209,7 +205,8 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
       // field that no longer applies.
       _offered.addAll(picked);
       _ticked.addAll(picked);
-      if (_linked != null && !_defs.any((d) => d.key == _linked!.key)) {
+      if (_linked case final linked?
+          when !_defs.any((d) => d.key == linked.key)) {
         _pickLinked(null);
       }
     });
@@ -222,7 +219,8 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
       } else {
         _ticked.remove(id);
       }
-      if (_linked != null && !_defs.any((d) => d.key == _linked!.key)) {
+      if (_linked case final linked?
+          when !_defs.any((d) => d.key == linked.key)) {
         _pickLinked(null);
       }
     });
@@ -240,7 +238,10 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
       id: existing?.id ?? '',
       entity: existing?.entity ?? _entities.first,
       date: _date,
-      time: _time == null ? null : (hour: _time!.hour, minute: _time!.minute),
+      time: switch (_time) {
+        final time? => (hour: time.hour, minute: time.minute),
+        null => null,
+      },
       title: _title.text.trim(),
       notes: _notes.text.trim(),
       linkedField: _linked?.key,
@@ -353,11 +354,12 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.schedule),
-              title: Text(
-                _time == null
-                    ? t.allDayLabel
-                    : MaterialLocalizations.of(context).formatTimeOfDay(_time!),
-              ),
+              title: Text(switch (_time) {
+                final time? => MaterialLocalizations.of(
+                  context,
+                ).formatTimeOfDay(time),
+                null => t.allDayLabel,
+              }),
               subtitle: Text(t.timeLabel),
               trailing: _time == null
                   ? const Icon(Icons.add)
@@ -406,12 +408,12 @@ class _AppointmentDialogState extends State<_AppointmentDialog> {
                 key == null ? null : _defs.firstWhere((d) => d.key == key),
               ),
             ),
-            if (_linkedValue != null) ...[
+            if (_linkedValue case final linkedValue?) ...[
               const SizedBox(height: 8),
               ListenableBuilder(
-                listenable: _linkedValue!,
+                listenable: linkedValue,
                 builder: (context, _) => FieldValueInput(
-                  controller: _linkedValue!,
+                  controller: linkedValue,
                   store: store,
                   excludeId: _entities.first,
                 ),

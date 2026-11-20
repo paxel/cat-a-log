@@ -48,8 +48,8 @@ pub fn graph_image(sheet: &GraphSheet, fonts: &FontSet) -> Option<RgbaImage> {
     // with a tenth above and below.
     let (left, right, top, bottom) = (130.0f32, 760.0f32, after_title + 24.0, 400.0f32);
     let points = &sheet.points;
-    let from = points[0].at;
-    let to = points[points.len() - 1].at;
+    let from = points.first()?.at;
+    let to = points.last()?.at;
     let span = (to - from).max(1) as f64;
     let (mut lo, mut hi) = points.iter().fold((f64::MAX, f64::MIN), |(lo, hi), p| {
         (lo.min(p.value), hi.max(p.value))
@@ -68,12 +68,16 @@ pub fn graph_image(sheet: &GraphSheet, fonts: &FontSet) -> Option<RgbaImage> {
     frame(&mut img, left, top, right, bottom);
     let line: Vec<(f32, f32)> = points.iter().map(at).collect();
     for pair in line.windows(2) {
-        stroke(&mut img, pair[0], pair[1], 2.0, READINGS);
+        if let [a, b] = *pair {
+            stroke(&mut img, a, b, 2.0, READINGS);
+        }
     }
     if sheet.smooth {
         let curve: Vec<(f32, f32)> = smooth_curve(points, from, to, 80).iter().map(at).collect();
         for pair in curve.windows(2) {
-            stroke(&mut img, pair[0], pair[1], 3.0, ORANGE);
+            if let [a, b] = *pair {
+                stroke(&mut img, a, b, 3.0, ORANGE);
+            }
         }
     }
     if sheet.trend

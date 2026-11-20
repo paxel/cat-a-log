@@ -57,9 +57,8 @@ String fieldValueDisplay(AppLocalizations t, FieldDef? def, String? value) {
     if (n != null) return formatNumber(t.localeName, n, 6);
   }
   // A Unit Value is stored in the base unit and read in the device's.
-  if (def?.type == FieldType.unitValue) {
-    return formatUnitValue(
-        t.localeName, def!.unitDimension, value);
+  if (def case final def? when def.type == FieldType.unitValue) {
+    return formatUnitValue(t.localeName, def.unitDimension, value);
   }
   // Looks read as group: values, in the device language.
   if (def?.type == FieldType.tags) return looksDisplay(t, value);
@@ -166,11 +165,13 @@ String fieldLabel(AppLocalizations t, CatalogStore store, String key) {
   if (key == Keys.private) return t.privateLabel;
   if (key.startsWith(Keys.privatePrefix)) {
     return t.privateMarker(
-        fieldLabel(t, store, key.substring(Keys.privatePrefix.length)));
+      fieldLabel(t, store, key.substring(Keys.privatePrefix.length)),
+    );
   }
   if (key.startsWith(Keys.withheldPrefix)) {
     return t.privateMarker(
-        fieldLabel(t, store, key.substring(Keys.withheldPrefix.length)));
+      fieldLabel(t, store, key.substring(Keys.withheldPrefix.length)),
+    );
   }
   if (key.startsWith(Keys.appointmentPrefix)) return t.appointmentLabel;
   if (key.startsWith(Keys.chorePrefix)) {
@@ -217,10 +218,12 @@ String valueLabel(
       value,
     );
     if (a == null) return value;
-    final when = a.time == null
-        ? ''
-        : ' ${a.time!.hour.toString().padLeft(2, '0')}:'
-              '${a.time!.minute.toString().padLeft(2, '0')}';
+    final when = switch (a.time) {
+      final time? =>
+        ' ${time.hour.toString().padLeft(2, '0')}:'
+            '${time.minute.toString().padLeft(2, '0')}',
+      null => '',
+    };
     // The outcome notes belong to the visit: "how did it go" is what
     // the history is read for.
     final notes = a.notes.isEmpty ? '' : '\n${a.notes}';
@@ -255,22 +258,22 @@ String valueLabel(
 
 /// Localized name of a Unit Value's dimension.
 String dimensionName(AppLocalizations t, Dimension d) => switch (d) {
-      Dimension.weight => t.dimensionWeight,
-      Dimension.length => t.dimensionLength,
-      Dimension.volume => t.dimensionVolume,
-      Dimension.temperature => t.dimensionTemperature,
-    };
+  Dimension.weight => t.dimensionWeight,
+  Dimension.length => t.dimensionLength,
+  Dimension.volume => t.dimensionVolume,
+  Dimension.temperature => t.dimensionTemperature,
+};
 
 /// Localized display of a species preset; anything else as typed.
 String speciesDisplay(AppLocalizations t, String value) => switch (value) {
-      'cat' => t.valueCat,
-      'dog' => t.valueDog,
-      'rabbit' => t.valueRabbit,
-      'guinea pig' => t.valueGuineaPig,
-      'hamster' => t.valueHamster,
-      'bird' => t.valueBird,
-      'horse' => t.valueHorse,
-      'tortoise' => t.valueTortoise,
-      'ferret' => t.valueFerret,
-      _ => value,
-    };
+  'cat' => t.valueCat,
+  'dog' => t.valueDog,
+  'rabbit' => t.valueRabbit,
+  'guinea pig' => t.valueGuineaPig,
+  'hamster' => t.valueHamster,
+  'bird' => t.valueBird,
+  'horse' => t.valueHorse,
+  'tortoise' => t.valueTortoise,
+  'ferret' => t.valueFerret,
+  _ => value,
+};

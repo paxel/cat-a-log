@@ -56,7 +56,8 @@ void main() {
     expect(b.current(cat, 'name'), 'Minka');
   });
 
-  test('the shared folder publishes keys and learns the others\' first', () async {
+  test('the shared folder publishes keys and learns the others\' first',
+      () async {
     final cat = a.createCat('Miezi');
     b.createCat('Wanderer');
     await folderSync(a, dir.path);
@@ -77,7 +78,8 @@ void main() {
     final last = rows
         .map((l) => (jsonDecode(l) as Map).cast<String, dynamic>())
         .lastWhere((r) => r['device'] == a.deviceId);
-    rows.add(jsonEncode({...last, 'dseq': last['dseq'] + 1, 'value': 'x'}));
+    rows.add(
+        jsonEncode({...last, 'dseq': (last['dseq'] as int) + 1, 'value': 'x'}));
     own.writeAsStringSync(rows.join('\n'));
     final manifestFile = File('$root/${manifestName(a.deviceId)}');
     final manifest = FolderManifest.parse(manifestFile.readAsBytesSync())!;

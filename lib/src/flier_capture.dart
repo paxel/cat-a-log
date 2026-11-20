@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:typed_data';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -28,7 +30,7 @@ import 'layout.dart';
 String? suggestChipId(String text) {
   final match = RegExp(r'(?<!\d)(?:\d[ -]?){14}\d(?!\d)').firstMatch(text);
   if (match == null) return null;
-  final digits = match.group(0)!.replaceAll(RegExp(r'[ -]'), '');
+  final digits = (match[0] ?? '').replaceAll(RegExp(r'[ -]'), '');
   return digits.length == 15 ? digits : null;
 }
 
@@ -496,9 +498,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
   PartialDate? _missingDate(String text) {
     final date = parseFlierDate(text);
     if (date == null) return null;
-    return date.earliest.isAfter(DateUtils.dateOnly(clockNow()))
-        ? null
-        : date;
+    return date.earliest.isAfter(DateUtils.dateOnly(clockNow())) ? null : date;
   }
 
   /// A hit for a number printed in the text: the registry named by the
@@ -617,7 +617,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
         lookupUrl: hit.template,
       );
       def = store.fieldDefs().firstWhere((d) => d.slug == slug);
-    } else if (def.lookupUrl == null || def.lookupUrl!.isEmpty) {
+    } else if ((def.lookupUrl ?? '').isEmpty) {
       store.setFieldLookupUrl(def.id, hit.template);
     }
     store.append(catId, def.key, hit.value);
@@ -752,7 +752,8 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
           }
         }
       }
-      if (_newCat) {
+      final existingCat = _existingCat;
+      if (existingCat == null) {
         // The cat lived with its owner until the flier's date — plain
         // Move semantics keep the history reconstructable after a Merge.
         catId = store.createCat(
@@ -766,7 +767,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
         }
         store.moveCat(catId, null, date: _missingSince);
       } else {
-        catId = _existingCat!;
+        catId = existingCat;
         if (clowderId != null) {
           // Known cat, known household: it lived there and went stray on
           // the flier's date.
@@ -822,15 +823,19 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
     (title: t.stepReview, body: _reviewStep(t)),
   ];
 
-  Widget _flierThumb() => ClipRRect(
-    borderRadius: BorderRadius.circular(12),
-    child: Image.memory(
-      _photo!,
-      height: 160,
-      cacheHeight: 480,
-      fit: BoxFit.contain,
-    ),
-  );
+  Widget _flierThumb() {
+    final photo = _photo;
+    if (photo == null) return const SizedBox.shrink();
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.memory(
+        photo,
+        height: 160,
+        cacheHeight: 480,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
 
   /// The targets a line can be sent to: the wizard's own inputs and
   /// every cat Field, by localized name.
@@ -973,12 +978,10 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
         if (reading == null)
           Text(t.ocrUnavailable, style: Theme.of(context).textTheme.bodySmall)
         else ...[
-          Text(
-            reading.template == null
-                ? t.flierLayoutUnknown
-                : t.flierRecognized(reading.template!.name),
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          Text(switch (reading.template) {
+            final template? => t.flierRecognized(template.name),
+            null => t.flierLayoutUnknown,
+          }, style: Theme.of(context).textTheme.bodySmall),
           // What was put aside, and the way back, above the cards where
           // the eye is.
           if (_hidden.isNotEmpty)
@@ -1029,9 +1032,9 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
                             ),
                           ],
                         ),
-                        if (entry.label != null)
+                        if (entry.label case final label?)
                           Text(
-                            entry.label!,
+                            label,
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         if (_overwriteHint(t, entry.target) case final hint?)
@@ -1088,22 +1091,20 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.pets),
           title: Text(t.existingCat),
-          subtitle: Text(
-            _existingCat == null
-                ? t.createNewInstead
-                : store.current(_existingCat!, Keys.name) ?? t.unnamed,
-          ),
+          subtitle: Text(switch (_existingCat) {
+            final id? => store.current(id, Keys.name) ?? t.unnamed,
+            null => t.createNewInstead,
+          }),
           onTap: _pickExistingCat,
         ),
       ListTile(
         contentPadding: EdgeInsets.zero,
         leading: const Icon(Icons.home_outlined),
         title: Text(t.existingClowder),
-        subtitle: Text(
-          _existingClowder == null
-              ? (_newCat ? t.createNewInstead : t.alertNone)
-              : store.current(_existingClowder!, Keys.name) ?? t.unnamed,
-        ),
+        subtitle: Text(switch (_existingClowder) {
+          final id? => store.current(id, Keys.name) ?? t.unnamed,
+          null => _newCat ? t.createNewInstead : t.alertNone,
+        }),
         onTap: _pickExistingClowder,
       ),
       if (_newCat)
@@ -1353,7 +1354,8 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
         ),
       if (_chip.text.trim().isNotEmpty) (t.starterChipId, _chip.text.trim()),
       if (_hasClowderTarget) (t.missingSinceLabel, _missingSinceText(context)),
-      if (_newCat && _looks != null) (t.starterLooks, looksDisplay(t, _looks!)),
+      if (_looks case final looks? when _newCat)
+        (t.starterLooks, looksDisplay(t, looks)),
       for (final input in _fieldInputs.values)
         if (input.value case final value?)
           (fieldDefName(t, input.def), fieldValueDisplay(t, input.def, value)),
@@ -1412,7 +1414,10 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
     final photo = _photo;
     if (photo == null) {
       return Scaffold(
-        appBar: pageBar(context, title: Text(_newCat ? t.captureFlier : t.addFlier)),
+        appBar: pageBar(
+          context,
+          title: Text(_newCat ? t.captureFlier : t.addFlier),
+        ),
         body: Center(
           child: _choosing && !_picking
               // The two ways in, as buttons on the page: no sheet first.
@@ -1443,7 +1448,7 @@ class _FlierCaptureScreenState extends State<FlierCaptureScreen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _confirmAbort();
+        if (!didPop) unawaited(_confirmAbort());
       },
       child: Scaffold(
         appBar: pageBar(context, title: Text(steps[step].title)),
@@ -1567,7 +1572,9 @@ class _LearnServiceDialogState extends State<_LearnServiceDialog> {
           onPressed: _value == null || _name.text.trim().isEmpty
               ? null
               : () {
-                  final template = learnLookupTemplate(widget.url, _value!);
+                  final value = _value;
+                  if (value == null) return;
+                  final template = learnLookupTemplate(widget.url, value);
                   if (template == null) {
                     Navigator.of(context).pop();
                     return;
@@ -1576,7 +1583,7 @@ class _LearnServiceDialogState extends State<_LearnServiceDialog> {
                     FlierRegistryHit(
                       serviceName: _name.text.trim(),
                       template: template,
-                      value: _value!,
+                      value: value,
                       learned: true,
                     ),
                   );

@@ -17,8 +17,12 @@ class HomeShell extends StatefulWidget {
   /// becomes the switcher; without it the title is just a word.
   final CatalogSwitching? switching;
 
-  const HomeShell(
-      {super.key, required this.store, this.catalogName, this.switching});
+  const HomeShell({
+    super.key,
+    required this.store,
+    this.catalogName,
+    this.switching,
+  });
 
   @override
   State<HomeShell> createState() => _HomeShellState();
@@ -33,62 +37,68 @@ class _HomeShellState extends State<HomeShell> {
   /// reading from a database that is no longer open.
   CatalogStore? _pageStore;
 
-  String? get _title =>
-      widget.catalogName ?? widget.switching?.active.name;
+  String? get _title => widget.catalogName ?? widget.switching?.active.name;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      // The table is for scanning the columns you picked; squeezed into
-      // the list pane it has to be dragged sideways to read, so in table
-      // view the list keeps the whole window and rows open over it.
-      final tableView =
-          widget.store.localSetting(clowderViewKey) == 'table';
-      if (constraints.maxWidth < desktopBreakpoint || tableView) {
-        return ClowderListScreen(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // The table is for scanning the columns you picked; squeezed into
+        // the list pane it has to be dragged sideways to read, so in table
+        // view the list keeps the whole window and rows open over it.
+        final tableView = widget.store.localSetting(clowderViewKey) == 'table';
+        if (constraints.maxWidth < desktopBreakpoint || tableView) {
+          return ClowderListScreen(
             store: widget.store,
             catalogName: _title,
             switching: widget.switching,
-            onViewChanged: () => setState(() {}));
-      }
-      // A page vacates the pane when its catalog is no longer the one
-      // open, and a clowder page also when its clowder is gone.
-      final page = _page;
-      final shown = page != null &&
-              page.stillBelongs(widget.store, openedIn: _pageStore)
-          ? page
-          : null;
-      return Row(children: [
-        SizedBox(
-          width: 400,
-          child: ClowderListScreen(
-            store: widget.store,
-            catalogName: _title,
-            switching: widget.switching,
-            selectedPageId: shown?.id,
-            onOpenPage: (page) => setState(() {
-              _page = page;
-              _pageStore = widget.store;
-            }),
             onViewChanged: () => setState(() {}),
-          ),
-        ),
-        const VerticalDivider(width: 1),
-        Expanded(
-          // The pane runs its own Navigator, so opening a cat from the
-          // clowder stays inside the pane instead of covering the list.
-          child: shown == null
-              ? Center(
-                  child: Text(context.t.selectClowderHint,
-                      style: Theme.of(context).textTheme.bodyLarge),
-                )
-              : Navigator(
-                  key: ValueKey(shown.id),
-                  onGenerateRoute: (settings) =>
-                      MaterialPageRoute(builder: shown.build),
-                ),
-        ),
-      ]);
-    });
+          );
+        }
+        // A page vacates the pane when its catalog is no longer the one
+        // open, and a clowder page also when its clowder is gone.
+        final page = _page;
+        final shown =
+            page != null &&
+                page.stillBelongs(widget.store, openedIn: _pageStore)
+            ? page
+            : null;
+        return Row(
+          children: [
+            SizedBox(
+              width: 400,
+              child: ClowderListScreen(
+                store: widget.store,
+                catalogName: _title,
+                switching: widget.switching,
+                selectedPageId: shown?.id,
+                onOpenPage: (page) => setState(() {
+                  _page = page;
+                  _pageStore = widget.store;
+                }),
+                onViewChanged: () => setState(() {}),
+              ),
+            ),
+            const VerticalDivider(width: 1),
+            Expanded(
+              // The pane runs its own Navigator, so opening a cat from the
+              // clowder stays inside the pane instead of covering the list.
+              child: shown == null
+                  ? Center(
+                      child: Text(
+                        context.t.selectClowderHint,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    )
+                  : Navigator(
+                      key: ValueKey(shown.id),
+                      onGenerateRoute: (settings) =>
+                          MaterialPageRoute(builder: shown.build),
+                    ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

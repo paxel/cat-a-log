@@ -33,11 +33,11 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
-
   Future<void> _open(String url) => runExclusive(
-      'link',
-      () => launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
-      context: context);
+    'link',
+    () => launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
+    context: context,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -45,90 +45,92 @@ class _AboutScreenState extends State<AboutScreen> {
     final showDonate = !Platform.isIOS;
     return Scaffold(
       appBar: pageBar(context, title: Text(t.about)),
-      body: ListView(children: [
-        const SizedBox(height: 24),
-        const Center(child: Icon(Icons.pets, size: 64)),
-        const SizedBox(height: 8),
-        Center(
-          child: Text('cat(a)log',
-              style: Theme.of(context).textTheme.headlineMedium),
-        ),
-        Center(
-          child: FutureBuilder<PackageInfo>(
-            future: PackageInfo.fromPlatform(),
-            builder: (context, snapshot) => Text(snapshot.hasData
-                ? t.versionLabel(snapshot.data!.version,
-                    snapshot.data!.buildNumber)
-                : ''),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+      body: ListView(
+        children: [
+          const SizedBox(height: 24),
+          const Center(child: Icon(Icons.pets, size: 64)),
+          const SizedBox(height: 8),
+          Center(
             child: Text(
-              t.aboutTagline,
+              'cat(a)log',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ),
+          Center(
+            child: FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) => Text(switch (snapshot.data) {
+                final info? => t.versionLabel(info.version, info.buildNumber),
+                null => '',
+              }),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(t.aboutTagline, textAlign: TextAlign.center),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Builder(
+            builder: (context) {
+              final url = documentationUrl(
+                Localizations.localeOf(context).languageCode,
+              );
+              return ListTile(
+                leading: const Icon(Icons.menu_book_outlined),
+                title: Text(t.documentation),
+                subtitle: Text(url),
+                onTap: () => _open(url),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.code),
+            title: Text(t.sourceCode),
+            subtitle: const Text('$_repoUrl — Apache-2.0 / MIT'),
+            onTap: () => _open(_repoUrl),
+          ),
+          ListTile(
+            leading: const Icon(Icons.bug_report_outlined),
+            title: Text(t.reportProblemOrIdea),
+            subtitle: Text(t.githubIssues),
+            onTap: () => _open(_issuesUrl),
+          ),
+          ListTile(
+            leading: const Icon(Icons.mail_outline),
+            title: Text(t.writeTheDeveloper),
+            subtitle: const Text(_feedbackMail),
+            onTap: () =>
+                _open('mailto:$_feedbackMail?subject=cat(a)log%20feedback'),
+          ),
+          if (showDonate)
+            ListTile(
+              leading: const Icon(Icons.coffee_outlined),
+              title: Text(t.buyCoffee),
+              subtitle: Text(t.coffeeSubtitle),
+              onTap: () => _open(_donateUrl),
+            ),
+          ListTile(
+            leading: const Icon(Icons.description_outlined),
+            title: Text(t.openSourceLicenses),
+            onTap: () =>
+                showLicensePage(context: context, applicationName: 'cat(a)log'),
+          ),
+          const SizedBox(height: 24),
+          const Center(child: _DangerButton()),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              t.machineTranslated,
+              style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Builder(builder: (context) {
-          final url =
-              documentationUrl(Localizations.localeOf(context).languageCode);
-          return ListTile(
-            leading: const Icon(Icons.menu_book_outlined),
-            title: Text(t.documentation),
-            subtitle: Text(url),
-            onTap: () => _open(url),
-          );
-        }),
-        ListTile(
-          leading: const Icon(Icons.code),
-          title: Text(t.sourceCode),
-          subtitle: const Text('$_repoUrl — Apache-2.0 / MIT'),
-          onTap: () => _open(_repoUrl),
-        ),
-        ListTile(
-          leading: const Icon(Icons.bug_report_outlined),
-          title: Text(t.reportProblemOrIdea),
-          subtitle: Text(t.githubIssues),
-          onTap: () => _open(_issuesUrl),
-        ),
-        ListTile(
-          leading: const Icon(Icons.mail_outline),
-          title: Text(t.writeTheDeveloper),
-          subtitle: const Text(_feedbackMail),
-          onTap: () => _open(
-              'mailto:$_feedbackMail?subject=cat(a)log%20feedback'),
-        ),
-        if (showDonate)
-          ListTile(
-            leading: const Icon(Icons.coffee_outlined),
-            title: Text(t.buyCoffee),
-            subtitle: Text(t.coffeeSubtitle),
-            onTap: () => _open(_donateUrl),
-          ),
-        ListTile(
-          leading: const Icon(Icons.description_outlined),
-          title: Text(t.openSourceLicenses),
-          onTap: () => showLicensePage(
-            context: context,
-            applicationName: 'cat(a)log',
-          ),
-        ),
-        const SizedBox(height: 24),
-        const Center(child: _DangerButton()),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            t.machineTranslated,
-            style: Theme.of(context).textTheme.bodySmall,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }
@@ -155,13 +157,18 @@ class _DangerButton extends StatelessWidget {
           onTap: () => showDialog<void>(
             context: context,
             builder: (context) => AlertDialog(
-              content: Column(mainAxisSize: MainAxisSize.min, children: [
-                const Text('\u{1F917}', style: TextStyle(fontSize: 72)),
-                const SizedBox(height: 12),
-                Text(context.t.dangerThanks,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('\u{1F917}', style: TextStyle(fontSize: 72)),
+                  const SizedBox(height: 12),
+                  Text(
+                    context.t.dangerThanks,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge),
-              ]),
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),

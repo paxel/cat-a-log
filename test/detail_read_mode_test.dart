@@ -26,16 +26,19 @@ void main() {
   tearDown(() => store.close());
 
   Future<void> pump(WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: CatDetailScreen(store: store, catId: cat),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatDetailScreen(store: store, catId: cat),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('opens read-only: filled fields only, no edit icons',
-      (tester) async {
+  testWidgets('opens read-only: filled fields only, no edit icons', (
+    tester,
+  ) async {
     await pump(tester);
     // The filled field shows, formatted.
     expect(find.text('Gender'), findsOneWidget);
@@ -51,8 +54,9 @@ void main() {
     expect(find.byType(AlertDialog), findsNothing);
   });
 
-  testWidgets('pencil enters edit mode with all fields, check leaves it',
-      (tester) async {
+  testWidgets('pencil enters edit mode with all fields, check leaves it', (
+    tester,
+  ) async {
     await pump(tester);
     await tester.tap(find.byTooltip('Edit'));
     await tester.pumpAndSettle();
@@ -72,8 +76,7 @@ void main() {
     expect(find.text('Breed'), findsNothing);
   });
 
-  testWidgets('back leaves edit mode before leaving the page',
-      (tester) async {
+  testWidgets('back leaves edit mode before leaving the page', (tester) async {
     await pump(tester);
     await tester.tap(find.byTooltip('Edit'));
     await tester.pumpAndSettle();
@@ -88,8 +91,9 @@ void main() {
     expect(state, isNotNull);
   });
 
-  testWidgets('read-mode long-press on a field lands in its editor',
-      (tester) async {
+  testWidgets('read-mode long-press on a field lands in its editor', (
+    tester,
+  ) async {
     await pump(tester);
     await tester.longPress(find.text('Gender'));
     await tester.pumpAndSettle();
@@ -106,13 +110,15 @@ void main() {
   testWidgets('photo long-press menu works in read mode', (tester) async {
     await tester.runAsync(() async {
       final bytes = Uint8List.fromList(
-          img.encodeJpg(img.Image(width: 8, height: 8)));
+        img.encodeJpg(img.Image(width: 8, height: 8)),
+      );
       store.addImage(cat, CatalogStore.compressImage(bytes));
     });
     await pump(tester);
     final tile = find.descendant(
-        of: find.byType(GridView),
-        matching: find.byType(GestureDetector));
+      of: find.byType(GridView),
+      matching: find.byType(GestureDetector),
+    );
     await tester.ensureVisible(tile.first);
     await tester.pumpAndSettle();
     // Tap opens the viewer.
@@ -129,8 +135,9 @@ void main() {
     expect(find.text('This is the profile image'), findsOneWidget);
   });
 
-  testWidgets('clowder opens read-only with the gallery before the fields',
-      (tester) async {
+  testWidgets('clowder opens read-only with the gallery before the fields', (
+    tester,
+  ) async {
     // Tall surface: edit mode lists every clowder field, and both the
     // gallery and the field must be on screen to compare their order.
     tester.view.physicalSize = const Size(1000, 2400);
@@ -140,11 +147,13 @@ void main() {
     store.moveCat(cat, home);
     store.append(home, Keys.userField('address'), 'Main St 1');
 
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: ClowderDetailScreen(store: store, clowderId: home),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ClowderDetailScreen(store: store, clowderId: home),
+      ),
+    );
     await tester.pumpAndSettle();
 
     // Filled field shows, empty one doesn't, no edit icons.
@@ -171,8 +180,9 @@ void main() {
     expect(find.text('Add cat'), findsOneWidget);
   });
 
-  testWidgets('a new field can be created from the page in edit mode',
-      (tester) async {
+  testWidgets('a new field can be created from the page in edit mode', (
+    tester,
+  ) async {
     await pump(tester);
     await tester.tap(find.byTooltip('Edit'));
     await tester.pumpAndSettle();
@@ -193,21 +203,25 @@ void main() {
     expect(find.byType(AlertDialog), findsOneWidget);
   });
 
-  testWidgets('a fresh cat opens in edit mode, existing ones read-only',
-      (tester) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: CatDetailScreen(store: store, catId: cat, startEditing: true),
-    ));
+  testWidgets('a fresh cat opens in edit mode, existing ones read-only', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatDetailScreen(store: store, catId: cat, startEditing: true),
+      ),
+    );
     await tester.pumpAndSettle();
     // All fields visible right away — no pencil needed.
     expect(find.text('Breed'), findsOneWidget);
     expect(find.byTooltip('Done'), findsOneWidget);
   });
 
-  testWidgets('a removal on the history page shows after returning',
-      (tester) async {
+  testWidgets('a removal on the history page shows after returning', (
+    tester,
+  ) async {
     store.append(cat, Keys.userField('gender'), 'male');
     await pump(tester);
     expect(find.text('male'), findsOneWidget);
@@ -218,10 +232,12 @@ void main() {
     await tester.longPress(find.text('Gender'));
     await tester.pumpAndSettle();
     // The field's history page: the bin on the value removes it.
-    await tester.tap(find.descendant(
-      of: find.ancestor(of: find.text('male'), matching: find.byType(Card)),
-      matching: find.byTooltip('Remove this value'),
-    ));
+    await tester.tap(
+      find.descendant(
+        of: find.ancestor(of: find.text('male'), matching: find.byType(Card)),
+        matching: find.byTooltip('Remove this value'),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.pageBack();
     await tester.pumpAndSettle();
@@ -230,8 +246,7 @@ void main() {
     expect(find.text('male'), findsNothing);
   });
 
-  testWidgets('conflict row shows and resolves in read mode',
-      (tester) async {
+  testWidgets('conflict row shows and resolves in read mode', (tester) async {
     final other = CatalogStore.inMemory();
     addTearDown(other.close);
     other.author = 'friend';
@@ -255,30 +270,35 @@ void main() {
     expect(find.byType(OutlinedButton), findsNWidgets(2));
   });
 
-  testWidgets('in edit mode a filled field holds to its history, an empty one holds nothing',
-      (tester) async {
-    tester.view.physicalSize = const Size(1000, 2400);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.reset);
-    await pump(tester);
-    await tester.tap(find.byTooltip('Edit'));
-    await tester.pumpAndSettle();
-    await tester.longPress(find.text('Breed'));
-    await tester.pumpAndSettle();
-    expect(find.byTooltip('Oldest first'), findsNothing);
-    await tester.longPress(find.text('Gender'));
-    await tester.pumpAndSettle();
-    expect(find.byTooltip('Oldest first'), findsOneWidget);
-  });
+  testWidgets(
+    'in edit mode a filled field holds to its history, an empty one holds nothing',
+    (tester) async {
+      tester.view.physicalSize = const Size(1000, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await pump(tester);
+      await tester.tap(find.byTooltip('Edit'));
+      await tester.pumpAndSettle();
+      await tester.longPress(find.text('Breed'));
+      await tester.pumpAndSettle();
+      expect(find.byTooltip('Oldest first'), findsNothing);
+      await tester.longPress(find.text('Gender'));
+      await tester.pumpAndSettle();
+      expect(find.byTooltip('Oldest first'), findsOneWidget);
+    },
+  );
 
-  testWidgets('a hold on the home title renames it in read mode',
-      (tester) async {
+  testWidgets('a hold on the home title renames it in read mode', (
+    tester,
+  ) async {
     final home = store.createClowder('Home');
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: ClowderDetailScreen(store: store, clowderId: home),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ClowderDetailScreen(store: store, clowderId: home),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.longPress(find.text('Home'));
     await tester.pumpAndSettle();
@@ -289,8 +309,9 @@ void main() {
     expect(store.current(home, Keys.name), 'Barn');
   });
 
-  testWidgets('the move is one dialog: a tap on the home moves as of today',
-      (tester) async {
+  testWidgets('the move is one dialog: a tap on the home moves as of today', (
+    tester,
+  ) async {
     final home = store.createClowder('Barn');
     await pump(tester);
     await tester.tap(find.byTooltip('Edit'));

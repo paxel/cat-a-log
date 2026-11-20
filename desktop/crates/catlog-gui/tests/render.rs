@@ -6,6 +6,15 @@
 //! cargo test -p catlog-gui --test render -- --ignored
 //! ```
 
+// Tests may unwrap, expect, panic and index (clippy.toml covers #[test]
+// functions; this covers the helpers beside them).
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing
+)]
+
 use catlog_core::tiles::{TileCache, TileFetcher, TileId, TileSource};
 use catlog_gui::{App, Modal, Selection, SettingsFile, View};
 use std::sync::Arc;

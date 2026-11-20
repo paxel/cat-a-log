@@ -4,6 +4,7 @@ import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+
 import 'exclusive.dart';
 import 'private_temp.dart';
 import 'sync/saf_folder.dart';
@@ -27,8 +28,10 @@ const backupFolderKey = 'backupFolder';
 
 /// Puts [path] as [name] into the chosen folder's `catlog-backups`.
 Future<void> copyToBackupFolder(String tree, String path, String name) =>
-    SafSyncFolder(tree, root: 'catlog-backups')
-        .write('', name, File(path).readAsBytesSync());
+    SafSyncFolder(
+      tree,
+      root: 'catlog-backups',
+    ).write('', name, File(path).readAsBytesSync());
 
 /// The marker Android's backup agent leaves after it restored the app's
 /// files (see CatlogBackupAgent.kt); holds the moment as ISO 8601.
@@ -62,8 +65,7 @@ String backupFileName(String? catalogName) {
   // carry — 北京, Москва — or one that only differs in punctuation gets
   // a short fingerprint of the real name, so "Cats!" and "Cats?" stay
   // apart and a Chinese name is not silently the shared fallback.
-  final faithful =
-      safe == name.toLowerCase().replaceAll(RegExp(r'\s+'), '-');
+  final faithful = safe == name.toLowerCase().replaceAll(RegExp(r'\s+'), '-');
   if (safe.isEmpty) return 'catlog-${_fingerprint(name)}.catsync';
   return faithful
       ? 'catlog-$safe.catsync'
@@ -131,7 +133,9 @@ Future<String> saveBesideBackups(String path, String name) async {
   }
   if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
     final downloads = await getDownloadsDirectory();
-    if (downloads == null) throw const FileSystemException('No Downloads folder');
+    if (downloads == null) {
+      throw const FileSystemException('No Downloads folder');
+    }
     final to = '${downloads.path}/$name';
     File(path).copySync(to);
     return to;
@@ -147,27 +151,32 @@ Future<void>? _inFlight;
 /// One backup at a time: Android fires "inactive" and "paused" back to
 /// back, and both would pass the vector check before either wrote it.
 /// [force] writes even when nothing changed — the Back up now button.
-Future<void> autoBackup(CatalogStore store,
-    {Future<String> Function(String path, String name)? save,
-    Future<void> Function(String tree, String path, String name)? copy,
-    bool force = false}) {
+Future<void> autoBackup(
+  CatalogStore store, {
+  Future<String> Function(String path, String name)? save,
+  Future<void> Function(String tree, String path, String name)? copy,
+  bool force = false,
+}) {
   final running = _inFlight;
   if (running != null) return running;
   // Under the backup key so the activity line shows it running.
-  final run = runExclusive<void>(
-    'backup',
-    () => _autoBackup(store, save: save, copy: copy, force: force),
-  ).whenComplete(() {
-    _inFlight = null;
-  });
+  final run =
+      runExclusive<void>(
+        'backup',
+        () => _autoBackup(store, save: save, copy: copy, force: force),
+      ).whenComplete(() {
+        _inFlight = null;
+      });
   _inFlight = run;
   return run;
 }
 
-Future<void> _autoBackup(CatalogStore store,
-    {Future<String> Function(String path, String name)? save,
-    Future<void> Function(String tree, String path, String name)? copy,
-    bool force = false}) async {
+Future<void> _autoBackup(
+  CatalogStore store, {
+  Future<String> Function(String path, String name)? save,
+  Future<void> Function(String tree, String path, String name)? copy,
+  bool force = false,
+}) async {
   try {
     // Only when something actually changed since the last backup.
     final vector = store.versionVector().toString();

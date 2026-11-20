@@ -32,28 +32,35 @@ void main() {
     // Distinct sizes: identical bytes would dedupe in the content-
     // addressed store.
     final f = File('${dir.path}/$name');
-    f.writeAsBytesSync(Uint8List.fromList(
-        img.encodeJpg(img.Image(width: frameSize++, height: 8))));
+    f.writeAsBytesSync(
+      Uint8List.fromList(
+        img.encodeJpg(img.Image(width: frameSize++, height: 8)),
+      ),
+    );
     return f.path;
   }
 
-  testWidgets('shared photos join the chosen cat through compression',
-      (tester) async {
+  testWidgets('shared photos join the chosen cat through compression', (
+    tester,
+  ) async {
     final cat = store.createCat('Sissi');
     final navigator = GlobalKey<NavigatorState>();
-    await tester.pumpWidget(MaterialApp(
-      navigatorKey: navigator,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: const Scaffold(body: SizedBox()),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigator,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Scaffold(body: SizedBox()),
+      ),
+    );
 
-    await tester.runAsync(() => handleSharedImages(
-          navigator,
-          store,
-          [frame('a.jpg'), frame('b.jpg'), '${dir.path}/missing.jpg'],
-          chooseTarget: (_, _) async => cat,
-        ));
+    await tester.runAsync(
+      () => handleSharedImages(navigator, store, [
+        frame('a.jpg'),
+        frame('b.jpg'),
+        '${dir.path}/missing.jpg',
+      ], chooseTarget: (_, _) async => cat),
+    );
     await tester.pumpAndSettle();
 
     // Both readable photos landed; the missing one was skipped quietly.
@@ -65,18 +72,19 @@ void main() {
   testWidgets('declining the chooser imports nothing', (tester) async {
     store.createCat('Sissi');
     final navigator = GlobalKey<NavigatorState>();
-    await tester.pumpWidget(MaterialApp(
-      navigatorKey: navigator,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: const Scaffold(body: SizedBox()),
-    ));
-    await tester.runAsync(() => handleSharedImages(
-          navigator,
-          store,
-          [frame('a.jpg')],
-          chooseTarget: (_, _) async => null,
-        ));
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigator,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Scaffold(body: SizedBox()),
+      ),
+    );
+    await tester.runAsync(
+      () => handleSharedImages(navigator, store, [
+        frame('a.jpg'),
+      ], chooseTarget: (_, _) async => null),
+    );
     await tester.pumpAndSettle();
     expect(store.images(store.cats().single.id), isEmpty);
   });
@@ -133,24 +141,31 @@ void main() {
     addTearDown(() => dir.deleteSync(recursive: true));
     final video = File('${dir.path}/clip.video')..writeAsBytesSync([0, 1, 2]);
     final navigator = GlobalKey<NavigatorState>();
-    await tester.pumpWidget(MaterialApp(
-      navigatorKey: navigator,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: const Scaffold(body: SizedBox()),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigator,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Scaffold(body: SizedBox()),
+      ),
+    );
     Uint8List jpeg(int shade) => Uint8List.fromList(
-        img.encodeJpg(img.Image(width: 40, height: 40)..clear(img.ColorRgb8(shade, 0, 0))));
-    await tester.runAsync(() => handleSharedImages(
-          navigator,
-          store,
-          [video.path],
-          chooseTarget: (_, _) async => cat,
-          extractFrames: (_, path) async {
-            expect(path, video.path);
-            return [jpeg(10), jpeg(200)];
-          },
-        ));
+      img.encodeJpg(
+        img.Image(width: 40, height: 40)..clear(img.ColorRgb8(shade, 0, 0)),
+      ),
+    );
+    await tester.runAsync(
+      () => handleSharedImages(
+        navigator,
+        store,
+        [video.path],
+        chooseTarget: (_, _) async => cat,
+        extractFrames: (_, path) async {
+          expect(path, video.path);
+          return [jpeg(10), jpeg(200)];
+        },
+      ),
+    );
     await tester.pumpAndSettle();
     expect(store.images(cat).length, 2);
   });

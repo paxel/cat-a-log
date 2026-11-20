@@ -63,13 +63,28 @@ void main() {
     addTearDown(store.close);
     addTearDown(other.close);
     final cat = store.createCat('Miezi');
-    store.append(cat, 'f:deceased', '2025-01-01', date: DateTime.utc(2025, 1, 1));
+    store.append(
+      cat,
+      'f:deceased',
+      '2025-01-01',
+      date: DateTime.utc(2025, 1, 1),
+    );
     other.applyEntries(
       store.entriesSince(const {}),
       senderVector: store.versionVector(),
     );
-    store.append(cat, 'f:deceased', '2026-02-02', date: DateTime.utc(2026, 1, 1));
-    other.append(cat, 'f:deceased', '2026-02-02', date: DateTime.utc(2026, 1, 2));
+    store.append(
+      cat,
+      'f:deceased',
+      '2026-02-02',
+      date: DateTime.utc(2026, 1, 1),
+    );
+    other.append(
+      cat,
+      'f:deceased',
+      '2026-02-02',
+      date: DateTime.utc(2026, 1, 2),
+    );
     store.applyEntries(
       other.entriesSince(store.versionVector()),
       senderVector: other.versionVector(),

@@ -46,16 +46,23 @@ pub fn edit_distance(a: &str, b: &str) -> usize {
     let a: Vec<char> = a.chars().collect();
     let b: Vec<char> = b.chars().collect();
     let mut prev: Vec<usize> = (0..=b.len()).collect();
-    let mut curr = vec![0; b.len() + 1];
-    for i in 1..=a.len() {
-        curr[0] = i;
-        for j in 1..=b.len() {
-            let cost = usize::from(a[i - 1] != b[j - 1]);
-            curr[j] = (curr[j - 1] + 1).min(prev[j] + 1).min(prev[j - 1] + cost);
+    let mut curr = Vec::with_capacity(b.len() + 1);
+    for (i, ca) in a.iter().enumerate() {
+        curr.clear();
+        curr.push(i + 1);
+        // prev[j] (the cell above) and prev[j + 1] (above right) walk along.
+        for (j, (cb, pair)) in b.iter().zip(prev.windows(2)).enumerate() {
+            let cost = usize::from(ca != cb);
+            let left = curr.get(j).copied().unwrap_or(usize::MAX - 1);
+            let (diag, up) = match pair {
+                [d, u] => (*d, *u),
+                _ => (usize::MAX - 1, usize::MAX - 1),
+            };
+            curr.push((left + 1).min(up + 1).min(diag + cost));
         }
-        prev.copy_from_slice(&curr);
+        std::mem::swap(&mut prev, &mut curr);
     }
-    prev[b.len()]
+    prev.last().copied().unwrap_or(0)
 }
 
 fn norm(s: &str) -> String {
@@ -104,9 +111,8 @@ impl Catalog {
         id_defs: &[&FieldDef],
         result: &mut Vec<DuplicateCandidate>,
     ) -> Result<()> {
-        for i in 0..entities.len() {
-            for j in i + 1..entities.len() {
-                let (a, b) = (&entities[i], &entities[j]);
+        for (i, a) in entities.iter().enumerate() {
+            for b in entities.iter().skip(i + 1) {
                 let mut matched = Vec::new();
                 let mut exact = false;
                 let (na, nb) = (norm(&a.name), norm(&b.name));
@@ -325,12 +331,12 @@ impl Catalog {
                 }
             }
             for ids in by_value.values() {
-                for i in 0..ids.len() {
-                    for j in i + 1..ids.len() {
-                        if seen.insert(pair_key(&ids[i], &ids[j])) {
+                for (i, a) in ids.iter().enumerate() {
+                    for b in ids.iter().skip(i + 1) {
+                        if seen.insert(pair_key(a, b)) {
                             result.push(MatchCandidate {
-                                a: ids[i].clone(),
-                                b: ids[j].clone(),
+                                a: a.clone(),
+                                b: b.clone(),
                                 reason: MatchReason::IdExact(def.clone()),
                                 distance_meters: None,
                             });
@@ -370,13 +376,13 @@ impl Catalog {
             });
         }
         let mut by_geo = Vec::new();
-        for i in 0..cats.len() {
-            for j in i + 1..cats.len() {
-                let (a, b) = (&cats[i].id, &cats[j].id);
+        let cats_geo: Vec<_> = cats.iter().zip(&geo).collect();
+        for (i, (ca, ga)) in cats_geo.iter().enumerate() {
+            for (cb, gb) in cats_geo.iter().skip(i + 1) {
+                let (a, b) = (&ca.id, &cb.id);
                 if seen.contains(&pair_key(a, b)) {
                     continue;
                 }
-                let (ga, gb) = (&geo[i], &geo[j]);
                 let mut best: Option<f64> = None;
                 let mut check = |xs: &[(f64, f64)], ys: &[(f64, f64)]| {
                     for x in xs {
@@ -444,10 +450,10 @@ impl Catalog {
             });
         }
         let mut by_looks: Vec<(i32, MatchCandidate)> = Vec::new();
-        for i in 0..cats.len() {
-            for j in i + 1..cats.len() {
-                let (a, b) = (&cats[i].id, &cats[j].id);
-                let (la, lb) = (&looks[i], &looks[j]);
+        let cats_looks: Vec<_> = cats.iter().zip(&looks).collect();
+        for (i, (ca, la)) in cats_looks.iter().enumerate() {
+            for (cb, lb) in cats_looks.iter().skip(i + 1) {
+                let (a, b) = (&ca.id, &cb.id);
                 if (!la.stray && !lb.stray) || la.looks.is_empty() || lb.looks.is_empty() {
                     continue;
                 }

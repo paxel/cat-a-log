@@ -84,7 +84,10 @@ class ChoreRow extends StatelessWidget {
       < 0 => t.overdueByDays(-toDue),
       0 => t.dueToday,
       <= 3 => t.choreDue(t.dueInDays(toDue)),
-      _ => t.choreDue(DateFormat.MMMEd(locale).format(chore.due!)),
+      _ => switch (chore.due) {
+        final due? => t.choreDue(DateFormat.MMMEd(locale).format(due)),
+        null => null,
+      },
     };
     final parts = <String>[
       if (showEntity) store.current(chore.entity, Keys.name) ?? t.unnamed,
@@ -96,8 +99,8 @@ class ChoreRow extends StatelessWidget {
     final alarm = overdue
         ? Theme.of(context).colorScheme.error
         : soon
-            ? Colors.orange.shade800
-            : null;
+        ? Colors.orange.shade800
+        : null;
     final time = chore.time;
     final title = time == null
         ? chore.title
@@ -110,33 +113,38 @@ class ChoreRow extends StatelessWidget {
     final paused = chore.paused;
     return WithCatEar(
       child: Card(
-      child: ListTile(
-        leading: paused
-            ? Icon(Icons.pause_circle_outline, color: faded)
-            : Checkbox(value: done, onChanged: (_) => _toggle()),
-        title: Text(
-          title,
-          style: done
-              ? TextStyle(decoration: TextDecoration.lineThrough, color: faded)
-              : paused
-                  ? TextStyle(color: faded)
-                  : overdue
-                      ? TextStyle(color: alarm)
-                      : null,
+        child: ListTile(
+          leading: paused
+              ? Icon(Icons.pause_circle_outline, color: faded)
+              : Checkbox(value: done, onChanged: (_) => _toggle()),
+          title: Text(
+            title,
+            style: done
+                ? TextStyle(
+                    decoration: TextDecoration.lineThrough,
+                    color: faded,
+                  )
+                : paused
+                ? TextStyle(color: faded)
+                : overdue
+                ? TextStyle(color: alarm)
+                : null,
+          ),
+          subtitle: parts.isEmpty
+              ? null
+              : Text(
+                  parts.join(' · '),
+                  style: done || paused
+                      ? TextStyle(color: faded)
+                      : alarm == null
+                      ? null
+                      : TextStyle(color: alarm),
+                ),
+          // A week has nothing to say about a chore done once.
+          trailing: once ? null : _WeekDots(weekDots(chore, ticks, today)),
+          onTap: onOpen,
+          onLongPress: () => _edit(context),
         ),
-        subtitle: parts.isEmpty
-            ? null
-            : Text(parts.join(' · '),
-                style: done || paused
-                    ? TextStyle(color: faded)
-                    : alarm == null
-                        ? null
-                        : TextStyle(color: alarm)),
-        // A week has nothing to say about a chore done once.
-        trailing: once ? null : _WeekDots(weekDots(chore, ticks, today)),
-        onTap: onOpen,
-        onLongPress: () => _edit(context),
-      ),
       ),
     );
   }

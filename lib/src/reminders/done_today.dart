@@ -17,7 +17,9 @@ void takeOffList(CatalogStore store, String key, {DateTime? today}) {
   final day = today ?? clockNow();
   final keys = _offList(store, day)..add(key);
   store.setLocalSetting(
-      doneTodayDismissedKey, '${dayKey(day)}|${keys.join(',')}');
+    doneTodayDismissedKey,
+    '${dayKey(day)}|${keys.join(',')}',
+  );
 }
 
 String reminderListKey(ActiveReminder r) => 'r:${r.entity}:${r.field}';
@@ -25,23 +27,21 @@ String reminderListKey(ActiveReminder r) => 'r:${r.entity}:${r.field}';
 String appointmentListKey(Appointment a) => 'a:${a.key}';
 
 /// The plans ticked today and still on the list.
-List<ActiveReminder> doneRemindersToday(CatalogStore store,
-    {DateTime? today}) {
+List<ActiveReminder> doneRemindersToday(CatalogStore store, {DateTime? today}) {
   final day = today ?? clockNow();
   final off = _offList(store, day);
   return [
     for (final r in store.remindersDoneToday(day))
-      if (!off.contains(reminderListKey(r))) r
+      if (!off.contains(reminderListKey(r))) r,
   ];
 }
 
 /// The appointments finished today and still on the list.
-List<Appointment> doneAppointmentsToday(CatalogStore store,
-    {DateTime? today}) {
+List<Appointment> doneAppointmentsToday(CatalogStore store, {DateTime? today}) {
   final day = today ?? clockNow();
   final off = _offList(store, day);
   return [
     for (final a in store.appointmentsDoneToday(day))
-      if (!off.contains(appointmentListKey(a))) a
+      if (!off.contains(appointmentListKey(a))) a,
   ];
 }

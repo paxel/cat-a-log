@@ -3748,11 +3748,11 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get playIntro =>
-      'Polož zařízení naplocho před kočku a spusť hračku. Zvedni zařízení, aby ses zastavil.';
+      'Polož zařízení naplocho před kočku a spusť hračku. Zvedni zařízení, abys ji zastavil.';
 
   @override
   String get playIntroNeutral =>
-      'Polož zařízení naplocho před mazlíčka a spusť hračku. Zvedni zařízení, aby ses zastavil.';
+      'Polož zařízení naplocho před mazlíčka a spusť hračku. Zvedni zařízení, abys ji zastavil.';
 
   @override
   String get toyLaserDot => 'Laserová tečka';

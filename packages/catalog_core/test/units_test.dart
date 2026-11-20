@@ -6,8 +6,8 @@ void main() {
   setUpAll(useSystemSqlite);
 
   test('kilograms and pounds meet in grams', () {
-    expect(baseString(toBase(Dimension.weight, UnitSystem.metric, 4.25)),
-        '4250');
+    expect(
+        baseString(toBase(Dimension.weight, UnitSystem.metric, 4.25)), '4250');
     expect(baseString(toBase(Dimension.weight, UnitSystem.imperial, 9.4)),
         '4263.8');
     expect(fromBase(Dimension.weight, UnitSystem.imperial, 4250),
@@ -39,7 +39,8 @@ void main() {
     expect(weight.scope, FieldScope.cat);
     store.defineField('Body temperature', FieldType.unitValue,
         scope: FieldScope.cat, dimension: Dimension.temperature);
-    final temp = store.fieldDefs().firstWhere((d) => d.slug == 'body-temperature');
+    final temp =
+        store.fieldDefs().firstWhere((d) => d.slug == 'body-temperature');
     expect(temp.dimension, Dimension.temperature);
   });
   formatDecimalTests();
@@ -49,8 +50,7 @@ void main() {
 }
 
 void formatDecimalTests() {
-  test('formatDecimal keeps at most the asked decimals, no trailing zeros',
-      () {
+  test('formatDecimal keeps at most the asked decimals, no trailing zeros', () {
     expect(formatDecimal(4.25, 2), '4.25');
     expect(formatDecimal(4.0, 2), '4');
     expect(formatDecimal(4.10, 2), '4.1');

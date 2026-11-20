@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -72,7 +74,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    unawaited(_load());
   }
 
   Future<void> _load() async {
@@ -83,13 +85,17 @@ class _RestoreScreenState extends State<RestoreScreen> {
     }
     _regroup();
     // Nothing found and no way to ask for a folder: nothing to offer.
-    if (_sets!.isEmpty && widget.skipWhenEmpty && widget._picker == null) {
+    if ((_sets?.isEmpty ?? false) &&
+        widget.skipWhenEmpty &&
+        widget._picker == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => widget.onDone(null));
     }
   }
 
   Future<void> _pickFolder() async {
-    final files = await widget._picker!();
+    final picker = widget._picker;
+    if (picker == null) return;
+    final files = await picker();
     if (files == null || !mounted) return;
     _files.addAll(files);
     _regroup();
@@ -109,16 +115,18 @@ class _RestoreScreenState extends State<RestoreScreen> {
     final picked = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (picked == null || !mounted) return;
     for (final f in picked.files) {
-      if (f.path != null) _files.add(File(f.path!));
+      if (f.path case final path?) _files.add(File(path));
     }
     _regroup();
   }
 
   Future<void> _restore() async {
+    final sets = _sets;
+    if (sets == null) return;
     setState(() => _restoring = true);
     CatalogInfo? first;
     var count = 0;
-    for (final (i, set) in _sets!.indexed) {
+    for (final (i, set) in sets.indexed) {
       if (!_selected.contains(i)) continue;
       final made = restoreBackupSet(widget.catalogs, set);
       first ??= made;
@@ -170,8 +178,8 @@ class _RestoreScreenState extends State<RestoreScreen> {
                     sets.isNotEmpty
                         ? t.restoreIntro
                         : widget._picker != null
-                            ? t.restoreAndroidHint
-                            : t.restoreNone,
+                        ? t.restoreAndroidHint
+                        : t.restoreNone,
                   ),
                 ),
                 if (widget._picker != null)

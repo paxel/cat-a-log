@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -45,11 +47,13 @@ void main() {
   ) async {
     final context = await pump(tester);
     ImportTarget? target;
-    chooseImportTarget(
-      context,
-      catalogs,
-      'Minka-share.catsync',
-    ).then((t) => target = t);
+    unawaited(
+      chooseImportTarget(
+        context,
+        catalogs,
+        'Minka-share.catsync',
+      ).then((t) => target = t),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Minka-share.catsync'), findsOneWidget);
     expect(find.text('Berlin'), findsOneWidget);
@@ -68,11 +72,13 @@ void main() {
   ) async {
     final context = await pump(tester);
     ImportTarget? target;
-    chooseImportTarget(
-      context,
-      catalogs,
-      'Minka-share.catsync',
-    ).then((t) => target = t);
+    unawaited(
+      chooseImportTarget(
+        context,
+        catalogs,
+        'Minka-share.catsync',
+      ).then((t) => target = t),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Berlin'));
     await tester.pumpAndSettle();
@@ -90,11 +96,13 @@ void main() {
   testWidgets('cancel returns nothing', (tester) async {
     final context = await pump(tester);
     ImportTarget? target = const ImportIntoNew('x');
-    chooseImportTarget(
-      context,
-      catalogs,
-      'Minka-share.catsync',
-    ).then((t) => target = t);
+    unawaited(
+      chooseImportTarget(
+        context,
+        catalogs,
+        'Minka-share.catsync',
+      ).then((t) => target = t),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();

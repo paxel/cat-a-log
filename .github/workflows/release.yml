@@ -5,18 +5,32 @@
 # builds can never collide (#39).
 #
 #   gate           — full Linux gate, tags only (analyze fatal-infos, all tests,
-#                    the Rust desktop's tests, tag = pubspec = Cargo versions)
-#   build-android  — signed per-ABI + universal APKs
+#                    the Rust desktop's tests, tag = pubspec = Cargo versions,
+#                    no known vulnerability in a lockfile, a CHANGELOG section
+#                    for the version, no open high or critical code-scanning
+#                    alert, Dart format, no null assertion,
+#                    no untranslated string,
+#                    the SonarQube Cloud quality gate OK, cargo-deny,
+#                    the coverage floors)
+#   geiger         — cargo geiger, report-only: unsafe counts in the log,
+#                    never blocks
+#   build-android  — signed per-ABI + universal APKs, refused when signed
+#                    with the debug key
 #   build-linux    — Rust desktop: tar.gz, .deb and AppImage per arch
 #   build-windows  — Rust desktop: zip with catlog.exe
 #   build-macos    — Rust desktop: unsigned catlog.app in a .dmg, per arch
 #   render-channels — Homebrew cask + formula and Scoop manifest rendered from
 #                    the artifacts, uploaded as an artifact on every run
+#   ios            — the iPhone app built unsigned and its XCTest target run
+#                    on a simulator (ios.yml); a gate for TestFlight
+#   testflight     — signed iPhone build, uploaded to TestFlight when
+#                    publishing
 #   release        — GitHub Release, notes = the CHANGELOG section for the tag
+#                    and signed build provenance for every file
 #   channels       — the rendered files pushed to the tap and the bucket, after
 #                    the Release, when publishing
 #
-# Publishing (Play, F-Droid, the Release, the tap and the bucket) happens
+# Publishing (Play, TestFlight, F-Droid, the Release, the tap and the bucket) happens
 # on a tag, or on a manual dispatch that says publish=true. A dispatch
 # without it is the dry run: every artifact is built and uploaded, nothing
 # leaves GitHub.
@@ -44,6 +58,10 @@ on:
         type: boolean
         default: false
 
+# Read-only by default; a job that writes widens it itself.
+permissions:
+  contents: read
+
 env:
   RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
   # Every publishing step asks this; the artifacts are built regardless.
@@ -54,11 +72,19 @@ jobs:
     name: Gate (Linux, full)
     if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: read
     steps:
-      - uses: actions/checkout@v5
-      - uses: subosito/flutter-action@v2
+      # The full history, so the code-scanning step finds the branches
+      # that hold the tagged commit.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
+          flutter-version: 3.47.9
           cache: true
       - name: Install sqlite3 for pure-Dart core tests
         run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
@@ -69,31 +95,157 @@ jobs:
           tag=${RELEASE_TAG#v}
           [ "$ver" = "$tag" ] || { echo "tag v$tag != pubspec version $ver" >&2; exit 1; }
           [ "$cargo_ver" = "$tag" ] || { echo "tag v$tag != Cargo version $cargo_ver" >&2; exit 1; }
+      # The Release's notes are this section (the release job below), which
+      # would otherwise fall back to a bare "Release <version>." line
+      # (cat-1006).
+      - name: CHANGELOG.md has a section for this version
+        run: |
+          ver=${RELEASE_TAG#v}
+          awk -v ver="$ver" '
+            $0 ~ "^## \\[" ver "\\]" { grab = 1; next }
+            grab && (/^## \[/ || /^---/) { exit }
+            grab && NF { print }
+          ' CHANGELOG.md | grep -q . || { echo "no ## [$ver] section with entries in CHANGELOG.md" >&2; exit 1; }
+      # CodeQL analyses branches, not tags (cat-1007): every open alert on a
+      # branch that holds this commit is listed, and one of severity high
+      # or critical (security severity, or rule severity error) stops the
+      # release. A branch CodeQL never analysed is skipped; none analysed
+      # at all stops it too. CodeQL's alerts only: OpenSSF Scorecard's
+      # (cat-1020) grade the repository's settings, not the code.
+      - name: No open high or critical code-scanning alert
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(git rev-parse HEAD)
+          branches=$(git branch -r --contains "$sha" --format='%(refname:lstrip=3)' | grep -vx HEAD || true)
+          analysed=0
+          blocking=0
+          for b in $branches; do
+            if ! gh api --paginate "repos/$GITHUB_REPOSITORY/code-scanning/alerts?ref=refs/heads/$b&state=open&tool_name=CodeQL&per_page=100" \
+              --jq '.[] | [(.rule.security_severity_level // "-"), .rule.severity, .rule.id, .most_recent_instance.location.path, .html_url] | @tsv' \
+              > "$RUNNER_TEMP/alerts.tsv" 2> "$RUNNER_TEMP/error.txt"; then
+              if grep -q 'no analysis found' "$RUNNER_TEMP/error.txt"; then
+                echo "$b: not analysed by CodeQL, skipped"
+                continue
+              fi
+              cat "$RUNNER_TEMP/error.txt" >&2
+              exit 1
+            fi
+            analysed=$((analysed + 1))
+            echo "Open code-scanning alerts on $b (security severity, severity, rule, file, link):"
+            cat "$RUNNER_TEMP/alerts.tsv"
+            n=$(awk -F'\t' '$1 == "high" || $1 == "critical" || $2 == "error"' "$RUNNER_TEMP/alerts.tsv" | wc -l)
+            echo "$n of them high or critical"
+            blocking=$((blocking + n))
+          done
+          [ "$analysed" -gt 0 ] || { echo "no CodeQL analysis on any branch that holds $sha" >&2; exit 1; }
+          [ "$blocking" -eq 0 ] || { echo "$blocking open high or critical code-scanning alerts" >&2; exit 1; }
+      # SonarQube Cloud's quality gate (cat-1018). The free plan analyses
+      # summer only (sonar.yml), so this is summer's latest analysis:
+      # release from summer after its SonarQube Cloud run has finished.
+      - name: SonarQube Cloud quality gate
+        run: |
+          status=$(curl -fsS "https://sonarcloud.io/api/qualitygates/project_status?projectKey=paxel_cat-a-log" \
+            | jq -r .projectStatus.status)
+          echo "quality gate: $status"
+          [ "$status" = "OK" ] || { echo "SonarQube Cloud quality gate is $status, not OK" >&2; exit 1; }
+      # No known vulnerability in a lockfile (cat-1004), as on every push;
+      # unmaintained notices are reported only, tool/osv_gate.py decides.
+      - name: osv-scanner
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
+        with:
+          scan-args: |-
+            --format=json
+            --output-file=osv-results.json
+            --recursive
+            ./
+      - name: No known vulnerability (unmaintained notices reported only)
+        run: python3 tool/osv_gate.py osv-results.json
+      # The app, the Dart core and the tools, formatted as `dart format`
+      # writes them (cat-1008). It reads each package's language version
+      # from .dart_tool/package_config.json, so the packages come first.
+      - name: Dart format
+        run: |
+          flutter pub get
+          (cd packages/catalog_core && dart pub get)
+          dart format --output=none --set-exit-if-changed .
       - name: Core — analyze and test
         working-directory: packages/catalog_core
         run: |
           dart pub get
           dart analyze --fatal-infos
           dart test
+      # No `!` null assertion outside tests (cat-1015), in the core and the
+      # app: the Dart counterpart of the desktop's ban on panics.
+      - name: No null assertion outside tests
+        working-directory: packages/catalog_core
+        run: dart run tool/no_null_assertions.dart lib ../../lib
       - name: App — analyze and test
         run: |
           flutter pub get
           flutter analyze --fatal-infos
           flutter test
-      - uses: dtolnay/rust-toolchain@stable
+      # Coverage floors (cat-1016), the Dart half: the core and the app
+      # below their floor in tool/coverage-floors.txt stop the release.
+      - name: Coverage floors — Dart core and app
+        run: tool/coverage.sh dart-core flutter-app
+      # flutter pub get runs gen-l10n, which lists every message missing
+      # in a locale in build/untranslated.json (l10n.yaml); any of them
+      # fails the build (cat-1009).
+      - name: No untranslated strings
+        run: test "$(tr -d '[:space:]' < build/untranslated.json)" = "{}"
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
         with:
-          components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
+          components: rustfmt, clippy, llvm-tools-preview
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: desktop
       - name: Desktop build dependencies
         run: sudo apt-get install -y --no-install-recommends libasound2-dev pkg-config
+      # As on every push (cat-1022): advisories, licences and sources of
+      # the desktop's dependencies.
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+        with:
+          manifest-path: desktop/Cargo.toml
+          command: check advisories licenses sources
       - name: Desktop — format, lint and test
         working-directory: desktop
         run: |
           cargo fmt --check
           cargo clippy --workspace --all-targets --locked -- -D warnings
           cargo test --workspace --locked
+      - uses: taiki-e/install-action@4a76afe23f9e08d2d9550fb56e556444e8611d21 # v2.90.4
+        with:
+          tool: cargo-llvm-cov
+      # The Rust half: each crate below its floor stops the release.
+      - name: Coverage floors — Rust core, GUI and l10n
+        run: tool/coverage.sh rust-core rust-gui rust-l10n
+
+  # Report-only (cat-1011): the unsafe counts of the desktop and its
+  # dependencies, for the log. cargo geiger is known to abort on some
+  # workspaces, so the job and its run may fail without failing the
+  # release, and nothing needs it. The real rule is clippy's `unsafe_code`
+  # workspace lint.
+  geiger:
+    name: Unsafe code report (cargo geiger, report-only)
+    if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 90
+    env:
+      CARGO_PROFILE_DEV_DEBUG: line-tables-only
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: System libraries (ALSA for the sounds)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev pkg-config
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
+      - run: cargo install cargo-geiger --locked --version 0.14.0
+      # geiger wants a package, not the virtual workspace root; the GUI
+      # crate pulls in the other two.
+      - name: Desktop
+        continue-on-error: true
+        run: cargo geiger --manifest-path "$GITHUB_WORKSPACE/desktop/crates/catlog-gui/Cargo.toml"
 
   # Runs on every branch push AND every tag — the gate blocks the
   # release-only jobs, not the internal-testing bundle.
@@ -101,14 +253,15 @@ jobs:
     name: Android APKs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: '17'
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
+          flutter-version: 3.47.9
           cache: true
       - name: Write signing config from secrets
         run: |
@@ -127,7 +280,7 @@ jobs:
         run: flutter build appbundle --release --build-number=$((GITHUB_RUN_NUMBER + 100))
       - name: Upload internal-testing bundle
         if: github.ref_type == 'branch' && github.event_name == 'push'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: catlog-aab
           path: build/app/outputs/bundle/release/app-release.aab
@@ -136,6 +289,28 @@ jobs:
         run: |
           flutter build apk --release --split-per-abi --build-number=$((GITHUB_RUN_NUMBER + 100))
           flutter build apk --release --build-number=$((GITHUB_RUN_NUMBER + 100))
+      # Gradle already refuses a release build without key.properties;
+      # this checks what actually came out, before anything is uploaded
+      # (cat-1010). An APK signed with the debug key would lock F-Droid
+      # clients to it for good, and Play refuses the bundle.
+      - name: Refuse anything signed with the debug key
+        run: |
+          shopt -s nullglob
+          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          for apk in build/app/outputs/flutter-apk/app-*release.apk; do
+            "$apksigner" verify --print-certs "$apk" > certs.txt
+            if grep -q "CN=Android Debug" certs.txt; then
+              echo "$apk is signed with the debug key" >&2
+              exit 1
+            fi
+          done
+          aab=build/app/outputs/bundle/release/app-release.aab
+          keytool -printcert -jarfile "$aab" > certs.txt
+          grep -q "Owner:" certs.txt || { echo "$aab is not signed" >&2; exit 1; }
+          if grep -q "CN=Android Debug" certs.txt; then
+            echo "$aab is signed with the debug key" >&2
+            exit 1
+          fi
       - name: Rename artifacts
         if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
         run: |
@@ -147,7 +322,7 @@ jobs:
           mv "$d/app-x86_64-release.apk"      "dist/catlog-$v-android-x86_64.apk"
           mv "$d/app-release.apk"             "dist/catlog-$v-android-universal.apk"
           mv build/app/outputs/bundle/release/app-release.aab "dist/catlog-$v-android-playstore.aab"
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
         with:
           name: android
@@ -157,7 +332,7 @@ jobs:
       # in the Console and waits for a human to press Start rollout.
       - name: Publish to Google Play
         if: env.PUBLISH == 'true'
-        uses: r0adkll/upload-google-play@v1
+        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: io.github.paxel.catlog
@@ -181,9 +356,9 @@ jobs:
             arch: arm64
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: desktop
       - name: Build dependencies
@@ -197,7 +372,7 @@ jobs:
         run: |
           v="${RELEASE_TAG#v}"
           desktop/packaging/linux/pack.sh "$v" "${{ matrix.arch }}" desktop/target/release/catlog dist
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: linux-${{ matrix.arch }}
           path: dist/*
@@ -207,9 +382,9 @@ jobs:
     needs: gate
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: desktop
       - name: Build
@@ -220,7 +395,7 @@ jobs:
         run: |
           $v = $env:RELEASE_TAG.TrimStart("v")
           desktop\packaging\windows\pack.ps1 -Version $v -Binary desktop\target\release\catlog.exe -Dist dist
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: windows
           path: dist/*
@@ -239,9 +414,9 @@ jobs:
             arch: x86_64
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: desktop
       - name: Build
@@ -251,7 +426,7 @@ jobs:
         run: |
           v="${RELEASE_TAG#v}"
           desktop/packaging/macos/pack.sh "$v" "${{ matrix.arch }}" desktop/target/release/catlog dist
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: macos-${{ matrix.arch }}
           path: dist/*
@@ -264,12 +439,12 @@ jobs:
     steps:
       # The listing (texts, F-Droid fields, store graphics, screenshots)
       # and the changelog.
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           path: app
       # Channel-repo pattern like Homebrew/Scoop: the index and APK live
       # in paxel/fdroid (own Pages), not in this repo's history.
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: android
           path: apks
@@ -345,14 +520,31 @@ jobs:
     needs: [gate, build-android, build-linux, build-windows, build-macos]
     if: github.ref_type == 'tag' || github.event.inputs.publish == 'true'
     runs-on: ubuntu-latest
+    # contents: the release itself. id-token and attestations: the signed
+    # build provenance (Sigstore certificate from the workflow's OIDC token).
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v7
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           path: dist
           merge-multiple: true
+      # SLSA build provenance for every release file (cat-1021), signed with
+      # Sigstore and stored with GitHub's attestations
+      # (`gh attestation verify <file> --repo paxel/cat-a-log`). The bundle
+      # is also a release asset, for verification without GitHub's API.
+      - name: Attest build provenance
+        id: attest
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/*
+      - name: Add the provenance bundle to the release assets
+        env:
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+        run: cp "$BUNDLE" "dist/catlog-${RELEASE_TAG}.intoto.jsonl"
       - name: Release notes from the CHANGELOG section
         run: |
           ver=${RELEASE_TAG#v}
@@ -377,22 +569,100 @@ jobs:
               dist/*
           fi
 
+  # The release's documentation frames as its asset, for the older versions
+  # of every later site build (site-frames.yml, tool/site/build-all.js).
+  site-frames:
+    name: Site frames
+    needs: release
+    permissions:
+      contents: write
+    uses: ./.github/workflows/site-frames.yml
+    with:
+      tag: ${{ github.event.inputs.tag || github.ref_name }}
+
   render-channels:
     name: Render cask, formula and manifest
     needs: [gate, build-linux, build-windows, build-macos]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v7
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           path: dist
           merge-multiple: true
       - name: Render from the templates with the artifacts' checksums
         run: desktop/packaging/render-channels.sh "${RELEASE_TAG#v}" dist out
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: channels
           path: out/*
+
+  # The iPhone app built unsigned and its XCTest target run on a simulator
+  # (ios.yml, the same job as on every push to a branch); a gate: the
+  # TestFlight upload needs it (cat-1019).
+  ios:
+    name: iOS
+    needs: gate
+    uses: ./.github/workflows/ios.yml
+    permissions:
+      contents: read
+
+  # Signed iOS build (ADR-0003: no local Mac), uploaded to TestFlight when
+  # publishing; a dry run builds and signs only. Behind the gate and the
+  # iOS tests, like every other channel.
+  #
+  # Requires these repository secrets (see docs/ci-ios-signing.md):
+  #   IOS_CERTIFICATE_BASE64   distribution certificate (.p12, base64)
+  #   IOS_CERTIFICATE_PASSWORD password of that .p12
+  #   IOS_PROFILE_BASE64       App Store provisioning profile (base64)
+  #   APPSTORE_ISSUER_ID       App Store Connect API issuer id
+  #   APPSTORE_KEY_ID          App Store Connect API key id
+  #   APPSTORE_PRIVATE_KEY     App Store Connect API private key (.p8 contents)
+  testflight:
+    name: iOS to TestFlight
+    needs: ios
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+      - name: Import signing certificate
+        uses: apple-actions/import-codesign-certs@63fff01cd422d4b7b855d40ca1e9d34d2de9427d # v3.0.0
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+      - name: Install provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_PROFILE_BASE64 }}" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/catlog.mobileprovision
+      - run: flutter pub get
+      - name: Pin manual signing for the archive build
+        run: |
+          for f in ios/Flutter/Release.xcconfig ios/Flutter/Debug.xcconfig; do
+            cat >> "$f" <<'EOF'
+          CODE_SIGN_STYLE = Manual
+          DEVELOPMENT_TEAM = 5Q2A853F9A
+          PROVISIONING_PROFILE_SPECIFIER = catlog appstore
+          CODE_SIGN_IDENTITY = Apple Distribution
+          EOF
+          done
+      # This workflow's run counter, as for the Android version codes:
+      # one counter for every store build (#39). It stands well above the
+      # numbers the separate TestFlight workflow used.
+      - name: Build signed IPA
+        run: flutter build ipa --release --build-number=$((GITHUB_RUN_NUMBER + 100)) --export-options-plist=ios/ExportOptions.plist
+      - name: Upload to TestFlight
+        if: env.PUBLISH == 'true'
+        uses: apple-actions/upload-testflight-build@9fd28d4e690396e43caca69cef54cccccce77034 # v3.0.1
+        with:
+          app-path: build/ios/ipa/catlog.ipa
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
   # Only after the Release exists: the cask and the manifest point at its
   # assets, so nothing may be pushed before they are there.
@@ -402,7 +672,7 @@ jobs:
     if: github.ref_type == 'tag' || github.event.inputs.publish == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: channels
           path: out

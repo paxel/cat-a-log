@@ -24,13 +24,16 @@ pub struct Trend {
 /// first and the last reading. A cluster of five weighings in a week
 /// does not drag a year's line.
 pub fn smooth_curve(points: &[GraphPoint], from: i64, to: i64, samples: usize) -> Vec<GraphPoint> {
+    let (Some(first), Some(last)) = (points.first(), points.last()) else {
+        return points.to_vec();
+    };
     if points.len() < 2 {
         return points.to_vec();
     }
     let span = (to - from).max(1) as f64;
     let sigma = span / 12.0;
-    let first = points[0].at as f64;
-    let last = points[points.len() - 1].at as f64;
+    let first = first.at as f64;
+    let last = last.at as f64;
     (0..=samples)
         .map(|i| {
             let t = first + (last - first) * i as f64 / samples as f64;
@@ -58,7 +61,7 @@ pub fn trend_line(points: &[GraphPoint], from: i64, to: i64) -> Option<Trend> {
         return None;
     }
     const DAY: f64 = 86_400_000.0;
-    let origin = points[0].at as f64;
+    let origin = points.first()?.at as f64;
     let xs: Vec<f64> = points
         .iter()
         .map(|p| (p.at as f64 - origin) / DAY)

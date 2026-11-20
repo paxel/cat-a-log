@@ -150,9 +150,9 @@ Future<void> main(List<String> args) async {
       folderReader.close();
       bundleReader.close();
       index.writeln('- `${scenario.name}`: ${scenario.about}');
-      stdout
-          .writeln('${scenario.name}: ${viaFolder['entries'].length} entries, '
-              '${viaFolder['blobs'].length} photos');
+      stdout.writeln(
+          '${scenario.name}: ${(viaFolder['entries'] as List).length} entries, '
+          '${(viaFolder['blobs'] as List).length} photos');
     } finally {
       work.deleteSync(recursive: true);
     }
@@ -248,8 +248,8 @@ void _applyTamper(Scenario scenario, CatalogStore writer, Directory folderDir,
 /// The share payload's entries with the random device id fixed.
 void _writeShare(
     CatalogStore writer, Directory out, String cat, Set<String> fields) {
-  final bytes = catShareBytes(writer,
-      catId: cat, fields: fields, includePhotos: false);
+  final bytes =
+      catShareBytes(writer, catId: cat, fields: fields, includePhotos: false);
   final archive = ZipDecoder().decodeBytes(bytes);
   final entries = archive.files.firstWhere((f) => f.name == 'entries.jsonl');
   final lines = const LineSplitter()
@@ -296,7 +296,6 @@ void _rewriteZip(
   // One stamp for every entry, in UTC: the encoder turns the modification
   // time into DOS time through the machine's own zone, so without this the
   // bundle's bytes differ between a writer in Berlin and one in UTC.
-  final bytes =
-      ZipEncoder().encode(fixed, modified: DateTime.utc(1980, 1, 1));
+  final bytes = ZipEncoder().encode(fixed, modified: DateTime.utc(1980, 1, 1));
   File(path).writeAsBytesSync(bytes!);
 }

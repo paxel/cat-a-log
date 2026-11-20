@@ -47,61 +47,73 @@ CatalogStore? activeStore;
 void Function(CatalogInfo)? switchCatalog;
 
 Future<void> main(List<String> args) async {
-  await runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    // Two cat sounds come from Wikimedia Commons, CC0 and public domain:
-    // no credit is owed, the sources are named on the licences page. The
-    // rest are one cat's own calls, given to the app by its keeper.
-    LicenseRegistry.addLicense(() => Stream.value(const LicenseEntryWithLineBreaks(
-          ['Cat sounds'],
-          'purr.wav and party.wav are cut from recordings on Wikimedia '
-          'Commons by Adam Cuerden, freemaster2 and jim_mowatt, released as '
-          'CC0 or into the public domain. socke1.wav, socke2.wav, '
-          'socke3.wav and the chorus made of them are recordings of a cat '
-          'called Socke; sonne_miau.wav and sonne_purr.wav are recordings '
-          'of a cat called Sonne. Both are used by permission of their '
-          'keeper. See assets/sounds/LICENSES.md for the sources.',
-        )));
-    final dir = await getApplicationSupportDirectory();
-    // The language decides what the catalog carried over from an older
-    // version is called, so it is read before the catalogs are opened.
-    final saved = CatalogManager.savedLocale(dir.path);
-    if (saved != null && saved.isNotEmpty) {
-      localeOverride.value = Locale(saved);
-    }
-    final texts = await _texts();
-    // Armed before the catalogs are opened: the one-time move into the
-    // multi-catalog layout can fail, and a failure at launch has to
-    // reach the keeper instead of dying in a zone with nothing to catch
-    // it. Restart then tries the move again, which is exactly what the
-    // message tells them to do.
-    await initCrashGuard(dir, restart: () {
-      // The previous run's handles go before a new one opens the same
-      // files.
-      activeStore?.close();
-      catalogManager?.close();
-      unawaited(_openAndRun(dir, texts, args));
-    });
-    // Read the marker BEFORE re-arming it: dirty means the last run was
-    // killed without a clean pause (out-of-memory, native crash).
-    final diedLastRun = await previousRunDied();
-    markRunning();
-    await _openAndRun(dir, texts, args, diedLastRun: diedLastRun);
-  }, (error, stack) {
-    // Anything that escapes everything else still gets the friendly
-    // screen instead of a silent death.
-    PlatformDispatcher.instance.onError?.call(error, stack);
-  });
+  await runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      // Two cat sounds come from Wikimedia Commons, CC0 and public domain:
+      // no credit is owed, the sources are named on the licences page. The
+      // rest are one cat's own calls, given to the app by its keeper.
+      LicenseRegistry.addLicense(
+        () => Stream.value(
+          const LicenseEntryWithLineBreaks(
+            ['Cat sounds'],
+            'purr.wav and party.wav are cut from recordings on Wikimedia '
+            'Commons by Adam Cuerden, freemaster2 and jim_mowatt, released as '
+            'CC0 or into the public domain. socke1.wav, socke2.wav, '
+            'socke3.wav and the chorus made of them are recordings of a cat '
+            'called Socke; sonne_miau.wav and sonne_purr.wav are recordings '
+            'of a cat called Sonne. Both are used by permission of their '
+            'keeper. See assets/sounds/LICENSES.md for the sources.',
+          ),
+        ),
+      );
+      final dir = await getApplicationSupportDirectory();
+      // The language decides what the catalog carried over from an older
+      // version is called, so it is read before the catalogs are opened.
+      final saved = CatalogManager.savedLocale(dir.path);
+      if (saved != null && saved.isNotEmpty) {
+        localeOverride.value = Locale(saved);
+      }
+      final texts = await _texts();
+      // Armed before the catalogs are opened: the one-time move into the
+      // multi-catalog layout can fail, and a failure at launch has to
+      // reach the keeper instead of dying in a zone with nothing to catch
+      // it. Restart then tries the move again, which is exactly what the
+      // message tells them to do.
+      await initCrashGuard(
+        dir,
+        restart: () {
+          // The previous run's handles go before a new one opens the same
+          // files.
+          activeStore?.close();
+          catalogManager?.close();
+          unawaited(_openAndRun(dir, texts, args));
+        },
+      );
+      // Read the marker BEFORE re-arming it: dirty means the last run was
+      // killed without a clean pause (out-of-memory, native crash).
+      final diedLastRun = await previousRunDied();
+      markRunning();
+      await _openAndRun(dir, texts, args, diedLastRun: diedLastRun);
+    },
+    (error, stack) {
+      // Anything that escapes everything else still gets the friendly
+      // screen instead of a silent death.
+      PlatformDispatcher.instance.onError?.call(error, stack);
+    },
+  );
 }
 
 /// Opens the catalogs and starts the app. Separate from [main] because
 /// the crash screen's Restart runs it again — after a failed migration
 /// that is a real retry, not a button that does nothing.
 Future<void> _openAndRun(
-    Directory dir, AppLocalizations texts, List<String> args,
-    {bool diedLastRun = false}) async {
-  final catalogs =
-      CatalogManager.open(dir.path, defaultName: texts.clowders);
+  Directory dir,
+  AppLocalizations texts,
+  List<String> args, {
+  bool diedLastRun = false,
+}) async {
+  final catalogs = CatalogManager.open(dir.path, defaultName: texts.clowders);
   final store = catalogs.openStore(catalogs.active);
   activeStore = store;
   catalogManager = catalogs;
@@ -110,11 +122,15 @@ Future<void> _openAndRun(
   refreshPetMode(store);
   // A Stray Cam capture the OS killed mid-camera completes here.
   unawaited(recoverStrayCam(store));
-  initIncomingFiles(navigatorKey, () => activeStore ?? store, args,
-      catalogs: catalogs, switchTo: (to) => switchCatalog?.call(to));
+  initIncomingFiles(
+    navigatorKey,
+    () => activeStore ?? store,
+    args,
+    catalogs: catalogs,
+    switchTo: (to) => switchCatalog?.call(to),
+  );
   await _restoreWindow(store);
-  runApp(CatlogApp(
-      store: store, catalogs: catalogs, diedLastRun: diedLastRun));
+  runApp(CatlogApp(store: store, catalogs: catalogs, diedLastRun: diedLastRun));
 }
 
 /// The texts in the language the app will run in, before there is a
@@ -124,8 +140,10 @@ Future<AppLocalizations> _texts() async =>
 
 Locale _resolvedLocale() =>
     localeOverride.value ??
-    basicLocaleListResolution(PlatformDispatcher.instance.locales.toList(),
-        AppLocalizations.supportedLocales);
+    basicLocaleListResolution(
+      PlatformDispatcher.instance.locales.toList(),
+      AppLocalizations.supportedLocales,
+    );
 
 bool get _isDesktop =>
     Platform.isLinux || Platform.isWindows || Platform.isMacOS;
@@ -138,9 +156,8 @@ Future<void> _restoreWindow(CatalogStore store) async {
   await windowManager.waitUntilReadyToShow(null, () async {
     if (saved != null && saved.length == 4) {
       final v = saved.map(double.tryParse).toList();
-      if (!v.contains(null)) {
-        await windowManager.setBounds(
-            Rect.fromLTWH(v[0]!, v[1]!, v[2]!, v[3]!));
+      if (v case [final l?, final t?, final w?, final h?]) {
+        await windowManager.setBounds(Rect.fromLTWH(l, t, w, h));
       }
     }
     await windowManager.show();
@@ -158,11 +175,12 @@ class CatlogApp extends StatefulWidget {
   /// send a report once.
   final bool diedLastRun;
 
-  const CatlogApp(
-      {super.key,
-      required this.store,
-      this.catalogs,
-      this.diedLastRun = false});
+  const CatlogApp({
+    super.key,
+    required this.store,
+    this.catalogs,
+    this.diedLastRun = false,
+  });
 
   @override
   State<CatlogApp> createState() => _CatlogAppState();
@@ -194,13 +212,16 @@ class _CatlogAppState extends State<CatlogApp>
   void _lagging(CatalogStore store, Set<String> devices) {
     final names = {
       for (final device in devices)
-        store.authorsOverview().where((r) => r.device == device).firstOrNull
+        store
+                .authorsOverview()
+                .where((r) => r.device == device)
+                .firstOrNull
                 ?.author ??
             device.substring(0, device.length.clamp(0, 8)),
     };
-    NoteQueue.instance.add(Note.failed(
-      (t) => t.noteFolderLagging(names.join(', ')),
-    ));
+    NoteQueue.instance.add(
+      Note.failed((t) => t.noteFolderLagging(names.join(', '))),
+    );
   }
 
   /// Photos stored with camera metadata are rewritten without it once
@@ -222,26 +243,42 @@ class _CatlogAppState extends State<CatlogApp>
     final context = navigatorKey.currentContext;
     if (context == null || !context.mounted) return;
     if (needsAttention(result.report)) {
-      showImportSummary(context, _store, result.applied,
-          undo: undo, report: result.report);
+      unawaited(
+        showImportSummary(
+          context,
+          _store,
+          result.applied,
+          undo: undo,
+          report: result.report,
+        ),
+      );
       return;
     }
     if (fromTap) {
-      NoteQueue.instance.add(arrivalNote(context, _store, result.applied,
-          undo: undo, report: result.report));
+      NoteQueue.instance.add(
+        arrivalNote(
+          context,
+          _store,
+          result.applied,
+          undo: undo,
+          report: result.report,
+        ),
+      );
     } else if (result.applied.isNotEmpty) {
       showEventToasts(context, _store, result.applied);
     }
   }
 
-  void _mergeFailed(Object error) => NoteQueue.instance.add(Note.failed(
-        (t) => t.noteSyncFailed,
-        detail: '$error',
-        pageLabel: (t) => t.sync,
-        onOpenPage: () => navigatorKey.currentState?.push(MaterialPageRoute(
-              builder: (_) => SyncScreen(store: _store),
-            )),
-      ));
+  void _mergeFailed(Object error) => NoteQueue.instance.add(
+    Note.failed(
+      (t) => t.noteSyncFailed,
+      detail: '$error',
+      pageLabel: (t) => t.sync,
+      onOpenPage: () => navigatorKey.currentState?.push(
+        MaterialPageRoute<void>(builder: (_) => SyncScreen(store: _store)),
+      ),
+    ),
+  );
 
   /// Switches the app to another catalog: the new one becomes what
   /// everything writes to, and the app returns to the list.
@@ -279,21 +316,29 @@ class _CatlogAppState extends State<CatlogApp>
   /// database's full-month count.
   void _pickCoat() {
     if (!_store.isOpen) return;
-    final months = catalogManager
+    final months =
+        catalogManager
             ?.achievements()
             .where((a) => a.id == fullMonthId)
             .firstOrNull
             ?.times ??
         0;
-    pickCoat(favourite: _store.localSetting('furFavourite'), fullMonths: months);
+    pickCoat(
+      favourite: _store.localSetting('furFavourite'),
+      fullMonths: months,
+    );
   }
 
   /// Chore reminders follow the catalog as it is now: rebuilt on start,
   /// on resume and after every change.
   void _refreshReminders() {
     if (!_store.isOpen) return;
-    refreshChoreReminders(_store,
-        body: (c) => _store.current(c.entity, Keys.name) ?? '');
+    unawaited(
+      refreshChoreReminders(
+        _store,
+        body: (c) => _store.current(c.entity, Keys.name) ?? '',
+      ),
+    );
   }
 
   /// True only when the author was created THIS run: the intro is for
@@ -319,8 +364,7 @@ class _CatlogAppState extends State<CatlogApp>
     _watcher.start();
     if (_isDesktop) windowManager.addListener(this);
     if (widget.diedLastRun) {
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _offerCrashReport());
+      WidgetsBinding.instance.addPostFrameCallback((_) => _offerCrashReport());
     }
   }
 
@@ -346,10 +390,12 @@ class _CatlogAppState extends State<CatlogApp>
       ),
     );
     if (send == true) {
-      await mailCrashReport(lastCrashText() ??
-          '${crashReportHeader()}\n\n'
-              'cat(a)log was killed without a crash log '
-              '(most likely out of memory).');
+      await mailCrashReport(
+        lastCrashText() ??
+            '${crashReportHeader()}\n\n'
+                'cat(a)log was killed without a crash log '
+                '(most likely out of memory).',
+      );
     }
     clearLastCrash();
   }
@@ -369,8 +415,10 @@ class _CatlogAppState extends State<CatlogApp>
 
   Future<void> _saveBounds() async {
     final b = await windowManager.getBounds();
-    _store.setLocalSetting('windowBounds',
-        '${b.left},${b.top},${b.width},${b.height}');
+    _store.setLocalSetting(
+      'windowBounds',
+      '${b.left},${b.top},${b.width},${b.height}',
+    );
   }
 
   @override
@@ -387,8 +435,8 @@ class _CatlogAppState extends State<CatlogApp>
         state == AppLifecycleState.inactive) {
       // What was gathered goes to the folder before the phone is put
       // down; the backup follows.
-      _watcher.flush();
-      autoBackup(_store);
+      unawaited(_watcher.flush());
+      unawaited(autoBackup(_store));
       markCleanExit();
     }
     if (state == AppLifecycleState.resumed) {
@@ -406,6 +454,7 @@ class _CatlogAppState extends State<CatlogApp>
 
   @override
   Widget build(BuildContext context) {
+    final catalogs = widget.catalogs;
     return ValueListenableBuilder<Locale?>(
       valueListenable: localeOverride,
       builder: (context, locale, _) => MaterialApp(
@@ -424,35 +473,47 @@ class _CatlogAppState extends State<CatlogApp>
         // nav bar instead of raw black.
         builder: (context, child) => FurBackground(
           child: SafeArea(
-          top: false,
-          child: CallbackShortcuts(
-          bindings: {
-            const SingleActivator(LogicalKeyboardKey.keyF, control: true):
-                () => navigatorKey.currentState?.push(MaterialPageRoute(
-                      builder: (context) => CatListScreen(
-                          store: _store,
-                          title: context.t.cats,
-                          source: (s) => s.visibleCats(),
-                          autofocusFilter: true),
-                    )),
-            const SingleActivator(LogicalKeyboardKey.keyK, control: true):
-                () => navigatorKey.currentState?.push(MaterialPageRoute(
-                      builder: (_) => SyncScreen(store: _store),
-                    )),
-            const SingleActivator(LogicalKeyboardKey.keyB, control: true):
-                () => autoBackup(_store),
-            const SingleActivator(LogicalKeyboardKey.escape): () =>
-                navigatorKey.currentState?.maybePop(),
-          },
-          child: TouchTracker(
-            child: NoteStrip(
-              queue: NoteQueue.instance,
-              busy: busyFlows,
-              openIn: () => navigatorKey.currentContext!,
-              child: child ?? const SizedBox.shrink(),
+            top: false,
+            child: CallbackShortcuts(
+              bindings: {
+                const SingleActivator(
+                  LogicalKeyboardKey.keyF,
+                  control: true,
+                ): () => navigatorKey.currentState?.push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => CatListScreen(
+                      store: _store,
+                      title: context.t.cats,
+                      source: (s) => s.visibleCats(),
+                      autofocusFilter: true,
+                    ),
+                  ),
+                ),
+                const SingleActivator(
+                  LogicalKeyboardKey.keyK,
+                  control: true,
+                ): () => navigatorKey.currentState?.push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => SyncScreen(store: _store),
+                  ),
+                ),
+                const SingleActivator(
+                  LogicalKeyboardKey.keyB,
+                  control: true,
+                ): () =>
+                    autoBackup(_store),
+                const SingleActivator(LogicalKeyboardKey.escape): () =>
+                    navigatorKey.currentState?.maybePop(),
+              },
+              child: TouchTracker(
+                child: NoteStrip(
+                  queue: NoteQueue.instance,
+                  busy: busyFlows,
+                  openIn: () => navigatorKey.currentContext ?? context,
+                  child: child ?? const SizedBox.shrink(),
+                ),
+              ),
             ),
-          ),
-          ),
           ),
         ),
         locale: locale,
@@ -470,30 +531,26 @@ class _CatlogAppState extends State<CatlogApp>
                 store: _store,
                 onDone: () => setState(() => _freshSetup = true),
               )
-            : _freshSetup && !_restoreOffered && widget.catalogs != null
-                ? RestoreScreen(
-                    catalogs: widget.catalogs!,
-                    onDone: (first) {
-                      setState(() => _restoreOffered = true);
-                      if (first != null) _switchCatalog(first);
-                    },
-                  )
-            : _freshSetup &&
-                    _store.localSetting('introSeen') == null
-                ? IntroScreen(
-                    store: _store,
-                    onDone: () => setState(() {}),
-                  )
-                : HomeShell(
-                    store: _store,
-                    switching: widget.catalogs == null
-                        ? null
-                        : CatalogSwitching(
-                            catalogs: widget.catalogs!,
-                            onSwitch: _switchCatalog,
-                            onChanged: () => setState(() {}),
-                          ),
-                  ),
+            : _freshSetup && !_restoreOffered && catalogs != null
+            ? RestoreScreen(
+                catalogs: catalogs,
+                onDone: (first) {
+                  setState(() => _restoreOffered = true);
+                  if (first != null) _switchCatalog(first);
+                },
+              )
+            : _freshSetup && _store.localSetting('introSeen') == null
+            ? IntroScreen(store: _store, onDone: () => setState(() {}))
+            : HomeShell(
+                store: _store,
+                switching: catalogs == null
+                    ? null
+                    : CatalogSwitching(
+                        catalogs: catalogs,
+                        onSwitch: _switchCatalog,
+                        onChanged: () => setState(() {}),
+                      ),
+              ),
       ),
     );
   }

@@ -48,12 +48,14 @@ bool isPrivateHost(String host) {
   if (parts.length != 4) return false;
   final o = parts.map(int.tryParse).toList();
   if (o.any((n) => n == null || n < 0 || n > 255)) return false;
-  final a = o[0]!, b = o[1]!;
-  return a == 10 ||
-      (a == 172 && b >= 16 && b <= 31) ||
-      (a == 192 && b == 168) ||
-      (a == 169 && b == 254) ||
-      a == 127;
+  if (o case [final a?, final b?, ...]) {
+    return a == 10 ||
+        (a == 172 && b >= 16 && b <= 31) ||
+        (a == 192 && b == 168) ||
+        (a == 169 && b == 254) ||
+        a == 127;
+  }
+  return false;
 }
 
 String encodePairCode(String host, int port, String pin,

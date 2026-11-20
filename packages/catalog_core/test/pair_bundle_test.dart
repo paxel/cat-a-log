@@ -92,7 +92,6 @@ void main() {
     });
   });
 
-
   test('clowder photos survive a bundle round-trip', () {
     final a = CatalogStore.inMemory()..author = 'axel';
     final b = CatalogStore.inMemory()..author = 'ben';

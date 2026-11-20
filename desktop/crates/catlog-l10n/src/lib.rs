@@ -171,7 +171,11 @@ pub fn generate(arbs: &[Arb], template: &str) -> Result<String, String> {
     for a in &ordered {
         let _ = write!(out, "    [");
         for key in &keys {
-            let text = a.messages.get(*key).unwrap_or(&tpl.messages[*key]);
+            let text = a
+                .messages
+                .get(*key)
+                .or_else(|| tpl.messages.get(*key))
+                .map_or("", String::as_str);
             let _ = write!(out, "{text:?}, ");
         }
         let _ = writeln!(out, "],");
@@ -194,11 +198,15 @@ impl L10n {{
     }}
 
     pub fn locale(&self) -> &'static str {{
-        LOCALES[self.index]
+        LOCALES.get(self.index).copied().unwrap_or("en")
     }}
 
     fn raw(&self, key: usize) -> &'static str {{
-        MESSAGES[self.index][key]
+        MESSAGES
+            .get(self.index)
+            .and_then(|messages| messages.get(key))
+            .copied()
+            .unwrap_or("")
     }}
 
     /// The raw ICU message of a key by name, for tools; none for an
@@ -209,7 +217,9 @@ impl L10n {{
 "#
     );
     for (i, key) in keys.iter().enumerate() {
-        let message = &tpl.messages[*key];
+        let Some(message) = tpl.messages.get(*key) else {
+            continue;
+        };
         let params = params(tpl, key, message);
         let name = snake(key);
         if params.is_empty() {

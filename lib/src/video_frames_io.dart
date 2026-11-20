@@ -20,9 +20,11 @@ import 'exclusive.dart';
 /// kept frames as JPEG bytes at the video's own size — the crop step
 /// cuts from them before compression; the video is never stored (#41).
 /// Mobile only — elsewhere the reason is explained instead of failing.
-Future<List<Uint8List>?> pickVideoFrames(BuildContext context) =>
-    runExclusive('imagePicker', () => _pickVideoFrames(context),
-        context: context);
+Future<List<Uint8List>?> pickVideoFrames(BuildContext context) => runExclusive(
+  'imagePicker',
+  () => _pickVideoFrames(context),
+  context: context,
+);
 
 Future<List<Uint8List>?> _pickVideoFrames(BuildContext context) async {
   if (defaultTargetPlatform != TargetPlatform.android &&
@@ -39,31 +41,36 @@ Future<List<Uint8List>?> _pickVideoFrames(BuildContext context) async {
 /// shared in. Returns the kept frames as JPEG bytes, at most
 /// [keptWidth] wide; 0 keeps the video's own size.
 Future<List<Uint8List>?> framesFromVideoFile(
-    BuildContext context, String path, {int keptWidth = 2560}) async {
+  BuildContext context,
+  String path, {
+  int keptWidth = 2560,
+}) async {
   final controller = VideoPlayerController.file(File(path));
   try {
     await controller.initialize();
     if (!context.mounted) return null;
-    return await Navigator.of(context).push<List<Uint8List>>(MaterialPageRoute(
-      builder: (_) => VideoFramesScreen(
-        player: _ControllerPlayer(controller),
-        // Preview size for the strip; photo size only for what is kept.
-        extractFrame: (ms) => VideoThumbnail.thumbnailData(
-          video: path,
-          timeMs: ms,
-          imageFormat: ImageFormat.JPEG,
-          quality: 85,
-          maxWidth: 1024,
-        ),
-        extractFull: (ms) => VideoThumbnail.thumbnailData(
-          video: path,
-          timeMs: ms,
-          imageFormat: ImageFormat.JPEG,
-          quality: 90,
-          maxWidth: keptWidth,
+    return await Navigator.of(context).push<List<Uint8List>>(
+      MaterialPageRoute(
+        builder: (_) => VideoFramesScreen(
+          player: _ControllerPlayer(controller),
+          // Preview size for the strip; photo size only for what is kept.
+          extractFrame: (ms) => VideoThumbnail.thumbnailData(
+            video: path,
+            timeMs: ms,
+            imageFormat: ImageFormat.JPEG,
+            quality: 85,
+            maxWidth: 1024,
+          ),
+          extractFull: (ms) => VideoThumbnail.thumbnailData(
+            video: path,
+            timeMs: ms,
+            imageFormat: ImageFormat.JPEG,
+            quality: 90,
+            maxWidth: keptWidth,
+          ),
         ),
       ),
-    ));
+    );
   } finally {
     await controller.dispose();
   }
@@ -93,9 +100,9 @@ class _ControllerPlayer extends ChangeNotifier implements FramePlayer {
 
   @override
   Widget build(BuildContext context) => AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: VideoPlayer(controller),
-      );
+    aspectRatio: controller.value.aspectRatio,
+    child: VideoPlayer(controller),
+  );
 
   @override
   Future<void> seekTo(Duration at) => controller.seekTo(at);
@@ -117,21 +124,27 @@ class _ControllerPlayer extends ChangeNotifier implements FramePlayer {
 /// frames, each through the crop step, and only a kept frame creates
 /// the cat — the photo-first rule holds. Extra kept frames join as
 /// further photos.
-Future<String?> strayCamVideo(BuildContext context, CatalogStore store,
-    {Locator locate = locateDevice,
-    Future<List<Uint8List>?> Function(BuildContext) pickFrames =
-        pickVideoFrames,
-    CropStep cropStep = cropPage}) async {
+Future<String?> strayCamVideo(
+  BuildContext context,
+  CatalogStore store, {
+  Locator locate = locateDevice,
+  Future<List<Uint8List>?> Function(BuildContext) pickFrames = pickVideoFrames,
+  CropStep cropStep = cropPage,
+}) async {
   var kept = <KeptFrame>[];
-  final catId = await strayCam(context, store, locate: locate,
-      pickPhoto: (c) async {
-    final frames = await pickFrames(c);
-    if (frames == null || !c.mounted) return null;
-    kept = await cropFrames(c, frames, cropStep: cropStep);
-    return kept.isEmpty ? null : kept.first.bytes;
-  },
-      addPhoto: (store, catId, bytes) =>
-          addCompressedImage(store, catId, bytes, crop: kept.first.crop));
+  final catId = await strayCam(
+    context,
+    store,
+    locate: locate,
+    pickPhoto: (c) async {
+      final frames = await pickFrames(c);
+      if (frames == null || !c.mounted) return null;
+      kept = await cropFrames(c, frames, cropStep: cropStep);
+      return kept.isEmpty ? null : kept.first.bytes;
+    },
+    addPhoto: (store, catId, bytes) =>
+        addCompressedImage(store, catId, bytes, crop: kept.first.crop),
+  );
   if (catId != null) await addFrames(store, catId, kept.skip(1).toList());
   return catId;
 }

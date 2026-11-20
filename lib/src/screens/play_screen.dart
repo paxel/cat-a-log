@@ -29,12 +29,13 @@ class _PlayScreenState extends State<PlayScreen> {
   bool get _sounds => widget.store.localSetting(toySoundsKey) != 'off';
 
   Future<void> _start(ToyKind kind) async {
-    final open = widget.open ??
+    final open =
+        widget.open ??
         (context, kind, sounds) => Navigator.of(context).push<ToyResult>(
-              MaterialPageRoute(
-                builder: (_) => ToyScreen(kind: kind, sounds: sounds),
-              ),
-            );
+          MaterialPageRoute(
+            builder: (_) => ToyScreen(kind: kind, sounds: sounds),
+          ),
+        );
     final result = await open(context, kind, _sounds);
     if (!mounted || result == null) return;
     setState(() => _last = result);
@@ -50,43 +51,47 @@ class _PlayScreenState extends State<PlayScreen> {
         title: Text(t.playToys),
         help: PageHelp('play', store: widget.store),
       ),
-      body: ListView(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text(t.playIntro),
-        ),
-        if (last != null)
+      body: ListView(
+        children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: Text(
-              t.toyLastGame(
-                t.toyCatches(last.catches),
-                t.toyMinutes(last.played.inMinutes),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(t.playIntro),
+          ),
+          if (last != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(
+                t.toyLastGame(
+                  t.toyCatches(last.catches),
+                  t.toyMinutes(last.played.inMinutes),
+                ),
+                style: Theme.of(context).textTheme.titleSmall,
               ),
-              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ListTile(
+            leading: const Icon(Icons.adjust, color: Color(0xFFE53935)),
+            title: Text(t.toyLaserDot),
+            subtitle: Text(t.toyLaserDotHint),
+            onTap: () => _start(ToyKind.laserDot),
+          ),
+          ListTile(
+            leading: const Icon(Icons.pest_control_rodent_outlined),
+            title: Text(t.toyMouse),
+            subtitle: Text(t.toyMouseHint),
+            onTap: () => _start(ToyKind.mouse),
+          ),
+          const Divider(),
+          SwitchListTile(
+            secondary: const Icon(Icons.volume_up_outlined),
+            title: Text(t.toySounds),
+            value: _sounds,
+            onChanged: (on) => setState(
+              () =>
+                  widget.store.setLocalSetting(toySoundsKey, on ? 'on' : 'off'),
             ),
           ),
-        ListTile(
-          leading: const Icon(Icons.adjust, color: Color(0xFFE53935)),
-          title: Text(t.toyLaserDot),
-          subtitle: Text(t.toyLaserDotHint),
-          onTap: () => _start(ToyKind.laserDot),
-        ),
-        ListTile(
-          leading: const Icon(Icons.pest_control_rodent_outlined),
-          title: Text(t.toyMouse),
-          subtitle: Text(t.toyMouseHint),
-          onTap: () => _start(ToyKind.mouse),
-        ),
-        const Divider(),
-        SwitchListTile(
-          secondary: const Icon(Icons.volume_up_outlined),
-          title: Text(t.toySounds),
-          value: _sounds,
-          onChanged: (on) => setState(() => widget.store
-              .setLocalSetting(toySoundsKey, on ? 'on' : 'off')),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }

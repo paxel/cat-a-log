@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:typed_data';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -111,10 +113,15 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
   }
 
   Future<void> _addFromVideo() async {
-    await addPhotosFromVideo(context, store, id, onProgress: (done, total) {
-      if (!mounted) return;
-      setState(() => _adding = done < total ? (done, total) : null);
-    });
+    await addPhotosFromVideo(
+      context,
+      store,
+      id,
+      onProgress: (done, total) {
+        if (!mounted) return;
+        setState(() => _adding = done < total ? (done, total) : null);
+      },
+    );
     if (mounted) setState(() => _adding = null);
   }
 
@@ -124,10 +131,8 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
     final currentClowder = store.current(id, Keys.clowder);
     final picked = await showDialog<(String?, DateTime)>(
       context: context,
-      builder: (context) => MoveDialog(
-        clowders: store.clowders(),
-        current: currentClowder,
-      ),
+      builder: (context) =>
+          MoveDialog(clowders: store.clowders(), current: currentClowder),
     );
     if (picked == null || !mounted) return; // dialog dismissed
     final (destination, asOf) = picked;
@@ -164,7 +169,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
     final pos = CatalogStore.parsePosition(value);
     if (pos == null) return;
     Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => MapScreen(
           store: store,
           initialCenter: LatLng(pos.$1, pos.$2),
@@ -198,7 +203,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
   Future<void> _openEntity(String entityId) async {
     if (entityId == id) return;
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => CatDetailScreen(store: store, catId: entityId),
       ),
     );
@@ -210,8 +215,12 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
     afterChoreTick(context, store, manager: catalogManager);
     setState(() {});
     mirrorAfterChange(context, store);
-    refreshChoreReminders(store,
-        body: (c) => store.current(c.entity, Keys.name) ?? context.t.unnamed);
+    unawaited(
+      refreshChoreReminders(
+        store,
+        body: (c) => store.current(c.entity, Keys.name) ?? context.t.unnamed,
+      ),
+    );
   }
 
   /// The cat's live plans, as the agenda shows them — nothing vanishes
@@ -231,7 +240,10 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
         if (store.resolveEntity(a.entity) == mine) a,
     ];
     final chores = partitionChores(
-        store, store.choresOf(id), DateUtils.dateOnly(clockNow()));
+      store,
+      store.choresOf(id),
+      DateUtils.dateOnly(clockNow()),
+    );
     final laterCount = chores.later.length + chores.paused.length;
     if (plans.isEmpty &&
         appointments.isEmpty &&
@@ -275,22 +287,22 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
           children: [
             for (final c in chores.later)
               ChoreRow(
-              store: store,
-              chore: c,
-              due: nextDue(c, store.choreTicks(c), today) ?? today,
-              today: today,
-              showEntity: false,
-              onChanged: _plansChanged,
-            ),
+                store: store,
+                chore: c,
+                due: nextDue(c, store.choreTicks(c), today) ?? today,
+                today: today,
+                showEntity: false,
+                onChanged: _plansChanged,
+              ),
             for (final c in chores.paused)
               ChoreRow(
-              store: store,
-              chore: c,
-              due: today,
-              today: today,
-              showEntity: false,
-              onChanged: _plansChanged,
-            ),
+                store: store,
+                chore: c,
+                due: today,
+                today: today,
+                showEntity: false,
+                onChanged: _plansChanged,
+              ),
           ],
         ),
       // A vet run shows its other cats as chips; delete here takes only
@@ -316,7 +328,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
 
   Future<void> _openTimeline({String? field}) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) =>
             TimelineScreen(store: store, entityId: id, field: field),
       ),
@@ -340,9 +352,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.star),
-            title: Text(
-              isProfile ? t.thisIsProfileImage : t.setAsProfileImage,
-            ),
+            title: Text(isProfile ? t.thisIsProfileImage : t.setAsProfileImage),
           ),
         ),
         PopupMenuItem(
@@ -446,7 +456,8 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
   Future<void> _flierHere() => _recordHere(flierHangsHere);
 
   Future<void> _recordHere(
-      Future<LocationFailure?> Function(CatalogStore, String) record) async {
+    Future<LocationFailure?> Function(CatalogStore, String) record,
+  ) async {
     final failure = await record(store, id);
     if (!mounted) return;
     if (failure != null) {
@@ -490,7 +501,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
             label: Text(store.current(catId, Keys.name) ?? '?'),
             onPressed: () async {
               await Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => CatDetailScreen(store: store, catId: catId),
                 ),
               );
@@ -504,8 +515,10 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
   List<Widget> _familyRows() {
     final f = store.family(id);
     return [
-      if (f.mother != null) _familyRow(context.t.starterMother, [f.mother!]),
-      if (f.father != null) _familyRow(context.t.starterFather, [f.father!]),
+      if (f.mother case final mother?)
+        _familyRow(context.t.starterMother, [mother]),
+      if (f.father case final father?)
+        _familyRow(context.t.starterFather, [father]),
       if (f.littermates.isNotEmpty)
         _familyRow(context.t.littermatesLabel, f.littermates),
       if (f.siblings.isNotEmpty)
@@ -522,76 +535,76 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
     final defs = store.visibleFieldDefs(scope: FieldScope.cat);
     final clowderId = store.current(id, Keys.clowder);
     final photosBlock = <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                context.t.photos,
-                style: Theme.of(context).textTheme.titleMedium,
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Text(
+          context.t.photos,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+      ),
+      GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(8),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 160,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+        ),
+        itemCount: images.length,
+        itemBuilder: (context, i) {
+          final hash = images[i];
+          final photo = imageProviderFor(store, hash);
+          // Tap = quick action (view full-size), long-press = menu
+          // at the finger — the app-wide gesture convention.
+          return GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => PhotoViewerScreen(
+                  store: store,
+                  hashes: images,
+                  initialIndex: i,
+                  name: store.current(id, Keys.name) ?? 'cat',
+                ),
               ),
             ),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(8),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 160,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-              ),
-              itemCount: images.length,
-              itemBuilder: (context, i) {
-                final hash = images[i];
-                final photo = imageProviderFor(store, hash);
-                // Tap = quick action (view full-size), long-press = menu
-                // at the finger — the app-wide gesture convention.
-                return GestureDetector(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => PhotoViewerScreen(
-                        store: store,
-                        hashes: images,
-                        initialIndex: i,
-                        name: store.current(id, Keys.name) ?? 'cat',
-                      ),
+            onLongPressStart: (d) => _imageMenu(hash, d.globalPosition),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (photo != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    // Decode at grid-tile size, not full resolution.
+                    child: Image(
+                      image: ResizeImage(photo, width: 480),
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else
+                  // The entry is here, the bytes are not (a sync
+                  // that never fetched them): say so instead of
+                  // leaving a hole with a badge on it.
+                  MissingPhoto(),
+                if (hash == profile)
+                  const Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Icon(Icons.star, color: Colors.amber),
                     ),
                   ),
-                  onLongPressStart: (d) => _imageMenu(hash, d.globalPosition),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (photo != null)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          // Decode at grid-tile size, not full resolution.
-                          child: Image(
-                            image: ResizeImage(photo, width: 480),
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      else
-                        // The entry is here, the bytes are not (a sync
-                        // that never fetched them): say so instead of
-                        // leaving a hole with a badge on it.
-                        MissingPhoto(),
-                      if (hash == profile)
-                        const Align(
-                          alignment: Alignment.topRight,
-                          child: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Icon(Icons.star, color: Colors.amber),
-                          ),
-                        ),
-                      // Top start, because the profile star owns the end.
-                      const PositionedDirectional(
-                        top: 0,
-                        start: 0,
-                        child: CatEarBadge(atStart: true),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                // Top start, because the profile star owns the end.
+                const PositionedDirectional(
+                  top: 0,
+                  start: 0,
+                  child: CatEarBadge(atStart: true),
+                ),
+              ],
             ),
+          );
+        },
+      ),
     ];
     return PopScope(
       // Back leaves edit mode before it leaves the page.
@@ -614,7 +627,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               icon: Icons.badge_outlined,
               label: context.t.card,
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => CardScreen(store: store, catId: id),
                 ),
               ),
@@ -634,17 +647,21 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               spotlightId: 'cat-report',
               icon: Icons.medical_information_outlined,
               label: context.t.vetReportMenu,
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => VetReportScreen(store: store, catId: id),
-              )),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => VetReportScreen(store: store, catId: id),
+                ),
+              ),
             ),
             PageAction(
               spotlightId: 'cat-poster',
               icon: Icons.campaign_outlined,
               label: context.t.posterMenu,
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => MissingPosterScreen(store: store, catId: id),
-              )),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => MissingPosterScreen(store: store, catId: id),
+                ),
+              ),
             ),
             if (canMoveBetweenCatalogs)
               PageAction(
@@ -671,7 +688,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               icon: Icons.public,
               label: context.t.sharePublicly,
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => SharePubliclyScreen(store: store, catId: id),
                 ),
               ),
@@ -709,10 +726,7 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
           children: [
             // Read mode: the photos first, then what is due, then the rest;
             // edit mode keeps the fields on top and the photos last.
-            if (!_editing) ...[
-              ...photosBlock,
-              ..._plannedSection(),
-            ],
+            if (!_editing) ...[...photosBlock, ..._plannedSection()],
             if (isDeceased(store, id))
               Padding(
                 padding: const EdgeInsets.only(left: 16, top: 8),
@@ -754,29 +768,39 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               // values are buttons on the row.
               onConflict: (_) async {
                 await Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (_) => ConflictsScreen(store: store)),
+                  MaterialPageRoute<void>(
+                    builder: (_) => ConflictsScreen(store: store),
+                  ),
                 );
                 if (mounted) setState(() {});
               },
               // A correction or removal there shows here on return.
               onHistory: (def) async {
-                await Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) =>
-                      FieldHistoryScreen(store: store, entityId: id, def: def),
-                ));
+                await Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => FieldHistoryScreen(
+                      store: store,
+                      entityId: id,
+                      def: def,
+                    ),
+                  ),
+                );
                 if (mounted) setState(() {});
               },
               onShowMap: _showOnMap,
               onLookup: (def, value) => openLookup(context, def, value),
-      onGraph: (def) => Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) =>
-            FieldGraphScreen(store: store, entityId: id, def: def),
-      )),
-      onValueHistory: (def) => Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) =>
-            FieldHistoryScreen(store: store, entityId: id, def: def),
-      )),
+              onGraph: (def) => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) =>
+                      FieldGraphScreen(store: store, entityId: id, def: def),
+                ),
+              ),
+              onValueHistory: (def) => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) =>
+                      FieldHistoryScreen(store: store, entityId: id, def: def),
+                ),
+              ),
               // Long-press in read mode: this one field's editor, the page
               // stays as it is — fix what you just spotted (#46), nothing more.
               onReadLongPress: _editField,
@@ -804,18 +828,17 @@ class _CatDetailScreenState extends State<CatDetailScreen> {
               ),
               ..._familyRows(),
             ],
-            if (_editing) ...[
-              const Divider(),
-              ...photosBlock,
-            ],
+            if (_editing) ...[const Divider(), ...photosBlock],
             if (_adding case (final done, final total))
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: Column(children: [
-                  Text(context.t.addingPhotos(done + 1, total)),
-                  const SizedBox(height: 6),
-                  LinearProgressIndicator(value: done / total),
-                ]),
+                child: Column(
+                  children: [
+                    Text(context.t.addingPhotos(done + 1, total)),
+                    const SizedBox(height: 6),
+                    LinearProgressIndicator(value: done / total),
+                  ],
+                ),
               ),
             const SizedBox(height: 80),
           ],

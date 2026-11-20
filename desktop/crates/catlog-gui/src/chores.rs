@@ -228,8 +228,11 @@ impl ChoreDialog {
                 self.unit = Some(c.schedule.unit);
                 self.weekdays = [false; 7];
                 for d in &c.schedule.weekdays {
-                    if (1..=7).contains(d) {
-                        self.weekdays[(*d - 1) as usize] = true;
+                    if let Some(day) = d
+                        .checked_sub(1)
+                        .and_then(|i| self.weekdays.get_mut(i as usize))
+                    {
+                        *day = true;
                     }
                 }
                 self.time = c.time.map(|t| t.text()).unwrap_or_default();
@@ -290,9 +293,9 @@ impl ChoreDialog {
                 self.unit.unwrap_or(ChoreUnit::Days),
             ),
             ChoreRepeat::Weekdays => {
-                let days: Vec<u32> = (0..7u32)
-                    .filter(|i| self.weekdays[*i as usize])
-                    .map(|i| i + 1)
+                let days: Vec<u32> = (1..=7u32)
+                    .zip(self.weekdays)
+                    .filter_map(|(day, on)| on.then_some(day))
                     .collect();
                 if days.is_empty() {
                     return Err("weekdays".into());

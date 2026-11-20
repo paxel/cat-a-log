@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -44,8 +46,11 @@ Future<PositionOutcome> locateDevice() async {
   }
   return positionWithin(
     () => Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high, timeLimit: fixLimit)),
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        timeLimit: fixLimit,
+      ),
+    ),
   );
 }
 
@@ -57,8 +62,10 @@ const fixLimit = Duration(seconds: 20);
 /// Runs [get] under [fixLimit] (with a little slack for the plugin's
 /// own limit to fire first); any failure, including the timeout, is
 /// "no fix".
-Future<PositionOutcome> positionWithin(Future<Position> Function() get,
-    {Duration limit = fixLimit}) async {
+Future<PositionOutcome> positionWithin(
+  Future<Position> Function() get, {
+  Duration limit = fixLimit,
+}) async {
   try {
     final p = await get().timeout(limit + const Duration(seconds: 5));
     return (pos: (p.latitude, p.longitude), failure: null);
@@ -71,10 +78,12 @@ Future<PositionOutcome> positionWithin(Future<Position> Function() get,
 /// fixes it where one exists. Anything is acceptable to users as long
 /// as the reason is explained.
 Future<void> explainLocationFailure(
-    BuildContext context, LocationFailure failure,
-    {Future<bool> Function() openAppSettings = Geolocator.openAppSettings,
-    Future<bool> Function() openLocationSettings =
-        Geolocator.openLocationSettings}) {
+  BuildContext context,
+  LocationFailure failure, {
+  Future<bool> Function() openAppSettings = Geolocator.openAppSettings,
+  Future<bool> Function() openLocationSettings =
+      Geolocator.openLocationSettings,
+}) {
   final t = context.t;
   final message = switch (failure) {
     LocationFailure.serviceOff => t.locationServiceOff,
@@ -100,7 +109,7 @@ Future<void> explainLocationFailure(
           FilledButton(
             onPressed: () {
               Navigator.of(context).pop();
-              openSettings();
+              unawaited(openSettings());
             },
             child: Text(t.openSettings),
           ),
@@ -116,45 +125,58 @@ Future<void> explainLocationFailure(
 /// One Stray Cam at a time (#91): a second press while the fix or the
 /// camera is pending does nothing; a plugin error ends it with a
 /// message; the parked capture is cleared however it ends.
-Future<String?> strayCam(BuildContext context, CatalogStore store,
-    {Locator locate = locateDevice,
-    Future<Uint8List?> Function(BuildContext)? pickPhoto,
-    Future<String?> Function(CatalogStore store, String catId, Uint8List bytes)
-        addPhoto = addCompressedImage,
-    ImageSource? source,
-    Future<bool> Function() openSettings = Geolocator.openAppSettings,
-    Future<bool> Function() openLocationSettings =
-        Geolocator.openLocationSettings}) {
+Future<String?> strayCam(
+  BuildContext context,
+  CatalogStore store, {
+  Locator locate = locateDevice,
+  Future<Uint8List?> Function(BuildContext)? pickPhoto,
+  Future<String?> Function(CatalogStore store, String catId, Uint8List bytes)
+      addPhoto =
+      addCompressedImage,
+  ImageSource? source,
+  Future<bool> Function() openSettings = Geolocator.openAppSettings,
+  Future<bool> Function() openLocationSettings =
+      Geolocator.openLocationSettings,
+}) {
   return runExclusive(
     'strayCam',
-    () => _strayCam(context, store,
-        locate: locate,
-        pickPhoto: pickPhoto,
-        addPhoto: addPhoto,
-        source: source,
-        openSettings: openSettings,
-        openLocationSettings: openLocationSettings),
+    () => _strayCam(
+      context,
+      store,
+      locate: locate,
+      pickPhoto: pickPhoto,
+      addPhoto: addPhoto,
+      source: source,
+      openSettings: openSettings,
+      openLocationSettings: openLocationSettings,
+    ),
     context: context,
   );
 }
 
-Future<String?> _strayCam(BuildContext context, CatalogStore store,
-    {Locator locate = locateDevice,
-    Future<Uint8List?> Function(BuildContext)? pickPhoto,
-    Future<String?> Function(CatalogStore store, String catId, Uint8List bytes)
-        addPhoto = addCompressedImage,
-    ImageSource? source,
-    Future<bool> Function() openSettings = Geolocator.openAppSettings,
-    Future<bool> Function() openLocationSettings =
-        Geolocator.openLocationSettings}) async {
+Future<String?> _strayCam(
+  BuildContext context,
+  CatalogStore store, {
+  Locator locate = locateDevice,
+  Future<Uint8List?> Function(BuildContext)? pickPhoto,
+  Future<String?> Function(CatalogStore store, String catId, Uint8List bytes)
+      addPhoto =
+      addCompressedImage,
+  ImageSource? source,
+  Future<bool> Function() openSettings = Geolocator.openAppSettings,
+  Future<bool> Function() openLocationSettings =
+      Geolocator.openLocationSettings,
+}) async {
   final outcome = await locate();
   final position = outcome.pos;
   if (position == null) {
     if (context.mounted) {
       await explainLocationFailure(
-          context, outcome.failure ?? LocationFailure.noFix,
-          openAppSettings: openSettings,
-          openLocationSettings: openLocationSettings);
+        context,
+        outcome.failure ?? LocationFailure.noFix,
+        openAppSettings: openSettings,
+        openLocationSettings: openLocationSettings,
+      );
     }
     return null;
   }
@@ -166,17 +188,22 @@ Future<String?> _strayCam(BuildContext context, CatalogStore store,
       'Stray ${clockNow().toIso8601String().substring(0, 16).replaceFirst('T', ' ')}';
   // Park the capture: if Android kills the app behind the camera, the
   // photo arrives on next start as image_picker "lost data".
-  store.setLocalSetting(strayCamPendingKey,
-      jsonEncode({'lat': position.$1, 'lon': position.$2, 'name': name}));
+  store.setLocalSetting(
+    strayCamPendingKey,
+    jsonEncode({'lat': position.$1, 'lon': position.$2, 'name': name}),
+  );
   Uint8List? bytes;
   try {
     if (context.mounted) {
       // Field speed beats framing: Stray Cam skips the crop step, and
       // the item that was picked already said camera or gallery.
-      bytes = await (pickPhoto ??
-          ((c) => pickImageBytes(c,
-              allowCrop: false,
-              source: source ?? cameraIfThereIsOne)))(context);
+      bytes =
+          await (pickPhoto ??
+              ((c) => pickImageBytes(
+                c,
+                allowCrop: false,
+                source: source ?? cameraIfThereIsOne,
+              )))(context);
     }
   } finally {
     // Cancelled, failed or done: nothing stays parked (#91).
@@ -185,8 +212,12 @@ Future<String?> _strayCam(BuildContext context, CatalogStore store,
   if (bytes == null || !store.isOpen) return null;
   // In a pets catalog the last species picked, a field to change on
   // the page; no prompt in the way of the picture.
-  final catId = store.createCat(name,
-      species: petMode.value ? (store.localSetting(lastSpeciesKey) ?? 'cat') : 'cat');
+  final catId = store.createCat(
+    name,
+    species: petMode.value
+        ? (store.localSetting(lastSpeciesKey) ?? 'cat')
+        : 'cat',
+  );
   store.recordPosition(catId, position.$1, position.$2);
   await addPhoto(store, catId, bytes);
   return catId;
@@ -195,8 +226,10 @@ Future<String?> _strayCam(BuildContext context, CatalogStore store,
 /// Completes a Stray Cam capture whose camera never returned because
 /// the OS killed the app: image_picker hands the photo over on the next
 /// start, the position and name were parked in [strayCamPendingKey].
-Future<void> recoverStrayCam(CatalogStore store,
-    {Future<LostDataResponse> Function()? retrieve}) async {
+Future<void> recoverStrayCam(
+  CatalogStore store, {
+  Future<LostDataResponse> Function()? retrieve,
+}) async {
   final pending = store.localSetting(strayCamPendingKey);
   if (pending == null || pending.isEmpty) return;
   if (retrieve == null && !Platform.isAndroid) {
@@ -231,19 +264,27 @@ Future<void> recoverStrayCam(CatalogStore store,
 
 /// Records a sighting of an existing cat at the device's position.
 /// Returns null on success, otherwise why no position was available.
-Future<LocationFailure?> seenHereNow(CatalogStore store, String catId,
-        {Locator locate = locateDevice}) =>
-    _recordHere(store, catId, PositionKind.sighting, locate);
+Future<LocationFailure?> seenHereNow(
+  CatalogStore store,
+  String catId, {
+  Locator locate = locateDevice,
+}) => _recordHere(store, catId, PositionKind.sighting, locate);
 
 /// Records a flier position of a cat where the device is: a poster of
 /// it hangs here (#85). Returns null on success, otherwise why no
 /// position was available.
-Future<LocationFailure?> flierHangsHere(CatalogStore store, String catId,
-        {Locator locate = locateDevice}) =>
-    _recordHere(store, catId, PositionKind.flier, locate);
+Future<LocationFailure?> flierHangsHere(
+  CatalogStore store,
+  String catId, {
+  Locator locate = locateDevice,
+}) => _recordHere(store, catId, PositionKind.flier, locate);
 
 Future<LocationFailure?> _recordHere(
-    CatalogStore store, String catId, PositionKind kind, Locator locate) async {
+  CatalogStore store,
+  String catId,
+  PositionKind kind,
+  Locator locate,
+) async {
   final outcome = await locate();
   final position = outcome.pos;
   if (position == null) return outcome.failure ?? LocationFailure.noFix;

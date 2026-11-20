@@ -75,7 +75,10 @@ void main() {
         size: const Size(500, 2000),
       );
       expect(find.text('Documentation'), findsOneWidget);
-      expect(find.text('https://paxel.github.io/cat-a-log/en/'), findsOneWidget);
+      expect(
+        find.text('https://paxel.github.io/cat-a-log/en/'),
+        findsOneWidget,
+      );
       expect(documentationUrl('de'), 'https://paxel.github.io/cat-a-log/de/');
       expect(documentationUrl('fr'), 'https://paxel.github.io/cat-a-log/en/');
     });

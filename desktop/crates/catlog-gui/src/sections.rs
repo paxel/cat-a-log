@@ -63,7 +63,7 @@ pub fn plan_row(
     trailing: impl FnOnce(&mut Ui),
 ) -> Response {
     let mut label = None;
-    egui::Frame::new()
+    let frame = egui::Frame::new()
         .fill(PALETTE.cream)
         .corner_radius(ROUNDING)
         .inner_margin(egui::Margin::symmetric(10, 8))
@@ -100,5 +100,5 @@ pub fn plan_row(
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), trailing);
             });
         });
-    label.expect("the row draws its first line")
+    label.unwrap_or(frame.response)
 }

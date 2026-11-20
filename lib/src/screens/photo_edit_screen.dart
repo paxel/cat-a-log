@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:isolate';
 import 'dart:typed_data';
 
@@ -5,7 +7,9 @@ import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n.dart';
+
 import 'dart:ui' as ui;
+
 import '../layout.dart';
 
 enum PhotoEditMode { crop, mark }
@@ -27,13 +31,13 @@ class PhotoEditScreen extends StatefulWidget {
   /// cutting to the compression, so the photo is encoded once.
   final bool selectOnly;
 
-  const PhotoEditScreen(
-      {super.key,
-      required this.bytes,
-      required this.mode,
-      this.allowSkip = false,
-      this.selectOnly = false})
-      : assert(!selectOnly || mode == PhotoEditMode.crop);
+  const PhotoEditScreen({
+    super.key,
+    required this.bytes,
+    required this.mode,
+    this.allowSkip = false,
+    this.selectOnly = false,
+  }) : assert(!selectOnly || mode == PhotoEditMode.crop);
 
   @override
   State<PhotoEditScreen> createState() => _PhotoEditScreenState();
@@ -48,7 +52,7 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
   @override
   void initState() {
     super.initState();
-    _readSize();
+    unawaited(_readSize());
   }
 
   /// The photo's size from its header alone. A full decode of a
@@ -71,8 +75,7 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
   }
 
   /// Where the image actually renders inside [box] with BoxFit.contain.
-  Rect _renderedRect(Size box) {
-    final image = _imageSize!;
+  Rect _renderedRect(Size box, Size image) {
     final scale = (box.width / image.width) < (box.height / image.height)
         ? box.width / image.width
         : box.height / image.height;
@@ -82,18 +85,20 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
   }
 
   Rect? get _selection {
-    if (_start == null || _end == null) return null;
-    return Rect.fromPoints(_start!, _end!);
+    final start = _start, end = _end;
+    if (start == null || end == null) return null;
+    return Rect.fromPoints(start, end);
   }
 
   Size _boxSize = Size.zero;
 
   Future<void> _apply() async {
     final selection = _selection;
-    if (selection == null || _imageSize == null || _boxSize == Size.zero) {
+    final imageSize = _imageSize;
+    if (selection == null || imageSize == null || _boxSize == Size.zero) {
       return;
     }
-    final rendered = _renderedRect(_boxSize);
+    final rendered = _renderedRect(_boxSize, imageSize);
     final sel = selection.intersect(rendered);
     if (sel.width < 8 || sel.height < 8) return;
     // Normalize to 0..1 image fractions.
@@ -108,7 +113,8 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
     }
     setState(() => _busy = true);
     final result = await Isolate.run(
-        _editTask(widget.bytes, widget.mode, x, y, w, h));
+      _editTask(widget.bytes, widget.mode, x, y, w, h),
+    );
     if (mounted) Navigator.of(context).pop(result);
   }
 
@@ -119,13 +125,15 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
       appBar: pageBar(
         context,
         title: Text(
-            widget.mode == PhotoEditMode.crop ? t.cropTitle : t.markTitle),
+          widget.mode == PhotoEditMode.crop ? t.cropTitle : t.markTitle,
+        ),
         actions: [
           if (widget.allowSkip)
             PageAction.labelled(
               label: t.useFullPhoto,
-              onPressed: () => Navigator.of(context)
-                  .pop(widget.selectOnly ? (crop: null) : widget.bytes),
+              onPressed: () =>
+                  Navigator.of(context)
+                      .pop(widget.selectOnly ? (crop: null) : widget.bytes),
             ),
           // A labeled button, not a bare checkmark: next to "Use full
           // photo" an icon didn't tell testers it applies the rectangle.
@@ -135,7 +143,8 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
                 ? const SizedBox(
                     width: 18,
                     height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2))
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : null,
             onPressed: _busy || _selection == null ? null : _apply,
           ),
@@ -143,42 +152,55 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
       ),
       body: _imageSize == null
           ? const Center(child: CircularProgressIndicator())
-          : Column(children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(widget.mode == PhotoEditMode.crop
-                    ? t.dragToSelect
-                    : t.dragOverTheCat),
-              ),
-              Expanded(
-                child: LayoutBuilder(builder: (context, constraints) {
-                  _boxSize = constraints.biggest;
-                  return GestureDetector(
-                    key: const Key('photoEditArea'),
-                    behavior: HitTestBehavior.opaque,
-                    onPanStart: (d) => setState(() {
-                      _start = d.localPosition;
-                      _end = d.localPosition;
-                    }),
-                    onPanUpdate: (d) =>
-                        setState(() => _end = d.localPosition),
-                    child: CustomPaint(
-                      foregroundPainter: _SelectionPainter(
-                          _selection, widget.mode == PhotoEditMode.mark),
-                      child: SizedBox.expand(
-                        // Decoded at screen size: the selection is
-                        // fractional, the crop runs on the real bytes.
-                        child: Image.memory(widget.bytes,
-                            fit: BoxFit.contain,
-                            cacheWidth: (MediaQuery.sizeOf(context).width *
-                                    MediaQuery.devicePixelRatioOf(context))
-                                .round()),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ]),
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    widget.mode == PhotoEditMode.crop
+                        ? t.dragToSelect
+                        : t.dragOverTheCat,
+                  ),
+                ),
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      _boxSize = constraints.biggest;
+                      return GestureDetector(
+                        key: const Key('photoEditArea'),
+                        behavior: HitTestBehavior.opaque,
+                        onPanStart: (d) => setState(() {
+                          _start = d.localPosition;
+                          _end = d.localPosition;
+                        }),
+                        onPanUpdate: (d) =>
+                            setState(() => _end = d.localPosition),
+                        child: CustomPaint(
+                          foregroundPainter: _SelectionPainter(
+                            _selection,
+                            widget.mode == PhotoEditMode.mark,
+                          ),
+                          child: SizedBox.expand(
+                            // Decoded at screen size: the selection is
+                            // fractional, the crop runs on the real bytes.
+                            child: Image.memory(
+                              widget.bytes,
+                              fit: BoxFit.contain,
+                              cacheWidth:
+                                  (MediaQuery.sizeOf(context).width *
+                                          MediaQuery.devicePixelRatioOf(
+                                            context,
+                                          ))
+                                      .round(),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
@@ -187,8 +209,14 @@ class _PhotoEditScreenState extends State<PhotoEditScreen> {
 /// sendable values — a closure created inside a State method can share
 /// its context with setState closures and drag the whole widget tree
 /// into the isolate message.
-Uint8List Function() _editTask(Uint8List bytes, PhotoEditMode mode,
-    double x, double y, double w, double h) {
+Uint8List Function() _editTask(
+  Uint8List bytes,
+  PhotoEditMode mode,
+  double x,
+  double y,
+  double w,
+  double h,
+) {
   if (mode == PhotoEditMode.crop) {
     return () => CatalogStore.cropImage(bytes, x, y, w, h);
   }
@@ -204,6 +232,7 @@ class _SelectionPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final selection = this.selection;
     if (selection == null) return;
     final casing = Paint()
       ..style = PaintingStyle.stroke
@@ -214,11 +243,11 @@ class _SelectionPainter extends CustomPainter {
       ..strokeWidth = 3
       ..color = Colors.deepOrange;
     if (ellipse) {
-      canvas.drawOval(selection!, casing);
-      canvas.drawOval(selection!, stroke);
+      canvas.drawOval(selection, casing);
+      canvas.drawOval(selection, stroke);
     } else {
-      canvas.drawRect(selection!, casing);
-      canvas.drawRect(selection!, stroke);
+      canvas.drawRect(selection, casing);
+      canvas.drawRect(selection, stroke);
     }
   }
 

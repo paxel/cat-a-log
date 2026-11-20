@@ -36,9 +36,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     final picked = await showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(at.dx, at.dy, at.dx, at.dy),
-      items: [
-        PopupMenuItem(value: 'delete', child: Text(context.t.delete)),
-      ],
+      items: [PopupMenuItem(value: 'delete', child: Text(context.t.delete))],
     );
     if (picked != 'delete' || !mounted) return;
     manager.dismissAchievement(s.id);
@@ -46,11 +44,11 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   }
 
   Widget _row(LadderState s, Widget tile) => WithCatEar(
-        child: GestureDetector(
-          onLongPressStart: (d) => _menu(s, d.globalPosition),
-          child: tile,
-        ),
-      );
+    child: GestureDetector(
+      onLongPressStart: (d) => _menu(s, d.globalPosition),
+      child: tile,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +68,19 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     ];
     final titled = [
       for (final s in states)
-        if (shown(s) && s.title != null) s,
+        if (shown(s))
+          if ((rankFor(s.tier), s.title) case (final rank?, final title?))
+            (s, rank, title),
     ];
     final months = states.firstWhere((s) => s.id == fullMonthId).times;
     final coats = unlockedCoats(months);
     final nothing = stretches.isEmpty && titled.isEmpty && coats.isEmpty;
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.achievementsTitle), help: PageHelp('achievements')),
+      appBar: pageBar(
+        context,
+        title: Text(t.achievementsTitle),
+        help: PageHelp('achievements'),
+      ),
       body: ListView(
         children: [
           if (nothing)
@@ -88,8 +92,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             _row(
               s,
               ListTile(
-                leading:
-                    Icon(Icons.emoji_events, color: Colors.amber.shade700),
+                leading: Icon(Icons.emoji_events, color: Colors.amber.shade700),
                 title: Text(switch (s.id) {
                   fullMonthId => t.achievementMonth,
                   fullYearId => t.achievementYear,
@@ -99,12 +102,12 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                 subtitle: Text(t.achievementReached(s.times, since(s))),
               ),
             ),
-          for (final s in titled)
+          for (final (s, rank, title) in titled)
             _row(
               s,
               ListTile(
                 leading: const Icon(Icons.workspace_premium_outlined),
-                title: Text(titleWithChore(t, rankFor(s.tier)!, s.title!)),
+                title: Text(titleWithChore(t, rank, title)),
                 // A master ladder counts ticks, not stretches: "done".
                 // No next rung here; the page lists what was earned,
                 // nothing to chase.

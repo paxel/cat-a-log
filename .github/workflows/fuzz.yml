@@ -1,0 +1,65 @@
+# Fuzzing of the parsers that read untrusted input (cat-1023): desktop/fuzz
+# (cargo-fuzz, libFuzzer). Every pull request and push to summer runs each
+# target for a minute; the weekly run goes longer, because a fuzzer finds
+# more the longer it runs. A crash fails the job and its input is uploaded as
+# an artifact; `cargo +nightly fuzz run <target> <file>` in desktop/ replays
+# it.
+#
+# Third-party actions are pinned to full commit SHAs; the comment names the
+# version.
+name: Fuzz
+
+on:
+  push:
+    branches: [summer]
+  pull_request:
+    branches: ["**"]
+  schedule:
+    - cron: "41 4 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: fuzz-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  fuzz:
+    name: Fuzz ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [bundle_import, lan_request, lan_sync, pair_code, share_qr, keys]
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      # cargo-fuzz needs nightly for the sanitizer flags. The fuzz crate only;
+      # the desktop itself builds on stable.
+      - uses: dtolnay/rust-toolchain@2c76c034f9e32a5d6e2c104dc4df23a22476db04 # nightly branch
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: desktop/fuzz
+      # install-action has no checksummed manifest for cargo-fuzz, so it is
+      # built from crates.io at a fixed version with its own lockfile.
+      - name: Install cargo-fuzz
+        run: cargo +nightly install cargo-fuzz --version 0.13.2 --locked
+      - name: Fuzz ${{ matrix.target }}
+        env:
+          SECONDS_TO_RUN: ${{ github.event_name == 'schedule' && '900' || '60' }}
+        run: cargo +nightly fuzz run "${{ matrix.target }}" -- -max_total_time="$SECONDS_TO_RUN"
+      - name: Upload the crashing input
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: fuzz-artifacts-${{ matrix.target }}
+          path: desktop/fuzz/artifacts
+          if-no-files-found: ignore
+          retention-days: 30

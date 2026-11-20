@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// One way to add something: its icon, its words, what it does.
@@ -45,7 +47,7 @@ class _AddFanState extends State<AddFan> with SingleTickerProviderStateMixin {
 
   void _toggle() {
     if (_open) {
-      _close();
+      unawaited(_close());
     } else {
       _openFan();
     }
@@ -53,11 +55,13 @@ class _AddFanState extends State<AddFan> with SingleTickerProviderStateMixin {
 
   void _openFan() {
     final overlay = Overlay.of(context);
-    final box = _button.currentContext!.findRenderObject() as RenderBox;
+    final box = _button.currentContext?.findRenderObject();
+    if (box is! RenderBox) return;
     final overlayBox = overlay.context.findRenderObject() as RenderBox;
-    final rect = box.localToGlobal(Offset.zero, ancestor: overlayBox) & box.size;
+    final rect =
+        box.localToGlobal(Offset.zero, ancestor: overlayBox) & box.size;
     _motion.duration = _duration;
-    _entry = OverlayEntry(
+    final entry = OverlayEntry(
       builder: (_) => _Fan(
         anchor: rect,
         items: widget.items,
@@ -66,7 +70,8 @@ class _AddFanState extends State<AddFan> with SingleTickerProviderStateMixin {
         onPick: _pick,
       ),
     );
-    overlay.insert(_entry!);
+    _entry = entry;
+    overlay.insert(entry);
     _motion.forward(from: 0);
     setState(() {});
   }
@@ -189,7 +194,11 @@ class _FanRow extends StatelessWidget {
   final Animation<double> motion;
   final VoidCallback onTap;
 
-  const _FanRow({required this.item, required this.motion, required this.onTap});
+  const _FanRow({
+    required this.item,
+    required this.motion,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +219,10 @@ class _FanRow extends StatelessWidget {
                 customBorder: const StadiumBorder(),
                 onTap: onTap,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   child: Text(item.label),
                 ),
               ),

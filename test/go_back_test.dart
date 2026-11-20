@@ -18,8 +18,7 @@ void main() {
     dir = Directory.systemTemp.createTempSync('catlog-goback');
     Directory('${dir.path}/mine').createSync();
     saved = Directory('${dir.path}/saved')..createSync();
-    store = CatalogStore.open('${dir.path}/mine/catlog.db')
-      ..author = 'Patrick';
+    store = CatalogStore.open('${dir.path}/mine/catlog.db')..author = 'Patrick';
   });
 
   tearDown(() {
@@ -34,18 +33,18 @@ void main() {
   }
 
   Future<void> pump(WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: GoBackScreen(store: store, saveTo: saveTo),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: GoBackScreen(store: store, saveTo: saveTo),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('every moment reads as a sentence with a date',
-      (tester) async {
-    store.addMoment(
-        cause: MomentCause.import, label: 'catlog-backup.catsync');
+  testWidgets('every moment reads as a sentence with a date', (tester) async {
+    store.addMoment(cause: MomentCause.import, label: 'catlog-backup.catsync');
     store.addMoment(cause: MomentCause.merge);
     await pump(tester);
 
@@ -56,9 +55,15 @@ void main() {
 
   testWidgets('the list is grouped by month', (tester) async {
     store.addMoment(
-        cause: MomentCause.manual, label: 'in March', at: DateTime(2026, 3, 4));
+      cause: MomentCause.manual,
+      label: 'in March',
+      at: DateTime(2026, 3, 4),
+    );
     store.addMoment(
-        cause: MomentCause.manual, label: 'in April', at: DateTime(2026, 4, 9));
+      cause: MomentCause.manual,
+      label: 'in April',
+      at: DateTime(2026, 4, 9),
+    );
     await pump(tester);
     expect(find.text('March 2026'), findsOneWidget);
     expect(find.text('April 2026'), findsOneWidget);
@@ -77,8 +82,9 @@ void main() {
     expect(find.text('moment 0'), findsOneWidget);
   });
 
-  testWidgets('going back restores the catalog and says what it costs',
-      (tester) async {
+  testWidgets('going back restores the catalog and says what it costs', (
+    tester,
+  ) async {
     final cat = store.createCat('Miezi');
     store.addMoment(cause: MomentCause.manual, label: 'before the trip');
     store.append(cat, Keys.userField('color'), 'black');
@@ -126,7 +132,9 @@ void main() {
     await pump(tester);
     await tester.tap(find.byIcon(Icons.help_outline));
     await tester.pumpAndSettle();
-    expect(find.textContaining('The moments this catalog changed shape'),
-        findsOneWidget);
+    expect(
+      find.textContaining('The moments this catalog changed shape'),
+      findsOneWidget,
+    );
   });
 }

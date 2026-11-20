@@ -6,8 +6,11 @@ import 'field_labels.dart';
 
 /// The one field-creation dialog: used by the Fields screen and by the
 /// detail pages' edit mode (#46). Returns true when a field was created.
-Future<bool> showNewFieldDialog(BuildContext context, CatalogStore store,
-    {FieldScope initialScope = FieldScope.cat}) async {
+Future<bool> showNewFieldDialog(
+  BuildContext context,
+  CatalogStore store, {
+  FieldScope initialScope = FieldScope.cat,
+}) async {
   final created = await showDialog<bool>(
     context: context,
     builder: (context) =>
@@ -70,111 +73,132 @@ class _NewFieldDialogState extends State<_NewFieldDialog> {
     return AlertDialog(
       title: Text(context.t.newField),
       content: SingleChildScrollView(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(
-            controller: _name,
-            autofocus: true,
-            decoration: InputDecoration(
-                labelText: context.t.name, errorText: _error),
-          ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<FieldType>(
-            initialValue: _type,
-            decoration: InputDecoration(labelText: context.t.fieldType),
-            items: [
-              // Tags are the built-in Looks field; its groups follow the
-              // species and cannot be typed in here.
-              for (final t in FieldType.values)
-                if (t != FieldType.tags)
-                DropdownMenuItem(
-                    value: t,
-                    child: Text(t == FieldType.unitValue
-                        ? context.t.typeUnitValue
-                        : t.name)),
-            ],
-            onChanged: (t) => setState(() => _type = t ?? _type),
-          ),
-          if (_type == FieldType.unitValue) ...[
-            const SizedBox(height: 12),
-            DropdownButtonFormField<Dimension>(
-              initialValue: _dimension,
-              decoration: InputDecoration(labelText: context.t.dimension),
-              items: [
-                for (final d in Dimension.values)
-                  DropdownMenuItem(
-                      value: d, child: Text(dimensionName(context.t, d))),
-              ],
-              onChanged: (d) => setState(() => _dimension = d ?? _dimension),
-            ),
-          ],
-          const SizedBox(height: 12),
-          DropdownButtonFormField<FieldScope>(
-            initialValue: _scope,
-            decoration: InputDecoration(labelText: context.t.usedOn),
-            items: [
-              DropdownMenuItem(
-                  value: FieldScope.cat, child: Text(context.t.forCats)),
-              DropdownMenuItem(
-                  value: FieldScope.clowder,
-                  child: Text(context.t.forClowders)),
-              DropdownMenuItem(
-                  value: FieldScope.both, child: Text(context.t.forBoth)),
-            ],
-            onChanged: (s) => setState(() => _scope = s ?? _scope),
-          ),
-          if (_type == FieldType.choice) ...[
-            const SizedBox(height: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             TextField(
-              controller: _options,
-              maxLines: 4,
+              controller: _name,
+              autofocus: true,
               decoration: InputDecoration(
-                labelText: context.t.optionsOnePerLine,
-                alignLabelWithHint: true,
+                labelText: context.t.name,
+                errorText: _error,
               ),
             ),
-          ],
-          if (_type == FieldType.id) ...[
             const SizedBox(height: 12),
-            DropdownButtonFormField<IdDisplay>(
-              initialValue: _idDisplay,
-              decoration:
-                  InputDecoration(labelText: context.t.displayFormat),
+            DropdownButtonFormField<FieldType>(
+              initialValue: _type,
+              decoration: InputDecoration(labelText: context.t.fieldType),
+              items: [
+                // Tags are the built-in Looks field; its groups follow the
+                // species and cannot be typed in here.
+                for (final t in FieldType.values)
+                  if (t != FieldType.tags)
+                    DropdownMenuItem(
+                      value: t,
+                      child: Text(
+                        t == FieldType.unitValue
+                            ? context.t.typeUnitValue
+                            : t.name,
+                      ),
+                    ),
+              ],
+              onChanged: (t) => setState(() => _type = t ?? _type),
+            ),
+            if (_type == FieldType.unitValue) ...[
+              const SizedBox(height: 12),
+              DropdownButtonFormField<Dimension>(
+                initialValue: _dimension,
+                decoration: InputDecoration(labelText: context.t.dimension),
+                items: [
+                  for (final d in Dimension.values)
+                    DropdownMenuItem(
+                      value: d,
+                      child: Text(dimensionName(context.t, d)),
+                    ),
+                ],
+                onChanged: (d) => setState(() => _dimension = d ?? _dimension),
+              ),
+            ],
+            const SizedBox(height: 12),
+            DropdownButtonFormField<FieldScope>(
+              initialValue: _scope,
+              decoration: InputDecoration(labelText: context.t.usedOn),
               items: [
                 DropdownMenuItem(
-                    value: IdDisplay.plain,
-                    child: Text(context.t.displayPlain)),
-                DropdownMenuItem(
-                    value: IdDisplay.qr, child: Text(context.t.displayQr)),
-                DropdownMenuItem(
-                    value: IdDisplay.barcode,
-                    child: Text(context.t.displayBarcode)),
-              ],
-              onChanged: (d) => setState(() => _idDisplay = d ?? _idDisplay),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _lookup,
-              keyboardType: TextInputType.url,
-              decoration: InputDecoration(
-                labelText: context.t.lookupUrlLabel,
-                helperText: context.t.lookupUrlHelp(lookupPlaceholder),
-                helperMaxLines: 3,
-              ),
-            ),
-            // The known services fill name and template in one tap;
-            // every other registry is learned from a scanned flier.
-            Wrap(spacing: 8, children: [
-              for (final preset in registryPresets)
-                ActionChip(
-                  label: Text(preset.name),
-                  onPressed: () => setState(() {
-                    if (_name.text.trim().isEmpty) _name.text = preset.name;
-                    _lookup.text = preset.template;
-                  }),
+                  value: FieldScope.cat,
+                  child: Text(context.t.forCats),
                 ),
-            ]),
+                DropdownMenuItem(
+                  value: FieldScope.clowder,
+                  child: Text(context.t.forClowders),
+                ),
+                DropdownMenuItem(
+                  value: FieldScope.both,
+                  child: Text(context.t.forBoth),
+                ),
+              ],
+              onChanged: (s) => setState(() => _scope = s ?? _scope),
+            ),
+            if (_type == FieldType.choice) ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: _options,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  labelText: context.t.optionsOnePerLine,
+                  alignLabelWithHint: true,
+                ),
+              ),
+            ],
+            if (_type == FieldType.id) ...[
+              const SizedBox(height: 12),
+              DropdownButtonFormField<IdDisplay>(
+                initialValue: _idDisplay,
+                decoration: InputDecoration(labelText: context.t.displayFormat),
+                items: [
+                  DropdownMenuItem(
+                    value: IdDisplay.plain,
+                    child: Text(context.t.displayPlain),
+                  ),
+                  DropdownMenuItem(
+                    value: IdDisplay.qr,
+                    child: Text(context.t.displayQr),
+                  ),
+                  DropdownMenuItem(
+                    value: IdDisplay.barcode,
+                    child: Text(context.t.displayBarcode),
+                  ),
+                ],
+                onChanged: (d) => setState(() => _idDisplay = d ?? _idDisplay),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _lookup,
+                keyboardType: TextInputType.url,
+                decoration: InputDecoration(
+                  labelText: context.t.lookupUrlLabel,
+                  helperText: context.t.lookupUrlHelp(lookupPlaceholder),
+                  helperMaxLines: 3,
+                ),
+              ),
+              // The known services fill name and template in one tap;
+              // every other registry is learned from a scanned flier.
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final preset in registryPresets)
+                    ActionChip(
+                      label: Text(preset.name),
+                      onPressed: () => setState(() {
+                        if (_name.text.trim().isEmpty) _name.text = preset.name;
+                        _lookup.text = preset.template;
+                      }),
+                    ),
+                ],
+              ),
+            ],
           ],
-        ]),
+        ),
       ),
       actions: [
         TextButton(

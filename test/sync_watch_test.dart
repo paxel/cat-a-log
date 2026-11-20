@@ -184,7 +184,8 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     await tester.runAsync(() => Future<void>.delayed(Duration.zero));
     final manifest = FolderManifest.parse(
-        folder.dirs[catalogFolderName('Farm')]![manifestName(ben.deviceId)])!;
+      folder.dirs[catalogFolderName('Farm')]![manifestName(ben.deviceId)],
+    )!;
     // Both cats in one write.
     expect(manifest.segments.single.$2, greaterThan(1));
   });
@@ -221,20 +222,26 @@ void main() {
     // Written today: a phone that still needs its update, not an
     // install that is gone.
     final today = DateTime.now().toUtc().toIso8601String();
-    await folder.write(dir, 'old-phone.jsonl', utf8.encode(jsonEncode({
-      'device': 'old-phone',
-      'dseq': 1,
-      'entity': 'cat:old',
-      'field': r'$type',
-      'value': 'cat',
-      'date': today,
-      'author': 'carla',
-      'recorded': today,
-    })));
+    await folder.write(
+      dir,
+      'old-phone.jsonl',
+      utf8.encode(
+        jsonEncode({
+          'device': 'old-phone',
+          'dseq': 1,
+          'entity': 'cat:old',
+          'field': r'$type',
+          'value': 'cat',
+          'date': today,
+          'author': 'carla',
+          'recorded': today,
+        }),
+      ),
+    );
     await watcher.merge();
     await watcher.merge();
     expect(named, [
-      {'old-phone'}
+      {'old-phone'},
     ]);
     watcher.dispose();
   });

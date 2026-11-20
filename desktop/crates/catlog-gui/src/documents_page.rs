@@ -525,10 +525,13 @@ impl DocumentPage {
                     day.is_some_and(|d| d >= from && d <= to)
                 })
                 .collect();
+            let (Some(first), Some(last)) = (points.first(), points.last()) else {
+                continue;
+            };
             if points.len() < 2 {
                 continue;
             }
-            let (first, last) = (points[0].at, points[points.len() - 1].at);
+            let (first, last) = (first.at, last.at);
             curves.push(ReportCurve {
                 title: format!("{} · {}", field_def_name(t, def), t.vet_report_curves()),
                 colour: colour_of(&def.key()),
@@ -923,9 +926,9 @@ pub fn card_png(card: &CardContent, fonts: &FontSet) -> Option<Vec<u8>> {
             let n = qr.width();
             let colors = qr.to_colors();
             let cell = 160.0 / (n as f32 + 4.0);
-            for row in 0..n {
-                for col in 0..n {
-                    if colors[row * n + col] == qrcode::Color::Dark {
+            for (row, cells) in colors.chunks(n.max(1)).enumerate() {
+                for (col, color) in cells.iter().enumerate() {
+                    if *color == qrcode::Color::Dark {
                         let x0 = 40.0 + (col as f32 + 2.0) * cell;
                         let y0 = y + (row as f32 + 2.0) * cell;
                         for py in y0 as u32..(y0 + cell + 0.5) as u32 {

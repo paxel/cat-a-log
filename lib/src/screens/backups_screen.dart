@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:catalog_core/catalog_core.dart';
@@ -60,10 +62,12 @@ class _BackupsScreenState extends State<BackupsScreen> {
   @override
   void initState() {
     super.initState();
-    restoredFromBackupAt().then((at) {
-      if (mounted) setState(() => _restored = at);
-    });
-    _nameFolder();
+    unawaited(
+      restoredFromBackupAt().then((at) {
+        if (mounted) setState(() => _restored = at);
+      }),
+    );
+    unawaited(_nameFolder());
   }
 
   Future<void> _nameFolder() async {
@@ -116,7 +120,11 @@ class _BackupsScreenState extends State<BackupsScreen> {
       _ => (null, t.backupsDesktopFiles),
     };
     return Scaffold(
-      appBar: pageBar(context, title: Text(t.backupsTitle), help: PageHelp('backups', store: widget.store)),
+      appBar: pageBar(
+        context,
+        title: Text(t.backupsTitle),
+        help: PageHelp('backups', store: widget.store),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

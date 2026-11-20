@@ -9,8 +9,7 @@ import 'package:test/test.dart';
 void main() {
   setUpAll(useSystemSqlite);
 
-  test('an old catalog with a text Species field gets the presets on open',
-      () {
+  test('an old catalog with a text Species field gets the presets on open', () {
     final root = Directory.systemTemp.createTempSync('catlog-species');
     addTearDown(() => root.deleteSync(recursive: true));
     final path = '${root.path}/catlog.db';

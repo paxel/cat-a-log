@@ -66,9 +66,8 @@ void main() {
   );
 
   group('crop step', () {
-    Uint8List frame(int width) => Uint8List.fromList(
-      img.encodeJpg(img.Image(width: width, height: 40)),
-    );
+    Uint8List frame(int width) =>
+        Uint8List.fromList(img.encodeJpg(img.Image(width: width, height: 40)));
 
     Future<String?> run(
       WidgetTester tester,
@@ -101,11 +100,7 @@ void main() {
       final catId = await run(
         tester,
         [frame(100), frame(80), frame(60)],
-        [
-          null,
-          (crop: (x: 0.0, y: 0.0, w: 0.5, h: 1.0)),
-          (crop: null),
-        ],
+        [null, (crop: (x: 0.0, y: 0.0, w: 0.5, h: 1.0)), (crop: null)],
       );
 
       expect(catId, isNotNull);
@@ -113,8 +108,11 @@ void main() {
         for (final hash in store.images(catId!))
           img.decodeImage(store.imageBytes(hash)!)!.width,
       ];
-      expect(widths, unorderedEquals([40, 60]),
-          reason: 'the second frame cropped to its half, the third whole');
+      expect(
+        widths,
+        unorderedEquals([40, 60]),
+        reason: 'the second frame cropped to its half, the third whole',
+      );
     });
 
     testWidgets('every frame canceled creates no stray', (tester) async {

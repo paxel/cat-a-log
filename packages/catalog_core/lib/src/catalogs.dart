@@ -159,8 +159,7 @@ class CatalogManager implements SharedSettings {
   /// name, a ladder nobody wants. It stays recorded, hidden until the
   /// ladder climbs past that tier.
   void dismissAchievement(String id) {
-    _db.execute(
-        'UPDATE achievements SET dismissed = tier WHERE id = ?', [id]);
+    _db.execute('UPDATE achievements SET dismissed = tier WHERE id = ?', [id]);
   }
 
   /// Writes the state of one ladder; the first date stays the first.
@@ -426,5 +425,8 @@ class Achievement {
 
   /// Whether a ladder at [tier] is on show: not waved off, or climbed
   /// past the tier it was waved off at.
-  bool shows(int tier) => dismissed == null || tier > dismissed!;
+  bool shows(int tier) => switch (dismissed) {
+        final d? => tier > d,
+        null => true,
+      };
 }

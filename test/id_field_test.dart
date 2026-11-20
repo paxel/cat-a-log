@@ -23,18 +23,21 @@ void main() {
   tearDown(() => store.close());
 
   Future<void> pump(WidgetTester tester, Widget home) async {
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: home,
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: home,
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('Chip ID edits as text with a scan affordance',
-      (tester) async {
-    await pump(tester,
-        CatDetailScreen(store: store, catId: cat, startEditing: true));
+  testWidgets('Chip ID edits as text with a scan affordance', (tester) async {
+    await pump(
+      tester,
+      CatDetailScreen(store: store, catId: cat, startEditing: true),
+    );
     await tester.ensureVisible(find.text('Chip ID'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Chip ID'));
@@ -44,8 +47,7 @@ void main() {
     await tester.enterText(find.byType(TextField), '276098102345678');
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
-    expect(store.current(cat, Keys.userField('chipid')),
-        '276098102345678');
+    expect(store.current(cat, Keys.userField('chipid')), '276098102345678');
   });
 
   testWidgets('the Card names a linked cat, never its id', (tester) async {
@@ -63,8 +65,7 @@ void main() {
     expect(find.textContaining(ghost), findsNothing);
   });
 
-  testWidgets('the Card renders a barcode for the Chip ID',
-      (tester) async {
+  testWidgets('the Card renders a barcode for the Chip ID', (tester) async {
     store.append(cat, Keys.userField('chipid'), '276098102345678');
     await pump(tester, CardScreen(store: store, catId: cat));
     await tester.pumpAndSettle();

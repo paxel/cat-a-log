@@ -1,4 +1,3 @@
-
 import 'package:catalog_core/catalog_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +22,11 @@ class SharePubliclyScreen extends StatefulWidget {
   final CatalogStore store;
   final String catId;
 
-  const SharePubliclyScreen(
-      {super.key, required this.store, required this.catId});
+  const SharePubliclyScreen({
+    super.key,
+    required this.store,
+    required this.catId,
+  });
 
   @override
   State<SharePubliclyScreen> createState() => _SharePubliclyScreenState();
@@ -72,8 +74,8 @@ class _SharePubliclyScreenState extends State<SharePubliclyScreen> {
     return result;
   }
 
-  Uint8List _bytes({required bool photos}) => catShareBytes(store,
-      catId: id, fields: _selected, includePhotos: photos);
+  Uint8List _bytes({required bool photos}) =>
+      catShareBytes(store, catId: id, fields: _selected, includePhotos: photos);
 
   /// The inline payload, kept until the whitelist changes. Building it
   /// walks every whitelisted field's history and zips the result, which
@@ -83,21 +85,22 @@ class _SharePubliclyScreenState extends State<SharePubliclyScreen> {
   Set<String>? _inlineFor;
 
   String get _inlinePayload {
-    if (_inline == null || !setEquals(_inlineFor, _selected)) {
-      _inline = encodeShareData(_bytes(photos: false));
-      _inlineFor = {..._selected};
-    }
-    return _inline!;
+    final inline = _inline;
+    if (inline != null && setEquals(_inlineFor, _selected)) return inline;
+    final fresh = encodeShareData(_bytes(photos: false));
+    _inline = fresh;
+    _inlineFor = {..._selected};
+    return fresh;
   }
 
   Future<void> _exportFile() async {
     try {
-      await withPrivateFile(shareFileName(store.current(id, Keys.name)),
-          (path) async {
+      await withPrivateFile(shareFileName(store.current(id, Keys.name)), (
+        path,
+      ) async {
         writeCatShare(store, path, catId: id, fields: _selected);
         if (!mounted) return;
-        await shareFiles(
-            context, [XFile(path, mimeType: 'application/zip')]);
+        await shareFiles(context, [XFile(path, mimeType: 'application/zip')]);
       });
     } catch (e) {
       // Sharing a cat must never take the app down with it.
@@ -114,67 +117,81 @@ class _SharePubliclyScreenState extends State<SharePubliclyScreen> {
     final url = _url.text.trim();
     return Scaffold(
       appBar: pageBar(context, title: Text(t.sharePublicly)),
-      body: ListView(padding: const EdgeInsets.all(16), children: [
-        if (store.localSetting(catalogNameKey) case final name?)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Text(t.sharedCatalogIs(name),
-                style: Theme.of(context).textTheme.titleMedium),
-          ),
-        Text(t.shareWhitelistExplainer,
-            style: Theme.of(context).textTheme.bodySmall),
-        const SizedBox(height: 8),
-        Wrap(spacing: 8, runSpacing: 0, children: [
-          for (final (def, _) in _filled())
-            FilterChip(
-              label: Text(fieldDefName(t, def)),
-              selected: _selected.contains(def.key),
-              onSelected: (_) => setState(() {
-                if (!_selected.remove(def.key)) _selected.add(def.key);
-              }),
-              visualDensity: VisualDensity.compact,
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (store.localSetting(catalogNameKey) case final name?)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                t.sharedCatalogIs(name),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
-        ]),
-        const Divider(height: 32),
-        FilledButton.icon(
-          icon: const Icon(Icons.ios_share),
-          label: Text(t.exportShareFile),
-          onPressed: _exportFile,
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _url,
-          keyboardType: TextInputType.url,
-          decoration: InputDecoration(labelText: t.hostedLink),
-          onChanged: (_) => setState(() {}),
-        ),
-        if (url.isNotEmpty)
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: QrImageView(
+          Text(
+            t.shareWhitelistExplainer,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 0,
+            children: [
+              for (final (def, _) in _filled())
+                FilterChip(
+                  label: Text(fieldDefName(t, def)),
+                  selected: _selected.contains(def.key),
+                  onSelected: (_) => setState(() {
+                    if (!_selected.remove(def.key)) _selected.add(def.key);
+                  }),
+                  visualDensity: VisualDensity.compact,
+                ),
+            ],
+          ),
+          const Divider(height: 32),
+          FilledButton.icon(
+            icon: const Icon(Icons.ios_share),
+            label: Text(t.exportShareFile),
+            onPressed: _exportFile,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _url,
+            keyboardType: TextInputType.url,
+            decoration: InputDecoration(labelText: t.hostedLink),
+            onChanged: (_) => setState(() {}),
+          ),
+          if (url.isNotEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: QrImageView(
                   data: encodeShareUrl(url),
                   size: 220,
-                  backgroundColor: Colors.white),
+                  backgroundColor: Colors.white,
+                ),
+              ),
             ),
-          ),
-        const Divider(height: 32),
-        Text(t.inlineQr,
-            style: Theme.of(context).textTheme.titleMedium),
-        if (inline.length > _inlineQrLimit)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(t.inlineTooBig),
-          )
-        else
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: QrImageView(
-                  data: inline, size: 220, backgroundColor: Colors.white),
+          const Divider(height: 32),
+          Text(t.inlineQr, style: Theme.of(context).textTheme.titleMedium),
+          if (inline.length > _inlineQrLimit)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(t.inlineTooBig),
+            )
+          else
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: QrImageView(
+                  data: inline,
+                  size: 220,
+                  backgroundColor: Colors.white,
+                ),
+              ),
             ),
-          ),
-      ]),
+        ],
+      ),
     );
   }
 }

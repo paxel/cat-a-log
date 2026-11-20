@@ -17,9 +17,9 @@ void rememberViewed(CatalogStore store, String entityId) {
 
 /// The cats and clowders a plan can be for, cats first.
 List<EntityView> planEntities(CatalogStore store) => [
-      ...store.visibleCats(),
-      ...store.visibleClowders(),
-    ];
+  ...store.visibleCats(),
+  ...store.visibleClowders(),
+];
 
 /// The entity a plan starts with when no page said: the one looked at
 /// last while it is still around, else the first cat, else the first

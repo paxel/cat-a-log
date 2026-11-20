@@ -1,0 +1,15 @@
+# Update pull requests for the actions the workflows use, weekly. Every
+# third-party action is pinned to a full commit SHA with its version in a
+# comment; Dependabot moves the SHA and the comment together.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # CodeQL's init and analyze steps must run the same version, or the
+    # analysis fails: they move in one pull request.
+    groups:
+      codeql-action:
+        patterns:
+          - "github/codeql-action*"

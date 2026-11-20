@@ -8,6 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'l10n.dart';
+
 import 'package:catalog_core/catalog_core.dart';
 
 /// Global crash guard (forgiving-UX rule 3: errors explain themselves).
@@ -32,8 +33,11 @@ File get _crashFile => File('${_supportDir.path}/last_crash.txt');
 File get _marker => File('${_supportDir.path}/running.marker');
 File get _exitSeen => File('${_supportDir.path}/exit_seen.txt');
 
-Future<void> initCrashGuard(Directory supportDir,
-    {required void Function() restart, String? appVersion}) async {
+Future<void> initCrashGuard(
+  Directory supportDir, {
+  required void Function() restart,
+  String? appVersion,
+}) async {
   _supportDir = supportDir;
   _restart = restart;
   // A report without a version is a report nobody can act on, so the
@@ -52,9 +56,8 @@ Future<void> initCrashGuard(Directory supportDir,
   // In release builds, build errors render as a compact note instead of
   // a grey void.
   if (kReleaseMode) {
-    ErrorWidget.builder = (details) => const Center(
-          child: Icon(Icons.healing_outlined, size: 32),
-        );
+    ErrorWidget.builder = (details) =>
+        const Center(child: Icon(Icons.healing_outlined, size: 32));
   }
 }
 
@@ -68,7 +71,9 @@ Future<bool> previousRunDied() async {
   if (exit == null) return dirty;
   // Each record is asked about once; the same one on the next launch
   // means the run in between ended without a record, so nothing died.
-  final seen = _exitSeen.existsSync() ? _exitSeen.readAsStringSync().trim() : '';
+  final seen = _exitSeen.existsSync()
+      ? _exitSeen.readAsStringSync().trim()
+      : '';
   if (seen == '${exit.timestamp}') return false;
   try {
     _exitSeen.writeAsStringSync('${exit.timestamp}');
@@ -78,10 +83,12 @@ Future<bool> previousRunDied() async {
   }
   if (!_crashFile.existsSync()) {
     try {
-      _crashFile.writeAsStringSync('${crashReportHeader()}\n\n'
-          'The system ended the app: ${exit.reason}'
-          '${exit.foreground ? ' while on screen' : ' in the background'}.\n'
-          '${exit.description}');
+      _crashFile.writeAsStringSync(
+        '${crashReportHeader()}\n\n'
+        'The system ended the app: ${exit.reason}'
+        '${exit.foreground ? ' while on screen' : ' in the background'}.\n'
+        '${exit.description}',
+      );
     } catch (_) {}
   }
   return true;
@@ -104,10 +111,12 @@ class LastExit {
   final int timestamp;
   final String description;
 
-  const LastExit(this.reason,
-      {required this.foreground,
-      required this.timestamp,
-      required this.description});
+  const LastExit(
+    this.reason, {
+    required this.foreground,
+    required this.timestamp,
+    required this.description,
+  });
 }
 
 /// Asks Android 11+ for the newest exit record; null elsewhere, on older
@@ -147,16 +156,15 @@ Future<String?> _versionFromPackage() async {
 /// What every report must carry to be worth reading: which build, on
 /// which system, in which language, and when.
 String crashReportHeader({DateTime? at}) => [
-      'cat(a)log ${_appVersion ?? 'version unknown'}',
-      '${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
-      'locale ${Platform.localeName}',
-      (at ?? clockNow()).toIso8601String(),
-    ].join('\n');
+  'cat(a)log ${_appVersion ?? 'version unknown'}',
+  '${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
+  'locale ${Platform.localeName}',
+  (at ?? clockNow()).toIso8601String(),
+].join('\n');
 
 void _record(Object error, StackTrace? stack) {
   try {
-    _crashFile
-        .writeAsStringSync('${crashReportHeader()}\n\n$error\n\n$stack');
+    _crashFile.writeAsStringSync('${crashReportHeader()}\n\n$error\n\n$stack');
   } catch (_) {}
 }
 
@@ -200,7 +208,8 @@ Future<void> mailCrashReport(String body) async {
   final uri = Uri(
     scheme: 'mailto',
     path: crashMail,
-    query: 'subject=${Uri.encodeComponent('cat(a)log crash report')}'
+    query:
+        'subject=${Uri.encodeComponent('cat(a)log crash report')}'
         '&body=${Uri.encodeComponent(mailBody(body))}',
   );
   try {
@@ -244,10 +253,11 @@ class _CrashApp extends StatelessWidget {
                   children: [
                     const Icon(Icons.healing_outlined, size: 64),
                     const SizedBox(height: 16),
-                    Text(t.crashTitle,
-                        style:
-                            Theme.of(context).textTheme.headlineSmall,
-                        textAlign: TextAlign.center),
+                    Text(
+                      t.crashTitle,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 8),
                     Text(t.crashBody, textAlign: TextAlign.center),
                     const SizedBox(height: 16),
@@ -264,7 +274,9 @@ class _CrashApp extends StatelessWidget {
                         child: Text(
                           '$error',
                           style: const TextStyle(
-                              fontFamily: 'monospace', fontSize: 12),
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -281,8 +293,10 @@ class _CrashApp extends StatelessWidget {
                     OutlinedButton.icon(
                       icon: const Icon(Icons.mail_outline),
                       label: Text(t.crashSendReport),
-                      onPressed: () => mailCrashReport(lastCrashText() ??
-                          '${crashReportHeader()}\n\n$error\n\n$stack'),
+                      onPressed: () => mailCrashReport(
+                        lastCrashText() ??
+                            '${crashReportHeader()}\n\n$error\n\n$stack',
+                      ),
                     ),
                   ],
                 ),

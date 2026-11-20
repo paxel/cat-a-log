@@ -7,9 +7,9 @@ import 'package:test/test.dart';
 Uint8List jpeg(int w, int h) =>
     Uint8List.fromList(img.encodeJpg(img.Image(width: w, height: h)));
 
-void sync(CatalogStore from, CatalogStore to) => to.applyEntries(
-    from.entriesSince(to.versionVector()),
-    senderVector: from.versionVector());
+void sync(CatalogStore from, CatalogStore to) =>
+    to.applyEntries(from.entriesSince(to.versionVector()),
+        senderVector: from.versionVector());
 
 void main() {
   setUpAll(useSystemSqlite);
@@ -40,8 +40,8 @@ void main() {
     expect(removed, isNotEmpty);
     expect(a.imageBytes(removed.single), isNull);
     expect(
-        a.entriesSince(const {}, includePrivate: true)
-            .where((e) => e.author == 'bob'),
+        a.entriesSince(const {},
+            includePrivate: true).where((e) => e.author == 'bob'),
         isEmpty);
   });
 

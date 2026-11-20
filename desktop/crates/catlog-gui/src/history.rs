@@ -321,8 +321,8 @@ impl HistoryPage {
         if points.len() < 2 {
             return None;
         }
-        let from = points[0].at;
-        let to = points[points.len() - 1].at;
+        let from = points.first()?.at;
+        let to = points.last()?.at;
         let (mut lo, mut hi) = points.iter().fold((f64::MAX, f64::MIN), |(lo, hi), p| {
             (lo.min(p.value), hi.max(p.value))
         });

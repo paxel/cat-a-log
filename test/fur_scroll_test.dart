@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catlog/src/fur_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -48,7 +50,7 @@ void main() {
     expect(scrolled, greaterThan(0));
 
     final navigator = tester.state<NavigatorState>(find.byType(Navigator));
-    navigator.push(MaterialPageRoute(builder: (_) => page('detail')));
+    navigator.push(MaterialPageRoute<void>(builder: (_) => page('detail')));
     await tester.pumpAndSettle();
     expect(furScroll.offset.value, 0);
 
@@ -92,9 +94,11 @@ void main() {
     expect(furScroll.offset.value, 0);
 
     final navigator = tester.state<NavigatorState>(find.byType(Navigator));
-    showDialog<void>(
-      context: navigator.context,
-      builder: (_) => Dialog(child: SizedBox(height: 200, child: page('d'))),
+    unawaited(
+      showDialog<void>(
+        context: navigator.context,
+        builder: (_) => Dialog(child: SizedBox(height: 200, child: page('d'))),
+      ),
     );
     await tester.pumpAndSettle();
     await tester.drag(find.text('d 0'), const Offset(0, -150));
