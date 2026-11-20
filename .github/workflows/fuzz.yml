@@ -40,7 +40,7 @@ jobs:
       run:
         working-directory: desktop
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # cargo-fuzz needs nightly for the sanitizer flags. The fuzz crate only;
       # the desktop itself builds on stable.
       - uses: dtolnay/rust-toolchain@2c76c034f9e32a5d6e2c104dc4df23a22476db04 # nightly branch
