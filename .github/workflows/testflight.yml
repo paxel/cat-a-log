@@ -56,7 +56,7 @@ jobs:
         # workflow can't collide with the numbers used so far (#39).
         run: flutter build ipa --release --build-number=$((GITHUB_RUN_NUMBER + 100)) --export-options-plist=ios/ExportOptions.plist
       - name: Upload to TestFlight
-        uses: apple-actions/upload-testflight-build@9fd28d4e690396e43caca69cef54cccccce77034 # v3.0.1
+        uses: apple-actions/upload-testflight-build@665328adbecbc3ad929d3da710696d928b8a7ba9 # v5.9.0
         with:
           app-path: build/ios/ipa/catlog.ipa
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
