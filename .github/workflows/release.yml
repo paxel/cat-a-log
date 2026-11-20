@@ -280,7 +280,7 @@ jobs:
         run: flutter build appbundle --release --build-number=$((GITHUB_RUN_NUMBER + 100))
       - name: Upload internal-testing bundle
         if: github.ref_type == 'branch' && github.event_name == 'push'
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: catlog-aab
           path: build/app/outputs/bundle/release/app-release.aab
@@ -322,7 +322,7 @@ jobs:
           mv "$d/app-x86_64-release.apk"      "dist/catlog-$v-android-x86_64.apk"
           mv "$d/app-release.apk"             "dist/catlog-$v-android-universal.apk"
           mv build/app/outputs/bundle/release/app-release.aab "dist/catlog-$v-android-playstore.aab"
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
         with:
           name: android
@@ -372,7 +372,7 @@ jobs:
         run: |
           v="${RELEASE_TAG#v}"
           desktop/packaging/linux/pack.sh "$v" "${{ matrix.arch }}" desktop/target/release/catlog dist
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: linux-${{ matrix.arch }}
           path: dist/*
@@ -395,7 +395,7 @@ jobs:
         run: |
           $v = $env:RELEASE_TAG.TrimStart("v")
           desktop\packaging\windows\pack.ps1 -Version $v -Binary desktop\target\release\catlog.exe -Dist dist
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: windows
           path: dist/*
@@ -426,7 +426,7 @@ jobs:
         run: |
           v="${RELEASE_TAG#v}"
           desktop/packaging/macos/pack.sh "$v" "${{ matrix.arch }}" desktop/target/release/catlog dist
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: macos-${{ matrix.arch }}
           path: dist/*
@@ -592,7 +592,7 @@ jobs:
           merge-multiple: true
       - name: Render from the templates with the artifacts' checksums
         run: desktop/packaging/render-channels.sh "${RELEASE_TAG#v}" dist out
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: channels
           path: out/*
